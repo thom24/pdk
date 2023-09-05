@@ -152,8 +152,6 @@ QueueP_Handle QueueP_create(const QueueP_Params *params)
  */
 QueueP_Status QueueP_delete(QueueP_Handle handle)
 {
-    DebugP_assert(NULL_PTR != handle);
-
     uintptr_t       key;
     QueueP_Status   ret_val = QueueP_OK;
     QueueP_freertos *queue = (QueueP_freertos *)handle;
@@ -225,8 +223,6 @@ void * QueueP_get(QueueP_Handle handle)
  */
 QueueP_Status QueueP_put(QueueP_Handle handle, void *elem)
 {
-    DebugP_assert(NULL_PTR != handle);
-
     uintptr_t       key;
     QueueP_Status   ret_val = QueueP_OK;
     QueueP_freertos *queue = (QueueP_freertos *)handle;

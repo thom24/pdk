@@ -238,8 +238,6 @@ HwiP_Handle HwiP_createDirect(uint32_t interruptNum, HwiP_DirectFxn hwiFxn,
  */
 HwiP_Status HwiP_delete(HwiP_Handle handle)
 {
-    HWIPOSAL_Assert(NULL_PTR == handle);
-
     uintptr_t   key;
     HwiP_Status ret;
     

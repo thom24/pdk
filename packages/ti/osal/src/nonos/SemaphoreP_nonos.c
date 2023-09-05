@@ -213,8 +213,6 @@ void SemaphoreP_Params_init(SemaphoreP_Params *params)
  */
 SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
 {
-    OSAL_Assert(NULL_PTR == handle);
-
     uintptr_t           key;
     Sem_Struct         *semS        = (Sem_Struct *)handle;
     uint32_t            semTimeout  = timeout;

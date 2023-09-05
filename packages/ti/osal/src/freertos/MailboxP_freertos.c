@@ -154,8 +154,6 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
 
 MailboxP_Status MailboxP_delete(MailboxP_Handle handle)
 {
-    DebugP_assert(NULL_PTR != handle);
-
     uintptr_t   key;
     MailboxP_Status ret_val = MailboxP_OK;
     MailboxP_freertos *mailbox = (MailboxP_freertos *)handle;

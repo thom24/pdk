@@ -101,25 +101,22 @@ HwiP_Handle HwiP_createDirect(uint32_t interruptNum, HwiP_DirectFxn hwiFxn,
 HwiP_Status HwiP_delete(HwiP_Handle handle)
 {
     HwiP_Status status;
-
-    OSAL_Assert(NULL_PTR == handle);
-
+    
     if(NULL_PTR != handle) {
-      status = OsalArch_HwiPDelete(handle);
-
-      if (HwiP_OK == status)
-      {
-        if (gOsalHwiAllocCnt > 0U)
+        status = OsalArch_HwiPDelete(handle);
+        
+        if (HwiP_OK == status)
         {
-            gOsalHwiAllocCnt--;
+            if (gOsalHwiAllocCnt > 0U)
+            {
+                gOsalHwiAllocCnt--;
+            }
         }
-      }
-   }
-   else
-   {
-      status = HwiP_FAILURE;
-   }
-
+    }
+    else
+    {
+        status = HwiP_FAILURE;
+    }
     return (status);
 }
 

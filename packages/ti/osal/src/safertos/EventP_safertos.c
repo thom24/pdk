@@ -223,7 +223,6 @@ uint32_t EventP_wait(EventP_Handle handle, uint32_t eventMask,
  */
 EventP_Status EventP_post(EventP_Handle handle, uint32_t eventMask)
 {
-    DebugP_assert(NULL_PTR != handle);
     DebugP_assert(eventMask <= EventP_ID_23);
 
     EventP_Status   ret_val = EventP_OK;

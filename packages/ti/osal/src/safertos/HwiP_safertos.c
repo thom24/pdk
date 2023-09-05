@@ -117,8 +117,6 @@ HwiP_Status HwiP_delete(HwiP_Handle handle)
 {
     HwiP_Status status;
 
-    OSAL_Assert(NULL_PTR == handle);
-
     if(NULL_PTR != handle)
     {
         status = OsalArch_HwiPDelete(handle);

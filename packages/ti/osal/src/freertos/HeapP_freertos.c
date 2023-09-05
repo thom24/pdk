@@ -149,8 +149,6 @@ HeapP_Handle HeapP_create(const HeapP_Params *params)
  */
 HeapP_Status HeapP_delete(HeapP_Handle handle)
 {
-    DebugP_assert(NULL_PTR != handle);
-
     uintptr_t   key;
     HeapP_Status ret_val = HeapP_OK;
     HeapP_freertos *heap = (HeapP_freertos *)handle;
@@ -183,8 +181,6 @@ HeapP_Status HeapP_delete(HeapP_Handle handle)
  */
 void *HeapP_alloc(HeapP_Handle handle, uint32_t allocSize)
 {
-    DebugP_assert(NULL_PTR != handle);
-
     void *ptr = NULL_PTR;
     HeapP_freertos *heap = (HeapP_freertos *)handle;
 
@@ -203,8 +199,6 @@ void *HeapP_alloc(HeapP_Handle handle, uint32_t allocSize)
  */
 HeapP_Status HeapP_free(HeapP_Handle handle, void *ptr, uint32_t size)
 {
-    DebugP_assert(NULL_PTR != handle);
-
     HeapP_Status ret_val = HeapP_OK;
     HeapP_freertos *heap = (HeapP_freertos *)handle;
 
@@ -227,9 +221,6 @@ HeapP_Status HeapP_free(HeapP_Handle handle, void *ptr, uint32_t size)
  */
 HeapP_Status HeapP_getHeapStats(HeapP_Handle handle, HeapP_MemStats *stats)
 {
-    DebugP_assert(NULL_PTR != handle);
-    DebugP_assert(NULL_PTR != stats);
-
     HeapP_Status ret_val = HeapP_OK;
     HeapP_freertos *heap = (HeapP_freertos *)handle;
     HeapMemStats_t pHeapStats;
