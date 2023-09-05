@@ -174,6 +174,7 @@ typedef struct SPI_Tests_s
     bool     pollMode;
     bool     cbMode;
     bool     dmaMode;
+    bool     useTR;
     uint32_t timeout;
     char     testDesc[80];
     uint32_t param;
@@ -312,8 +313,10 @@ Udma_DrvHandle          gDrvHandle = NULL;
 static uint8_t gTxRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 static uint8_t gTxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 static uint8_t gUdmaTxHpdMem[UDMA_TEST_APP_DESC_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gUdmaTxTrpdMem[UDMA_TEST_APP_TRPD_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 static uint8_t gRxRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 static uint8_t gRxCompRingMem[UDMA_TEST_APP_RING_MEM_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
+static uint8_t gUdmaRxTrpdMem[UDMA_TEST_APP_TRPD_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 static uint8_t gUdmaRxHpdMem[UDMA_TEST_APP_DESC_SIZE_ALIGN] __attribute__((aligned(UDMA_CACHELINE_ALIGNMENT)));
 
 static SPI_dmaInfo gUdmaInfo;
@@ -334,7 +337,7 @@ static void App_print(const char *str)
     return;
 }
 
-Udma_DrvHandle MCSPIApp_udmaInit(SPI_v1_HWAttrs *cfg, uint32_t chn)
+Udma_DrvHandle MCSPIApp_udmaInit(SPI_v1_HWAttrs *cfg, uint32_t chn, bool useTR)
 {
     int32_t         retVal = UDMA_SOK;
     Udma_InitPrms   initPrms;
@@ -373,9 +376,12 @@ Udma_DrvHandle MCSPIApp_udmaInit(SPI_v1_HWAttrs *cfg, uint32_t chn)
         gUdmaInfo.rxRingMem      = (void *)&gRxRingMem[0];
         gUdmaInfo.cqRxRingMem    = (void *)&gRxCompRingMem[0];
         gUdmaInfo.txHpdMem       = (void *)&gUdmaTxHpdMem[0];
+        gUdmaInfo.txTrpdMem       = (void *)&gUdmaTxTrpdMem[0];
+        gUdmaInfo.rxTrpdMem       = (void *)&gUdmaRxTrpdMem[0];
         gUdmaInfo.rxHpdMem       = (void *)&gUdmaRxHpdMem[0];
         gUdmaInfo.txEventHandle  = (void *)&gUdmaTxCqEventObj;
         gUdmaInfo.rxEventHandle  = (void *)&gUdmaRxCqEventObj;
+        gUdmaInfo.useTR          = useTR;
         cfg->chnCfg[chn].dmaInfo = &gUdmaInfo;
     }
     else
@@ -644,11 +650,7 @@ static void SPI_initConfig(uint32_t domain, uint32_t instance, SPI_Tests *test, 
         if (dmaMode == true)
         {
             /* Set the DMA related init config */
-#if defined (SOC_AM65XX)  || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
-            spi_cfg.edmaHandle = (void *)MCSPIApp_udmaInit(&spi_cfg, chn);
-#else
-            spi_cfg.edmaHandle = MCSPIApp_edmaInit();
-#endif
+            spi_cfg.edmaHandle = (void *)MCSPIApp_udmaInit(&spi_cfg, chn, test->useTR);
             spi_cfg.dmaMode    = TRUE;
             spi_cfg.enableIntr = FALSE;
         }
@@ -1561,91 +1563,115 @@ void SPI_test_print_test_desc(SPI_Tests *test)
 SPI_Tests Spi_tests_master[] =
 {
 #ifndef SPI_MASTERONLY_TESTS
-    /* testFunc               testID         master pollMode cbMode dmaMode timeout               testDesc */
+	    /* testFunc             testID                  master pollMode cbMode  dmaMode, useTr    timeout                     testDesc */
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_single_channel, SPI_TEST_ID_DMA, true, false, false, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master in dma mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_DMA,        true,  false,   false,  true,    true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma mode", },
 #endif
-    {SPI_test_single_channel, SPI_TEST_ID_INT, true, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master in non-dma interrupt mode", },
-    {SPI_test_single_channel, SPI_TEST_ID_POLL, true, true, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master in polling mode"},
-    {SPI_test_single_channel, SPI_TEST_ID_CB, true, false, true, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master in non-dma callback mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_INT,        true,  false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma interrupt mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_POLL,       true,  true,    false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_CB,         true,  false,   true,   false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_single_channel, SPI_TEST_ID_DMA_CB, true, false, true, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master in dma callback mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_DMA_CB,     true,  false,   true,   true,    true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
 #endif
-    {SPI_test_xfer_error, SPI_TEST_ID_XFER_ERR, true, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master transfer error test in non-dma interrupt mode", },
-    {SPI_test_single_channel, SPI_TEST_ID_PHA_POL, true, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master phase polarity test in non-dma interrupt mode", 1, },
+    {SPI_test_xfer_error,       SPI_TEST_ID_XFER_ERR,   true,  false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI slave transfer error test in non-dma interrupt mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_PHA_POL,    true,  false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI slave phase polarity test in non-dma interrupt mode", 1, },
 #ifdef MCSPI_MULT_CHANNEL
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_multi_channel, SPI_TEST_ID_MC_DMA, true, false, false, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master multi channel in dma mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA,     true,  false,   false,  true,    true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in dma mode", },
 #endif
-    {SPI_test_multi_channel, SPI_TEST_ID_MC_INT, true, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master multi channel in non-dma interrupt mode", },
-    {SPI_test_multi_channel, SPI_TEST_ID_MC_POLL, true, true, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master multi channel in polling mode", },
-    {SPI_test_multi_channel, SPI_TEST_ID_MC_CB, true, false, true, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master multi channel in non-dma callback mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_INT,     true,  false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in non-dma interrupt mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_POLL,    true,  true,    false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_CB,      true,  false,   true,   false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_multi_channel, SPI_TEST_ID_MC_DMA_CB, true, false, true, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master multi channel in dma callback mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA_CB,  true,  false,   true,   true,    true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
 #endif
-    {SPI_test_multi_channel, SPI_TEST_ID_TX_ONLY, true, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master multi channel TX_ONLY test", 0, },
+    {SPI_test_multi_channel,    SPI_TEST_ID_TX_ONLY,    true,  false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel TX_ONLY test", 0, },
 #endif
-#endif
-
-#if !defined (SOC_J721E) && !defined (SOC_J7200) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_single_channel, SPI_TEST_ID_WORD_LEN, true, false, false, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master data size test in loopback dma mode", SPI_TEST_DATA_SIZE, },
+    {SPI_test_single_channel,   SPI_TEST_ID_DMA,        true,  false,   false,  true,    false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma mode", },
 #endif
-    {SPI_test_single_channel, SPI_TEST_ID_WORD_LEN, true, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master data size test in loopback mode", SPI_TEST_DATA_SIZE, },
+    {SPI_test_single_channel,   SPI_TEST_ID_INT,        true,  false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma interrupt mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_POLL,       true,  true,    false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_CB,         true,  false,   true,   false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
+#ifdef SPI_DMA_ENABLE
+    {SPI_test_single_channel,   SPI_TEST_ID_DMA_CB,     true,  false,   true,   true,    false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
+#endif
+    {SPI_test_xfer_error,       SPI_TEST_ID_XFER_ERR,   true,  false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI slave transfer error test in non-dma interrupt mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_PHA_POL,    true,  false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI slave phase polarity test in non-dma interrupt mode", 1, },
 #ifdef MCSPI_MULT_CHANNEL
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_multi_channel, SPI_TEST_ID_TRIG_LVL, true, false, false, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master multi channel FIFO trigger level test in loopback dma mode", SPI_TEST_TRIG_LVL, },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA,     true,  false,   false,  true,    false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in dma mode", },
 #endif
-    {SPI_test_multi_channel, SPI_TEST_ID_TRIG_LVL, true, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master multi channel FIFO trigger level test in loopback mode", SPI_TEST_TRIG_LVL, },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_INT,     true,  false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in non-dma interrupt mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_POLL,    true,  true,    false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_CB,      true,  false,   true,   false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_multi_channel, SPI_TEST_ID_TCS, true, false, false, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master multi channel TCS test in dma mode", SPI_TEST_TCS, },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA_CB,  true,  false,   true,   true,    false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
 #endif
-    {SPI_test_multi_channel, SPI_TEST_ID_TCS, true, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master multi channel TCS test", SPI_TEST_TCS, },
-#ifdef SPI_DMA_ENABLE
-    {SPI_test_multi_channel, SPI_TEST_ID_INIT_DELAY, true, false, false, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master multi channel init delay test in dma mode", SPI_TEST_INIT_DELAY, },
+    {SPI_test_multi_channel,    SPI_TEST_ID_TX_ONLY,    true,  false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel TX_ONLY test", 0, },
 #endif
-    {SPI_test_multi_channel, SPI_TEST_ID_INIT_DELAY, true, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master multi channel init delay test", SPI_TEST_INIT_DELAY, },
 #endif
 
-#endif /* Loopback not supported on j721e, j7200, j721s2, j784s4 */
-
 #ifdef SPI_DMA_ENABLE
-     {SPI_test_single_channel, SPI_TEST_ID_DMA_CB_CANCEL, true, false, true, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master transmit cancel in dma callback mode", },
+     {SPI_test_single_channel, SPI_TEST_ID_DMA_CB_CANCEL, true, false, true, true, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master transmit cancel in dma callback mode", },
 #endif
-     {SPI_test_single_channel, SPI_TEST_ID_CB_CANCEL, true, false, true, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master transmit cancel in non-dma callback mode", },
+     {SPI_test_single_channel, SPI_TEST_ID_CB_CANCEL, true, false, true, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test master transmit cancel in non-dma callback mode", },
     /* NOTE: Timeout Test case should be executed as the final test, as this test requires no transaction on the data lines
      * for the timeout to happen */
-    {SPI_test_single_channel, SPI_TEST_ID_TIMEOUT, false, false, false, false, SPI_TIMEOUT_VALUE, "\r\n SPI timeout test in interrupt mode", },
-    {SPI_test_single_channel, SPI_TEST_ID_TIMEOUT_POLL, false, true, false, false, SPI_TIMEOUT_VALUE, "\r\n SPI timeout test in polling mode", },
+    {SPI_test_single_channel, SPI_TEST_ID_TIMEOUT, false, false, false, false, false, SPI_TIMEOUT_VALUE, "\r\n SPI timeout test in interrupt mode", },
+    {SPI_test_single_channel, SPI_TEST_ID_TIMEOUT_POLL, false, true, false, false, false, SPI_TIMEOUT_VALUE, "\r\n SPI timeout test in polling mode", },
     {NULL, },
 };
 
 SPI_Tests Spi_tests_slave[] =
 {
 #ifndef SPI_MASTERONLY_TESTS
-	    /* testFunc           testID         master pollMode cbMode dmaMode, timeout               testDesc */
+	    /* testFunc             testID                  master pollMode cbMode  dmaMode, useTr    timeout                     testDesc */
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_single_channel, SPI_TEST_ID_DMA, false, false, false, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_DMA,        false, false,   false,  true,    true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma mode", },
 #endif
-    {SPI_test_single_channel, SPI_TEST_ID_INT, false, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma interrupt mode", },
-    {SPI_test_single_channel, SPI_TEST_ID_POLL, false, true, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
-    {SPI_test_single_channel, SPI_TEST_ID_CB, false, false, true, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_INT,        false, false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma interrupt mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_POLL,       false, true,    false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_CB,         false, false,   true,   false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_single_channel, SPI_TEST_ID_DMA_CB, false, false, true, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_DMA_CB,     false, false,   true,   true,    true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
 #endif
-    {SPI_test_xfer_error, SPI_TEST_ID_XFER_ERR, false, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI slave transfer error test in non-dma interrupt mode", },
-    {SPI_test_single_channel, SPI_TEST_ID_PHA_POL, false, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI slave phase polarity test in non-dma interrupt mode", 1, },
+    {SPI_test_xfer_error,       SPI_TEST_ID_XFER_ERR,   false, false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI slave transfer error test in non-dma interrupt mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_PHA_POL,    false, false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI slave phase polarity test in non-dma interrupt mode", 1, },
 #ifdef MCSPI_MULT_CHANNEL
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_multi_channel, SPI_TEST_ID_MC_DMA, false, false, false, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in dma mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA,     false, false,   false,  true,    true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in dma mode", },
 #endif
-    {SPI_test_multi_channel, SPI_TEST_ID_MC_INT, false, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in non-dma interrupt mode", },
-    {SPI_test_multi_channel, SPI_TEST_ID_MC_POLL, false, true, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
-    {SPI_test_multi_channel, SPI_TEST_ID_MC_CB, false, false, true, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_INT,     false, false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in non-dma interrupt mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_POLL,    false, true,    false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_CB,      false, false,   true,   false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
 #ifdef SPI_DMA_ENABLE
-    {SPI_test_multi_channel, SPI_TEST_ID_MC_DMA_CB, false, false, true, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA_CB,  false, false,   true,   true,    true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
 #endif
-    {SPI_test_multi_channel, SPI_TEST_ID_RX_ONLY, false, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel RX_ONLY test", 0, },
+    {SPI_test_multi_channel,    SPI_TEST_ID_RX_ONLY,    false, false,   false,  false,   true,    SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel RX_ONLY test", 0, },
+#endif
+#ifdef SPI_DMA_ENABLE
+    {SPI_test_single_channel,   SPI_TEST_ID_DMA,        false, false,   false,  true,    false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma mode", },
+#endif
+    {SPI_test_single_channel,   SPI_TEST_ID_INT,        false, false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma interrupt mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_POLL,       false, true,    false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_CB,         false, false,   true,   false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
+#ifdef SPI_DMA_ENABLE
+    {SPI_test_single_channel,   SPI_TEST_ID_DMA_CB,     false, false,   true,   true,    false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
+#endif
+    {SPI_test_xfer_error,       SPI_TEST_ID_XFER_ERR,   false, false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI slave transfer error test in non-dma interrupt mode", },
+    {SPI_test_single_channel,   SPI_TEST_ID_PHA_POL,    false, false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI slave phase polarity test in non-dma interrupt mode", 1, },
+#ifdef MCSPI_MULT_CHANNEL
+#ifdef SPI_DMA_ENABLE
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA,     false, false,   false,  true,    false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in dma mode", },
+#endif
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_INT,     false, false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel in non-dma interrupt mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_POLL,    false, true,    false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in polling mode", },
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_CB,      false, false,   true,   false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in non-dma callback mode", },
+#ifdef SPI_DMA_ENABLE
+    {SPI_test_multi_channel,    SPI_TEST_ID_MC_DMA_CB,  false, false,   true,   true,    false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave in dma callback mode", },
+#endif
+    {SPI_test_multi_channel,    SPI_TEST_ID_RX_ONLY,    false, false,   false,  false,   false,   SemaphoreP_WAIT_FOREVER, "\r\n SPI master slave test slave multi channel RX_ONLY test", 0, },
 #endif
 #endif
     {NULL, },
