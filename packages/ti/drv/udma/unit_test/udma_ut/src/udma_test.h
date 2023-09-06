@@ -706,6 +706,15 @@ int32_t udmaTestUdmaDeinitNegTc(UdmaTestTaskObj *taskObj);
 int32_t udmaTestUdmaInitEventRegTc(UdmaTestTaskObj *taskObj);
 
 /*
+ * UDMA Utils Negative test case functions
+ */
+int32_t udmaTestUdmaPrinfNegTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestUdmaGetTrSizeNegTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestUdmaPhyToVirtNegTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestUdmaVirtToPhyNegTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestUdmaPrinftMutexNegTc(UdmaTestTaskObj *taskObj);
+
+/*
  * UDMA SOC specific functions
  */
 int32_t udmaTestPrintPsilMacro(UdmaTestTaskObj *taskObj);
