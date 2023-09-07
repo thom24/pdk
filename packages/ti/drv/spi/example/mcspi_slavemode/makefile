@@ -48,7 +48,7 @@ ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 j784s4))
     ifeq ($(CORE), mcu2_1)
         # Slave running on mcu2_1 core
         CFLAGS_SPI_MS     = -DMCSPI_SLAVE_TASK
-        APP_MASTER_SLAVE  = slave
+        APP_MASTER_SLAVE  = Slave
         APPEND_LNKCMD_FILE = $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/slave_linker_append_r5f.cmd
     else
         # Master running on mcu2_0 core, use the common linker command file in build

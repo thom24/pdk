@@ -294,8 +294,11 @@ uint32_t spi_test_xfer_len[SPI_NUM_XFERS] =
 
 /** \brief UDMA host mode buffer descriptor memory size. */
 #define UDMA_TEST_APP_DESC_SIZE         (sizeof(CSL_UdmapCppi5HMPD))
+/** \brief UDMA TR packet descriptor memory size. */
+#define UDMA_TEST_APP_TRPD_SIZE         ((sizeof(CSL_UdmapTR15) * 2U) + 4U)
 /** \brief This ensures every channel memory is aligned */
 #define UDMA_TEST_APP_DESC_SIZE_ALIGN   ((UDMA_TEST_APP_DESC_SIZE + UDMA_CACHELINE_ALIGNMENT) & ~(UDMA_CACHELINE_ALIGNMENT - 1U))
+#define UDMA_TEST_APP_TRPD_SIZE_ALIGN   ((UDMA_TEST_APP_TRPD_SIZE + UDMA_CACHELINE_ALIGNMENT) & ~(UDMA_CACHELINE_ALIGNMENT - 1U))
 
 /*
  * UDMA driver objects
