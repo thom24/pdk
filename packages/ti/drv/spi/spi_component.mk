@@ -115,8 +115,8 @@ drvspi_FIRM_LIST = $(spi_FIRM_LIST)
 # List below all examples for allowed values
 ############################
 spi_EXAMPLE_LIST = drv_mcspi_loopback_app
-spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_TestApp MCSPI_Baremetal_Slave_TestApp
-spi_EXAMPLE_LIST += MCSPI_Baremetal_Master_Dma_TestApp MCSPI_Baremetal_Slave_Dma_TestApp
+spi_EXAMPLE_LIST += mcspi_baremetal_master_testapp mcspi_baremetal_slave_testapp
+spi_EXAMPLE_LIST += mcspi_baremetal_master_dma_testapp mcspi_baremetal_slave_dma_testapp
 spi_EXAMPLE_LIST += OSPI_Baremetal_Flash_TestApp  OSPI_Baremetal_Flash_Dma_TestApp OSPI_Flash_TestApp OSPI_Flash_Dma_TestApp OSPI_Baremetal_Flash_Cache_TestApp  OSPI_Baremetal_Flash_Dma_Cache_TestApp OSPI_Flash_Cache_TestApp OSPI_Flash_Dma_Cache_TestApp QSPI_Baremetal_Flash_TestApp QSPI_Baremetal_Flash_Dma_TestApp QSPI_FileFlashWrite_Dma_TestApp
 
 #
@@ -234,349 +234,349 @@ drv_mcspi_loopback_app_$(SOC)_CORELIST = $(spi_$(SOC)_CORELIST)
 export drv_mcspi_loopback_app_$(SOC)_CORELIST
 
 # SPI baremetal master Test app
-MCSPI_Baremetal_Master_TestApp_COMP_LIST = MCSPI_Baremetal_Master_TestApp
-MCSPI_Baremetal_Master_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
-MCSPI_Baremetal_Master_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
-MCSPI_Baremetal_Master_TestApp_BOARD_DEPENDENCY = yes
-MCSPI_Baremetal_Master_TestApp_CORE_DEPENDENCY = yes
-MCSPI_Baremetal_Master_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
-export MCSPI_Baremetal_Master_TestApp_COMP_LIST
-export MCSPI_Baremetal_Master_TestApp_BOARD_DEPENDENCY
-export MCSPI_Baremetal_Master_TestApp_CORE_DEPENDENCY
-export MCSPI_Baremetal_Master_TestApp_MAKEFILE
-MCSPI_Baremetal_Master_TestApp_PKG_LIST = MCSPI_Baremetal_Master_TestApp
-MCSPI_Baremetal_Master_TestApp_INCLUDE = $(MCSPI_Baremetal_Master_TestApp_PATH)
-MCSPI_Baremetal_Master_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
-export MCSPI_Baremetal_Master_TestApp_BOARDLIST
+mcspi_baremetal_master_testapp_COMP_LIST = mcspi_baremetal_master_testapp
+mcspi_baremetal_master_testapp_RELPATH = ti/drv/spi/example/mcspi_slavemode
+mcspi_baremetal_master_testapp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+mcspi_baremetal_master_testapp_BOARD_DEPENDENCY = yes
+mcspi_baremetal_master_testapp_CORE_DEPENDENCY = yes
+mcspi_baremetal_master_testapp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
+export mcspi_baremetal_master_testapp_COMP_LIST
+export mcspi_baremetal_master_testapp_BOARD_DEPENDENCY
+export mcspi_baremetal_master_testapp_CORE_DEPENDENCY
+export mcspi_baremetal_master_testapp_MAKEFILE
+mcspi_baremetal_master_testapp_PKG_LIST = mcspi_baremetal_master_testapp
+mcspi_baremetal_master_testapp_INCLUDE = $(mcspi_baremetal_master_testapp_PATH)
+mcspi_baremetal_master_testapp_BOARDLIST = $(drvspi_BOARDLIST)
+export mcspi_baremetal_master_testapp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), am65xx))
-MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu1_0
+mcspi_baremetal_master_testapp_$(SOC)_CORELIST = mcu1_0
 else
-MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST = mcu2_0
+mcspi_baremetal_master_testapp_$(SOC)_CORELIST = mcu2_0
 endif
-export MCSPI_Baremetal_Master_TestApp_$(SOC)_CORELIST
+export mcspi_baremetal_master_testapp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x j721s2 j784s4))
-export MCSPI_Baremetal_Master_TestApp_SBL_APPIMAGEGEN = yes
+export mcspi_baremetal_master_testapp_SBL_APPIMAGEGEN = yes
 endif
 
 # SPI baremetal slave Test app
-MCSPI_Baremetal_Slave_TestApp_COMP_LIST = MCSPI_Baremetal_Slave_TestApp
-MCSPI_Baremetal_Slave_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
-MCSPI_Baremetal_Slave_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
-MCSPI_Baremetal_Slave_TestApp_BOARD_DEPENDENCY = yes
-MCSPI_Baremetal_Slave_TestApp_CORE_DEPENDENCY = yes
-MCSPI_Baremetal_Slave_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
-export MCSPI_Baremetal_Slave_TestApp_COMP_LIST
-export MCSPI_Baremetal_Slave_TestApp_BOARD_DEPENDENCY
-export MCSPI_Baremetal_Slave_TestApp_CORE_DEPENDENCY
-export MCSPI_Baremetal_Slave_TestApp_MAKEFILE
-MCSPI_Baremetal_Slave_TestApp_PKG_LIST = MCSPI_Baremetal_Slave_TestApp
-MCSPI_Baremetal_Slave_TestApp_INCLUDE = $(MCSPI_Baremetal_Slave_TestApp_PATH)
-MCSPI_Baremetal_Slave_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_evm j7200_evm j721s2_evm j784s4_evm
-export MCSPI_Baremetal_Slave_TestApp_BOARDLIST
+mcspi_baremetal_slave_testapp_COMP_LIST = mcspi_baremetal_slave_testapp
+mcspi_baremetal_slave_testapp_RELPATH = ti/drv/spi/example/mcspi_slavemode
+mcspi_baremetal_slave_testapp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+mcspi_baremetal_slave_testapp_BOARD_DEPENDENCY = yes
+mcspi_baremetal_slave_testapp_CORE_DEPENDENCY = yes
+mcspi_baremetal_slave_testapp_MAKEFILE = -f makefile BUILD_OS_TYPE=baremetal
+export mcspi_baremetal_slave_testapp_COMP_LIST
+export mcspi_baremetal_slave_testapp_BOARD_DEPENDENCY
+export mcspi_baremetal_slave_testapp_CORE_DEPENDENCY
+export mcspi_baremetal_slave_testapp_MAKEFILE
+mcspi_baremetal_slave_testapp_PKG_LIST = mcspi_baremetal_slave_testapp
+mcspi_baremetal_slave_testapp_INCLUDE = $(mcspi_baremetal_slave_testapp_PATH)
+mcspi_baremetal_slave_testapp_BOARDLIST = am65xx_evm am65xx_idk j721e_evm j7200_evm j721s2_evm j784s4_evm
+export mcspi_baremetal_slave_testapp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), am65xx))
-MCSPI_Baremetal_Slave_TestApp_$(SOC)_CORELIST = mcu1_1
+mcspi_baremetal_slave_testapp_$(SOC)_CORELIST = mcu1_1
 else
-MCSPI_Baremetal_Slave_TestApp_$(SOC)_CORELIST = mcu2_1
+mcspi_baremetal_slave_testapp_$(SOC)_CORELIST = mcu2_1
 endif
-export MCSPI_Baremetal_Slave_TestApp_$(SOC)_CORELIST
+export mcspi_baremetal_slave_testapp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 j721s2 j784s4))
-export MCSPI_Baremetal_Slave_TestApp_SBL_APPIMAGEGEN = yes
+export mcspi_baremetal_slave_testapp_SBL_APPIMAGEGEN = yes
 endif
 
 # SPI baremetal MasterSlave Test app
-export MCSPI_Baremetal_MasterSlave_TestApp_COMP_LIST = MCSPI_Baremetal_MasterSlave_TestApp
-MCSPI_Baremetal_MasterSlave_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
-MCSPI_Baremetal_MasterSlave_TestApp_BINPATH = $(PDK_INSTALL_PATH)/ti/binary/MCSPI_Baremetal_Master_TestApp/bin
-MCSPI_Baremetal_MasterSlave_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
-export MCSPI_Baremetal_MasterSlave_TestApp_BOARD_DEPENDENCY = yes
-export MCSPI_Baremetal_MasterSlave_TestApp_CORE_DEPENDENCY = yes
-export MCSPI_Baremetal_MasterSlave_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
-export MCSPI_Baremetal_MasterSlave_TestApp_MAKEFILE = -f$(PDK_SPI_COMP_PATH)/example/mcspi_slavemode/mcspi_multicore_testapp.mk BUILD_OS_TYPE=baremetal
-export MCSPI_Baremetal_MasterSlave_TestApp_DEPENDS_ON = MCSPI_Baremetal_Master_TestApp MCSPI_Baremetal_Slave_TestApp
-MCSPI_Baremetal_MasterSlave_TestApp_PKG_LIST = MCSPI_Baremetal_MasterSlave_TestApp
-MCSPI_Baremetal_MasterSlave_TestApp_INCLUDE = $(MCSPI_Baremetal_MasterSlave_TestApp_PATH)
-export MCSPI_Baremetal_MasterSlave_TestApp_BOARDLIST = j721e_evm j7200_evm j721s2_evm
-export MCSPI_Baremetal_MasterSlave_TestApp_$(SOC)_CORELIST:= mcu2_1
-export MCSPI_Baremetal_MasterSlave_TestApp_SBL_APPIMAGEGEN = no
-spi_EXAMPLE_LIST +=MCSPI_Baremetal_MasterSlave_TestApp
+export mcspi_baremetal_masterslave_testapp_COMP_LIST = mcspi_baremetal_masterslave_testapp
+mcspi_baremetal_masterslave_testapp_RELPATH = ti/drv/spi/example/mcspi_slavemode
+mcspi_baremetal_masterslave_testapp_BINPATH = $(PDK_INSTALL_PATH)/ti/binary/mcspi_baremetal_master_testapp/bin
+mcspi_baremetal_masterslave_testapp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+export mcspi_baremetal_masterslave_testapp_BOARD_DEPENDENCY = yes
+export mcspi_baremetal_masterslave_testapp_CORE_DEPENDENCY = yes
+export mcspi_baremetal_masterslave_testapp_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export mcspi_baremetal_masterslave_testapp_MAKEFILE = -f$(PDK_SPI_COMP_PATH)/example/mcspi_slavemode/mcspi_multicore_testapp.mk BUILD_OS_TYPE=baremetal
+export mcspi_baremetal_masterslave_testapp_DEPENDS_ON = mcspi_baremetal_master_testapp mcspi_baremetal_slave_testapp
+mcspi_baremetal_masterslave_testapp_PKG_LIST = mcspi_baremetal_masterslave_testapp
+mcspi_baremetal_masterslave_testapp_INCLUDE = $(mcspi_baremetal_masterslave_testapp_PATH)
+export mcspi_baremetal_masterslave_testapp_BOARDLIST = j721e_evm j7200_evm j721s2_evm
+export mcspi_baremetal_masterslave_testapp_$(SOC)_CORELIST:= mcu2_1
+export mcspi_baremetal_masterslave_testapp_SBL_APPIMAGEGEN = no
+spi_EXAMPLE_LIST +=mcspi_baremetal_masterslave_testapp
 
 # SPI baremetal master Test app
-MCSPI_Baremetal_Master_Dma_TestApp_COMP_LIST = MCSPI_Baremetal_Master_Dma_TestApp
-MCSPI_Baremetal_Master_Dma_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
-MCSPI_Baremetal_Master_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
-MCSPI_Baremetal_Master_Dma_TestApp_BOARD_DEPENDENCY = yes
-MCSPI_Baremetal_Master_Dma_TestApp_CORE_DEPENDENCY = yes
-MCSPI_Baremetal_Master_Dma_TestApp_MAKEFILE = -f makefile  BUILD_OS_TYPE=baremetal DMA=enable
-export MCSPI_Baremetal_Master_Dma_TestApp_COMP_LIST
-export MCSPI_Baremetal_Master_Dma_TestApp_BOARD_DEPENDENCY
-export MCSPI_Baremetal_Master_Dma_TestApp_CORE_DEPENDENCY
-export MCSPI_Baremetal_Master_Dma_TestApp_MAKEFILE
-MCSPI_Baremetal_Master_Dma_TestApp_PKG_LIST = MCSPI_Baremetal_Master_Dma_TestApp
-MCSPI_Baremetal_Master_Dma_TestApp_INCLUDE = $(MCSPI_Baremetal_Master_Dma_TestApp_PATH)
-MCSPI_Baremetal_Master_Dma_TestApp_BOARDLIST = $(drvspi_BOARDLIST)
-export MCSPI_Baremetal_Master_Dma_TestApp_BOARDLIST
+mcspi_baremetal_master_dma_testapp_COMP_LIST = mcspi_baremetal_master_dma_testapp
+mcspi_baremetal_master_dma_testapp_RELPATH = ti/drv/spi/example/mcspi_slavemode
+mcspi_baremetal_master_dma_testapp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+mcspi_baremetal_master_dma_testapp_BOARD_DEPENDENCY = yes
+mcspi_baremetal_master_dma_testapp_CORE_DEPENDENCY = yes
+mcspi_baremetal_master_dma_testapp_MAKEFILE = -f makefile  BUILD_OS_TYPE=baremetal DMA=enable
+export mcspi_baremetal_master_dma_testapp_COMP_LIST
+export mcspi_baremetal_master_dma_testapp_BOARD_DEPENDENCY
+export mcspi_baremetal_master_dma_testapp_CORE_DEPENDENCY
+export mcspi_baremetal_master_dma_testapp_MAKEFILE
+mcspi_baremetal_master_dma_testapp_PKG_LIST = mcspi_baremetal_master_dma_testapp
+mcspi_baremetal_master_dma_testapp_INCLUDE = $(mcspi_baremetal_master_dma_testapp_PATH)
+mcspi_baremetal_master_dma_testapp_BOARDLIST = $(drvspi_BOARDLIST)
+export mcspi_baremetal_master_dma_testapp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), am65xx))
-MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST = mcu1_0
+mcspi_baremetal_master_dma_testapp_$(SOC)_CORELIST = mcu1_0
 else
-MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST = mcu2_0
+mcspi_baremetal_master_dma_testapp_$(SOC)_CORELIST = mcu2_0
 endif
-export MCSPI_Baremetal_Master_Dma_TestApp_$(SOC)_CORELIST
+export mcspi_baremetal_master_dma_testapp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x j721s2 j784s4))
-export MCSPI_Baremetal_Master_Dma_TestApp_SBL_APPIMAGEGEN = yes
+export mcspi_baremetal_master_dma_testapp_SBL_APPIMAGEGEN = yes
 endif
 
 # SPI baremetal slave Test app
-MCSPI_Baremetal_Slave_Dma_TestApp_COMP_LIST = MCSPI_Baremetal_Slave_Dma_TestApp
-MCSPI_Baremetal_Slave_Dma_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
-MCSPI_Baremetal_Slave_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
-MCSPI_Baremetal_Slave_Dma_TestApp_BOARD_DEPENDENCY = yes
-MCSPI_Baremetal_Slave_Dma_TestApp_CORE_DEPENDENCY = yes
-MCSPI_Baremetal_Slave_Dma_TestApp_MAKEFILE = -f makefile  BUILD_OS_TYPE=baremetal DMA=enable
-export MCSPI_Baremetal_Slave_Dma_TestApp_COMP_LIST
-export MCSPI_Baremetal_Slave_Dma_TestApp_BOARD_DEPENDENCY
-export MCSPI_Baremetal_Slave_Dma_TestApp_CORE_DEPENDENCY
-export MCSPI_Baremetal_Slave_Dma_TestApp_MAKEFILE
-MCSPI_Baremetal_Slave_Dma_TestApp_PKG_LIST = MCSPI_Baremetal_Slave_Dma_TestApp
-MCSPI_Baremetal_Slave_Dma_TestApp_INCLUDE = $(MCSPI_Baremetal_Slave_Dma_TestApp_PATH)
-MCSPI_Baremetal_Slave_Dma_TestApp_BOARDLIST = am65xx_evm am65xx_idk j721e_evm j7200_evm j721s2_evm j784s4_evm
-export MCSPI_Baremetal_Slave_Dma_TestApp_BOARDLIST
+mcspi_baremetal_slave_dma_testapp_COMP_LIST = mcspi_baremetal_slave_dma_testapp
+mcspi_baremetal_slave_dma_testapp_RELPATH = ti/drv/spi/example/mcspi_slavemode
+mcspi_baremetal_slave_dma_testapp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+mcspi_baremetal_slave_dma_testapp_BOARD_DEPENDENCY = yes
+mcspi_baremetal_slave_dma_testapp_CORE_DEPENDENCY = yes
+mcspi_baremetal_slave_dma_testapp_MAKEFILE = -f makefile  BUILD_OS_TYPE=baremetal DMA=enable
+export mcspi_baremetal_slave_dma_testapp_COMP_LIST
+export mcspi_baremetal_slave_dma_testapp_BOARD_DEPENDENCY
+export mcspi_baremetal_slave_dma_testapp_CORE_DEPENDENCY
+export mcspi_baremetal_slave_dma_testapp_MAKEFILE
+mcspi_baremetal_slave_dma_testapp_PKG_LIST = mcspi_baremetal_slave_dma_testapp
+mcspi_baremetal_slave_dma_testapp_INCLUDE = $(mcspi_baremetal_slave_dma_testapp_PATH)
+mcspi_baremetal_slave_dma_testapp_BOARDLIST = am65xx_evm am65xx_idk j721e_evm j7200_evm j721s2_evm j784s4_evm
+export mcspi_baremetal_slave_dma_testapp_BOARDLIST
 ifeq ($(SOC),$(filter $(SOC), am65xx))
-MCSPI_Baremetal_Slave_Dma_TestApp_$(SOC)_CORELIST = mcu1_1
+mcspi_baremetal_slave_dma_testapp_$(SOC)_CORELIST = mcu1_1
 else
-MCSPI_Baremetal_Slave_Dma_TestApp_$(SOC)_CORELIST = mcu2_1
+mcspi_baremetal_slave_dma_testapp_$(SOC)_CORELIST = mcu2_1
 endif
-export MCSPI_Baremetal_Slave_Dma_TestApp_$(SOC)_CORELIST
+export mcspi_baremetal_slave_dma_testapp_$(SOC)_CORELIST
 ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 j721s2 j784s4))
-export MCSPI_Baremetal_Slave_Dma_TestApp_SBL_APPIMAGEGEN = yes
+export mcspi_baremetal_slave_dma_testapp_SBL_APPIMAGEGEN = yes
 endif
 
 # SPI baremetal MasterSlave Dma Test app
-export MCSPI_Baremetal_MasterSlave_Dma_TestApp_COMP_LIST = MCSPI_Baremetal_MasterSlave_Dma_TestApp
-MCSPI_Baremetal_MasterSlave_Dma_TestApp_RELPATH = ti/drv/spi/example/mcspi_slavemode
-MCSPI_Baremetal_MasterSlave_Dma_TestApp_BINPATH = $(PDK_INSTALL_PATH)/ti/binary/MCSPI_Baremetal_Master_Dma_TestApp/bin
-MCSPI_Baremetal_MasterSlave_Dma_TestApp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
-export MCSPI_Baremetal_MasterSlave_Dma_TestApp_BOARD_DEPENDENCY = yes
-export MCSPI_Baremetal_MasterSlave_Dma_TestApp_CORE_DEPENDENCY = yes
-export MCSPI_Baremetal_MasterSlave_Dma_TestApp_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
-export MCSPI_Baremetal_MasterSlave_Dma_TestApp_MAKEFILE = -f$(PDK_SPI_COMP_PATH)/example/mcspi_slavemode/mcspi_multicore_testapp.mk  BUILD_OS_TYPE=baremetal DMA=enable
-export MCSPI_Baremetal_MasterSlave_Dma_TestApp_DEPENDS_ON = MCSPI_Baremetal_Master_Dma_TestApp MCSPI_Baremetal_Slave_Dma_TestApp
-MCSPI_Baremetal_MasterSlave_Dma_TestApp_PKG_LIST = MCSPI_Baremetal_MasterSlave_Dma_TestApp
-MCSPI_Baremetal_MasterSlave_Dma_TestApp_INCLUDE = $(MCSPI_Baremetal_MasterSlave_Dma_TestApp_PATH)
-export MCSPI_Baremetal_MasterSlave_Dma_TestApp_BOARDLIST = j721e_evm j7200_evm j721s2_evm
-export MCSPI_Baremetal_MasterSlave_Dma_TestApp_$(SOC)_CORELIST:= mcu2_1
-export MCSPI_Baremetal_MasterSlave_Dma_TestApp_SBL_APPIMAGEGEN = no
-spi_EXAMPLE_LIST +=MCSPI_Baremetal_MasterSlave_Dma_TestApp
+export mcspi_baremetal_masterslave_dma_testapp_COMP_LIST = mcspi_baremetal_masterslave_dma_testapp
+mcspi_baremetal_masterslave_dma_testapp_RELPATH = ti/drv/spi/example/mcspi_slavemode
+mcspi_baremetal_masterslave_dma_testapp_BINPATH = $(PDK_INSTALL_PATH)/ti/binary/mcspi_baremetal_master_dma_testapp/bin
+mcspi_baremetal_masterslave_dma_testapp_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+export mcspi_baremetal_masterslave_dma_testapp_BOARD_DEPENDENCY = yes
+export mcspi_baremetal_masterslave_dma_testapp_CORE_DEPENDENCY = yes
+export mcspi_baremetal_masterslave_dma_testapp_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export mcspi_baremetal_masterslave_dma_testapp_MAKEFILE = -f$(PDK_SPI_COMP_PATH)/example/mcspi_slavemode/mcspi_multicore_testapp.mk  BUILD_OS_TYPE=baremetal DMA=enable
+export mcspi_baremetal_masterslave_dma_testapp_DEPENDS_ON = mcspi_baremetal_master_dma_testapp mcspi_baremetal_slave_dma_testapp
+mcspi_baremetal_masterslave_dma_testapp_PKG_LIST = mcspi_baremetal_masterslave_dma_testapp
+mcspi_baremetal_masterslave_dma_testapp_INCLUDE = $(mcspi_baremetal_masterslave_dma_testapp_PATH)
+export mcspi_baremetal_masterslave_dma_testapp_BOARDLIST = j721e_evm j7200_evm j721s2_evm
+export mcspi_baremetal_masterslave_dma_testapp_$(SOC)_CORELIST:= mcu2_1
+export mcspi_baremetal_masterslave_dma_testapp_SBL_APPIMAGEGEN = no
+spi_EXAMPLE_LIST +=mcspi_baremetal_masterslave_dma_testapp
 
 # SPI master RTOS Test apps
-define MCSPI_Master_TestApp_RULE
+define mcspi_master_testapp_RULE
 
-    export MCSPI_Master_TestApp_$(1)_COMP_LIST = MCSPI_Master_TestApp_$(1)
-    export MCSPI_Master_TestApp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
-    export MCSPI_Master_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
-    export MCSPI_Master_TestApp_$(1)_BOARD_DEPENDENCY = yes
-    export MCSPI_Master_TestApp_$(1)_CORE_DEPENDENCY = yes
-    export MCSPI_Master_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+    export mcspi_master_testapp_$(1)_COMP_LIST = mcspi_master_testapp_$(1)
+    export mcspi_master_testapp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
+    export mcspi_master_testapp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+    export mcspi_master_testapp_$(1)_BOARD_DEPENDENCY = yes
+    export mcspi_master_testapp_$(1)_CORE_DEPENDENCY = yes
+    export mcspi_master_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
 
-    MCSPI_Master_TestApp_$(1)_PKG_LIST = MCSPI_Master_TestApp_$(1)
-    MCSPI_Master_TestApp_$(1)_INCLUDE = $(MCSPI_Master_TestApp_$(1)_PATH)
-    export MCSPI_Master_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvspi_BOARDLIST))
+    mcspi_master_testapp_$(1)_PKG_LIST = mcspi_master_testapp_$(1)
+    mcspi_master_testapp_$(1)_INCLUDE = $(mcspi_master_testapp_$(1)_PATH)
+    export mcspi_master_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvspi_BOARDLIST))
 
     ifeq ($(SOC),$(filter $(SOC), am65xx))
-    export MCSPI_Master_TestApp_$(1)_$(SOC)_CORELIST = mcu1_0
+    export mcspi_master_testapp_$(1)_$(SOC)_CORELIST = mcu1_0
     else
-    export MCSPI_Master_TestApp_$(1)_$(SOC)_CORELIST = mcu2_0
+    export mcspi_master_testapp_$(1)_$(SOC)_CORELIST = mcu2_0
     endif
 
     ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x j721s2 j784s4))
-        export MCSPI_Master_TestApp_$(1)_SBL_APPIMAGEGEN = yes
+        export mcspi_master_testapp_$(1)_SBL_APPIMAGEGEN = yes
     endif
 
     ifneq ($(1),$(filter $(1), safertos))
-        spi_EXAMPLE_LIST += MCSPI_Master_TestApp_$(1)
+        spi_EXAMPLE_LIST += mcspi_master_testapp_$(1)
     else
         ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-           spi_EXAMPLE_LIST += MCSPI_Master_TestApp_$(1)
+           spi_EXAMPLE_LIST += mcspi_master_testapp_$(1)
         endif
     endif
 
 endef
 
-MCSPI_Master_TestApp_MACRO_LIST := $(foreach curos,$(drvspi_RTOS_LIST),$(call MCSPI_Master_TestApp_RULE,$(curos)))
+mcspi_master_testapp_MACRO_LIST := $(foreach curos,$(drvspi_RTOS_LIST),$(call mcspi_master_testapp_RULE,$(curos)))
 
-$(eval ${MCSPI_Master_TestApp_MACRO_LIST})
+$(eval ${mcspi_master_testapp_MACRO_LIST})
 
 
 # SPI slave RTOS Test apps
-define MCSPI_Slave_TestApp_RULE
+define mcspi_slave_testapp_RULE
 
-    export MCSPI_Slave_TestApp_$(1)_COMP_LIST = MCSPI_Slave_TestApp_$(1)
-    export MCSPI_Slave_TestApp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
-    export MCSPI_Slave_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
-    export MCSPI_Slave_TestApp_$(1)_BOARD_DEPENDENCY = yes
-    export MCSPI_Slave_TestApp_$(1)_CORE_DEPENDENCY = yes
-    export MCSPI_Slave_TestApp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+    export mcspi_slave_testapp_$(1)_COMP_LIST = mcspi_slave_testapp_$(1)
+    export mcspi_slave_testapp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
+    export mcspi_slave_testapp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+    export mcspi_slave_testapp_$(1)_BOARD_DEPENDENCY = yes
+    export mcspi_slave_testapp_$(1)_CORE_DEPENDENCY = yes
+    export mcspi_slave_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
 
-    MCSPI_Slave_TestApp_$(1)_PKG_LIST = MCSPI_Slave_TestApp_$(1)
-    MCSPI_Slave_TestApp_$(1)_INCLUDE = $(MCSPI_Slave_TestApp_$(1)_PATH)
-    export MCSPI_Slave_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721e_evm j7200_evm am64x_evm am65xx_evm am65xx_idk j784s4_evm j721s2_evm)
+    mcspi_slave_testapp_$(1)_PKG_LIST = mcspi_slave_testapp_$(1)
+    mcspi_slave_testapp_$(1)_INCLUDE = $(mcspi_slave_testapp_$(1)_PATH)
+    export mcspi_slave_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721e_evm j7200_evm am64x_evm am65xx_evm am65xx_idk j784s4_evm j721s2_evm)
 
     ifeq ($(SOC),$(filter $(SOC), am65xx))
-    export MCSPI_Slave_TestApp_$(1)_$(SOC)_CORELIST = mcu1_1
+    export mcspi_slave_testapp_$(1)_$(SOC)_CORELIST = mcu1_1
     else
-    export MCSPI_Slave_TestApp_$(1)_$(SOC)_CORELIST = mcu2_1
+    export mcspi_slave_testapp_$(1)_$(SOC)_CORELIST = mcu2_1
     endif
 
     ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x j721s2 j784s4))
-        export MCSPI_Slave_TestApp_$(1)_SBL_APPIMAGEGEN = yes
+        export mcspi_slave_testapp_$(1)_SBL_APPIMAGEGEN = yes
     endif
 
     ifneq ($(1),$(filter $(1), safertos))
-        spi_EXAMPLE_LIST += MCSPI_Slave_TestApp_$(1)
+        spi_EXAMPLE_LIST += mcspi_slave_testapp_$(1)
     else
         ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-          spi_EXAMPLE_LIST += MCSPI_Slave_TestApp_$(1)
+          spi_EXAMPLE_LIST += mcspi_slave_testapp_$(1)
         endif
     endif
 endef
 
-MCSPI_Slave_TestApp_MACRO_LIST := $(foreach curos,$(drvspi_RTOS_LIST),$(call MCSPI_Slave_TestApp_RULE,$(curos)))
+mcspi_slave_testapp_MACRO_LIST := $(foreach curos,$(drvspi_RTOS_LIST),$(call mcspi_slave_testapp_RULE,$(curos)))
 
-$(eval ${MCSPI_Slave_TestApp_MACRO_LIST})
+$(eval ${mcspi_slave_testapp_MACRO_LIST})
 
 # SPI MasterSlave RTOS Test apps
-define MCSPI_MasterSlave_TestApp_RULE
+define mcspi_masterslave_testapp_RULE
 
-export MCSPI_MasterSlave_TestApp_$(1)_COMP_LIST = MCSPI_MasterSlave_TestApp_$(1)
-MCSPI_MasterSlave_TestApp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
-MCSPI_MasterSlave_TestApp_$(1)_BINPATH = $(PDK_INSTALL_PATH)/ti/binary/MCSPI_Master_TestApp_$(1)/bin
-MCSPI_MasterSlave_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
-export MCSPI_MasterSlave_TestApp_$(1)_BOARD_DEPENDENCY = yes
-export MCSPI_MasterSlave_TestApp_$(1)_CORE_DEPENDENCY = yes
-export MCSPI_MasterSlave_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
-export MCSPI_MasterSlave_TestApp_$(1)_MAKEFILE =  -f$(PDK_SPI_COMP_PATH)/example/mcspi_slavemode/mcspi_multicore_testapp.mk BUILD_OS_TYPE=$(1)
-export MCSPI_MasterSlave_TestApp_$(1)_DEPENDS_ON=MCSPI_Master_TestApp_$(1) MCSPI_Slave_TestApp_$(1)
-MCSPI_MasterSlave_TestApp_$(1)_PKG_LIST = MCSPI_MasterSlave_TestApp_$(1)
-MCSPI_MasterSlave_TestApp_$(1)_INCLUDE = $(MCSPI_MasterSlave_TestApp_$(1)_PATH)
-export MCSPI_MasterSlave_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721s2_evm j721e_evm j7200_evm j784s4_evm)
-export MCSPI_MasterSlave_TestApp_$(1)_$(SOC)_CORELIST := mcu2_1
-export MCSPI_MasterSlave_TestApp_SBL_APPIMAGEGEN = no
+export mcspi_masterslave_testapp_$(1)_COMP_LIST = mcspi_masterslave_testapp_$(1)
+mcspi_masterslave_testapp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
+mcspi_masterslave_testapp_$(1)_BINPATH = $(PDK_INSTALL_PATH)/ti/binary/mcspi_master_testapp_$(1)/bin
+mcspi_masterslave_testapp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+export mcspi_masterslave_testapp_$(1)_BOARD_DEPENDENCY = yes
+export mcspi_masterslave_testapp_$(1)_CORE_DEPENDENCY = yes
+export mcspi_masterslave_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export mcspi_masterslave_testapp_$(1)_MAKEFILE =  -f$(PDK_SPI_COMP_PATH)/example/mcspi_slavemode/mcspi_multicore_testapp.mk BUILD_OS_TYPE=$(1)
+export mcspi_masterslave_testapp_$(1)_DEPENDS_ON=mcspi_master_testapp_$(1) mcspi_slave_testapp_$(1)
+mcspi_masterslave_testapp_$(1)_PKG_LIST = mcspi_masterslave_testapp_$(1)
+mcspi_masterslave_testapp_$(1)_INCLUDE = $(mcspi_masterslave_testapp_$(1)_PATH)
+export mcspi_masterslave_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721s2_evm j721e_evm j7200_evm j784s4_evm)
+export mcspi_masterslave_testapp_$(1)_$(SOC)_CORELIST := mcu2_1
+export mcspi_masterslave_testapp_SBL_APPIMAGEGEN = no
 ifneq ($(1),$(filter $(1), safertos))
-spi_EXAMPLE_LIST += MCSPI_MasterSlave_TestApp_$(1)
+spi_EXAMPLE_LIST += mcspi_masterslave_testapp_$(1)
 else
 ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-spi_EXAMPLE_LIST += MCSPI_MasterSlave_TestApp_$(1)
+spi_EXAMPLE_LIST += mcspi_masterslave_testapp_$(1)
 endif
 endif
 endef
 
-MCSPI_MasterSlave_TestApp_MACRO_LIST := $(foreach curos, $(filter-out tirtos, $(drvipc_RTOS_LIST)), $(call MCSPI_MasterSlave_TestApp_RULE,$(curos)))
+mcspi_masterslave_testapp_MACRO_LIST := $(foreach curos, $(filter-out tirtos, $(drvipc_RTOS_LIST)), $(call mcspi_masterslave_testapp_RULE,$(curos)))
 
-$(eval ${MCSPI_MasterSlave_TestApp_MACRO_LIST})
+$(eval ${mcspi_masterslave_testapp_MACRO_LIST})
 
 # SPI master DMA RTOS Test apps
-define MCSPI_Master_Dma_TestApp_RULE
+define mcspi_master_dma_testapp_RULE
 
-    export MCSPI_Master_Dma_TestApp_$(1)_COMP_LIST = MCSPI_Master_Dma_TestApp_$(1)
-    export MCSPI_Master_Dma_TestApp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
-    export MCSPI_Master_Dma_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
-    export MCSPI_Master_Dma_TestApp_$(1)_BOARD_DEPENDENCY = yes
-    export MCSPI_Master_Dma_TestApp_$(1)_CORE_DEPENDENCY = yes
-    export MCSPI_Master_Dma_TestApp_$(1)_MAKEFILE = -f makefile DMA=enable BUILD_OS_TYPE=$(1)
+    export mcspi_master_dma_testapp_$(1)_COMP_LIST = mcspi_master_dma_testapp_$(1)
+    export mcspi_master_dma_testapp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
+    export mcspi_master_dma_testapp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+    export mcspi_master_dma_testapp_$(1)_BOARD_DEPENDENCY = yes
+    export mcspi_master_dma_testapp_$(1)_CORE_DEPENDENCY = yes
+    export mcspi_master_dma_testapp_$(1)_MAKEFILE = -f makefile DMA=enable BUILD_OS_TYPE=$(1)
 
-    MCSPI_Master_Dma_TestApp_$(1)_PKG_LIST = MCSPI_Master_Dma_TestApp_$(1)
-    MCSPI_Master_Dma_TestApp_$(1)_INCLUDE = $(MCSPI_Master_Dma_TestApp_$(1)_PATH)
-    export MCSPI_Master_Dma_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvspi_BOARDLIST))
+    mcspi_master_dma_testapp_$(1)_PKG_LIST = mcspi_master_dma_testapp_$(1)
+    mcspi_master_dma_testapp_$(1)_INCLUDE = $(mcspi_master_dma_testapp_$(1)_PATH)
+    export mcspi_master_dma_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvspi_BOARDLIST))
 
     ifeq ($(SOC),$(filter $(SOC), am65xx))
-    export MCSPI_Master_Dma_TestApp_$(1)_$(SOC)_CORELIST = mcu1_0
+    export mcspi_master_dma_testapp_$(1)_$(SOC)_CORELIST = mcu1_0
     else
-    export MCSPI_Master_Dma_TestApp_$(1)_$(SOC)_CORELIST = mcu2_0
+    export mcspi_master_dma_testapp_$(1)_$(SOC)_CORELIST = mcu2_0
     endif
 
     ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x j721s2 j784s4))
-        export MCSPI_Master_Dma_TestApp_$(1)_SBL_APPIMAGEGEN = yes
+        export mcspi_master_dma_testapp_$(1)_SBL_APPIMAGEGEN = yes
     endif
 
     ifneq ($(1),$(filter $(1), safertos))
-        spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp_$(1)
+        spi_EXAMPLE_LIST += mcspi_master_dma_testapp_$(1)
     else
         ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-           spi_EXAMPLE_LIST += MCSPI_Master_Dma_TestApp_$(1)
+           spi_EXAMPLE_LIST += mcspi_master_dma_testapp_$(1)
         endif
     endif
 endef
 
-MCSPI_Master_Dma_TestApp_MACRO_LIST := $(foreach curos,$(drvspi_RTOS_LIST),$(call MCSPI_Master_Dma_TestApp_RULE,$(curos)))
+mcspi_master_dma_testapp_MACRO_LIST := $(foreach curos,$(drvspi_RTOS_LIST),$(call mcspi_master_dma_testapp_RULE,$(curos)))
 
-$(eval ${MCSPI_Master_Dma_TestApp_MACRO_LIST})
+$(eval ${mcspi_master_dma_testapp_MACRO_LIST})
 
 
 # SPI slave DMA RTOS Test apps
-define MCSPI_Slave_Dma_TestApp_RULE
+define mcspi_slave_dma_testapp_RULE
 
-    export MCSPI_Slave_Dma_TestApp_$(1)_COMP_LIST = MCSPI_Slave_Dma_TestApp_$(1)
-    export MCSPI_Slave_Dma_TestApp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
-    export MCSPI_Slave_Dma_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
-    export MCSPI_Slave_Dma_TestApp_$(1)_BOARD_DEPENDENCY = yes
-    export MCSPI_Slave_Dma_TestApp_$(1)_CORE_DEPENDENCY = yes
-    export MCSPI_Slave_Dma_TestApp_$(1)_MAKEFILE = -f makefile DMA=enable BUILD_OS_TYPE=$(1)
+    export mcspi_slave_dma_testapp_$(1)_COMP_LIST = mcspi_slave_dma_testapp_$(1)
+    export mcspi_slave_dma_testapp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
+    export mcspi_slave_dma_testapp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+    export mcspi_slave_dma_testapp_$(1)_BOARD_DEPENDENCY = yes
+    export mcspi_slave_dma_testapp_$(1)_CORE_DEPENDENCY = yes
+    export mcspi_slave_dma_testapp_$(1)_MAKEFILE = -f makefile DMA=enable BUILD_OS_TYPE=$(1)
 
-    MCSPI_Slave_Dma_TestApp_$(1)_PKG_LIST = MCSPI_Slave_Dma_TestApp_$(1)
-    MCSPI_Slave_Dma_TestApp_$(1)_INCLUDE = $(MCSPI_Slave_Dma_TestApp_$(1)_PATH)
-    export MCSPI_Slave_Dma_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721e_evm j7200_evm am64x_evm am65xx_evm am65xx_idk j784s4_evm j721s2_evm)
+    mcspi_slave_dma_testapp_$(1)_PKG_LIST = mcspi_slave_dma_testapp_$(1)
+    mcspi_slave_dma_testapp_$(1)_INCLUDE = $(mcspi_slave_dma_testapp_$(1)_PATH)
+    export mcspi_slave_dma_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), j721e_evm j7200_evm am64x_evm am65xx_evm am65xx_idk j784s4_evm j721s2_evm)
 
     ifeq ($(SOC),$(filter $(SOC), am65xx))
-    export MCSPI_Slave_Dma_TestApp_$(1)_$(SOC)_CORELIST = mcu1_1
+    export mcspi_slave_dma_testapp_$(1)_$(SOC)_CORELIST = mcu1_1
     else
-    export MCSPI_Slave_Dma_TestApp_$(1)_$(SOC)_CORELIST = mcu2_1
+    export mcspi_slave_dma_testapp_$(1)_$(SOC)_CORELIST = mcu2_1
     endif
 
     ifeq ($(SOC),$(filter $(SOC), j721e am65xx j7200 am64x j721s2 j784s4))
-        export MCSPI_Slave_Dma_TestApp_$(1)_SBL_APPIMAGEGEN = yes
+        export mcspi_slave_dma_testapp_$(1)_SBL_APPIMAGEGEN = yes
     endif
 
     ifneq ($(1),$(filter $(1), safertos))
-        spi_EXAMPLE_LIST += MCSPI_Slave_Dma_TestApp_$(1)
+        spi_EXAMPLE_LIST += mcspi_slave_dma_testapp_$(1)
     else
         ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-           spi_EXAMPLE_LIST += MCSPI_Slave_Dma_TestApp_$(1)
+           spi_EXAMPLE_LIST += mcspi_slave_dma_testapp_$(1)
         endif
     endif
 endef
 
-MCSPI_Slave_Dma_TestApp_MACRO_LIST := $(foreach curos,$(drvspi_RTOS_LIST),$(call MCSPI_Slave_Dma_TestApp_RULE,$(curos)))
+mcspi_slave_dma_testapp_MACRO_LIST := $(foreach curos,$(drvspi_RTOS_LIST),$(call mcspi_slave_dma_testapp_RULE,$(curos)))
 
-$(eval ${MCSPI_Slave_Dma_TestApp_MACRO_LIST})
+$(eval ${mcspi_slave_dma_testapp_MACRO_LIST})
 
 # SPI MasterSlave DMA RTOS Test apps
-define MCSPI_MasterSlave_Dma_TestApp_RULE
+define mcspi_masterslave_dma_testapp_RULE
 
-export MCSPI_MasterSlave_Dma_TestApp_$(1)_COMP_LIST = MCSPI_MasterSlave_Dma_TestApp_$(1)
-MCSPI_MasterSlave_Dma_TestApp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
-MCSPI_MasterSlave_Dma_TestApp_$(1)_BINPATH = $(PDK_INSTALL_PATH)/ti/binary/MCSPI_Master_Dma_TestApp_$(1)/bin
-MCSPI_MasterSlave_Dma_TestApp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
-export MCSPI_MasterSlave_Dma_TestApp_$(1)_BOARD_DEPENDENCY = yes
-export MCSPI_MasterSlave_Dma_TestApp_$(1)_CORE_DEPENDENCY = yes
-export MCSPI_MasterSlave_Dma_TestApp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
-export MCSPI_MasterSlave_Dma_TestApp_$(1)_MAKEFILE =  -f$(PDK_SPI_COMP_PATH)/example/mcspi_slavemode/mcspi_multicore_testapp.mk BUILD_OS_TYPE=$(1) DMA=enable
-export MCSPI_MasterSlave_Dma_TestApp_$(1)_DEPENDS_ON=MCSPI_Master_Dma_TestApp_$(1) MCSPI_Slave_Dma_TestApp_$(1)
-MCSPI_MasterSlave_Dma_TestApp_$(1)_PKG_LIST = MCSPI_MasterSlave_Dma_TestApp_$(1)
-MCSPI_MasterSlave_Dma_TestApp_$(1)_INCLUDE = $(MCSPI_MasterSlave_Dma_TestApp_$(1)_PATH)
-export MCSPI_MasterSlave_Dma_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)),j721s2_evm j721e_evm j7200_evm )
-export MCSPI_MasterSlave_Dma_TestApp_$(1)_$(SOC)_CORELIST := mcu2_1
-export MCSPI_MasterSlave_Dma_TestApp_SBL_APPIMAGEGEN = no
+export mcspi_masterslave_dma_testapp_$(1)_COMP_LIST = mcspi_masterslave_dma_testapp_$(1)
+mcspi_masterslave_dma_testapp_$(1)_RELPATH = ti/drv/spi/example/mcspi_slavemode
+mcspi_masterslave_dma_testapp_$(1)_BINPATH = $(PDK_INSTALL_PATH)/ti/binary/mcspi_master_dma_testapp_$(1)/bin
+mcspi_masterslave_dma_testapp_$(1)_PATH = $(PDK_SPI_COMP_PATH)/example/mcspi_slavemode
+export mcspi_masterslave_dma_testapp_$(1)_BOARD_DEPENDENCY = yes
+export mcspi_masterslave_dma_testapp_$(1)_CORE_DEPENDENCY = yes
+export mcspi_masterslave_dma_testapp_$(1)_XDC_CONFIGURO = $(if $(findstring tirtos, $(1)), yes, no)
+export mcspi_masterslave_dma_testapp_$(1)_MAKEFILE =  -f$(PDK_SPI_COMP_PATH)/example/mcspi_slavemode/mcspi_multicore_testapp.mk BUILD_OS_TYPE=$(1) DMA=enable
+export mcspi_masterslave_dma_testapp_$(1)_DEPENDS_ON=mcspi_master_dma_testapp_$(1) mcspi_slave_dma_testapp_$(1)
+mcspi_masterslave_dma_testapp_$(1)_PKG_LIST = mcspi_masterslave_dma_testapp_$(1)
+mcspi_masterslave_dma_testapp_$(1)_INCLUDE = $(mcspi_masterslave_dma_testapp_$(1)_PATH)
+export mcspi_masterslave_dma_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)),j721s2_evm j721e_evm j7200_evm )
+export mcspi_masterslave_dma_testapp_$(1)_$(SOC)_CORELIST := mcu2_1
+export mcspi_masterslave_dma_testapp_SBL_APPIMAGEGEN = no
 ifneq ($(1),$(filter $(1), safertos))
-spi_EXAMPLE_LIST += MCSPI_MasterSlave_Dma_TestApp_$(1)
+spi_EXAMPLE_LIST += mcspi_masterslave_dma_testapp_$(1)
 else
 ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
-spi_EXAMPLE_LIST += MCSPI_MasterSlave_Dma_TestApp_$(1)
+spi_EXAMPLE_LIST += mcspi_masterslave_dma_testapp_$(1)
 endif
 endif
 endef
 
-MCSPI_MasterSlave_Dma_TestApp_MACRO_LIST := $(foreach curos, $(filter-out tirtos, $(drvipc_RTOS_LIST)), $(call MCSPI_MasterSlave_Dma_TestApp_RULE,$(curos)))
+mcspi_masterslave_dma_testapp_MACRO_LIST := $(foreach curos, $(filter-out tirtos, $(drvipc_RTOS_LIST)), $(call mcspi_masterslave_dma_testapp_RULE,$(curos)))
 
-$(eval ${MCSPI_MasterSlave_Dma_TestApp_MACRO_LIST})
+$(eval ${mcspi_masterslave_dma_testapp_MACRO_LIST})
 
 # OSPI baremetal Flash Test app
 OSPI_Baremetal_Flash_TestApp_COMP_LIST = OSPI_Baremetal_Flash_TestApp

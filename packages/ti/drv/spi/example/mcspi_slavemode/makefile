@@ -5,7 +5,7 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 #Baremetal Specifics
 ifeq ($(BUILD_OS_TYPE), baremetal)
 
-    MCSPI_OS_TESTPREFIX=_Baremetal
+    MCSPI_OS_TESTPREFIX=_baremetal
     MCSPI_OS_TESTPOSTFIX=
     CFLAGS_OS_DEFINES = -DBARE_METAL
     LNKFLAGS_LOCAL_mpu1_0 += --entry Entry
@@ -48,19 +48,19 @@ ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 j784s4))
     ifeq ($(CORE), mcu2_1)
         # Slave running on mcu2_1 core
         CFLAGS_SPI_MS     = -DMCSPI_SLAVE_TASK
-        APP_MASTER_SLAVE  = Slave
+        APP_MASTER_SLAVE  = slave
         APPEND_LNKCMD_FILE = $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/slave_linker_append_r5f.cmd
     else
         # Master running on mcu2_0 core, use the common linker command file in build
         CFLAGS_SPI_MS     = -DMCSPI_MASTER_TASK
-        APP_MASTER_SLAVE  = Master
+        APP_MASTER_SLAVE  = master
         APPEND_LNKCMD_FILE = $(PDK_INSTALL_PATH)/ti/drv/spi/example/mcspi_slavemode/$(SOC)/master_linker_append_r5f.cmd
     endif
 endif
 
 # DMA enabled build
 ifeq ($(DMA), enable)
-    MCSPI_DMA_MODE_INFIX = _Dma
+    MCSPI_DMA_MODE_INFIX = _dma
     COMP_LIST_COMMON += spi_dma
     CFLAGS_SPI_DMA    = -DSPI_DMA_ENABLE
 else
@@ -71,11 +71,11 @@ endif
 
 
 #Name of the directory created under packages/ti/binary/
-APP_NAME = MCSPI$(MCSPI_OS_TESTPREFIX)_$(APP_MASTER_SLAVE)$(MCSPI_DMA_MODE_INFIX)_TestApp$(MCSPI_OS_TESTPOSTFIX)
+APP_NAME = mcspi$(MCSPI_OS_TESTPREFIX)_$(APP_MASTER_SLAVE)$(MCSPI_DMA_MODE_INFIX)_testapp$(MCSPI_OS_TESTPOSTFIX)
 
 ifeq ($(SOC),$(filter $(SOC), am64x))
 CFLAGS_SPI_MS     = -DMCSPI_MASTER_TASK -Dam64x_evm=am64x_evm
-APP_MASTER_SLAVE  = Master
+APP_MASTER_SLAVE  = master
 endif
 
 ifeq ($(SOC),$(filter $(SOC), am65xx))
