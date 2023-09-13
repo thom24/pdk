@@ -276,6 +276,46 @@ static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__(( aligned( 32
 #endif
 #endif
 
+
+/* Can not have NOINIT in --ram-model of linking on C7x or C66x cores.
+ * Hence, can not test extended_system_pre_init for C7x or C66x cores.
+ */
+#if defined(BUILD_MCU)
+__attribute__((noinit)) uint32_t gStartupHookTestProbeA;
+#endif
+uint32_t gStartupHookTestProbeB = 0XABABABABU;
+uint32_t gStartupHookTestResult = 2U;
+void extended_system_pre_init(void)
+{
+#if defined(BUILD_MCU)
+    gStartupHookTestProbeA = 0xBAD0BAD0U;
+#endif
+}
+void extended_system_post_cinit(void)
+{
+#if defined(BUILD_MCU)
+    if ((0xBAD0BAD0U != gStartupHookTestProbeA) || (0XABABABABU != gStartupHookTestProbeB))
+    {
+        gStartupHookTestResult = 1U;
+    }
+    else
+    {
+        gStartupHookTestResult = 0U;
+    }
+#elif defined (BUILD_C7X) || defined (_TMS320C6X)
+    if (0XABABABABU != gStartupHookTestProbeB)
+    {
+        gStartupHookTestResult = 1U;
+    }
+    else
+    {
+        gStartupHookTestResult = 0U;
+    }
+#else
+    gStartupHookTestResult = 0U;
+#endif
+}
+
 /*
  *  ======== Board_initOSAL ========
  */
@@ -310,6 +350,16 @@ void Board_initOSAL(void)
     }
 
     return;
+}
+
+bool OSAL_startup_hook_test()
+{
+    bool retval = true;
+    if( 0U != gStartupHookTestResult )
+    {
+        retval = false;
+    }
+    return retval;
 }
 
 #if !defined (BARE_METAL)
@@ -2237,6 +2287,15 @@ void osal_test(void *arg0, void *arg1)
     Osal_StaticMemStatus pMemStats;
 
     Board_initOSAL();
+
+    if (true == OSAL_startup_hook_test())
+    {
+        OSAL_log("\n StartuphookP test has passed. \n");
+    }
+    else
+    {
+        OSAL_log("\n StartuphookP test has failed. \n");
+    }
 
 #if defined (BUILD_C7X)
     C7x_ConfigureTimerOutput();
