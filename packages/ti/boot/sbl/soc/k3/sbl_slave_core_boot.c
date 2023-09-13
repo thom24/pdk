@@ -794,7 +794,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
                 Sciclient_pmSetModuleState(SBL_DEV_ID_MCU1_CPU1, TISCI_MSG_VALUE_DEVICE_SW_STATE_ON, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             }
-  
+
             /* Release the CPU and branch to app */
             if (requestCoresFlag == SBL_REQUEST_CORE)
             {
@@ -813,28 +813,34 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 SBL_RequestCore(core_id - 1);
             }
 
-            /** 
+            /**
              * Reset sequence for cluster running SBL
              *
              *   The reset sequence for the cluster running SBL has to be done differently from
-             *   that of other clusters. More detail is described in comments below, but a high-
-             *   level overview of the reset sequence is as follows:
+             *   that of other clusters. We first need to provide a sequence of commands to SYSFW
+             *   which then holds these commands in a queue and they are all executed at once.
+             *   This ensures that we don't mess up the state of current host CPU.
+             *   After providing whole sequence of commands host CPU will go into WFI.
+             *   Then TIFS will detect the WFI and execute the commands from queue.
+             *   More detail is described in comments below, but a high-level overview of the
+             *   reset sequence is as follows:
              *
-             *   1. Processor Boot Wait (holds the queue)
-             *   2. MCU1_1 Enter Reset - (AM65x case: already powered OFF)
-             *   3. MCU1_0 Enter Reset - (AM65x case: Power OFF)
-             *   4. Un-halt MCU1_1     - (AM65x case: Not necessary)
-             *   5. Release control of MCU1_0
-             *   6. Release control of MCU1_1
-             *   7. MCU1_0 Leave Reset - (AM65x case: Power ON)
-             *   8. MCU1_1 Leave Reset (if an application is requested to run there) - (AM65x case: Power ON)
+             *   1. Processor Boot Wait (hold all subsequent commands from current host in a queue i.e. points 2 to 8)
+             *   2. MCU1_1 Enter Reset
+             *   3. MCU1_0 Enter Reset
+             *   4. Un-halt MCU1_1     - This is done to ensure that MCU1_1 does not go to halt once TIFS brings it out of reset
+             *   5. MCU1_0 Leave Reset
+             *   6. MCU1_1 Leave Reset (if an application is requested to run there)
+             *   7. Release control of MCU1_0 - Tell SYSFW that MCU1_0 is not going to boot control this CPU anymore
+             *   8. Release control of MCU1_1 - Tell SYSFW that MCU1_0 is not going to boot control this CPU anymore
+             *   9. Execute WFI
              */
 
             /**
              * Processor Boot Wait
              *
              *   DMSC will block until a WFI is issued, thus allowing the following commands
-             *   to be queued so this cluster may be reset by DMSC (queue length is defined in 
+             *   to be queued so this cluster may be reset by DMSC (queue length is defined in
              *   "drv/sciclient/soc/sysfw/include/<soc>/tisci_sec_proxy.h"). If these commands
              *   were to be issued and executed prior to WFI, the cluster would enter reset and
              *   SBL would quite sensibly not be able to tell DMSC to take itself out of reset.
@@ -862,16 +868,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             Sciclient_procBootSetSequenceCtrl(SBL_PROC_ID_MCU1_CPU1, 0, TISCI_MSG_VAL_PROC_BOOT_CTRL_FLAG_R5_CORE_HALT, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
 
             /**
-             * Notify SYSFW that the SBL is relinquishing the MCU cluster running the SBL
-             */
-#if !defined(SOC_J721E) && !defined(SOC_J7200) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
-            if (requestCoresFlag == SBL_REQUEST_CORE)
-            {
-                Sciclient_procBootReleaseProcessor(SBL_PROC_ID_MCU1_CPU0, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
-                Sciclient_procBootReleaseProcessor(SBL_PROC_ID_MCU1_CPU1, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
-            }
-#endif
-            /**
              * MCU1_0 and (optionally) MCU1_1 leave reset
              *
              *   Ensuring that MCU1_1 is never in a higher functional state than MCU1_0, both cores
@@ -884,7 +880,6 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 Sciclient_pmSetModuleRst_flags(SBL_DEV_ID_MCU1_CPU1, 0, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             }
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
             /* Notifying SYSFW that the SBL is relinquishing the MCU cluster running the SBL */
             /* This is done at the end as the PM set module state relies on the fact the SBL is the owner of MCU1_0 and MCU1_1 */
             if (requestCoresFlag == SBL_REQUEST_CORE)
@@ -892,7 +887,7 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
                 Sciclient_procBootReleaseProcessor(SBL_PROC_ID_MCU1_CPU0, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
                 Sciclient_procBootReleaseProcessor(SBL_PROC_ID_MCU1_CPU1, 0, SCICLIENT_SERVICE_WAIT_FOREVER);
             }
-#endif
+
             /* Execute a WFI */
             asm volatile ("    wfi");
 #endif
