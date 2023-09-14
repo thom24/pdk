@@ -54,7 +54,7 @@ extern void I2C_socInit(void);
 #endif
 
 /* Used to check status and initialization */
-static int32_t I2C_count = (-((int32_t)1));
+static int32_t gisI2CInitDone = 0U;
 
 /* Default I2C parameters structure */
 const I2C_Params I2C_defaultParams = {
@@ -112,16 +112,21 @@ int32_t I2C_control(I2C_Handle handle, uint32_t cmd, void *arg)
  */
 void I2C_init(void)
 {
-    if (I2C_count == (-((int32_t)1))) {
+    uint32_t I2C_count = 0U;
+
+    if(0U == gisI2CInitDone)
+    {
         /* Call each driver's init function */
         for (I2C_count = 0; I2C_config[I2C_count].fxnTablePtr != NULL; I2C_count++) {
             I2C_config[I2C_count].fxnTablePtr->initFxn((I2C_Handle)&(I2C_config[I2C_count]));
         }
-    }
 
 #if defined (BUILD_MCU)
     I2C_socInit();
 #endif
+
+        gisI2CInitDone = 1U;
+    }
 }
 
 /*
@@ -129,11 +134,12 @@ void I2C_init(void)
  */
 I2C_Handle I2C_open(uint32_t idx, I2C_Params *params)
 {
-    I2C_Handle handle = (I2C_Handle)&(I2C_config[idx]);
+    I2C_Handle handle = NULL;
 
     /* Input parameter validation */
-    if (handle != NULL)
+    if ((params != NULL) && (idx < (sizeof(I2C_config)/sizeof(I2C_config[0]))))
     {
+        handle = (I2C_Handle)&(I2C_config[idx]);
         handle = handle->fxnTablePtr->openFxn(handle, params);
     }
 
