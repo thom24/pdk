@@ -695,8 +695,15 @@ int32_t udmaTestBcdmaParamCheckTc(UdmaTestTaskObj *taskObj);
 int32_t udmaTestBcdmaChApiTc(UdmaTestTaskObj *taskObj);
 
 /*
- * UDMA Negative test case functions
+ * UDMA Driver Negative test functions
  */
+int32_t udmaTestUdmaInitNegTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestUdmaInitRmLockNegTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestUdmaInitPrintLockNegTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestUdmaInitRmSetProxyNegTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestUdmaPrmsInitNegTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestUdmaDeinitNegTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestUdmaInitEventRegTc(UdmaTestTaskObj *taskObj);
 
 /*
  * UDMA SOC specific functions

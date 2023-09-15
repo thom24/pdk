@@ -54,6 +54,7 @@ SRCS_COMMON += udma_test_soc.c
 SRCS_COMMON += udma_test_proxy.c udma_test_ring_monitor.c
 SRCS_COMMON += utils_trace.c
 SRCS_COMMON += utils_mem.c
+SRCS_COMMON += udma_test_drv_neg.c
 
 ifeq ($(BUILD_OS_TYPE), freertos)
   SRCS_COMMON += utils_prf.c
