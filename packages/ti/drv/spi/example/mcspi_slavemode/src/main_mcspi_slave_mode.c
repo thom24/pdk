@@ -1257,15 +1257,6 @@ static bool SPI_test_single_channel(void *arg)
             {
                 xferLen = spi_test_xfer_len[i];
             }
-            if (SPI_test_mst_slv_xfer((void *)spi, test, xferLen, false) == false)
-            {
-                goto Err;
-            }
-
-            if ((testId == SPI_TEST_ID_CB_CANCEL) || (testId == SPI_TEST_ID_DMA_CB_CANCEL))
-            {
-                SPI_log("SPI Master Transfer Cancelled!!\n");
-            }
             if ((master == true) && (testId < SPI_TEST_ID_LOOPBACK))
             {
                 /*
@@ -1281,6 +1272,15 @@ static bool SPI_test_single_channel(void *arg)
                  * to sync with master transfer
                  */
                 Osal_delay(500);
+            }
+            if (SPI_test_mst_slv_xfer((void *)spi, test, xferLen, false) == false)
+            {
+                goto Err;
+            }
+
+            if ((testId == SPI_TEST_ID_CB_CANCEL) || (testId == SPI_TEST_ID_DMA_CB_CANCEL))
+            {
+                SPI_log("SPI Master Transfer Cancelled!!\n");
             }
         }
 
@@ -1496,10 +1496,6 @@ static bool SPI_test_multi_channel(void *arg)
     for (i = 0; i < SPI_NUM_XFERS; i++)
 #endif
     {
-        if (SPI_test_mst_slv_xfer((void *)(spi[testChn]), test, spi_test_xfer_len[i], true) == false)
-        {
-            goto Err;
-        }
 
         if ((master == true) && (testId < SPI_TEST_ID_LOOPBACK))
         {
@@ -1516,6 +1512,10 @@ static bool SPI_test_multi_channel(void *arg)
              * to sync with master transfer
              */
             Osal_delay(500);
+        }
+        if (SPI_test_mst_slv_xfer((void *)(spi[testChn]), test, spi_test_xfer_len[i], true) == false)
+        {
+            goto Err;
         }
     }
 
