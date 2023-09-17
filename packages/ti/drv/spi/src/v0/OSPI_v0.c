@@ -1353,7 +1353,7 @@ static int32_t OSPI_dac_xfer_mode_write_v0(OSPI_Handle handle,
         pDst = (uint8_t *)(hwAttrs->dataAddr + offset);
         remainSize = (uint32_t)transaction->count & 3U;
         size = (uint32_t)transaction->count - remainSize;
-        /* Transfer the data in 32-bit size */
+        /* Transfer the data in 32 bit size (R5 word size) to ensure that chip select does not drop during writes. */
         for (i = 0U; i < size; i += 4U)
         {
             wrWord = CSL_REG32_RD(pSrc + i);
