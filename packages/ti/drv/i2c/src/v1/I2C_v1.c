@@ -50,8 +50,9 @@
 #include <ti/csl/hw_types.h>
 
 
-#define I2C_MODULE_INTERNAL_CLK_4MHZ  (4000000U)
-#define I2C_MODULE_INTERNAL_CLK_12MHZ (12000000U)
+#define I2C_MODULE_INTERNAL_CLK_4MHZ   (4000000U)
+#define I2C_MODULE_INTERNAL_CLK_12MHZ  (12000000U)
+#define I2C_MODULE_INTERNAL_CLK_9P6MHZ (9600000U)
 
 /*
  * Maximum number of loop count to handle in the same ISR, which is
@@ -821,7 +822,7 @@ static I2C_Handle I2C_open_v1(I2C_Handle handle, const I2C_Params *params)
              case I2C_400kHz:
              {
                  outputClk = 400000U;
-                 internalClk = I2C_MODULE_INTERNAL_CLK_12MHZ;
+                 internalClk = I2C_MODULE_INTERNAL_CLK_9P6MHZ;
                  break;
              }
 
@@ -1695,7 +1696,7 @@ static int32_t I2C_v1_setBusFrequency(I2C_Handle handle, uint32_t busFrequency)
            case (uint32_t)I2C_400kHz:
            {
                outputClk = 400000U;
-               internalClk = I2C_MODULE_INTERNAL_CLK_12MHZ;
+               internalClk = I2C_MODULE_INTERNAL_CLK_9P6MHZ;
                break;
            }
            default:
@@ -1900,7 +1901,7 @@ static int32_t I2C_v1_ctrlInit(I2C_Handle handle)
            case I2C_400kHz:
            {
                outputClk = 400000U;
-               internalClk = I2C_MODULE_INTERNAL_CLK_12MHZ;
+               internalClk = I2C_MODULE_INTERNAL_CLK_9P6MHZ;
                break;
            }
 
