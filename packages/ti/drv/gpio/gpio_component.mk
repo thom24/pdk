@@ -68,32 +68,10 @@ ifeq ($(gpio_component_make_include), )
 
 drvgpio_RTOS_LIST = $(DEFAULT_RTOS_LIST)
 # under other list
-drvgpio_BOARDLIST       = am65xx_evm am65xx_idk j721e_sim j721e_evm j7200_evm tpr12_evm tpr12_qt awr294x_evm am64x_evm j721s2_evm j784s4_evm
+drvgpio_BOARDLIST       = j721e_sim j721e_evm j7200_evm j721s2_evm j784s4_evm
 
-drvgpio_SOCLIST         = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
-drvgpio_SOCLIST        += am65xx j721e j7200 j721s2 tpr12 awr294x am64x j784s4
+drvgpio_SOCLIST        += j721e j7200 j721s2 j784s4
 
-drvgpio_SOCPROFILELIST  = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
-
-drvgpio_am574x_CORELIST = c66x a15_0 ipu1_0
-drvgpio_am572x_CORELIST = c66x a15_0 ipu1_0
-drvgpio_am571x_CORELIST = c66x a15_0 ipu1_0
-drvgpio_dra72x_CORELIST = c66x a15_0 ipu1_0
-drvgpio_dra75x_CORELIST = c66x a15_0 ipu1_0
-drvgpio_dra78x_CORELIST = c66x ipu1_0
-drvgpio_k2h_CORELIST    = c66x a15_0
-drvgpio_k2k_CORELIST    = c66x a15_0
-drvgpio_k2l_CORELIST    = c66x a15_0
-drvgpio_k2e_CORELIST    = c66x a15_0
-drvgpio_k2g_CORELIST    = c66x a15_0
-drvgpio_c6678_CORELIST  = c66x
-drvgpio_c6657_CORELIST  = c66x
-drvgpio_omapl137_CORELIST  = c674x arm9_0
-drvgpio_omapl138_CORELIST  = c674x arm9_0
-drvgpio_am437x_CORELIST = a9host
-drvgpio_am335x_CORELIST = a8host
-
-drvgpio_am65xx_CORELIST    = mpu1_0 mcu1_0
 drvgpio_j721e_CORELIST     = $(DEFAULT_j721e_CORELIST)
 drvgpio_j721e_CORELISTARM  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvgpio_j7200_CORELIST     = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
@@ -102,17 +80,13 @@ drvgpio_j721s2_CORELIST    = $(DEFAULT_j721s2_CORELIST)
 drvgpio_j721s2_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1
 drvgpio_j784s4_CORELIST    = $(DEFAULT_j784s4_CORELIST)
 drvgpio_j784s4_CORELISTARM = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1
-drvgpio_tpr12_CORELIST     = mcu1_0 c66xdsp_1
-drvgpio_awr294x_CORELIST   = mcu1_0
-drvgpio_am64x_CORELIST     = $(DEFAULT_am64x_CORELIST)
-drvgpio_am64x_CORELISTARM  = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 
 ############################
 # gpio package
 # List of components included under gpio rtos
 # The components included here are built and will be part of gpio rtos
 ############################
-gpio_LIB_LIST = gpio gpio_indp gpio_profile gpio_profile_indp
+gpio_LIB_LIST = gpio
 drvgpio_LIB_LIST = $(gpio_LIB_LIST)
 
 ############################
@@ -145,54 +119,6 @@ gpio_INCLUDE = $(gpio_PATH)
 export gpio_SOCLIST = $(drvgpio_SOCLIST)
 export gpio_$(SOC)_CORELIST = $(drvgpio_$(SOC)_CORELIST)
 
-# GPIO INDEPENDENT LIB
-export gpio_indp_COMP_LIST = gpio_indp
-gpio_indp_RELPATH = ti/drv/gpio
-gpio_indp_PATH = $(PDK_GPIO_COMP_PATH)
-export gpio_indp_LIBNAME = ti.drv.gpio
-export gpio_indp_LIBPATH = $(gpio_indp_PATH)/lib
-export gpio_indp_OBJPATH = $(gpio_indp_RELPATH)/gpio_indp
-export gpio_indp_MAKEFILE = -f build/makefile_indp.mk
-export gpio_indp_BOARD_DEPENDENCY = no
-export gpio_indp_CORE_DEPENDENCY = no
-export gpio_indp_SOC_DEPENDENCY = no
-export gpio_indp_PKG_LIST = gpio_indp
-gpio_indp_INCLUDE = $(gpio_indp_PATH)
-export gpio_indp_SOCLIST = am574x am572x am571x dra72x dra75x dra78x k2h k2k k2l k2e k2g c6678 c6657 am437x am335x omapl137 omapl138
-export gpio_indp_$(SOC)_CORELIST = $(drvgpio_$(SOC)_CORELIST)
-
-# GPIO PROFILE LIB
-export gpio_profile_COMP_LIST = gpio_profile
-gpio_profile_RELPATH = ti/drv/gpio
-gpio_profile_PATH = $(PDK_GPIO_COMP_PATH)
-export gpio_profile_LIBNAME = ti.drv.gpio.profiling
-export gpio_profile_LIBPATH = $(gpio_profile_PATH)/lib
-export gpio_profile_OBJPATH = $(gpio_profile_RELPATH)/gpio_profile
-export gpio_profile_MAKEFILE = -f build/makefile_profile.mk
-export gpio_profile_BOARD_DEPENDENCY = no
-export gpio_profile_CORE_DEPENDENCY = no
-export gpio_profile_SOC_DEPENDENCY = yes
-export gpio_profile_PKG_LIST = gpio_profile
-gpio_profile_INCLUDE = $(gpio_profile_PATH)
-export gpio_profile_SOCLIST = $(drvgpio_SOCPROFILELIST)
-export gpio_profile_$(SOC)_CORELIST = $(drvgpio_$(SOC)_CORELIST)
-
-# GPIO PROFILE INDEPENDENT LIB
-export gpio_profile_indp_COMP_LIST = gpio_profile_indp
-gpio_profile_indp_RELPATH = ti/drv/gpio
-gpio_profile_indp_PATH = $(PDK_GPIO_COMP_PATH)
-export gpio_profile_indp_LIBNAME = ti.drv.gpio.profiling
-export gpio_profile_indp_LIBPATH = $(gpio_profile_indp_PATH)/lib
-export gpio_profile_indp_OBJPATH = $(gpio_profile_indp_RELPATH)/gpio_profile_indp
-export gpio_profile_indp_MAKEFILE = -f build/makefile_profile_indp.mk
-export gpio_profile_indp_BOARD_DEPENDENCY = no
-export gpio_profile_indp_CORE_DEPENDENCY = no
-export gpio_profile_indp_SOC_DEPENDENCY = no
-export gpio_profile_indp_PKG_LIST = gpio_profile_indp
-gpio_profile_indp_INCLUDE = $(gpio_profile_indp_PATH)
-export gpio_profile_indp_SOCLIST = $(drvgpio_SOCPROFILELIST)
-export gpio_profile_indp_$(SOC)_CORELIST = $(drvgpio_$(SOC)_CORELIST)
-
 #
 # GPIO Examples
 #
@@ -207,24 +133,20 @@ export GPIO_Baremetal_LedBlink_TestApp_MAKEFILE = -f makefile BUILD_OS_TYPE=bare
 GPIO_Baremetal_LedBlink_TestApp_PKG_LIST = GPIO_Baremetal_LedBlink_TestApp
 GPIO_Baremetal_LedBlink_TestApp_INCLUDE = $(GPIO_Baremetal_LedBlink_TestApp_PATH)
 export GPIO_Baremetal_LedBlink_TestApp_BOARDLIST = $(drvgpio_BOARDLIST)
-ifeq ($(SOC),$(filter $(SOC), am64x))
-export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = $(drvgpio_$(SOC)_CORELISTARM)
-else ifeq ($(SOC),$(filter $(SOC), j721e))
+ifeq ($(SOC),$(filter $(SOC), j721e))
 # J721e:- There are no IR path from WKUP_GPIO to mcu3_0/mcu3_1.
 export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = $(filter $(drvgpio_$(SOC)_CORELISTARM), mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1)
 else ifeq ($(SOC),$(filter $(SOC), j7200))
 # J7200:- There are no IR path from WKUP_GPIO to mcu2_0/mcu2_1.
 export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = $(filter $(drvgpio_$(SOC)_CORELISTARM), mpu1_0 mcu1_0 mcu1_1)
-else ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4))
-# J721S2:- There is not IR path from WKUP_GPIO to mcu3_0/mcu3_1 (no WKUP_GPIO IR allocations)
+else ifeq ($(SOC),$(filter $(SOC), j721s2))
+# J721S2:- There is no IR path from WKUP_GPIO to mcu3_0/mcu3_1 (no WKUP_GPIO IR allocations)
 export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
-else ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-#TPR12 EVM push button and LED are supported only on MSS R5F (mcu1_0)
-export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = mcu1_0
-else
-export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = $(drvgpio_$(SOC)_CORELIST)
+else ifeq ($(SOC),$(filter $(SOC), j784s4))
+# J784S4:- There is no IR path from WKUP_GPIO to mcu3_0/mcu3_1/mcu4_0/mcu4_1 (no WKUP_GPIO IR allocations)
+export GPIO_Baremetal_LedBlink_TestApp_$(SOC)_CORELIST = mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1
 endif
-ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 am64x j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 export GPIO_Baremetal_LedBlink_TestApp_SBL_APPIMAGEGEN = yes
 endif
 
@@ -242,14 +164,9 @@ export GPIO_LedBlink_TestApp_$(1)_PKG_LIST = GPIO_LedBlink_TestApp_$(1)
 export GPIO_LedBlink_TestApp_$(1)_INCLUDE = $(GPIO_LedBlink_TestApp_$(1)_PATH)
 export GPIO_LedBlink_TestApp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(drvgpio_BOARDLIST))
 export GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvgpio_$(SOC)_CORELIST))
-ifeq ($(SOC),$(filter $(SOC), am64x))
-    export GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1)
-else ifeq ($(SOC),$(filter $(SOC), j721e))
+ifeq ($(SOC),$(filter $(SOC), j721e))
     # J721e:- There are no IR path from WKUP_GPIO to mcu3_0/mcu3_1/c66 cores.
     export GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0 mcu1_1 mcu2_0 mcu2_1)
-else ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-    #TPR12 EVM push button and LED are supported only on MSS R5F (mcu1_0)
-    export GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mcu1_0)
 else ifeq ($(SOC),$(filter $(SOC), j721s2 j784s4))
     # J721S2:- There is not IR path from WKUP_GPIO to mcu3_0/mcu3_1/c7x_1/c7x_2 (no WKUP_GPIO IR allocations)
     export GPIO_LedBlink_TestApp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), mpu1_0 mcu1_0 mcu1_1 mcu2_0 mcu2_1)

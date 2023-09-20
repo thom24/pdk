@@ -44,39 +44,13 @@ extern "C" {
 
 #include <ti/drv/gpio/GPIO.h>
 #include <ti/osal/osal.h>
-#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2L) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_C6678) || defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/drv/gpio/src/v0/GPIO_v0.h>
-#endif
 
-#if defined(SOC_AM574x) || defined(SOC_AM572x) || defined(SOC_AM571x) || defined(SOC_AM335x) || defined(SOC_AM437x) || defined(SOC_DRA72x) || defined(SOC_DRA75x) || defined(SOC_DRA78x)
-#include <ti/drv/gpio/soc/GPIO_v1.h>
-#include <ti/csl/src/ip/gpio/V1/gpio_v2.h>
-#endif
-
-#if defined(SOC_TPR12)
-#include <ti/drv/gpio/src/v2/GPIO_v2.h>
-#include <ti/drv/gpio/soc/tpr12/GPIO_soc.h>
-#endif
-
-#if defined (SOC_AWR294X)
-#include <ti/drv/gpio/src/v2/GPIO_v2.h>
-#include <ti/drv/gpio/soc/awr294x/GPIO_soc.h>
-#endif
 
 /* GPIO SoC level API */
-#if defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2L) || defined(SOC_K2E) || defined(SOC_K2G) || defined(SOC_C6678) || defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_AM64X) || defined(SOC_J721S2) || defined(SOC_J784S4)
 extern int32_t GPIO_socGetInitCfg(uint32_t idx, GPIO_v0_HwAttrs *cfg);
 extern int32_t GPIO_socSetInitCfg(uint32_t idx, const GPIO_v0_HwAttrs *cfg);
 extern void GPIO_socGetNumPinsPorts(uint32_t *numPins, uint32_t *numPorts);
-#endif
-
-#if defined(SOC_K2G)
-extern int32_t GPIO_socSetIntMux(uint32_t index, uint32_t pinNum, const GPIO_IntCfg *cfg, uint32_t muxEvtSel);
-#endif
-
-#if defined(SOC_OMAPL137) || defined(SOC_OMAPL138)
-extern int32_t GPIO_socSetBankInt(uint32_t index, uint32_t pinNum, const GPIO_IntCfg *cfg);
-#endif
 
 #ifdef __cplusplus
 }
