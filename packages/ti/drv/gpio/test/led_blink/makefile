@@ -6,25 +6,8 @@ CFLAGS_OS_DEFINES =
 LNKFLAGS_LOCAL_mpu1_0  += --entry Entry
 COMP_LIST_COMMON =  $(PDK_COMMON_BAREMETAL_COMP)
 EXTERNAL_INTERFACES =
-XDC_CFG_FILE_mpu1_0 =
-XDC_CFG_FILE_mcu1_0 =
 GPIO_OS_TESTPREFIX=_Baremetal
 GPIO_OS_TESTPOSTFIX=
-endif
-
-ifeq ($(BUILD_OS_TYPE),tirtos)
-CFLAGS_OS_DEFINES = -DUSE_BIOS -DRTOS_ENV
-EXTERNAL_INTERFACES = bios xdc
-COMP_LIST_COMMON    = $(PDK_COMMON_TIRTOS_COMP)
-ifeq ($(SOC),$(filter $(SOC), am65xx))
-XDC_CFG_FILE_mpu1_0 = ./am65xx/gpioLedBlinkTest_a53.cfg
-XDC_CFG_FILE_mcu1_0 = ./am65xx/gpioLedBlinkTest_r5.cfg
-endif
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 tpr12 awr294x am64x j721s2))
-XDC_CFG_FILE_$(CORE) = $(PDK_INSTALL_PATH)/ti/build/$(SOC)/sysbios_$(ISA).cfg
-endif
-GPIO_OS_TESTPREFIX=
-GPIO_OS_TESTPOSTFIX=_tirtos
 endif
 
 ifeq ($(BUILD_OS_TYPE),freertos)
@@ -43,8 +26,6 @@ INCDIR = . src
 
 # Common source files across all platforms and cores
 SRCS_COMMON += main_led_blink.c GPIO_board.c
-
-SRCDIR += $(SOC)
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component

@@ -1,12 +1,12 @@
 /**
  *  \file   GPIO_board.c
  *
- *  \brief  AM64x EVM board specific GPIO parameters.
+ *  \brief  j7200_evm EVM board specific GPIO parameters.
  *
  */
 
 /*
- * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2019 - 2023 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -49,12 +49,12 @@
 GPIO_PinConfig gpioPinConfigs[] =
 {
     /* Input pin with interrupt enabled */
-    GPIO_DEVICE_CONFIG(GPIO_LED0_PORT_NUM, GPIO_LED0_PIN_NUM) |
+    GPIO_DEVICE_CONFIG(WKUP_GPIO, WKUP_GPIO_PIN_NUM) |
     GPIO_CFG_IN_INT_RISING | GPIO_CFG_OUTPUT,
 
     /* Output pin */
-    GPIO_DEVICE_CONFIG(GPIO_LED1_PORT_NUM, GPIO_LED1_PIN_NUM) |
-    GPIO_CFG_OUTPUT
+    GPIO_DEVICE_CONFIG(MAIN_GPIO, MAIN_GPIO_PIN_NUM) |
+    GPIO_CFG_IN_INT_RISING | GPIO_CFG_OUTPUT,
 };
 
 /* GPIO Driver call back functions */
@@ -74,6 +74,10 @@ GPIO_v0_Config GPIO_v0_config =
 #if (__ARM_ARCH == 7) && (__ARM_ARCH_PROFILE == 'R') /* R5F */
     0x8U
 #else
+#if defined(BUILD_C7X)
+    0x01U
+#else
     0x20U
+#endif
 #endif
 };
