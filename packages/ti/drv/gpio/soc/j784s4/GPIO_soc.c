@@ -470,47 +470,60 @@ int32_t GPIO_socConfigIntrPath(uint32_t portNum, uint32_t pinNum,void *hwAttrs,b
     /* GPIO uses bank interrupts. So choose the bank interrupts from bus_gpio_bank with valid values from
      * the DMSC firmware user guide */
     /* We route bank interrupts to the cpu interrupts */
+    src_index = (uint16_t)bankNum;
     switch (cfg->baseAddr)
     {
         case (uint32_t)CSL_WKUP_GPIO0_BASE:
-            ir_id = TISCI_DEV_WKUP_GPIOMUX_INTRTR0;
             src_id = TISCI_DEV_WKUP_GPIO0;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-5) mentioned in DMSC firmware guide for J784S4_DEV_WKUP_GPIO0 */
             break;
         case (uint32_t)CSL_WKUP_GPIO1_BASE:
-            ir_id = TISCI_DEV_WKUP_GPIOMUX_INTRTR0;
             src_id = TISCI_DEV_WKUP_GPIO1;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-5) mentioned in DMSC firmware guide for J784S4_DEV_WKUP_GPIO1 */
             break;
         case (uint32_t)CSL_GPIO0_BASE:
-            ir_id = TISCI_DEV_GPIOMUX_INTRTR0;
             src_id = TISCI_DEV_GPIO0;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J784S4_DEV_GPIO0 */
             break;
         case (uint32_t)CSL_GPIO2_BASE:
-            ir_id = TISCI_DEV_GPIOMUX_INTRTR0;
             src_id = TISCI_DEV_GPIO2;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J784S4_DEV_GPIO2 */
             break;
         case (uint32_t)CSL_GPIO4_BASE:
-            ir_id = TISCI_DEV_GPIOMUX_INTRTR0;
             src_id = TISCI_DEV_GPIO4;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J784S4_DEV_GPIO4 */
             break;
         case (uint32_t)CSL_GPIO6_BASE:
-            ir_id = TISCI_DEV_GPIOMUX_INTRTR0;
             src_id = TISCI_DEV_GPIO6;
-            src_index = (uint16_t)bankNum;  /* This is the bus_gpio_bank (0-7) mentioned in DMSC firmware guide  for J784S4_DEV_GPIO6 */
             break;
         default:
+            retVal = CSL_EFAIL;
             break;
     }
 
-    /* Get TISCI Destination Idx for the core */
-    dst_id = GPIO_socGetCoreSciId();
-
-    /* Get valid Interrupt Idx for the core by querying from BoardCfg */
-    retVal = GPIO_socGetIrqRange(ir_id, dst_id, &irq_range_start, &irq_range_num);
+    if(CSL_PASS == retVal)
+    {
+        /* Get TISCI Destination Idx for the core. */
+        dst_id = GPIO_socGetCoreSciId();
+        /* Check if the source is a GPIO in the wakeup domain. */
+        if (TISCI_DEV_WKUP_GPIO0 == src_id || TISCI_DEV_WKUP_GPIO1 == src_id)
+        {
+            ir_id = TISCI_DEV_WKUP_GPIOMUX_INTRTR0;
+        }
+        /* Check if the source is a GPIO in the Main domain. */
+        else
+        {
+            switch (dst_id)
+            {
+                /* Check if the interrupt is going to the wakeup domain. */
+                case TISCI_DEV_MCU_R5FSS0_CORE0:
+                case TISCI_DEV_MCU_R5FSS0_CORE1:
+                    ir_id = TISCI_DEV_MAIN2MCU_PLS_INTRTR0;
+                    break;
+                /* Check if the interrupt is staying in the main domain, R5, C7x and A72. */
+                default:
+                    ir_id = TISCI_DEV_GPIOMUX_INTRTR0;
+                    break;
+            }
+        }
+        /* Get the valid range of valid interrupts based on the ir_id. */
+        retVal = GPIO_socGetIrqRange(ir_id, dst_id, &irq_range_start, &irq_range_num);
+    }
 
     if(CSL_PASS == retVal) 
     {
