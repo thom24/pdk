@@ -821,6 +821,14 @@ static I2C_Handle I2C_open_v1(I2C_Handle handle, const I2C_Params *params)
 
              case I2C_400kHz:
              {
+                /* For 400KHz Bus Frequency:
+                * I2C Functional Clock: 96MHz(Fixed).
+                * TRM recommended Internal Clock: 9.6MHz.
+                *   => i.e., 96MHz is divided by a prescalar of 10.
+                * To get a bus frequence of 400KHz, 
+                * 9.6MHz internal clock is divided internally by 24(9.6MHz/24 = 400KHz).
+                * Based on the InternalCLk and outputClk, CSL calculates the internal divider.
+                */
                  outputClk = 400000U;
                  internalClk = I2C_MODULE_INTERNAL_CLK_9P6MHZ;
                  break;
@@ -1695,6 +1703,14 @@ static int32_t I2C_v1_setBusFrequency(I2C_Handle handle, uint32_t busFrequency)
 
            case (uint32_t)I2C_400kHz:
            {
+               /* For 400KHz Bus Frequency:
+                * I2C Functional Clock: 96MHz(Fixed).
+                * TRM recommended Internal Clock: 9.6MHz.
+                *   => i.e., 96MHz is divided by a prescalar of 10.
+                * To get a bus frequence of 400KHz,
+                * 9.6MHz internal clock is divided internally by 24(9.6MHz/24 = 400KHz).
+                * Based on the InternalCLk and outputClk, CSL calculates the internal divider.
+                */
                outputClk = 400000U;
                internalClk = I2C_MODULE_INTERNAL_CLK_9P6MHZ;
                break;
@@ -1900,6 +1916,14 @@ static int32_t I2C_v1_ctrlInit(I2C_Handle handle)
 
            case I2C_400kHz:
            {
+               /* For 400KHz Bus Frequency:
+                * I2C Functional Clock: 96MHz(Fixed).
+                * TRM recommended Internal Clock: 9.6MHz.
+                *   => i.e., 96MHz is divided by a prescalar of 10.
+                * To get a bus frequence of 400KHz,
+                * 9.6MHz internal clock is divided internally by 24(9.6MHz/24 = 400KHz).
+                * Based on the InternalCLk and outputClk, CSL calculates the internal divider.
+                */
                outputClk = 400000U;
                internalClk = I2C_MODULE_INTERNAL_CLK_9P6MHZ;
                break;
