@@ -57,7 +57,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk
 
 COMP_LIST_COMMON = $(PDK_COMMON_FREERTOS_COMP) lpm sciserver_tirtos ipc sbl_lib_cust spi
 INCLUDE_EXTERNAL_INTERFACES += freertos board
-SRCS_COMMON = main_rtos.c overrides/$(SOC)/$(CORE)/r5_mpu_freertos.c ../../../gpio/test/led_blink/${SOC}/GPIO_board.c
+SRCS_COMMON = main_rtos.c overrides/$(SOC)/$(CORE)/r5_mpu_freertos.c ../../../gpio/test/led_blink/src/GPIO_board.c
 EXTERNAL_LNKCMD_FILE_LOCAL = overrides/$(SOC)/$(CORE)/linker_r5_freertos.lds
 
 # Common source files and CFLAGS across all platforms and cores
