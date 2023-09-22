@@ -74,7 +74,7 @@
 #endif
 
 #define DMAUTILS_ALIGN_CEIL(VAL, ALIGN)((((VAL) + (ALIGN) - 1) / (ALIGN)) * (ALIGN))
-static int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * channelContext, void * autoIncrementContext);
+static int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * channelContext, void * autoIncrementContext, int32_t coreId);
 
 /**
  *
@@ -425,16 +425,15 @@ static int32_t DmaUtilsAutoInc3d_setupContext(void * autoIncrementContext,const 
   return retVal;
 }
 
-static void DmaUtilsAutoInc3d_getUtcInfo(uint32_t * pUtcId, uint32_t * pDru_local_event_start) {
+static void DmaUtilsAutoInc3d_getUtcInfo(uint32_t * pUtcId, uint32_t * pDru_local_event_start, int32_t coreId) {
+  printf("\n filename = %s , lineNumber = %d \n", __FILE__, __LINE__);
+  fflush(stdout);
   uint32_t utcId = 0;
   uint32_t dru_local_event_start = DRU_LOCAL_EVENT_START_DEFAULT;
 
-  #ifndef HOST_EMULATION
-  uint64_t dnum;
-  uint8_t corePacNum;
-  /* Get the bits from bit 7 to bit 15, which represents the core pac number */
-  dnum = __DNUM; // This register is used to identify the current core
-  corePacNum = (uint8_t) CSL_REG64_FEXT( & dnum, C7X_CPU_DNUM_COREPACNUM);
+  uint8_t corePacNum = coreId + CSL_C7X_CPU_COREPACK_NUM_C7X1;
+  printf("\ncorePacNum = %d\n", corePacNum);
+  fflush(stdout);
   switch (corePacNum) {
     #ifdef SOC_J784S4
   case CSL_C7X_CPU_COREPACK_NUM_C7X1:
@@ -462,7 +461,6 @@ static void DmaUtilsAutoInc3d_getUtcInfo(uint32_t * pUtcId, uint32_t * pDru_loca
     break;
     #endif
   }
-  #endif
   if (pUtcId != NULL) {
     * pUtcId = utcId;
   }
@@ -499,7 +497,7 @@ static int32_t DmaUtilsAutoInc3d_getClecConfigEvent(const CSL_CLEC_EVTRegs * pRe
 }
 #endif
 
-static int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * channelContext, void * autoIncrementContext) {
+static int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * channelContext, void * autoIncrementContext, int32_t coreId) {
   int32_t eventId;
 
   #if!defined(HOST_EMULATION)
@@ -509,7 +507,7 @@ static int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * 
 
   CSL_CLEC_EVTRegs * clecBaseAddr = (CSL_CLEC_EVTRegs * ) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
 
-  DmaUtilsAutoInc3d_getUtcInfo(NULL, & dru_local_event_start);
+  DmaUtilsAutoInc3d_getUtcInfo(NULL, & dru_local_event_start, coreId);
   (void)DmaUtilsAutoInc3d_getClecConfigEvent(clecBaseAddr, dru_local_event_start + channelContext -> druChannelId, & cfgClec);
   if ((cfgClec.rtMap != (uint32_t) thisCore) && (cfgClec.rtMap != CSL_CLEC_RTMAP_CPU_ALL)) {
     DmaUtilsAutoInc3d_printf(autoIncrementContext, 0,
@@ -528,6 +526,8 @@ static int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * 
 }
 
 int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext, DmaUtilsAutoInc3d_InitParam * initParams, DmaUtilsAutoInc3d_ChannelInitParam chInitParams[]) {
+  // printf("\n filename = %s , lineNumber = %d \n", __FILE__, __LINE__);
+  fflush(stdout);
   uint32_t size;
   int32_t retVal = (int32_t) DMAUTILS_SOK;
   int32_t i;
@@ -564,7 +564,7 @@ int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext, DmaUtilsAutoInc3d_In
         /* Initialize the channel params to default */
         chType = UDMA_CH_TYPE_UTC;
         UdmaChPrms_init( & chPrms, chType);
-        DmaUtilsAutoInc3d_getUtcInfo( & chPrms.utcId, NULL);
+        DmaUtilsAutoInc3d_getUtcInfo( & chPrms.utcId, NULL, initParams->coreId);
         UdmaChUtcPrms_init( & utcPrms);
 
         for (i = 0; i < initParams -> numChannels; i++)
@@ -629,7 +629,7 @@ int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext, DmaUtilsAutoInc3d_In
                 channelContext -> druChannelId = Udma_chGetNum(channelHandle);
                 channelContext -> swTriggerPointer = Udma_druGetTriggerRegAddr(channelHandle);
 
-                eventId = DmaUtilsAutoInc3d_getEventNum(channelContext, autoIncrementContext);
+                eventId = DmaUtilsAutoInc3d_getEventNum(channelContext, autoIncrementContext, initParams->coreId);
                 if (eventId == (int32_t) DMAUTILS_EFAIL) {
                   retVal = (int32_t) DMAUTILS_EFAIL;
 
