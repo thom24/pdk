@@ -33,11 +33,15 @@
 #ifndef SAFERTOS_CONFIG_
 #define SAFERTOS_CONFIG_
 
+#if defined (BUILD_C7X) || defined (BUILD_MCU)
 #if defined (BUILD_C7X)
-#if defined(SOC_J721E) || defined(SOC_J721S2)
-#define configMAX_PRIORITIES            ( 16 )
 /* Minimal size for Task's stacks. */
 #define configMINIMAL_STACK_SIZE        ( 16 * 1024 )
+#elif defined (BUILD_MCU)
+#define configMINIMAL_STACK_SIZE_WITH_FPU       ( 1024U )
+#define configMINIMAL_STACK_SIZE_WITH_NO_FPU    ( 512U )
+#endif
+
 /* System tick rate. */
 #define configCPU_CLOCK_HZ              ( 1000 * 1000 * 1000 )
 #define configSYSTICK_CLOCK_HZ          ( 19200000 )
@@ -54,6 +58,4 @@
 #define configTICK_TIMER_ID 2
 #define configTICK_TIMER_INT_NUM 16
 #endif
-#endif
-
 #endif

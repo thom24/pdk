@@ -19,7 +19,7 @@ PACKAGE_SRCS_COMMON = makefile HwiP.h SwiP.h MuxIntcP.h osal.h osal_component.mk
                       arch/core/Core_utils.c docs/OSAL_SoftwareManifest.html docs/ReleaseNotes_OSAL.pdf \
                       build src/safertos/SafeRTOS_priv.h \
                       osalver.h \
-				              Safertos_Aborts.h SafeRTOS_config.h
+                      Safertos_Aborts.h SafeRTOS_config.h
 
 ifeq ($(SOC),$(filter $(SOC), j721e j721s2 j784s4))
   SRCDIR      += soc/$(SOC)
@@ -36,18 +36,10 @@ ifeq ($(CORE),$(filter $(CORE), mcu1_0 mcu2_0 mcu2_1 mcu1_1 mcu3_0 mcu3_1 mcu4_0
   SRCS_COMMON += CacheP_nonos.c Arch_util.c SafeRTOS_aborts_r5f.c SafeRTOS_mpu_r5f.c HwiP_safertos.c
   SRCS_COMMON += SafeRTOS_config_r5f.c
   SRCS_ASM_COMMON += TimestampProvider_asm.asm
-  ifeq ($(SOC),$(filter $(SOC), j7200))
-    SRCS_ASM_COMMON += SafeRTOS_utils_j7200_r5f.asm
-  else
-    SRCS_ASM_COMMON += SafeRTOS_utils_r5f.asm
-  endif
+  SRCS_ASM_COMMON += SafeRTOS_utils_r5f.asm
   PACKAGE_SRCS_COMMON += arch/core/r5 src/safertos/SafeRTOS_aborts_r5f.c src/safertos/SafeRTOS_mpu_r5f.c
   PACKAGE_SRCS_COMMON += src/safertos/SafeRTOS_config_r5f.c src/safertos/HwiP_safertos.c
-  ifeq ($(SOC),$(filter $(SOC), j7200))
-    PACKAGE_SRCS_COMMON += src/safertos/SafeRTOS_utils_j7200_r5f.asm
-  else
-    PACKAGE_SRCS_COMMON += src/safertos/SafeRTOS_utils_r5f.asm
-  endif
+  PACKAGE_SRCS_COMMON += src/safertos/SafeRTOS_utils_r5f.asm
 endif
 
 ifeq ($(CORE),$(filter $(CORE), c66x c66xdsp_1 c66xdsp_2 c674x))

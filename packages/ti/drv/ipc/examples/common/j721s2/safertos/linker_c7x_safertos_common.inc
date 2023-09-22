@@ -38,6 +38,7 @@ SECTIONS
     GROUP LOAD_START( lnkStartFlashAddress ),
           LOAD_END( lnkEndFlashAddress )
     {
+        .interrupt_vectors      : {} ALIGN(0x400000)
         .vecs                   : {} ALIGN(0x400000)
         .secure_vecs            : {} ALIGN(0x200000)
         .text:_c_int00_secure   : {} ALIGN(0x200000)
@@ -65,7 +66,6 @@ SECTIONS
         .KERNEL_DATA LOAD_START( lnkKernelDataStartAddr ),
                      LOAD_END( lnkKernelDataEndAddr )
                                 : {} palign( 0x800 )
-        .interrupt_vectors      : {} ALIGN(0x400000)
     } > __CORE_DDR_SPACE
 
     GROUP:              >  __CORE_DDR_SPACE

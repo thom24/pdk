@@ -83,11 +83,7 @@
  * initialisation function. */
 portBaseType xInitializeScheduler( void );
 
-#if !defined (SOC_J7200)
 void vApplicationFiqHandlerHook( void );
-#else
-void vFiqHandler( void );
-#endif
 
 /*-----------------------------------------------------------------------------
  * Local Variables
@@ -192,11 +188,7 @@ void vApplicationErrorHook( portTaskHandleType xHandleOfTaskWithError,
 }
 /*---------------------------------------------------------------------------*/
 #if defined (BUILD_MCU)
-#if !defined (SOC_J7200)
 void vApplicationFiqHandlerHook( void )
-#else
-void vFiqHandler( void )
-#endif
 {
     while( 1 ); /* vFiqhandler not used in SAFERTOS */
 }

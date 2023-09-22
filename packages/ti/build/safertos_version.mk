@@ -6,6 +6,11 @@
 # Else the default path will be set to $(SDK_INSTALL_PATH)/safertos_$(SOC)_$(ISA)_$(SAFERTOS_VERSION_$(ISA))
 # IMPORTANT:
 #   Make sure the paths specified below DO NOT have any spaces in them.
+
+SAFERTOS_VERSION_c7x=009-004-230-005-219-004
+SAFERTOS_VERSION_r5f=009-004-199-024-219-004
+SAFERTOS_VERSION_c66=009-002-201-005-219-002
+
 ifeq ($(BOARD),$(filter $(BOARD), j721e_evm ))
   export SAFERTOS_j721e_r5f_INSTALL_PATH = 
   export SAFERTOS_j721e_c66_INSTALL_PATH = 
@@ -24,24 +29,6 @@ endif
 ifeq ($(BOARD),$(filter $(BOARD), j784s4_evm ))
   export SAFERTOS_j784s4_r5f_INSTALL_PATH = 
   export SAFERTOS_j784s4_c7x_INSTALL_PATH =
-endif
-
-# This release is validated on below mentioned SafeRTOS Version on said SOC's/ISA's 
-ifeq ($(BOARD),$(filter $(BOARD), j721e_evm ))
-  SAFERTOS_VERSION_r5f = 009-004-199-024-219-001
-  SAFERTOS_VERSION_c66 = 009-002-201-005-219-002
-  SAFERTOS_VERSION_c7x = 009-004-230-005-219-001
-endif
-ifeq ($(BOARD),$(filter $(BOARD), j7200_evm ))
-  SAFERTOS_VERSION_r5f = 009-002-199-024-243-001
-endif
-ifeq ($(BOARD),$(filter $(BOARD), j721s2_evm ))
-  SAFERTOS_VERSION_r5f = 009-004-199-024-235-002
-  SAFERTOS_VERSION_c7x = 009-004-230-005-235-003
-endif
-ifeq ($(BOARD),$(filter $(BOARD), j784s4_evm ))
-  SAFERTOS_VERSION_r5f = 009-004-199-024-251-001
-  SAFERTOS_VERSION_c7x = 009-004-230-005-251-001
 endif
 
 # ISA based directory extensions used in SafeRTOS Package 

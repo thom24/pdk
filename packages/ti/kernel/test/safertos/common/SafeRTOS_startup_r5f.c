@@ -413,16 +413,9 @@ __attribute__((section(".startupCode"))) void __mpu_init( void )
     /* Override the startup code mpu initialisation. */
 
     /* Region 0 configuration: whole 4 GB */
-    /* The below API name is different in the TDA4* and DRA821 package  */
-#if !defined (SOC_J7200)
     xInitMpuResult = xMPUConfigureWholeMemory( 0U,
                                                    mpuREGION_PRIVILEGED_READ_WRITE_USER_READ_WRITE,
                                                    0U );
-#else
-    xInitMpuResult = xPortMPUConfigureWholeMemory( 0U,
-                                                   mpuREGION_PRIVILEGED_READ_WRITE_USER_READ_WRITE,
-                                                   0U );
-#endif
 
     if( pdPASS == xInitMpuResult )
     {

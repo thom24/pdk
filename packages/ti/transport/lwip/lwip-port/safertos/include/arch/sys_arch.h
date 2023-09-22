@@ -103,4 +103,12 @@ void sys_arch_netconn_sem_free(void);
 #define LWIP_NETCONN_THREAD_SEM_FREE()     sys_arch_netconn_sem_free()
 #endif /* LWIP_NETCONN_SEM_PER_THREAD */
 
+#define configTICK_RATE_HZ              ( ( portTickType ) 1000UL )
+/* This macro calculates the number of ticks per millisecond.
+ * NOTE: This integer calculation is only correct for values of
+ * configTICK_RATE_HZ less than or equal to 1000 that are also divisors
+ * of 1000.
+ */
+#define configTICK_RATE_MS              ( ( portTickType ) 1000UL / configTICK_RATE_HZ )
+
 #endif /* LWIP_ARCH_SYS_ARCH_H */

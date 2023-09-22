@@ -34,16 +34,19 @@
 #ifndef __SAFERTOS_CFG__
 #define __SAFERTOS_CFG__
 
-#if defined (BUILD_C7X)
+#if defined (BUILD_C7X) || defined (BUILD_MCU)
 /* Minimal size for Task's stacks. */
+#if defined (BUILD_C7X)
 #define configMINIMAL_STACK_SIZE        ( 16 * 1024 )
+#elif defined (BUILD_MCU)
+#define configMINIMAL_STACK_SIZE_WITH_FPU       ( 1024U )
+#define configMINIMAL_STACK_SIZE_WITH_NO_FPU    ( 512U )
+#endif
 
 /* System tick rate. */
 #define configCPU_CLOCK_HZ              ( 1000 * 1000 * 1000 )
 #define configSYSTICK_CLOCK_HZ          ( 19200000 )
-
 #define configTICK_RATE_HZ              ( ( portTickType ) 1000UL )
-
 /* This macro calculates the number of ticks per millisecond.
  * NOTE: This integer calculation is only correct for values of
  * configTICK_RATE_HZ less than or equal to 1000 that are also divisors

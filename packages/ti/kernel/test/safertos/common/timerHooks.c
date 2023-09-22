@@ -44,6 +44,9 @@
 #include <ti/osal/src/nonos/Nonos_config.h>
 #endif
 
+#if defined (BUILD_C7X) || defined (BUILD_MCU)
+#define configTIMER_ID  configTICK_TIMER_ID
+#endif
 /* Timer Hook function handlers targeting the TI PDK libraries. */
 
 /* Timer interrupt handler function. */
@@ -121,9 +124,6 @@ void vApplicationSetupTickInterruptHook( portUInt32Type ulTimerClockHz,
     xTimerParams.eventId    = TimerP_USE_DEFAULT;
 #endif
 
-#if defined (BUILD_C7X)
-#define configTIMER_ID  configTICK_TIMER_ID
-#endif
 
     pxTickTimerHandle = TimerP_create( configTIMER_ID,
                                        &prvTimerTickIsr,

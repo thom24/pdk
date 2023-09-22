@@ -125,15 +125,9 @@ __attribute__((section(".startupCode"))) void __mpu_init( void )
     /* Override the startup code mpu initialisation. */
 
     /* Region 0 configuration: whole 4 GB */
-#if !defined (SOC_J7200)    
     xInitMpuResult = xMPUConfigureWholeMemory( 0U,
                                                    mpuREGION_PRIVILEGED_READ_WRITE_USER_READ_WRITE,
                                                    0U );
-#else
-    xInitMpuResult = xPortMPUConfigureWholeMemory( 0U,
-                                                   mpuREGION_PRIVILEGED_READ_WRITE_USER_READ_WRITE,
-                                                   0U );
-#endif
 
 
     if( pdPASS == xInitMpuResult )
@@ -358,11 +352,7 @@ portBaseType prvSetupHardware( void )
 
 /*-------------------------------------------------------------------------*/
 
-#if !defined (SOC_J7200)
 void vApplicationFiqHandlerHook( void )
-#else
-void vFiqHandler( void )
-#endif
 {
     /* FIQ is not supported with SafeRTOS.
      *
