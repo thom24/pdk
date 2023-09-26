@@ -28,8 +28,7 @@ fi
 
 # Include an SCMVERSION if applicable. Make it short. Abbreviate dirty as +.
 if "$git_cmd" rev-parse --is-inside-work-tree 2>/dev/null >/dev/null; then
-	pushd . > /dev/null
-	cd $RM_PM_HAL_PATH
+	pushd $RM_PM_HAL_PATH > /dev/null
 	git_ver=$("$git_cmd" describe --abbrev=5 --dirty | sed -e 's/-dirty$/+/g')
 	popd > /dev/null
 	if [ -n "$git_ver" ]; then
