@@ -397,7 +397,7 @@ extern "C" {
 /** \brief Ring Monitors */
 #define UDMA_RM_RES_ID_RING_MON                 (16U)
 
-#if defined (BUILD_C7X)
+#if defined (BUILD_C7X) || defined (HOST_EMULATION)
 /* List of all DRUs local to C7X */
 /** \brief DRU4 local to C7X cluster */
 #define UDMA_RM_C7X_MSMC_DRU4                   (17U)

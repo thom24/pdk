@@ -1520,14 +1520,14 @@ if (ret == 1U)
 #ifdef HOST_EMULATION
 
 void hostEmulation_updateTriggerCount(struct Udma_DrvObj * udmaDrvHandle,
-      volatile uint64_t *pSwTrigReg)
+      volatile uint64_t *pSwTrigReg, uint32_t utcId)
 {
   uint32_t i;
-  CSL_DRU_t *druRegs = udmaDrvHandle->utcInfo[0].druRegs;
+  CSL_DRU_t *druRegs = udmaDrvHandle->utcInfo[utcId].druRegs;
   uintptr_t origPtr = (uintptr_t)pSwTrigReg;
   uintptr_t currPtr;
 
-  for ( i = 0; i < udmaDrvHandle->utcInfo[0].numCh; i++)
+  for ( i = 0; i < udmaDrvHandle->utcInfo[utcId].numCh; i++)
   {
     currPtr = (uintptr_t)&druRegs->CHRT[i].CHRT_SWTRIG;
     if ( currPtr == origPtr)
@@ -1577,7 +1577,7 @@ void hostEmulation_druChSubmitAtomicTr(CSL_DRU_t *pRegs,
   }
 }
 
-void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
+void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle, uint32_t utcId)
 {
   uint32_t chId;
   CSL_DRU_t * druRegs;
@@ -1586,12 +1586,12 @@ void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle)
   CSL_UdmapCfg  * udmapRegs;
   CSL_ringacc_cfgRegs * ringAccCfgRegs;
 
-  druRegs         = udmaDrvHandle->utcInfo[0].druRegs;
+  druRegs         = udmaDrvHandle->utcInfo[utcId].druRegs;
   ringAccCfgRegs  = udmaDrvHandle->raRegs.pCfgRegs;
   udmapRegs        = &udmaDrvHandle->udmapRegs;
 #endif
 
-  druRegs             = udmaDrvHandle->utcInfo[0].druRegs;
+  druRegs             = udmaDrvHandle->utcInfo[utcId].druRegs;
 
 
 

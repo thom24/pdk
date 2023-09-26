@@ -85,7 +85,7 @@ typedef struct
 
 #ifdef HOST_EMULATION
 void hostEmulation_updateTriggerCount(struct Udma_DrvObj * udmaDrvHandle,
-                                                volatile uint64_t *pSwTrigReg);
+                                                volatile uint64_t *pSwTrigReg, uint32_t utcId);
 void hostEmulation_druChSubmitAtomicTr(CSL_DRU_t *pRegs,
                                            uint32_t chId,
                                            void *  vdata);
@@ -94,7 +94,7 @@ uint64_t hostEmulation_addressUpdate( uint64_t base, int32_t offset, uint64_t ad
 
 void hostEmulation_circMask( uint32_t cbk0, uint32_t cbk1, uint64_t * circMask0, uint64_t * circMask1  );
 
-void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle);
+void hostEmulation_triggerDMA(struct Udma_DrvObj * udmaDrvHandle, uint32_t utcId);
 
 #endif
 

@@ -426,16 +426,11 @@ static int32_t DmaUtilsAutoInc3d_setupContext(void * autoIncrementContext,const 
 }
 
 static void DmaUtilsAutoInc3d_getUtcInfo(uint32_t * pUtcId, uint32_t * pDru_local_event_start, int32_t coreId) {
-  printf("\n filename = %s , lineNumber = %d \n", __FILE__, __LINE__);
-  fflush(stdout);
   uint32_t utcId = 0;
   uint32_t dru_local_event_start = DRU_LOCAL_EVENT_START_DEFAULT;
 
   uint8_t corePacNum = coreId + CSL_C7X_CPU_COREPACK_NUM_C7X1;
-  printf("\ncorePacNum = %d\n", corePacNum);
-  fflush(stdout);
-  switch (corePacNum) {
-    #ifdef SOC_J784S4
+  #ifdef SOC_J784S4
   case CSL_C7X_CPU_COREPACK_NUM_C7X1:
     utcId = UDMA_UTC_ID_C7X_MSMC_DRU4;
     dru_local_event_start = DRU_LOCAL_EVENT_START_J784S4 + (96U * 0U); // TODO: Pick from CSL if possible
@@ -526,8 +521,6 @@ static int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * 
 }
 
 int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext, DmaUtilsAutoInc3d_InitParam * initParams, DmaUtilsAutoInc3d_ChannelInitParam chInitParams[]) {
-  // printf("\n filename = %s , lineNumber = %d \n", __FILE__, __LINE__);
-  fflush(stdout);
   uint32_t size;
   int32_t retVal = (int32_t) DMAUTILS_SOK;
   int32_t i;
@@ -866,9 +859,11 @@ int32_t DmaUtilsAutoInc3d_configure(void * autoIncrementContext, int32_t channel
         #ifndef HOST_EMULATION
         Udma_chDruSubmitTr(channelHandle, tr + i);
         #else
-        udmaDrvHandle = (Udma_DrvHandle) dmautilsContext -> initParams.udmaDrvHandle;
+        udmaDrvHandle = (Udma_DrvHandle) dmautilsContext->initParams.udmaDrvHandle;
         druChannelNum = Udma_chGetNum(channelHandle);
-        hostEmulation_druChSubmitAtomicTr(udmaDrvHandle -> utcInfo[0].druRegs,
+        uint32_t utcId;
+        DmaUtilsAutoInc3d_getUtcInfo(&utcId, NULL, dmautilsContext->initParams.coreId);
+        hostEmulation_druChSubmitAtomicTr(udmaDrvHandle->utcInfo[utcId].druRegs,
           druChannelNum, (void * ) tr);
         #endif
       }
@@ -890,16 +885,18 @@ int32_t DmaUtilsAutoInc3d_configure(void * autoIncrementContext, int32_t channel
       (void)Udma_ringQueueRaw(Udma_chGetFqRingHandle(channelHandle),(uint64_t) trMem);
 
       #ifdef HOST_EMULATION
+      uint32_t utcId;
+      DmaUtilsAutoInc3d_getUtcInfo(&utcId, NULL, dmautilsContext->initParams.coreId);
       CSL_UdmapTR * pTr = (CSL_UdmapTR * )(trMem + sizeof(CSL_UdmapTR));
       udmaDrvHandle = (Udma_DrvHandle) dmautilsContext -> initParams.udmaDrvHandle;
-      druChannelNum = (channelHandle -> extChNum - channelHandle -> utcInfo -> startCh);
-      hostEmulation_druChSubmitAtomicTr(udmaDrvHandle -> utcInfo[0].druRegs,
+      druChannelNum = (channelHandle->extChNum - channelHandle->utcInfo[utcId].startCh);
+      hostEmulation_druChSubmitAtomicTr(udmaDrvHandle->utcInfo[utcId].druRegs,
         druChannelNum,
         (void * ) pTr);
 
       /* Use this field to track the TR, For the target build this would be handled by hardware */
       /* In real hardware this will not be like this it is done just for host emulation*/
-      udmaDrvHandle -> utcInfo[0].druRegs -> CHATOMIC[druChannelNum].DEBUG[1].NEXT_TR_WORD0_1 = 1;
+      udmaDrvHandle -> utcInfo[utcId].druRegs->CHATOMIC[druChannelNum].DEBUG[1].NEXT_TR_WORD0_1 = 1;
 
       #endif
     }
@@ -918,8 +915,10 @@ int32_t DmaUtilsAutoInc3d_trigger(void * autoIncrementContext, int32_t channelId
 
   CSL_druChSetGlobalTrigger0Raw(dmautilsContext -> channelContext[channelId] -> swTriggerPointer); //:TODO: This should be replaced by something else as we are not suppose to directly use these registers
   #ifdef HOST_EMULATION
-  Udma_DrvHandle udmaDrvHandle = (Udma_DrvHandle) dmautilsContext -> initParams.udmaDrvHandle;
-  hostEmulation_updateTriggerCount(udmaDrvHandle, dmautilsContext -> channelContext[channelId] -> swTriggerPointer);
+  uint32_t utcId;
+  DmaUtilsAutoInc3d_getUtcInfo(&utcId, NULL, dmautilsContext->initParams.coreId);
+  Udma_DrvHandle udmaDrvHandle = (Udma_DrvHandle) dmautilsContext->initParams.udmaDrvHandle;
+  hostEmulation_updateTriggerCount(udmaDrvHandle, dmautilsContext->channelContext[channelId]->swTriggerPointer, utcId);
   #endif
 
   dmautilsContext -> blkIdx[channelId]--;
@@ -943,9 +942,12 @@ void DmaUtilsAutoInc3d_wait(void * autoIncrementContext, int32_t channelId) {
   }
   __set_indexed(__EFCLR, 0, waitWord);
   #else
-  Udma_DrvHandle udmaDrvHandle = (Udma_DrvHandle) dmautilsContext -> initParams.udmaDrvHandle;
+  uint32_t utcId;
+  DmaUtilsAutoInc3d_getUtcInfo(&utcId, NULL, dmautilsContext->initParams.coreId);
+
+  Udma_DrvHandle udmaDrvHandle = (Udma_DrvHandle) dmautilsContext->initParams.udmaDrvHandle;
   /* Do the actual Transfer for host emulation*/
-  hostEmulation_triggerDMA(udmaDrvHandle);
+  hostEmulation_triggerDMA(udmaDrvHandle, utcId);
   #endif
 
   return;
