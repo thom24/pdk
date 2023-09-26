@@ -707,6 +707,21 @@ int32_t udmaTestUdmaInitEventRegTc(UdmaTestTaskObj *taskObj);
 int32_t udmaTestUdmaInitSkipEventRegTc(UdmaTestTaskObj *taskObj);
 
 /*
+ * UDMA Ring Negative test case functions
+ */
+int32_t udmaTestRingGetMemPtrNormal(UdmaTestTaskObj *taskObj);
+int32_t udmaTestRingGetModeNormal(UdmaTestTaskObj *taskObj);
+int32_t udmaTestRingGetElementCntNormal(UdmaTestTaskObj *taskObj);
+int32_t udmaTestRingGetRingOccNormal(UdmaTestTaskObj *taskObj);
+int32_t udmaTestRingGetWrIdxNormal(UdmaTestTaskObj *taskObj);
+int32_t udmaTestRingGetRdIdxNormal(UdmaTestTaskObj *taskObj);
+
+/*
+ *UDMA Flow Negative test case functions
+ */
+int32_t UdmaTest_flowGetNum(UdmaTestTaskObj *taskObj);
+
+/*
  * UDMA Utils Negative test case functions
  */
 int32_t udmaTestUdmaPrinfNegTc(UdmaTestTaskObj *taskObj);
