@@ -704,6 +704,7 @@ int32_t udmaTestUdmaInitRmSetProxyNegTc(UdmaTestTaskObj *taskObj);
 int32_t udmaTestUdmaPrmsInitNegTc(UdmaTestTaskObj *taskObj);
 int32_t udmaTestUdmaDeinitNegTc(UdmaTestTaskObj *taskObj);
 int32_t udmaTestUdmaInitEventRegTc(UdmaTestTaskObj *taskObj);
+int32_t udmaTestUdmaInitSkipEventRegTc(UdmaTestTaskObj *taskObj);
 
 /*
  * UDMA Utils Negative test case functions

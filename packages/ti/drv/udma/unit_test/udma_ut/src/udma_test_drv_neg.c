@@ -73,14 +73,14 @@ static uint32_t gMutexCnt = 0U;
 /* ========================================================================== */
 
 /*
-* Test Case Description: Verifies Udma_init function when drvHandle 
-* and initPrms are NULL/Invalid arguments
-*/
+ * Test Case Description: Verifies Udma_init function when drvHandle 
+ * and initPrms are NULL/Invalid arguments
+ */
 int32_t udmaTestUdmaInitNegTc(UdmaTestTaskObj *taskObj)
 {
     int32_t retVal       = UDMA_SOK;
     int32_t instId       = 0U;
-    uint8_t  tcIdx       = 0U; /*Test Case Index*/
+    uint8_t  tcIdx       = 0U; /* Test Case Index */
     UdmaTestObj *testObj = taskObj->testObj;
     Udma_InitPrms  initPrmsTemp;
     Udma_DrvHandle drvHandle[3] = {(Udma_DrvHandle) NULL_PTR, 
@@ -94,7 +94,7 @@ int32_t udmaTestUdmaInitNegTc(UdmaTestTaskObj *taskObj)
     GT_1trace(taskObj->traceMask, GT_INFO1,
               " |TEST INFO|:: Task:%d:: Udma_Init function verification testcase for invalid drvHandle and initPrms\r\n", taskObj->taskId);
     
-    /*Deinit the drivers */
+    /* Deinit the driver */
     retVal = udmaTestDeinitDriver(testObj);
     if(UDMA_SOK == retVal)
     {
@@ -119,9 +119,9 @@ int32_t udmaTestUdmaInitNegTc(UdmaTestTaskObj *taskObj)
 }
 
 /*
-* Test Case Description: Verifies Udma_init function for an 
-* invalid rmLock
-*/
+ * Test Case Description: Verifies Udma_init function for an 
+ * invalid rmLock
+ */
 int32_t udmaTestUdmaInitRmLockNegTc(UdmaTestTaskObj *taskObj)
 {
     int32_t retVal       = UDMA_SOK;
@@ -133,7 +133,7 @@ int32_t udmaTestUdmaInitRmLockNegTc(UdmaTestTaskObj *taskObj)
     GT_1trace(taskObj->traceMask, GT_INFO1,
               " |TEST INFO|:: Task:%d:: Verify Udma_Init function for invalid RmLock\r\n", taskObj->taskId);
     
-    /*Deinit the drivers */
+    /* Deinit the driver */
     retVal = udmaTestDeinitDriver(testObj);
     if(UDMA_SOK == retVal)
     {
@@ -162,9 +162,9 @@ int32_t udmaTestUdmaInitRmLockNegTc(UdmaTestTaskObj *taskObj)
 }
 
 /*
-* Test Case Description: Function reproduces Udma_Init 
-* failure when PrintLock is null pointer
-*/
+ * Test Case Description: Function reproduces Udma_Init 
+ * failure when PrintLock is null pointer
+ */
 int32_t udmaTestUdmaInitPrintLockNegTc(UdmaTestTaskObj *taskObj)
 {
     int32_t retVal       = UDMA_SOK;
@@ -176,7 +176,7 @@ int32_t udmaTestUdmaInitPrintLockNegTc(UdmaTestTaskObj *taskObj)
     GT_1trace(taskObj->traceMask, GT_INFO1,
               " |TEST INFO|:: Task:%d:: Udma_Init verification testcase for an invalid printLock\r\n", taskObj->taskId);
     
-    /*Deinit the drivers */
+    /* Deinit the driver */
     retVal = udmaTestDeinitDriver(testObj);
     if(UDMA_SOK == retVal)
     {
@@ -205,9 +205,9 @@ int32_t udmaTestUdmaInitPrintLockNegTc(UdmaTestTaskObj *taskObj)
 }
 
 /*
-* Test Case Description: This function fails Udma_Init 
-* for an invalid sciclient proxy configuration
-*/
+ * Test Case Description: This function fails Udma_Init 
+ * for an invalid sciclient proxy configuration
+ */
 int32_t udmaTestUdmaInitRmSetProxyNegTc(UdmaTestTaskObj *taskObj)
 {
     int32_t  retVal          = UDMA_SOK;
@@ -219,7 +219,7 @@ int32_t udmaTestUdmaInitRmSetProxyNegTc(UdmaTestTaskObj *taskObj)
     GT_1trace(taskObj->traceMask, GT_INFO1,
               " |TEST INFO|:: Task:%d:: Udma_init testcase for an invalid sciclient proxy configuration\r\n", taskObj->taskId);
 
-    /* Deinit the drivers */
+    /* Deinit the driver */
     retVal = udmaTestDeinitDriver(testObj);
     if(UDMA_SOK == retVal)
     {
@@ -255,9 +255,9 @@ int32_t udmaTestUdmaInitRmSetProxyNegTc(UdmaTestTaskObj *taskObj)
 }
 
 /*
-* Test Case Description: Testcase to verify the Udma_PrmsInit
-* function with input parameters as null
-*/
+ * Test Case Description: Testcase to verify the Udma_PrmsInit
+ * function with input parameters as null
+ */
 int32_t udmaTestUdmaPrmsInitNegTc(UdmaTestTaskObj *taskObj)
 {
     int32_t  retVal      = UDMA_SOK;
@@ -270,7 +270,7 @@ int32_t udmaTestUdmaPrmsInitNegTc(UdmaTestTaskObj *taskObj)
     GT_1trace(taskObj->traceMask, GT_INFO1,
               " |TEST INFO|:: Task:%d:: Testcase which verifies Udma_PrmsInit function for NULL parameters\r\n", taskObj->taskId);
 
-    /* Deinit the drivers */
+    /* Deinit the driver */
     retVal = udmaTestDeinitDriver(testObj);
     if(UDMA_SOK == retVal)
     {
@@ -296,9 +296,9 @@ int32_t udmaTestUdmaPrmsInitNegTc(UdmaTestTaskObj *taskObj)
 }
 
 /*
-* Function Description: Verifies Udma_deinit for 
-* an incorrect input parameters 
-*/
+ * Function Description: Verifies Udma_deinit for 
+ * an incorrect input parameters 
+ */
 int32_t udmaTestUdmaDeinitNegTc(UdmaTestTaskObj *taskObj)
 {
     int32_t  retVal          = UDMA_SOK;
@@ -311,13 +311,13 @@ int32_t udmaTestUdmaDeinitNegTc(UdmaTestTaskObj *taskObj)
     GT_1trace(taskObj->traceMask, GT_INFO1,
               " |TEST INFO|:: Test%d:: Testcase to verify Udma_init for an invalid drvHandle\r\n", taskObj->taskId);
     
-    /* Deinit the drivers */
+    /* Deinit the driver */
     retVal = udmaTestDeinitDriver(testObj);
     if(UDMA_SOK == retVal)
     {
        for(tcIdx = 0U; tcIdx < 3U ; tcIdx++)
         {
-            /*Test Case: Udma_deinit fails when drvHandle is NULL_PTR*/
+            /* Test Case: Udma_deinit fails when drvHandle is NULL_PTR */
             if(0U == tcIdx)
             {
                 drvHandle = (Udma_DrvHandle) NULL_PTR;
@@ -327,7 +327,7 @@ int32_t udmaTestUdmaDeinitNegTc(UdmaTestTaskObj *taskObj)
                 drvHandle = &testObj->drvObj[instId];
                 drvHandle->drvInitDone = UDMA_DEINIT_DONE;
             }
-            /*Test Case: Udma_deinit fails due to invalid drvHandle in globalEventHandle*/
+            /* Test Case: Udma_deinit fails due to invalid drvHandle in globalEventHandle */
             else
             {
                 drvHandle = &testObj->drvObj[instId];
@@ -357,9 +357,9 @@ int32_t udmaTestUdmaDeinitNegTc(UdmaTestTaskObj *taskObj)
 }
 
 /*
-* Function Description: Function which fails Udma_Init from registering
-* global event
-*/
+ * Function Description: Function which fails Udma_Init from registering
+ * global event
+ */
 int32_t udmaTestUdmaInitEventRegTc(UdmaTestTaskObj *taskObj)
 {
     int32_t  retVal           = UDMA_SOK;
@@ -376,7 +376,7 @@ int32_t udmaTestUdmaInitEventRegTc(UdmaTestTaskObj *taskObj)
     GT_1trace(taskObj->traceMask, GT_INFO1,
               " |TEST INFO|:: Task:%d:: Testcase to verify Udma_init from registering global event for an invalid configuration\r\n", taskObj->taskId);
 
-    /*Deinit the drivers */
+    /* Deinit the driver */
     retVal = udmaTestDeinitDriver(testObj);
     if(UDMA_SOK == retVal)
     {
@@ -410,7 +410,7 @@ int32_t udmaTestUdmaInitEventRegTc(UdmaTestTaskObj *taskObj)
             rmIrqReq.vint_status_bit_index  = 0U;
             rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
-            /*Get Resource*/
+            /* Get Resource */
             retVal = Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, UDMA_SCICLIENT_TIMEOUT);
             if(UDMA_SOK != retVal)
             {
@@ -441,10 +441,9 @@ int32_t udmaTestUdmaInitEventRegTc(UdmaTestTaskObj *taskObj)
     return (retVal);
 }
 
-
 /*
-* Function Description: Returns MutexHandle as null pointer 
-*/
+ * Function Description: Returns MutexHandle as null pointer 
+ */
 static void *udmaTestRmLockMutexCreate(void)
 {
     SemaphoreP_Handle mutexHandle = NULL_PTR;
@@ -452,13 +451,13 @@ static void *udmaTestRmLockMutexCreate(void)
 }
 
 /*
-* Function Description: Helper function which fails Udma_Init 
-* by assigning PrintLock as null pointer.
-* This functions returns valid mutexHandler when gMutexCnt is 0U 
-* and null pointer when gMutexCnt is not equal to 0U. It 
-* returns Mutex handler for RmLock when gMutexCnt is 0U and returns null pointer 
-* for PrintLock when gMutexCnt is not equal to 0U.
-*/
+ * Function Description: Helper function which fails Udma_Init 
+ * by assigning PrintLock as null pointer.
+ * This functions returns valid mutexHandler when gMutexCnt is 0U 
+ * and null pointer when gMutexCnt is not equal to 0U. It 
+ * returns Mutex handler for RmLock when gMutexCnt is 0U and returns null pointer 
+ * for PrintLock when gMutexCnt is not equal to 0U.
+ */
 static void *udmaTestPrintLockMutexCreate(void)
 {
     SemaphoreP_Params semPrms;
@@ -478,5 +477,55 @@ static void *udmaTestPrintLockMutexCreate(void)
     }
 
     return (mutexHandle);
+}
+
+/*
+ * Function Description: Function to test Udma_Init and Udma_deinit when Global Event is disabled
+ */
+int32_t udmaTestUdmaInitSkipEventRegTc(UdmaTestTaskObj *taskObj)
+{
+    int32_t  retVal           = UDMA_SOK;
+    uint32_t instId           = 0U;
+    UdmaTestObj *testObj      = taskObj->testObj;
+    Udma_DrvHandle drvHandle  = (Udma_DrvHandle) NULL_PTR;
+    Udma_InitPrms initPrms;
+
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+              " |TEST INFO|:: Task:%d:: Testcase to verify Udma_init and Udma_deinit when GlobalEventReg value is True\r\n", taskObj->taskId);
+
+    /* Deinit the driver */
+    retVal = udmaTestDeinitDriver(testObj);
+    if(UDMA_SOK == retVal)
+    {
+        for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX ; instId++)
+        {
+            drvHandle = &testObj->drvObj[instId];
+            UdmaInitPrms_init(instId, &initPrms);
+            initPrms.skipGlobalEventReg = TRUE;
+            retVal = Udma_init(drvHandle, &initPrms);
+            if(UDMA_SOK != retVal)
+            {
+                GT_1trace(testObj->traceMask, GT_ERR, " |TEST INFO|:: UDMA Init Instance %d:: Failed!!!\r\n", instId);
+            }
+            else
+            {
+                GT_1trace(testObj->traceMask, GT_INFO1, " |TEST INFO|:: UDMA Init Instance %d:: Pass\r\n", instId);
+            }
+            retVal = Udma_deinit(drvHandle);
+            if(UDMA_SOK != retVal)
+            {
+                GT_1trace(testObj->traceMask, GT_ERR, " |TEST INFO|:: UDMA Denit Instance %d:: Failed!!!\r\n", instId);
+            }
+            else
+            {
+                GT_1trace(testObj->traceMask, GT_INFO1, " |TEST INFO|:: UDMA Deinit Instance %d:: Pass\r\n", instId);
+            }
+            initPrms.skipGlobalEventReg = FALSE;
+        }
+    }
+
+    /* Re-init driver with default params */
+    retVal = udmaTestInitDriver(testObj);
+    return (retVal);
 }
 
