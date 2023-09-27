@@ -3492,7 +3492,7 @@ static UdmaTestParams gUdmaTestCases[] =
 #endif /* #if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1) */
     {
         .enableTest = TEST_ENABLE,
-        .tcId       = 2U,
+        .tcId       = 13372U,
         .tcName     = "Test UDMA Init function for invalid input parameters",
         .disableInfo= NULL,
         .printEnable= PRINT_ENABLE,
@@ -3529,7 +3529,7 @@ static UdmaTestParams gUdmaTestCases[] =
     },
     {
         .enableTest = TEST_ENABLE,
-        .tcId       = 3U,
+        .tcId       = 13373U,
         .tcName     = "RmLock params test for UDMA Init function",
         .disableInfo= NULL,
         .printEnable= PRINT_ENABLE,
@@ -3566,7 +3566,7 @@ static UdmaTestParams gUdmaTestCases[] =
     },
     {
         .enableTest = TEST_ENABLE,
-        .tcId       = 4U,
+        .tcId       = 13374U,
         .tcName     = "PrintLock params test for UDMA Init function",
         .disableInfo= NULL,
         .printEnable= PRINT_ENABLE,
@@ -3603,7 +3603,7 @@ static UdmaTestParams gUdmaTestCases[] =
     },
     {
         .enableTest = TEST_ENABLE,
-        .tcId       = 5U,
+        .tcId       = 13375U,
         .tcName     = "Test UDMA Init function for invalid RmSetProxy",
         .disableInfo= NULL,
         .printEnable= PRINT_ENABLE,
@@ -3640,7 +3640,7 @@ static UdmaTestParams gUdmaTestCases[] =
     },
     {
         .enableTest = TEST_ENABLE,
-        .tcId       = 6U,
+        .tcId       = 13378U,
         .tcName     = "Test UDMA Params Init function",
         .disableInfo= NULL,
         .printEnable= PRINT_ENABLE,
@@ -3677,7 +3677,7 @@ static UdmaTestParams gUdmaTestCases[] =
     },
     {
         .enableTest = TEST_ENABLE,
-        .tcId       = 7U,
+        .tcId       = 13377U,
         .tcName     = "Test UDMA Deinit function",
         .disableInfo= NULL,
         .printEnable= PRINT_ENABLE,
@@ -3714,7 +3714,7 @@ static UdmaTestParams gUdmaTestCases[] =
     },
     {
         .enableTest = TEST_ENABLE,
-        .tcId       = 8U,
+        .tcId       = 13376U,
         .tcName     = "Event Registration test for UDMA Init function",
         .disableInfo= NULL,
         .printEnable= PRINT_ENABLE,
@@ -3752,7 +3752,7 @@ static UdmaTestParams gUdmaTestCases[] =
     {
         .enableTest = TEST_ENABLE,
         .tcId       = 13370U,
-        .tcName     = "Negative Test for UDMA Utility Functionsn",
+        .tcName     = "Negative Test for UDMA Utility Functions",
         .disableInfo= NULL,
         .printEnable= PRINT_ENABLE,
         .prfEnable  = PRF_DISABLE,
