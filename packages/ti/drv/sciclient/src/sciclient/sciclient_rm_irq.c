@@ -2294,7 +2294,8 @@ static int32_t Sciclient_rmIrqGetRoute(struct Sciclient_rmIrqCfg    *cfg)
 static int32_t Sciclient_rmIrqDeleteRoute(struct Sciclient_rmIrqCfg    *cfg,
                                           bool                         unmap_vint)
 {
-    int32_t r = CSL_PASS;
+    int32_t retVal = CSL_PASS;
+    int32_t retValSum = CSL_PASS;
     uint16_t i;
     const struct Sciclient_rmIrqNode *cur_n;
     uint16_t cur_inp, cur_outp;
@@ -2322,9 +2323,9 @@ static int32_t Sciclient_rmIrqDeleteRoute(struct Sciclient_rmIrqCfg    *cfg,
             req.vint = cur_outp;
             req.global_event = cur_inp;
             req.vint_status_bit_index = cfg->vint_sb;
-            r = Sciclient_rmIrqReleaseRaw(&req,
+            retVal = Sciclient_rmIrqReleaseRaw(&req,
                                           SCICLIENT_SERVICE_WAIT_FOREVER);
-            if (r == CSL_PASS) {
+            if (retVal == CSL_PASS) {
                 ia_inst = Sciclient_rmIaGetInst(cur_n->id);
                 if (ia_inst != NULL) {
                     ia_inst->vint_usage_count[cur_outp]--;
@@ -2333,6 +2334,7 @@ static int32_t Sciclient_rmIrqDeleteRoute(struct Sciclient_rmIrqCfg    *cfg,
                     }
                 }
             }
+            retValSum = retValSum + retVal;
         }
 
         if (i > 0u) {
@@ -2344,18 +2346,24 @@ static int32_t Sciclient_rmIrqDeleteRoute(struct Sciclient_rmIrqCfg    *cfg,
             req.src_index = cur_inp;
             req.dst_id = cur_n->id;
             req.dst_host_irq = cur_outp;
-            r = Sciclient_rmIrqReleaseRaw(&req,
+            retVal = Sciclient_rmIrqReleaseRaw(&req,
                                           SCICLIENT_SERVICE_WAIT_FOREVER);
-            if ((r == CSL_PASS) && (cur_outp == 0U)) {
+            if ((retVal == CSL_PASS) && (cur_outp == 0U)) {
                 ir_inst = Sciclient_rmIrGetInst(cur_n->id);
                 if (ir_inst != NULL) {
                     ir_inst->inp0_mapping = SCICLIENT_RM_IR_MAPPING_FREE;
                 }
             }
         }
+        retValSum = retValSum + retVal;
+    }
+    
+    if (retValSum != CSL_PASS)
+    {
+        retValSum = CSL_EFAIL;
     }
 
-    return r;
+    return retValSum;
 }
 
 static int32_t Sciclient_rmIrqVintDelete(struct Sciclient_rmIrqCfg  *cfg)
