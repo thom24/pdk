@@ -31,9 +31,6 @@ endif
 ifeq ($(BUILD_OS_TYPE),safertos)
   INCLUDE_EXTERNAL_INTERFACES = pdk osal safertos
 endif
-ifeq ($(BUILD_OS_TYPE),tirtos)
-  INCLUDE_EXTERNAL_INTERFACES = pdk xdc osal bios
-endif
 
 INCLUDE_INTERNAL_INTERFACES += lwipstack_$(BUILD_OS_TYPE)
 
@@ -43,7 +40,7 @@ CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS)
 SRCS_COMMON += sys_arch.c
 
 PACKAGE_SRCS_COMMON =  makefile
-PACKAGE_SRCS_COMMON += freertos safertos tirtos
+PACKAGE_SRCS_COMMON += freertos safertos
 PACKAGE_SRCS_COMMON += config/$(SOC)
 
 # Core/SoC/platform specific source files and CFLAGS

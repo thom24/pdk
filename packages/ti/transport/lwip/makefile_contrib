@@ -58,18 +58,12 @@ ifeq ($(BUILD_PROFILE_$(CORE)),release)
   LWIP_CONTRIB_CFLAGS += -mthumb -O3
 endif
 
-ifeq ($(BUILD_OS_TYPE),tirtos)
-  INCDIR += $(bios_PATH)/packages/ti/posix/ccs
-endif
-
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 ifeq ($(BUILD_OS_TYPE),freertos)
   INCLUDE_EXTERNAL_INTERFACES = pdk osal freertos
 else ifeq ($(BUILD_OS_TYPE),safertos)
   INCLUDE_EXTERNAL_INTERFACES = pdk osal safertos
-else ifeq ($(BUILD_OS_TYPE),tirtos)
-  INCLUDE_EXTERNAL_INTERFACES = pdk xdc osal bios
 endif
 
 INCLUDE_INTERNAL_INTERFACES += lwipstack_$(BUILD_OS_TYPE)

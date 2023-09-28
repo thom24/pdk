@@ -51,8 +51,6 @@ ifeq ($(BUILD_OS_TYPE),freertos)
   INCLUDE_EXTERNAL_INTERFACES = pdk osal freertos
 else ifeq ($(BUILD_OS_TYPE),safertos)
   INCLUDE_EXTERNAL_INTERFACES = pdk osal safertos
-else ifeq ($(BUILD_OS_TYPE),tirtos)
-  INCLUDE_EXTERNAL_INTERFACES = pdk xdc osal bios
 endif
 
 INCLUDE_INTERNAL_INTERFACES += lwipport_$(BUILD_OS_TYPE)
