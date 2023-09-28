@@ -12,6 +12,8 @@ MODULE_NAME = lwipport_$(BUILD_OS_TYPE)
 SRCDIR += $(BUILD_OS_TYPE)
 INCDIR += $(BUILD_OS_TYPE)/include
 INCDIR += $(BUILD_OS_TYPE)/include/arch
+INCDIR += config/$(SOC)
+INCDIR += config
 
 ifeq ($(BUILD_OS_TYPE),freertos)
   ENET_CFLAGS += -DFREERTOS
@@ -40,7 +42,9 @@ CFLAGS_LOCAL_COMMON += $(PDK_CFLAGS)
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON += sys_arch.c
 
-PACKAGE_SRCS_COMMON = .
+PACKAGE_SRCS_COMMON =  makefile
+PACKAGE_SRCS_COMMON += freertos safertos tirtos
+PACKAGE_SRCS_COMMON += config/$(SOC)
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

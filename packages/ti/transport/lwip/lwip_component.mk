@@ -192,7 +192,7 @@ export lwipport_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
 export lwipport_$(1)_BOARD_DEPENDENCY = no
 export lwipport_$(1)_CORE_DEPENDENCY = no
 lwipport_$(1)_PKG_LIST = lwipport_$(1)
-lwipport_$(1)_INCLUDE = $(PDK_LWIP_COMP_PATH)/lwip-port/$(1)/include
+lwipport_$(1)_INCLUDE = $(PDK_LWIP_COMP_PATH)/lwip-port/$(1)/include $(PDK_LWIP_COMP_PATH)/lwip-port/config/$(SOC) $(PDK_LWIP_COMP_PATH)/lwip-port/config
 export lwipport_$(1)_SOCLIST = $(drvlwip_SOCLIST)
 export lwipport_$(1)_$(SOC)_CORELIST = $(drvlwip_$(SOC)_CORELIST)
 ifeq ($(1),$(filter $(1), freertos))
