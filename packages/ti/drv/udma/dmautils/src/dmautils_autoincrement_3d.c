@@ -430,30 +430,31 @@ static void DmaUtilsAutoInc3d_getUtcInfo(uint32_t * pUtcId, uint32_t * pDru_loca
   uint32_t dru_local_event_start = DRU_LOCAL_EVENT_START_DEFAULT;
 
   uint8_t corePacNum = coreId + CSL_C7X_CPU_COREPACK_NUM_C7X1;
+  switch (corePacNum) {
   #ifdef SOC_J784S4
-  case CSL_C7X_CPU_COREPACK_NUM_C7X1:
-    utcId = UDMA_UTC_ID_C7X_MSMC_DRU4;
-    dru_local_event_start = DRU_LOCAL_EVENT_START_J784S4 + (96U * 0U); // TODO: Pick from CSL if possible
-    break;
-  case CSL_C7X_CPU_COREPACK_NUM_C7X2:
-    utcId = UDMA_UTC_ID_C7X_MSMC_DRU5;
-    dru_local_event_start = DRU_LOCAL_EVENT_START_J784S4 + (96U * 1U); // TODO: Pick from CSL if possible
-    break;
-  case CSL_C7X_CPU_COREPACK_NUM_C7X3:
-    utcId = UDMA_UTC_ID_C7X_MSMC_DRU6;
-    dru_local_event_start = DRU_LOCAL_EVENT_START_J784S4 + (96U * 2U); // TODO: Pick from CSL if possible
-    break;
-  case CSL_C7X_CPU_COREPACK_NUM_C7X4:
-    utcId = UDMA_UTC_ID_C7X_MSMC_DRU7;
-    dru_local_event_start = DRU_LOCAL_EVENT_START_J784S4 + (96U * 3U); // TODO: Pick from CSL if possible
-    break;
-  default:
-    break;
+    case CSL_C7X_CPU_COREPACK_NUM_C7X1:
+      utcId = UDMA_UTC_ID_C7X_MSMC_DRU4;
+      dru_local_event_start = DRU_LOCAL_EVENT_START_J784S4 + (96U * 0U); // TODO: Pick from CSL if possible
+      break;
+    case CSL_C7X_CPU_COREPACK_NUM_C7X2:
+      utcId = UDMA_UTC_ID_C7X_MSMC_DRU5;
+      dru_local_event_start = DRU_LOCAL_EVENT_START_J784S4 + (96U * 1U); // TODO: Pick from CSL if possible
+      break;
+    case CSL_C7X_CPU_COREPACK_NUM_C7X3:
+      utcId = UDMA_UTC_ID_C7X_MSMC_DRU6;
+      dru_local_event_start = DRU_LOCAL_EVENT_START_J784S4 + (96U * 2U); // TODO: Pick from CSL if possible
+      break;
+    case CSL_C7X_CPU_COREPACK_NUM_C7X4:
+      utcId = UDMA_UTC_ID_C7X_MSMC_DRU7;
+      dru_local_event_start = DRU_LOCAL_EVENT_START_J784S4 + (96U * 3U); // TODO: Pick from CSL if possible
+      break;
+    default:
+      break;
     #else
-  default: //J7ES and J721S2 will fall in this condition
-    utcId = UDMA_UTC_ID_MSMC_DRU0;
-    dru_local_event_start = DRU_LOCAL_EVENT_START_DEFAULT; // TODO: Pick from CSL if possible
-    break;
+    default: //J7ES and J721S2 will fall in this condition
+      utcId = UDMA_UTC_ID_MSMC_DRU0;
+      dru_local_event_start = DRU_LOCAL_EVENT_START_DEFAULT; // TODO: Pick from CSL if possible
+      break;
     #endif
   }
   if (pUtcId != NULL) {
@@ -956,50 +957,57 @@ void DmaUtilsAutoInc3d_wait(void * autoIncrementContext, int32_t channelId) {
 int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t channelId, const uint8_t * trMem, int32_t numTr)
 {
     int32_t retVal = (int32_t) DMAUTILS_SOK;
-  #ifndef DMA_UTILS_STANDALONE
     DmaUtilsAutoInc3d_Context * dmautilsContext;
+  #ifndef DMA_UTILS_STANDALONE    
     DmaUtilsAutoInc3d_ChannelContext * channelContext;
     Udma_ChHandle channelHandle;
-
   #endif
     uint32_t isRingBasedFlowReq = 0;
 
-    if (autoIncrementContext == NULL)
-     {
-       retVal = (int32_t) DMAUTILS_EBADARGS;
-       DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_configure : Failed :autoIncrementContext == NULL \n");
-     }
-     else if (trMem == NULL)
-      {
-        retVal = (int32_t) DMAUTILS_EBADARGS;
-        DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_configure : Failed : trMem == NULL \n");
-      }
+  if (autoIncrementContext == NULL)
+  {
+    retVal = (int32_t) DMAUTILS_EBADARGS;
+    DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_configure : Failed :autoIncrementContext == NULL \n");
+  }
+  else if (trMem == NULL)
+  {
+    retVal = (int32_t) DMAUTILS_EBADARGS;
+    DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_configure : Failed : trMem == NULL \n");
+  }
   else
   {
-    #ifndef DMA_UTILS_STANDALONE
-      dmautilsContext = (DmaUtilsAutoInc3d_Context * ) autoIncrementContext;
-      channelContext = dmautilsContext -> channelContext[channelId];
-      channelHandle = & channelContext -> chHandle;
+    dmautilsContext = (DmaUtilsAutoInc3d_Context * ) autoIncrementContext;
+    #ifndef DMA_UTILS_STANDALONE      
+    channelContext = dmautilsContext->channelContext[channelId];
+    channelHandle = & channelContext->chHandle;
     #endif
 
-    /* disable  The channel */
-    if (numTr > (int32_t) DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE)
+    if (dmautilsContext->blkIdx[channelId] != 0 )
     {
-      isRingBasedFlowReq = 1U;
+      retVal = (int32_t) DMAUTILS_EFAIL;
+      DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_deconfigure : Failed : All icnt's configured are not exhaused \n");
     }
-
-    if (isRingBasedFlowReq == 1U)
+    else
     {
-      #ifndef DMA_UTILS_STANDALONE
-        uint64_t pDesc = 0;
-        retVal = Udma_ringDequeueRaw(Udma_chGetCqRingHandle(channelHandle), & pDesc);
-      if (retVal != (int32_t)DMAUTILS_SOK )
+      /* disable  The channel */
+      if (numTr > (int32_t) DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE)
       {
-        DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_deconfigure : Failed : Udma_ringDequeueRaw\n");
-        retVal = (int32_t) DMAUTILS_EFAIL;
-
+        isRingBasedFlowReq = 1U;
       }
-      #endif
+
+      if (isRingBasedFlowReq == 1U)
+      {
+        #ifndef DMA_UTILS_STANDALONE
+          uint64_t pDesc = 0;
+          retVal = Udma_ringDequeueRaw(Udma_chGetCqRingHandle(channelHandle), & pDesc);
+        if (retVal != (int32_t)DMAUTILS_SOK )
+        {
+          DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_deconfigure : Failed : Udma_ringDequeueRaw\n");
+          retVal = (int32_t) DMAUTILS_EFAIL;
+
+        }
+        #endif
+      }
     }
   }
   return retVal;
@@ -1016,7 +1024,6 @@ int32_t DmaUtilsAutoInc3d_deinit(void * autoIncrementContext) {
   {
     retVal = (int32_t) DMAUTILS_EBADARGS;
     DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_configure : Failed :autoIncrementContext == NULL \n");
-
   }
   else
   {
