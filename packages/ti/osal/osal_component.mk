@@ -182,6 +182,18 @@ export OSAL_Baremetal_TestApp_BOARDLIST = $(libosal_BOARDLIST)
 export OSAL_Baremetal_TestApp_SBL_APPIMAGEGEN = yes
 osal_EXAMPLE_LIST += OSAL_Baremetal_TestApp
 
+#new baremetal testapp rules to cover the testcase coverage 
+export osal_baremetal_extd_testapp_COMP_LIST = osal_baremetal_extd_testapp
+osal_baremetal_extd_testapp_RELPATH = ti/osal/test/baremetal_extd
+osal_baremetal_extd_testapp_PATH = $(PDK_OSAL_COMP_PATH)/test/baremetal_extd
+export osal_baremetal_extd_testapp_BOARD_DEPENDENCY = yes
+export osal_baremetal_extd_testapp_CORE_DEPENDENCY = no
+osal_baremetal_extd_testapp_PKG_LIST = osal_baremetal_extd_testapp
+osal_baremetal_extd_testapp_INCLUDE = $(osal_baremetal_extd_testapp_PATH)
+export osal_baremetal_extd_testapp_BOARDLIST = $(libosal_BOARDLIST)
+export osal_baremetal_extd_testapp_SBL_APPIMAGEGEN = yes
+osal_EXAMPLE_LIST += osal_baremetal_extd_testapp
+
 define OSAL_TestApp_RULE
 
 export OSAL_TestApp_$(1)_COMP_LIST = OSAL_TestApp_$(1)
@@ -231,6 +243,33 @@ export osal_cache_test_multicore_BOARDLIST = $(libosal_BOARDLIST)
 export osal_cache_test_multicore_SBL_APPIMAGEGEN = no
 osal_EXAMPLE_LIST += osal_cache_test_multicore
 
+#added for new test cases to complete the test coverage
+define osal_extd_testapp_RULE
+
+export osal_extd_testapp_$(1)_COMP_LIST = osal_extd_testapp_$(1)
+export osal_extd_testapp_$(1)_PATH = $(PDK_OSAL_COMP_PATH)/test/rtos_extd
+export osal_extd_testapp_$(1)_RELPATH = ti/osal/test/rtos_extd
+export osal_extd_testapp_$(1)_BOARD_DEPENDENCY = yes
+export osal_extd_testapp_$(1)_CORE_DEPENDENCY = no
+export osal_extd_testapp_$(1)_MAKEFILE = -f makefile BUILD_OS_TYPE=$(1)
+export osal_extd_testapp_$(1)_PKG_LIST = osal_extd_testapp_$(1)
+export osal_extd_testapp_$(1)_INCLUDE = $(osal_extd_testapp_$(1)_PATH)
+export osal_extd_testapp_$(1)_BOARDLIST = $(filter $(DEFAULT_BOARDLIST_$(1)), $(libosal_$(1)_BOARDLIST))
+export osal_extd_testapp_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(libosal_$(SOC)_CORELIST))
+ifneq ($(1),$(filter $(1), safertos))
+osal_EXAMPLE_LIST += osal_extd_testapp_$(1)
+else
+ifneq ($(wildcard $(SAFERTOS_KERNEL_INSTALL_PATH)),)
+osal_EXAMPLE_LIST += osal_extd_testapp_$(1)
+endif
+endif
+export osal_extd_testapp_$(1)_SBL_APPIMAGEGEN = yes
+
+endef
+osal_extd_testapp_MACRO_LIST := $(foreach curos,$(libosal_RTOS_LIST) safertos,$(call osal_extd_testapp_RULE,$(curos)))
+
+$(eval ${osal_extd_testapp_MACRO_LIST})
+
 define osal_exception_testapp_RULE
 
 export osal_exception_testapp_$(1)_COMP_LIST = osal_exception_testapp_$(1)
@@ -260,6 +299,9 @@ ifeq ($(SOC),$(filter $(SOC), j721e))
  osal_cache_test_multicore_$(SOC)_CORELIST = mpu1_1
  OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
  OSAL_TestApp_safertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
+ osal_baremetal_extd_testapp_$(SOC)_CORELIST = mcu1_0 mcu2_0 mcu3_0
+ osal_extd_testapp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
+ osal_extd_testapp_safertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j7200))
@@ -267,6 +309,8 @@ ifeq ($(SOC),$(filter $(SOC), j7200))
  osal_baremetal_cache_test_$(SOC)_CORELIST = mcu2_0 mcu2_1
  osal_cache_test_multicore_$(SOC)_CORELIST = mpu1_1
  OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
+ osal_baremetal_extd_testapp_$(SOC)_CORELIST= mcu1_0 mcu2_0
+ osal_extd_testapp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j721s2))
@@ -275,6 +319,9 @@ ifeq ($(SOC),$(filter $(SOC), j721s2))
  osal_cache_test_multicore_$(SOC)_CORELIST = mpu1_1
  OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c7x_1 c7x_2
  OSAL_TestApp_safertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c7x_1 c7x_2
+ osal_baremetal_extd_testapp_$(SOC)_CORELIST = mcu1_0 mcu2_0 mcu3_0
+ osal_extd_testapp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c7x_1 c7x_2
+ osal_extd_testapp_safertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c7x_1 c7x_2
 endif
 
 ifeq ($(SOC),$(filter $(SOC), j784s4))
@@ -283,12 +330,17 @@ ifeq ($(SOC),$(filter $(SOC), j784s4))
  osal_cache_test_multicore_$(SOC)_CORELIST = mpu1_1
  OSAL_TestApp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4
  OSAL_TestApp_safertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4
+ osal_baremetal_extd_testapp_$(SOC)_CORELIST = mcu1_0 mcu2_0 mcu3_0 mcu4_0
+ osal_extd_testapp_freertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4
+ osal_extd_testapp_safertos_$(SOC)_CORELIST = mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4
 endif
 
 export OSAL_Baremetal_TestApp_$(SOC)_CORELIST
 export OSAL_freertos_TestApp_$(SOC)_CORELIST
 export osal_baremetal_cache_test_$(SOC)_CORELIST
 export osal_cache_test_multicore_$(SOC)_CORELIST
+export osal_baremetal_extd_testapp_$(SOC)_CORELIST
+export osal_extd_testapp_freertos_$(SOC)_CORELIST
 
 export osal_LIB_LIST
 export libosal_LIB_LIST
