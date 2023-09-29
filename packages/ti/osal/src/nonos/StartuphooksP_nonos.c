@@ -48,6 +48,7 @@
 
 #include <ti/osal/StartuphooksP.h>
 
+int _system_pre_init(void);
 __attribute__((section(".startupCode"))) int _system_pre_init(void)
 {
     extended_system_pre_init();
@@ -59,6 +60,7 @@ __attribute__((section(".startupCode"))) int _system_pre_init(void)
 /* the C/C++ auto-initialization function after cinit() and before pinit().  */
 /*                                                                           */
 /*****************************************************************************/
+void _system_post_cinit(void);
 __attribute__((section(".startupCode"))) void _system_post_cinit(void)
 {
     extended_system_post_cinit();
