@@ -52,8 +52,12 @@
 #include <ti/csl/soc.h>
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/csl/hw_types.h>
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
+#include <ti/csl/cslr_pvu.h>
+#endif
 #include <ti/drv/sciclient/examples/common/sciclient_appCommon.h>
 
+#include <ti/board/board.h>
 #include <ti/drv/sciclient/examples/sciclient_unit_testapp/sciclient_ut_tests.h>
 #if defined(ENABLE_FW_NOTIFICATION)
 #include <ti/drv/sciclient/examples/sciclient_unit_testapp/sciclient_fw_notify.h>
@@ -82,6 +86,7 @@
 /* ========================================================================== */
 /*                 Internal Function Declarations                             */
 /* ========================================================================== */
+
 void mainTask(void* arg0, void* arg1);
 static int32_t App_getRevisionTestPol(void);
 static int32_t App_getRevisionTestIntr(void);
@@ -97,6 +102,10 @@ static int32_t App_tifs2dmMsgForwardingTest(void);
 #endif
 #if defined(ENABLE_FW_NOTIFICATION)
 static int32_t App_fwExcpNotificationTest(void);
+#endif
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
+static int32_t App_pvu2R5IntrTest(void);
+static void App_pvu2R5IntrTestIsr(void);
 #endif
 
 /* ========================================================================== */
@@ -115,6 +124,9 @@ static uint8_t  gAppTskStackMain[32*1024] __attribute__((aligned(8192)));
  * - AND stack assigned for task context is "size - 8KB"
  *       - 8KB chunk for the stack area is used for interrupt handling in this task context
  */
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
+static volatile int32_t gAppIsrExecNum=0;
+#endif
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -196,6 +208,11 @@ int32_t App_sciclientTestMain(App_sciclientTestParams_t *testParams)
 #if defined(ENABLE_FW_NOTIFICATION)
         case 7:
             testParams->testResult = App_fwExcpNotificationTest();
+            break;
+#endif
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
+        case 8:
+            testParams->testResult = App_pvu2R5IntrTest();
             break;
 #endif
         default:
@@ -821,6 +838,160 @@ static int32_t App_fwExcpNotificationTest(void)
 }
 #endif
 
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
+static void App_pvu2R5IntrTestIsr(void)
+{
+    gAppIsrExecNum++;
+
+    /* Clear the PVU interrupt by writing 1 to pend clear register */
+    CSL_REG32_WR(CSL_NAVSS0_IO_PVU0_CFG_MMRS_BASE+CSL_PVU_EXCEPTION_PEND_CLEAR, 1);
+
+    /* Disable the PVU interrupt by writing 1 to enable clear register */
+    CSL_REG32_WR(CSL_NAVSS0_IO_PVU0_CFG_MMRS_BASE+CSL_PVU_EXCEPTION_ENABLE_CLEAR, 1);
+}
+
+static int32_t App_pvu2R5IntrTest(void)
+{
+    int32_t status = CSL_PASS;
+    uint16_t intNum=0;
+    struct tisci_msg_rm_irq_set_req     rmIrqReq;
+    struct tisci_msg_rm_irq_set_resp    rmIrqResp;
+    struct tisci_msg_rm_get_resource_range_resp res;
+    struct tisci_msg_rm_get_resource_range_req  req;
+    struct tisci_msg_rm_irq_release_req rmIrqReqRel;
+    memset(&res, 0, sizeof(res));
+    memset(&req, 0, sizeof(req));
+    memset(&rmIrqReqRel,0,sizeof(rmIrqReqRel));
+
+    App_sciclientPrintf("PVU to Main R5 Interrupt Test\n");
+
+    /* Enable the PVU interrupt by writing 1 to enable set register */
+    CSL_REG32_WR(CSL_NAVSS0_IO_PVU0_CFG_MMRS_BASE+CSL_PVU_EXCEPTION_ENABLE_SET, 1);
+
+    req.type = TISCI_DEV_NAVSS0_INTR_0;
+    req.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+
+    status  = Sciclient_rmGetResourceRange(&req,
+                                           &res,
+                                           SCICLIENT_SERVICE_WAIT_FOREVER);
+    App_sciclientPrintf("Sciclient_rmGetResourceRange() execution is successful\n");
+    
+    if(status == CSL_PASS)
+    {
+        status = Sciclient_rmIrqTranslateIrOutput(req.type,
+                                                  res.range_start,
+                                                  TISCI_DEV_R5FSS0_CORE0,
+                                                  &intNum);
+        if(status == CSL_PASS)
+        {
+            App_sciclientPrintf("Sciclient_rmIrqTranslateIrOutput() execution is successful and host interrupt number is %d\n", intNum);
+
+            memset(&rmIrqReq, 0, sizeof(rmIrqReq));
+            rmIrqReq.valid_params   = TISCI_MSG_VALUE_RM_DST_ID_VALID;
+            rmIrqReq.valid_params  |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+            rmIrqReq.src_id         = TISCI_DEV_NAVSS0_PVU_0;
+            rmIrqReq.src_index      = 0;
+            rmIrqReq.dst_id         = TISCI_DEV_R5FSS0_CORE0;
+            rmIrqReq.dst_host_irq   = intNum;
+            rmIrqReq.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+
+            status                    = Sciclient_rmIrqSet(&rmIrqReq,
+                                                           &rmIrqResp,
+                                                           SCICLIENT_SERVICE_WAIT_FOREVER);
+            if(status == CSL_PASS)
+            {
+                App_sciclientPrintf("Sciclient_rmIrqSet() execution is successful\n");
+            }
+            else
+            {
+                App_sciclientPrintf("Sciclient_rmIrqSet() has failed\n");
+            }
+        }
+        else
+        {
+            App_sciclientPrintf("Sciclient_rmIrqTranslateIrOutput() has failed\n");
+        }
+    }
+    else
+    {
+        App_sciclientPrintf("Sciclient_rmGetResourceRange() has failed\n");
+    }
+
+    /* Generates an interrupt from PVU and checks if the registered ISR is hit.
+     * This helps in checking the correctness of PVU to R5 interrupt routing. */
+    if(status == CSL_PASS)
+    {
+        OsalRegisterIntrParams_t intrPrmsCmbnIntr;
+        HwiP_Handle hwiPHandleCmbnIntr;
+
+        Osal_RegisterInterrupt_initParams(&intrPrmsCmbnIntr);
+        intrPrmsCmbnIntr.corepacConfig.isrRoutine       = (void*)App_pvu2R5IntrTestIsr;
+        intrPrmsCmbnIntr.corepacConfig.corepacEventNum  = 0;
+        intrPrmsCmbnIntr.corepacConfig.intVecNum        = rmIrqReq.dst_host_irq;
+        status = Osal_RegisterInterrupt(&intrPrmsCmbnIntr, &hwiPHandleCmbnIntr);
+        App_sciclientPrintf("The status of registering the interrupt is %d\n", status);
+
+        /* Generate the PVU interrupt by writing 1 to pend set register */
+        CSL_REG32_WR(CSL_NAVSS0_IO_PVU0_CFG_MMRS_BASE+CSL_PVU_EXCEPTION_PEND_SET, 1);
+        if(gAppIsrExecNum == 1)
+        {
+            App_sciclientPrintf("PVU to Main R5 interrupt route is properly set\n");
+            status = CSL_PASS;
+        }
+        else
+        {
+            App_sciclientPrintf("PVU to Main R5 interrupt route is not properly set\n");
+            status = CSL_EFAIL;
+        }
+    }
+
+    App_sciclientPrintf("\nDeleting PVU to Main R5 Interrupt Route\n");
+
+    /* Enable the PVU interrupt by writing 1 to enable set register */
+    CSL_REG32_WR(CSL_NAVSS0_IO_PVU0_CFG_MMRS_BASE+CSL_PVU_EXCEPTION_ENABLE_SET, 1);
+    
+    rmIrqReqRel.valid_params   = TISCI_MSG_VALUE_RM_DST_ID_VALID;
+    rmIrqReqRel.valid_params  |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+    rmIrqReqRel.src_id         = TISCI_DEV_NAVSS0_PVU_0;
+    rmIrqReqRel.src_index      = 0;
+    rmIrqReqRel.dst_id         = TISCI_DEV_R5FSS0_CORE0;
+    rmIrqReqRel.dst_host_irq   = intNum;
+    rmIrqReqRel.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+    gAppIsrExecNum = 0;
+
+    status = Sciclient_rmIrqRelease(&rmIrqReqRel, SCICLIENT_SERVICE_WAIT_FOREVER);
+    if(status == CSL_PASS)
+    {
+        App_sciclientPrintf("Sciclient_rmIrqRelease() execution is successful\n");
+    }
+    else
+    {
+        App_sciclientPrintf("Sciclient_rmIrqRelease() has failed\n");
+    }
+
+    /* Generate the PVU interrupt by writing 1 to pend set register */
+    CSL_REG32_WR(CSL_NAVSS0_IO_PVU0_CFG_MMRS_BASE+CSL_PVU_EXCEPTION_PEND_SET, 1);
+    if(gAppIsrExecNum == 1)
+    {
+        App_sciclientPrintf("PVU to Main R5 interrupt route deletion is not successful\n");
+        status = CSL_EFAIL;
+    }
+    else
+    {
+        App_sciclientPrintf("PVU to Main R5 interrupt route deletion is successful\n");
+        status = CSL_PASS;
+    }
+
+    /* Clear the PVU interrupt by writing 1 to pend clear register */
+    CSL_REG32_WR(CSL_NAVSS0_IO_PVU0_CFG_MMRS_BASE+CSL_PVU_EXCEPTION_PEND_CLEAR, 1);
+
+    /* Disable the PVU interrupt by writing 1 to enable clear register */
+    CSL_REG32_WR(CSL_NAVSS0_IO_PVU0_CFG_MMRS_BASE+CSL_PVU_EXCEPTION_ENABLE_CLEAR, 1);
+        
+    return status;
+}
+#endif
+
 #if defined(BUILD_MPU) || defined (BUILD_C7X)
 extern void Osal_initMmuDefault(void);
 void InitMmu(void)
@@ -828,6 +999,3 @@ void InitMmu(void)
     Osal_initMmuDefault();
 }
 #endif
-
-
-

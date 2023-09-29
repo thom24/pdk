@@ -347,6 +347,46 @@ App_sciclientTestParams_t gSciclientTestcaseParams[] =
 
         /** testType **/
         (APP_SCICLIENT_TEST_TYPE_SANITY)
+    },
+#endif
+#if defined (SOC_J721S2) || defined (SOC_J784S4)
+    {
+        /** enableTest **/
+        TEST_ENABLE,
+
+        /** testCaseId **/
+        8U,
+
+        /** *reqId **/
+        "PDK-13207",
+
+        /** *testCaseName **/
+        "PVU to Main R5 Interrupt Route Testing",
+
+        /** *userInfo **/
+        "None",
+
+        /** *disableReason **/
+        "None",
+
+        /** *passFailCriteria **/
+        "Sciclient programs the interrupt route between PVU and R5F core in the Main domain\
+        and also tests if the R5F core is executing the registered ISR on generating the\
+        interrupt from PVU. It also deletes the set interrupt route between PVU and Main R5F\
+        core and tests if the R5F core is still executing the registered ISR on generating\
+        the interrupt from PVU.",
+
+        /** cpuID **/
+        APP_SCICLIENT_R5F,
+
+        /** sciclientConfigParams **/
+        {},
+
+        /** printEnable **/
+        PRINT_ENABLE,
+
+        /** testType **/
+        (APP_SCICLIENT_TEST_TYPE_SANITY)
     }
 #endif
 };
