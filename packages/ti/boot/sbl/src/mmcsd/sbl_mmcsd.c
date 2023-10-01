@@ -49,6 +49,7 @@
 #include <ti/drv/mmcsd/soc/MMCSD_soc.h>
 #include <ti/drv/mmcsd/src/MMCSD_osal.h>
 #include <ti/boot/sbl/soc/k3/sbl_soc_cfg.h>
+#include <ti/osal/CacheP.h>
 
 /* SBL Header files. */
 #include "sbl_rprc_parse.h"
@@ -100,6 +101,15 @@ static uint32_t SBL_getWkupCtrlDevStat(void);
 static uint32_t SBL_getMainCtrlDevStat(void);
 
 int32_t SBL_loadMMCSDBootFile(FIL * fp);
+
+/**
+ * \brief    SBL_LazyBootGetAppname function to get the name of 'app'
+ *           to be booted. In lazy boot, SBL may not boot 'app' and
+ *           boot 'appX' instead.
+ *
+ * \return   none
+ */
+static void SBL_LazyBootGetAppname(TCHAR fileName[16]);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -186,6 +196,14 @@ const FATFS_Config FATFS_config[_VOLUMES + 1] = {
 #define SBL_MAIN_DEVSTAT_BACKUP_BOOT_MMCSD      (0xAU)
 #define SBL_MAIN_DEVSTAT_PRIMARY_BOOT_B_MASK    (0x1U)
 #endif
+/* Below macros are used by SBL Lazy Boot */
+#define SBL_MMCSD_BLOCK_SIZE       (512U)
+#define SBL_META_BUFF_LEN          (SBL_MMCSD_BLOCK_SIZE)
+#define SBL_META_BUFF_ALIGN        (256U)
+#define ASCII_FOR_ZERO             (48U)
+#define SBL_NUM_DIGITS_IN_METAFILE (4U)
+
+__attribute((aligned(SBL_META_BUFF_ALIGN))) uint8_t metabuf[SBL_META_BUFF_LEN];
 
 #ifdef BUILD_MCU
 int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
@@ -300,10 +318,86 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 }
 #endif
 
+static void SBL_LazyBootGetAppname(TCHAR fileName[16])
+{
+    const TCHAR *metafilename = "0:/metafile";
+    uint32_t appId = 0, nextAppId=1, maxAppId=0, appInd=0, numStarted=0, metaBuffInd;
+    FIL     metaFilefp;
+    FRESULT  metaFresult;
+    uint32_t writtenSize=0, readBytes=0;
+
+    /* Try to open the metafile. 
+     * 'metafile' is used by MMCSD SBL to boot application in Lazy Boot fashion.
+     * Please refer the SBL documentation to understand the contents of the 'metafile'.
+     */
+    metaFresult = f_open(&metaFilefp, metafilename, ((BYTE)FA_READ));
+    /* If opening metafile fails, continue to normal boot. */
+    if(FR_OK == metaFresult)
+    {
+        /* If metafile read fails, then continue to boot the normal 'app' */
+        if (FR_OK != f_read(&metaFilefp, &metabuf[0], SBL_META_BUFF_LEN, &readBytes))
+        {
+            SBL_log(SBL_LOG_MAX, "\n Meta file read failed... Continuing the boot. \n");
+        }
+        else
+        {
+            /* Close the 'metafile' in the read mode., and open it in the
+             * write mode to write the index of the next 'appN'.
+             */
+            f_close(&metaFilefp);
+            metaFresult = f_open(&metaFilefp, metafilename, ((BYTE)FA_WRITE));
+
+            CacheP_Inv(metabuf , 4U);
+            /* Max supported appId is 9999.
+             * 'metafile' is ASCII encoded, containing decimal digits. Number formed with the first 4 digits
+             * denote the appId to boot and the number formed with the next 4 digits denote the maxAppId
+             * present in the SD card.
+             */
+            appId = (metabuf[0] - ASCII_FOR_ZERO)*1000 + (metabuf[1] - ASCII_FOR_ZERO)*100 + \
+                    (metabuf[2] - ASCII_FOR_ZERO)*10 + (metabuf[3] - ASCII_FOR_ZERO);
+            maxAppId = (metabuf[4] - ASCII_FOR_ZERO)*1000 + (metabuf[5] - ASCII_FOR_ZERO)*100 + \
+                    (metabuf[6] - ASCII_FOR_ZERO)*10 + (metabuf[7] - ASCII_FOR_ZERO);
+            while(fileName[appInd] != '\0')
+            {
+                appInd++;
+            }
+            /* Do not prepend 0s to appname, if these are leading 0s. */
+            for(metaBuffInd = 0; metaBuffInd < SBL_NUM_DIGITS_IN_METAFILE; metaBuffInd++)
+            {
+                if (numStarted || (metabuf[metaBuffInd] - ASCII_FOR_ZERO) != 0)
+                {
+                    fileName[appInd++] = metabuf[metaBuffInd];
+                    numStarted = 1;
+                }
+            }
+            fileName[appInd]   = '\0';
+
+            nextAppId = appId+1;
+            /* If the nextAppId overflows maxAppId, restore the nextAppId to 1. */
+            if (nextAppId > maxAppId)
+            {
+                nextAppId = 1U;
+            }
+            /* Store the appId of the next application to boot back into the SD card. */
+            metabuf[0] = (nextAppId/1000) + ASCII_FOR_ZERO;
+            nextAppId %= 1000;
+            metabuf[1] = (nextAppId/100) + ASCII_FOR_ZERO;
+            nextAppId %= 100;
+            metabuf[2] = (nextAppId/10) + ASCII_FOR_ZERO;
+            nextAppId %= 10;
+            metabuf[3] = (nextAppId) + ASCII_FOR_ZERO;
+
+            CacheP_wb(metabuf, 4U);
+            f_write(&metaFilefp, &metabuf[0], SBL_META_BUFF_LEN, &writtenSize);
+        }
+    }
+
+}
+
 int32_t SBL_MMCBootImage(sblEntryPoint_t *pEntry)
 {
     int32_t retVal = E_PASS;
-    const TCHAR *fileName = "0:/app";
+    TCHAR fileName[16] = "0:/app";
     FIL     fp;
     memset(&fp, 0, sizeof(fp));
     FRESULT  fresult;
@@ -313,6 +407,11 @@ int32_t SBL_MMCBootImage(sblEntryPoint_t *pEntry)
 
     /* MMCSD FATFS initialization */
     FATFS_open(0U, NULL, &sbl_fatfsHandle);
+
+    /* If this is a Lazy Boot, then SBL_LazyBootGetAppname will change the 'fileName'
+     * to the name of the app that needs to be booted. 'fileName' remains unchanged otherwise.
+     */
+    SBL_LazyBootGetAppname(fileName);
 
     fresult = f_open(&fp, fileName, ((BYTE)FA_READ));
     if (fresult != FR_OK)
