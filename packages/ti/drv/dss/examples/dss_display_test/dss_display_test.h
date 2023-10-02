@@ -76,6 +76,7 @@ extern "C" {
 #define DISP_APP_BGR565                   (11U)
 #define DISP_APP_BGRA32                   (12U)
 #define DISP_APP_YUV2_2                   (13U)
+#define DISP_APP_YUV422_SP                (14U)
 
 /* Test Params to be used. Possible values:
  * 1U: Test VID1 and VIDL1
@@ -642,6 +643,88 @@ static const DispApp_TestParams gDispAppTestParams=
     /* Data format */
     {
         FVID2_DF_YUV420SP_UV
+    },
+    /* Input buffer width */
+    {
+        1920U
+    },
+    /* Input buffer height */
+    {
+        1080U
+    },
+    /* Pitch */
+    {
+        {
+            1920U, 1920U, 0U, 0U, 0U, 0U
+        }
+    },
+    /* Scan format */
+    {
+        FVID2_SF_PROGRESSIVE
+    },
+    /* Output buffer width */
+    {
+        DISP_APP_LCD_WIDTH
+    },
+    /* Output buffer height */
+    {
+        DISP_APP_LCD_HEIGHT
+    },
+    /* Scaler enable */
+    {
+        TRUE
+    },
+    /* Global Alpha */
+    {
+        0xFFU
+    },
+    /* Pre-multiply alpha */
+    {
+        FALSE
+    },
+    /* X Position */
+    {
+        0U
+    },
+    /* Y position */
+    {
+        0U
+    },
+    /* Invalid Pipe Id */
+    {
+        CSL_DSS_VID_PIPE_ID_VIDL1,
+#if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
+        CSL_DSS_VID_PIPE_ID_VID2,
+        CSL_DSS_VID_PIPE_ID_VIDL2
+#endif
+    }
+};
+#elif (DISP_APP_YUV422_SP == DISP_APP_USE_TEST_PARAMS)
+static const DispApp_TestParams gDispAppTestParams=
+{
+    /* Number of Pipes */
+    1U,
+    /* bpp, not used in this case */
+    2U,
+    /* Instance Id */
+    {
+        DSS_DISP_INST_VID1
+    },
+    /* Pipe Id */
+    {
+        CSL_DSS_VID_PIPE_ID_VID1
+    },
+    /* Pipe Node Id */
+    {
+        DSS_DCTRL_NODE_VID1
+    },
+    /* Pipe Type */
+    {
+        CSL_DSS_VID_PIPE_TYPE_VID
+    },
+    /* Data format */
+    {
+        FVID2_DF_YUV422SP_UV
     },
     /* Input buffer width */
     {

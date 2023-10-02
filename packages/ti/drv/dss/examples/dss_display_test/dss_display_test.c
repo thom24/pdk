@@ -774,6 +774,17 @@ static int32_t DispApp_allocAndQueueFrames(const DispApp_Obj *appObj,
     {
         scanf("%c", &uartInput);
     } while ('1' != uartInput);
+#elif (1U == DISP_APP_YUV422_SP)
+    uint32_t height=1080U, width=1920U;
+    char uartInput = '0';
+    App_print("Load Image using loadRaw command and then press '1'\n");
+    App_print("Command is:\n");
+    App_print("loadRaw(0x82000000, 0, \"C:\\\\yuv422_sp.tigf.tigf\", 32, false);\n");
+    do
+    {
+        scanf("%c", &uartInput);
+    } while ('1' != uartInput);
+#endif
 #else
     uint32_t height=1080U, width=1920U;
     char uartInput = '0';
@@ -820,6 +831,14 @@ static int32_t DispApp_allocAndQueueFrames(const DispApp_Obj *appObj,
                 CSL_REG32_WR(temp_addr + 4*j, 0x08000800U);
             }
         #endif
+    #elif(DISP_APP_YUV422_SP == DISP_APP_USE_TEST_PARAMS)
+        frm[frmId].addr[0U] =
+                        (uint64_t)(DISP_APP_DDR_LOAD_ADDRESS +
+                                   frmId*(2*height*width));
+        frm[frmId].addr[1U] =
+                        (uint64_t)(DISP_APP_DDR_LOAD_ADDRESS +
+                                   frmId*(2*height*width) +
+                                   height*width);
     #else
         frm[frmId].addr[0U] =
                          (uint64_t)(DISP_APP_DDR_LOAD_ADDRESS +
