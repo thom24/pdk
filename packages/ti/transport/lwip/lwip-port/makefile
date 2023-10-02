@@ -21,7 +21,9 @@ else ifeq ($(BUILD_OS_TYPE),safertos)
   ENET_CFLAGS += -DSAFERTOS
 endif
 
-ENET_CFLAGS += -mthumb -O3
+ifeq ($(BUILD_PROFILE_$(CORE)),release)
+  ENET_CFLAGS += -O3
+endif
 
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component

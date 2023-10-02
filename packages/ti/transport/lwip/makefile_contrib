@@ -55,7 +55,7 @@ else ifeq ($(BUILD_OS_TYPE),safertos)
 endif
 
 ifeq ($(BUILD_PROFILE_$(CORE)),release)
-  LWIP_CONTRIB_CFLAGS += -mthumb -O3
+  LWIP_CONTRIB_CFLAGS += -O3
 endif
 
 # List all the external components/interfaces, whose interface header files
