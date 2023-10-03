@@ -561,7 +561,6 @@ static void Mcasp_udmaIsrHandler(Udma_EventHandle eventHandle,
    Mcasp_Object         *instHandle = (Mcasp_Object *)chanHandle->devHandle;
    uint64_t            pDesc = 0;
    CSL_UdmapTdResponse tdResp;
-   uint32_t            num_descs=0;
    int32_t status;
 
     Udma_ChHandle udmaChanHandle;
@@ -631,7 +630,6 @@ static void Mcasp_udmaIsrHandler(Udma_EventHandle eventHandle,
 
      if ((UDMA_SOK == status) && (eventType == UDMA_EVENT_TYPE_DMA_COMPLETION))
      {
-         num_descs++;
          Mcasp_commonDmaCallback(chanHandle, status);
      }
    } while(status==UDMA_SOK);  
