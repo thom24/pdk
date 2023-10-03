@@ -784,7 +784,6 @@ static int32_t DispApp_allocAndQueueFrames(const DispApp_Obj *appObj,
     {
         scanf("%c", &uartInput);
     } while ('1' != uartInput);
-#endif
 #else
     uint32_t height=1080U, width=1920U;
     char uartInput = '0';
