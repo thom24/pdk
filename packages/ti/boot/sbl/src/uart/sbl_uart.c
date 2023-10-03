@@ -65,6 +65,7 @@
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/board/board_cfg.h>
 #include "sbl_uart.h"
+#include <ti/osal/CacheP.h>
 
 /**********************************************************************
  ************************** Internal functions ************************
@@ -109,6 +110,9 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
 #endif
 
     SBL_uartXmodemRead((uint8_t *)(*pBuffer), SBL_SYSFW_MAX_SIZE);
+    /* SBL_uartXmodemRead() API does CPU copy of tifs received via UART to OCMC memory,
+       Hence write back the R5 cache to OCMC memory, so that M3/M4 can read the latest contents */
+    CacheP_wb((uint8_t *)(*pBuffer), SBL_SYSFW_MAX_SIZE);
 
     return CSL_PASS;
 }
