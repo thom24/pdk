@@ -106,7 +106,7 @@ endif
 
 VALIDATOR_JSON := $(ROOTDIR)/ti/drv/sciclient/soc/sysfw/binaries/scripts/sysfw_boardcfg_rules.json
 VALIDATOR_SCRIPT := $(ROOTDIR)/ti/drv/sciclient/soc/sysfw/binaries/scripts/sysfw_boardcfg_validator.py
-COMBINE_SCRIPT := $(ROOTDIR)/ti/drv/sciclient/soc/sysfw/binaries/scripts/sysfw_boardcfg_blob_creator.py
+COMBINE_SCRIPT := $(ROOTDIR)/ti/drv/sciclient/tools/sysfw_boardcfg_blob_creator.py
 
 HS_SUFFIX=
 ifeq ($(BUILD_HS),yes)
