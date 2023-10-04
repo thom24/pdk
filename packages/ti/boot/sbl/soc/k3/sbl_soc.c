@@ -380,6 +380,9 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
             fp_readData(scratch_mem_ptr, *img_handle, img_len);
             fp_seek(*img_handle, *ImageOffsetPtr);
 
+            /* Above API fp_readData() does CPU copy of appimage to SBL scratch memory, Hence write back
+            the R5 cache to OCMC memory, so that M3/M4 can read the latest contents */
+            CacheP_wb(scratch_mem_ptr, img_len);
             /* Request DMSC to authenticate the image */
             authReq.certificate_address_hi = 0;
             authReq.certificate_address_lo = cert_load_addr;
@@ -456,6 +459,10 @@ int32_t SBL_loadAndAuthHsmBinary()
 #elif defined(BOOT_UART)
     retVal = SBL_uartCopyHsmImage(sblScratchMem, SBL_HSM_IMG_MAX_SIZE);
 #endif
+    /* SBL_<boot_mode>CopyHsmImage() API does CPU copy of tifs to OCMC memory, Hence write back
+    the R5 cache to OCMC memory, so that M3/M4 can read the latest contents */
+    CacheP_wb(sblScratchMem, SBL_HSM_IMG_MAX_SIZE);
+
     if(retVal != CSL_PASS)
     {
         if (retVal == SBL_HSM_IMG_NOT_FOUND)

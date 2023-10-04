@@ -388,6 +388,10 @@ void SBL_SciClientInit(uint32_t devGroup)
 
     void *sysfw_ptr = gSciclient_firmware;
     status = SBL_ReadSysfwImage(&sysfw_ptr, SBL_SYSFW_MAX_SIZE);
+    /* SBL_ReadSysfwImage() API does CPU copy of tifs to OCMC memory, Hence write back
+    the R5 cache to OCMC memory, so that M3/M4 can read the latest contents */
+    CacheP_wb(sysfw_ptr, SBL_SYSFW_MAX_SIZE);
+
     if (status != CSL_PASS)
     {
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
