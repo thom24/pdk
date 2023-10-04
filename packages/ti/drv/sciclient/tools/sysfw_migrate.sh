@@ -45,7 +45,7 @@ export CAT=cat
 ################################################################################
 # Parse CLI arguments
 RELEASE_TAG=$1
-SOC_LIST=$2
+SOC_LIST="j721e j7200 j721s2 j784s4"
 for i in "$@"; do
 case $i in
     -sr|--skip-reset) # Skips the PDK reset and rebase step
@@ -56,7 +56,7 @@ case $i in
         SKIP_CHECKOUT=YES
         shift
         ;;
-    -sb|--skip-build) # Skips the sciclient_ccs_init build step
+    -sb|--skip-build) # Skips the sciclient binaries build step
         SKIP_BUILD=YES
         shift
         ;;
@@ -72,6 +72,40 @@ case $i in
         SKIP_TEST_REPORT=YES
         shift
         ;;
+    --soc=*) #List of SOC's
+        if [ "${i#*=}" != "" ]; then
+            SOC_LIST="${i#*=}"
+        fi
+        shift
+        ;;
+    -gf|--generate-firmwares) # generate DM and ipc firmwares
+        GEN_DM_IPC=YES
+        shift
+        ;;
+    -gl|--generate-lpr) # generate firmware patches for LPR
+        GEN_LPR_PATCH=YES
+        shift
+        ;;
+    -h|--help)
+        $ECHO "Usage : sysfw_migrate.sh <release tag> [OPTIONS]"
+        $ECHO
+        $ECHO "OPTIONS:-"
+        $ECHO " -sr or --skip-reset           : Skips the PDK reset and rebase step"
+        $ECHO " -sk or --skip-checkout        : Skips the SYSFW checkout step"
+        $ECHO " -sb or --skip-build           : Skips the sciclient binaries build step"
+        $ECHO " -sg or --skip-gen             : Skips the firmwareHeaderGen.sh step"
+        $ECHO " -sc or --skip-commit          : Skips the PDK commit step"
+        $ECHO " -gf or --generate-firmwares   : Generate DM and ipc firmwares"
+        $ECHO " -gl or --generate-lpr         : Generate firmware patches for LPR"
+        $ECHO " --soc=\"\<soc_list\>\" : List of SOCs. Default will be all supported SOCs"
+        $ECHO "     Supported SOCs:-"
+        $ECHO "     - j721e"
+        $ECHO "     - j7200"
+        $ECHO "     - j721s2"
+        $ECHO "     - j784s4"
+        $ECHO "    For example, --soc=\"j721e\" or  --soc=\"j721e j7200\""
+        exit 0
+        ;;
     -*) # Invalid flag
         $ECHO "!!!WARNING!!! - IGNORING INVALID FLAG: $1"
         shift
@@ -85,16 +119,14 @@ if [ "$RELEASE_TAG" == "" ]; then
     exit 1
 fi
 
-if [ "$SOC_LIST" == "" ]; then
-    SOC_LIST="j721e j7200 j721s2 j784s4"
-fi
-
 ################################################################################
 # Specify paths relative to script
 export SCRIPT_DIR=$(cd "$( dirname "${BASH_SOURCE[0]}")" && pwd )
 export SCI_CLIENT_DIR=$(cd "$SCRIPT_DIR/.." && pwd )
 export ROOTDIR=$(cd "$SCI_CLIENT_DIR/../../.." && pwd )
 export PDK_DIR=$(cd "$ROOTDIR/.." && pwd )
+
+$ECHO " Starting TIFS Migration for $SOC_LIST "
 
 ################################################################################
 # Checkout SYSFW release and prepare it for use with PDK
@@ -283,8 +315,116 @@ if [ "$SKIP_COMMIT" != "YES" ]; then
         esac
     done
 
-    git commit -m "Migrating to SYSFW version $RELEASE_TAG"
+    git commit -s -m "Migrating to TIFS version $RELEASE_TAG"
 fi
 
+
+################################################################################
+# Generate DM and IPC firmwares
+if [ "$GEN_DM_IPC" == "YES" ]; then
+    $ECHO "Generating DM and IPC firmwares"
+
+    ipc_corelist_j721e_evm="mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1"
+    ipc_corelist_j7200_evm="mcu1_1 mcu2_0 mcu2_1"
+    ipc_corelist_j721s2_evm="mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c7x_1 c7x_2"
+    ipc_corelist_j784s4_evm="mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4"
+
+    cd $ROOTDIR/ti/build
+    mkdir -p $ROOTDIR/ti/binary/firmware/{ti-dm,ti-sysfw,ti-ipc}
+
+    DMF_DIR=$ROOTDIR/ti/binary/firmware/ti-dm
+    SYSFWF_DIR=$ROOTDIR/ti/binary/firmware/ti-sysfw
+    IPCF_DIR=$ROOTDIR/ti/binary/firmware/ti-ipc
+
+    cp $SCI_CLIENT_DIR/soc/sysfw/binaries/ti-fs*j7*gp.bin   ${SYSFWF_DIR}/
+    cp $SCI_CLIENT_DIR/soc/sysfw/binaries/ti-fs*j7*cert.bin ${SYSFWF_DIR}/
+    cp $SCI_CLIENT_DIR/soc/sysfw/binaries/ti-fs*j7*enc.bin  ${SYSFWF_DIR}/
+
+    for SOC in $SOC_LIST
+    do
+        mkdir -p ${DMF_DIR}/${SOC}
+        mkdir -p ${IPCF_DIR}/${SOC}
+
+        make ipc_echo_testb_freertos -sj8 CORE=mcu1_0 BOARD=${SOC}_evm;
+        cp $ROOTDIR/ti/binary/ipc_echo_testb_freertos/bin/${SOC}_evm/ipc_echo_testb_freertos_mcu1_0_release_strip.xer5f  \
+            ${DMF_DIR}/${SOC}/ipc_echo_testb_mcu1_0_release_strip.xer5f
+
+        corelist="ipc_corelist_${SOC}_evm"
+        for core in ${!corelist}
+        do
+            case ${core} in
+                mcu*)
+                    ext=xer5f
+                    shift
+                    ;;
+                c66x*)
+                    ext=xe66
+                    shift
+                    ;;
+                c7x*)
+                    ext=xe71
+                    shift
+                    ;;
+            esac
+            make ipc_echo_test_freertos -sj8 CORE=${core} BOARD=${SOC}_evm;
+            cp $ROOTDIR/ti/binary/ipc_echo_test_freertos/bin/${SOC}_evm/ipc_echo_test_freertos_${core}_release_strip.${ext}  \
+            ${IPCF_DIR}/${SOC}/ipc_echo_test_${core}_release_strip.${ext}
+        done
+    done
+    #There is only one common tifs.bin for all gp device for a device. Remove other tifs.bin for gp devices.
+    cd $SYSFWF_DIR
+    rm -rf ti-fs*j7*sr*gp.bin
+fi
+
+################################################################################
+# Generate DM and IPC firmwares
+if [ "$GEN_LPR_PATCH" == "YES" ]; then
+    $ECHO "Generating LPR Patch"
+
+    DMF_DIR=$ROOTDIR/ti/binary/firmware/ti-dm
+    SYSFWF_DIR=$ROOTDIR/ti/binary/firmware/ti-sysfw
+    IPCF_DIR=$ROOTDIR/ti/binary/firmware/ti-ipc
+
+    cd $ROOTDIR/ti/binary/firmware/
+
+    echo "" >> sysfw_commit_msg.txt
+    echo "Update the System Firmware binaries to $RELEASE_TAG for Jacinto devices. " >> sysfw_commit_msg.txt
+    echo "" >> sysfw_commit_msg.txt
+    echo " < Add release highlights here >" >> sysfw_commit_msg.txt
+    echo "" >> sysfw_commit_msg.txt
+    echo "MD5 Checksums: " >> sysfw_commit_msg.txt
+
+    for files in ti-sysfw/*;
+    do
+        md5sum $files >> sysfw_commit_msg.txt
+    done
+
+    echo "" >> dm_commit_msg.txt
+    echo "Update the ti-dm firmware to $RELEASE_TAG for Jacinto devices. " >> dm_commit_msg.txt
+    echo "" >> dm_commit_msg.txt
+    echo "These were generated using SYSFW $RELEASE_TAG" >> dm_commit_msg.txt
+    echo "" >> dm_commit_msg.txt
+    echo " < Add release highlights here >" >> dm_commit_msg.txt
+    echo "" >> dm_commit_msg.txt
+    echo "MD5 Checksums: " >> dm_commit_msg.txt
+
+    for files in ti-dm/*/*;
+    do
+        md5sum $files >> dm_commit_msg.txt
+    done
+
+    echo "" >> ipc_commit_msg.txt
+    echo "Update the ti-ipc firmware to $RELEASE_TAG for Jacinto devices. " >> ipc_commit_msg.txt
+    echo "" >> ipc_commit_msg.txt
+    echo " < Add IPC release highlights here >" >> ipc_commit_msg.txt
+    echo "" >> ipc_commit_msg.txt
+    echo "MD5 Checksums: " >> ipc_commit_msg.txt
+
+    for files in ti-ipc/*/*;
+    do
+        md5sum $files >> ipc_commit_msg.txt
+    done
+
+fi
 ################################################################################
 $ECHO "Done."
