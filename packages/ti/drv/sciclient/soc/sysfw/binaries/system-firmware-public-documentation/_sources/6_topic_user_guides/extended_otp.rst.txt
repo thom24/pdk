@@ -45,6 +45,8 @@ Please refer to the table below for SOC specific details of hardware rows:
 +---------+------------------+---------------+----------+----------+------------+
 | J784S4  | 1024             | 25            | 42       | 32       | 2          |
 +---------+------------------+---------------+----------+----------+------------+
+| AM62Px  | 1024             | 25            | 42       | 32       | 2          |
++---------+------------------+---------------+----------+----------+------------+
 
 On device boot, the data in the OTP area is read into a set of 32 bit memory
 mapped registers(MMRs). There are 32 such registers to accommodate the maximum
@@ -69,7 +71,7 @@ TI provides two pieces of software to program the extended OTP area.
 
 2. System Firmware - System Firmware provides API that can be used to access and
    modify the extended OTP area on a HS SE device for all SoCs. It provides these
-   APIs on HS FS and GP device also for AM64x, AM62x and AM62Ax SoCs. System 
+   APIs on HS FS and GP device also for AM64x, AM62x, AM62Ax and AM62Px SoCs. System 
    Firmware is not a standalone executable and must be used along with software 
    running on another core to access or modify the extended OTP area.
 

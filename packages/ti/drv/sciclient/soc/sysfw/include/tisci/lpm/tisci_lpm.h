@@ -55,9 +55,10 @@
 #define TISCI_LPM_H
 
 
-#define TISCI_MSG_VALUE_SLEEP_MODE_DEEP_SLEEP              0x0
-#define TISCI_MSG_VALUE_SLEEP_MODE_MCU_ONLY                        0x1
-#define TISCI_MSG_VALUE_SLEEP_MODE_STANDBY                         0x2
+
+#define TISCI_MSG_VALUE_SLEEP_MODE_DEEP_SLEEP          0x0U
+#define TISCI_MSG_VALUE_SLEEP_MODE_MCU_ONLY            0x1U
+#define TISCI_MSG_VALUE_SLEEP_MODE_STANDBY             0x2U
 
 #define MSG_FLAG_CERT_AUTH_PASS                        0x555555U
 #define MSG_FLAG_CERT_AUTH_FAIL                        0xffffffU
@@ -95,26 +96,26 @@
 #define TISCI_MSG_VALUE_SLEEP_DEBUG_FLAG_30            0x0x40000000
 #define TISCI_MSG_VALUE_SLEEP_DEBUG_FLAG_31            0x0x80000000
 
-#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_WKUP_I2C0                       0x00
-#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_WKUP_UART0                      0x10
-#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_MCU_GPIO0                       0x20
-#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_WKUP_ICEMELTER0                 0x30
-#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_WKUP_TIMER0                     0x40
-#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_WKUP_TIMER1                     0x41
-#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_WKUP_RTC0                       0x50
-#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_RESET                           0x60
-#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_USB0                            0x70
-#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_USB1                            0x71
-#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_MAIN_IO                         0x80
-#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_MCU_IO                          0x81
-#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_CAN_IO                          0x82
-#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_MCU_IPC                         0x90
-#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_INVALID                         0xFF
+#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_WKUP_I2C0                       0x00U
+#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_WKUP_UART0                      0x10U
+#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_MCU_GPIO0                       0x20U
+#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_WKUP_ICEMELTER0                 0x30U
+#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_WKUP_TIMER0                     0x40U
+#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_WKUP_TIMER1                     0x41U
+#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_WKUP_RTC0                       0x50U
+#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_RESET                           0x60U
+#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_USB0                            0x70U
+#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_USB1                            0x71U
+#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_MAIN_IO                         0x80U
+#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_MCU_IO                          0x81U
+#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_CAN_IO                          0x82U
+#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_MCU_IPC                         0x90U
+#define TISCI_MSG_VALUE_LPM_WAKE_SOURCE_INVALID                         0xFFU
 
 /** Used by TISCI_MSG_SET_IO_ISOLATION to enable IO isolation */
-#define TISCI_MSG_VALUE_IO_ENABLE 1
+#define TISCI_MSG_VALUE_IO_ENABLE 1U
 /** Used by TISCI_MSG_SET_IO_ISOLATION to disable IO isolation */
-#define TISCI_MSG_VALUE_IO_DISABLE 0
+#define TISCI_MSG_VALUE_IO_DISABLE 0U
 
 /**
  * \brief Request for TISCI_MSG_PREPARE_SLEEP.

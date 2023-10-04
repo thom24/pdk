@@ -61,6 +61,10 @@ The following X509 extensions are supported by |sysfw|.
 +--------------------------------------+----------------------------------------------------+-----------------------+
 | :ref:`sysfw_fwl_ext`                 | Firewall configuration extension                   | 1.3.6.1.4.1.294.1.37  |
 +--------------------------------------+----------------------------------------------------+-----------------------+
+| :ref:`sysfw_key_info_ext`            | Keyring configuration extension                    | 1.3.6.1.4.1.294.1.38  |
++--------------------------------------+----------------------------------------------------+-----------------------+
+| :ref:`sysfw_keyring_info_ext`        | Keyring Info extension                             | 1.3.6.1.4.1.294.1.39  |
++--------------------------------------+----------------------------------------------------+-----------------------+
 | :ref:`sysfw_encryption_extended_ext` | Extended Encryption extension                      | 1.3.6.1.4.1.294.1.40  |
 +--------------------------------------+----------------------------------------------------+-----------------------+
 
@@ -82,10 +86,12 @@ or not applicable (**.**).
      - Processor Boot
      - Debug
      - Generic Data [#data_auth_footnote]_
+     - Keyring
 
    * - ROM Boot [#f1]_
      - **M**
      - **M**
+     - .
      - .
      - .
      - .
@@ -98,11 +104,13 @@ or not applicable (**.**).
      - .
      - .
      - .
+     - .
 
    * - :ref:`SWREV<sysfw_swrev_ext>` [#swrev_footnote]_
      - **M**
      - **M**
      - **M** 
+     - **M**
      - **M**
      - **M**
      - **M**
@@ -114,6 +122,7 @@ or not applicable (**.**).
      - **M**
      - .
      - .
+     - .
 
    * - :ref:`Integrity<sysfw_image_integrity_ext>`
      - .
@@ -121,6 +130,7 @@ or not applicable (**.**).
      - **M**
      - **M**
      - .
+     - **M**
      - **M**
 
    * - :ref:`Load<sysfw_load_ext>`
@@ -130,6 +140,7 @@ or not applicable (**.**).
      - **M**
      - .
      - **M**
+     - **M**
 
    * - :ref:`Debug<sysfw_debug_ext>`
      - O
@@ -137,6 +148,7 @@ or not applicable (**.**).
      - .
      - .
      - **M**
+     - .
      - .
 
    * - :ref:`Encryption<sysfw_encryption_ext>`
@@ -146,10 +158,12 @@ or not applicable (**.**).
      - O
      - .
      - O
+     - O
 
    * - :ref:`HS Boardcfg<sysfw_hs_bcfg_ext>`
      - .
      - O [#opt_boardcfg_footnote]_
+     - .
      - .
      - .
      - .
@@ -162,6 +176,7 @@ or not applicable (**.**).
      - O
      - .
      - .
+     - .
 
    * - :ref:`Extended Encryption<sysfw_encryption_extended_ext>`
      - . 
@@ -170,6 +185,25 @@ or not applicable (**.**).
      - O
      - .
      - .
+     - .
+
+   * - :ref:`Key info Config<sysfw_key_info_ext>` [#key_info_footnote]_
+     - . 
+     - .
+     - O
+     - O
+     - O
+     - O
+     - .
+
+   * - :ref:`Keyring info<sysfw_keyring_info_ext>`
+     - . 
+     - .
+     - .
+     - .
+     - .
+     - .
+     - **M**
 
 .. [#f1] See device Technical Reference Manual for details on these extensions
 
@@ -205,6 +239,9 @@ or not applicable (**.**).
 
 .. [#opt_boardcfg_footnote] This is only used for outer certificate to enable
                             optimized boot. See :ref:`sysfw_pub_hs_bcfg_in_cert`
+
+.. [#key_info_footnote] This is only used if the data blob is signed with a key from 
+                        a keyring. 
 
 Keywriter extensions
 ====================
@@ -579,7 +616,76 @@ Author will also have to provide a host ID as specified in :ref:`sysfw_load_ext`
 (refer to :ref:`TISCI_MSG_PROC_AUTH_BOOT <proc-boot-authenticate-image-and-configure-processor>` for more information.)
 Adding firewall extension without a host ID would lead to API failure.
 
+.. _sysfw_key_info_ext:
 
+|sysfw| Key Info Configuration Extension
+----------------------------------------
+
+|sysfw| This is identified by OID **1.3.6.1.4.1.294.1.38**.
+
+::
+
+   SYSFW-KEYRING := SEQUENCE
+   {
+      AUTH_KEYRING_ID INTEGER,
+      ENC_KEYRING_ID  INTEGER,
+   }
+
+The encryption extension is decoded into the following data structure.
+
+.. code-block:: c
+
+    struct ti_kr_config {
+        u8 auth_key_id;
+        u8 enc_key_id;
+    };
+
+Populating the certificate fields
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+1. ``auth_key_id``
+
+   - Keyid for authentication using asymmetric keys.
+
+2. ``enc_key_id``
+
+   - Keyid for decryption using symmetric keys.
+
+.. _sysfw_keyring_info_ext:
+
+|sysfw| Keyring info Extension
+------------------------------
+
+|sysfw| This is identified by OID **1.3.6.1.4.1.294.1.39**.
+
+::
+
+   SYSFW-KEYRING-INFO := SEQUENCE
+   {
+      NUM_ASYMM INTEGER,
+      NUM_SYMM  INTEGER,
+   }
+
+The encryption extension is decoded into the following data structure.
+
+.. code-block:: c
+
+    struct ti_num_keys_config {
+      u8  num_asymm_keys;
+      u8  num_symm_keys;
+    };
+
+Populating the certificate fields
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+1. ``num_symm_keys``
+
+   - Number of symmetric keys in the keyring.
+
+2. ``num_asymm_keys``
+
+   - Number of asymmetric keys in the keyring.
+   
 .. _sysfw_encryption_extended_ext:
 
 |sysfw| Extended Encryption Extension
@@ -1454,6 +1560,14 @@ Sample x509 template
     pmBoardcfgHash  =  FORMAT:HEX,OCT:PM_BCFG_HASH
     rmBoardcfgHash  =  FORMAT:HEX,OCT:RM_BCFG_HASH
     boardcfgHash    =  FORMAT:HEX,OCT:BCFG_HASH
+
+    [ keyring ]
+    auth_key_id =  INTEGER:AUTH_KEYRING_ID
+    enc_key_id  =  INTEGER:ENC_KEYRING_ID
+
+    [ num_of_keys ]
+    num_of_asymm_keys =  INTEGER:NUM_ASYMM
+    num_of_symm_keys =  INTEGER:NUM_SYMM
 
 
 Keywriter: Sample x509 template

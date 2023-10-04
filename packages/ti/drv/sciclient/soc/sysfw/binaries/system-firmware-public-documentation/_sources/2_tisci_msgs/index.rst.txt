@@ -67,3 +67,4 @@ Secure Management
    security/security_handover
    security/keywriter
    security/otp_revision
+   security/keyring

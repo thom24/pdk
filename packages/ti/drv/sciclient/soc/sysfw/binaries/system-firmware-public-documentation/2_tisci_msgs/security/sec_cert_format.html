@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                09.00.06
+                09.01.00
               </div>
             
           
@@ -125,6 +125,7 @@
 <li class="toctree-l3"><a class="reference internal" href="security_handover.html">Security Handover Message Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="keywriter.html">OTP Keywriter TISCI Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="otp_revision.html">OTP Revision Read/Write Message Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="keyring.html">KEYRING TISCI Description</a></li>
 </ul>
 </li>
 </ul>
@@ -261,6 +262,14 @@ frameworks
 <td>Firewall configuration extension</td>
 <td>1.3.6.1.4.1.294.1.37</td>
 </tr>
+<tr class="row-even"><td><a class="reference internal" href="#sysfw-key-info-ext"><span class="std std-ref">System Firmware Key Info Configuration Extension</span></a></td>
+<td>Keyring configuration extension</td>
+<td>1.3.6.1.4.1.294.1.38</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#sysfw-keyring-info-ext"><span class="std std-ref">System Firmware Keyring info Extension</span></a></td>
+<td>Keyring Info extension</td>
+<td>1.3.6.1.4.1.294.1.39</td>
+</tr>
 <tr class="row-even"><td><a class="reference internal" href="#sysfw-encryption-extended-ext"><span class="std std-ref">System Firmware Extended Encryption Extension</span></a></td>
 <td>Extended Encryption extension</td>
 <td>1.3.6.1.4.1.294.1.40</td>
@@ -271,16 +280,17 @@ frameworks
 summarizes which extensions are mandatory (<strong>M</strong>) for a particular image type, which
 are optional (<strong>O</strong>) to take any additional specific actions, and which are ignored
 or not applicable (<strong>.</strong>).</p>
-<span id="sysfw-x509-ext-requirements"></span><table border="1" class="docutils align-center" id="id14">
-<caption><span class="caption-number">Table 2 </span><span class="caption-text">Applicability of certificate extensions to image types</span><a class="headerlink" href="#id14" title="Permalink to this table">¶</a></caption>
+<span id="sysfw-x509-ext-requirements"></span><table border="1" class="docutils align-center" id="id17">
+<caption><span class="caption-number">Table 2 </span><span class="caption-text">Applicability of certificate extensions to image types</span><a class="headerlink" href="#id17" title="Permalink to this table">¶</a></caption>
 <colgroup>
-<col width="14%" />
-<col width="14%" />
-<col width="14%" />
-<col width="14%" />
-<col width="14%" />
-<col width="14%" />
-<col width="14%" />
+<col width="13%" />
+<col width="13%" />
+<col width="13%" />
+<col width="13%" />
+<col width="13%" />
+<col width="13%" />
+<col width="13%" />
+<col width="13%" />
 </colgroup>
 <thead valign="bottom">
 <tr class="row-odd"><th class="head">Certificate Extension</th>
@@ -290,12 +300,14 @@ or not applicable (<strong>.</strong>).</p>
 <th class="head">Processor Boot</th>
 <th class="head">Debug</th>
 <th class="head">Generic Data <a class="footnote-reference" href="#data-auth-footnote" id="id4">[3]</a></th>
+<th class="head">Keyring</th>
 </tr>
 </thead>
 <tbody valign="top">
 <tr class="row-even"><td>ROM Boot <a class="footnote-reference" href="#f1" id="id5">[1]</a></td>
 <td><strong>M</strong></td>
 <td><strong>M</strong></td>
+<td>.</td>
 <td>.</td>
 <td>.</td>
 <td>.</td>
@@ -308,8 +320,10 @@ or not applicable (<strong>.</strong>).</p>
 <td>.</td>
 <td>.</td>
 <td>.</td>
+<td>.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#sysfw-swrev-ext"><span class="std std-ref">SWREV</span></a> <a class="footnote-reference" href="#swrev-footnote" id="id7">[4]</a></td>
+<td><strong>M</strong></td>
 <td><strong>M</strong></td>
 <td><strong>M</strong></td>
 <td><strong>M</strong></td>
@@ -324,6 +338,7 @@ or not applicable (<strong>.</strong>).</p>
 <td><strong>M</strong></td>
 <td>.</td>
 <td>.</td>
+<td>.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#sysfw-image-integrity-ext"><span class="std std-ref">Integrity</span></a></td>
 <td>.</td>
@@ -331,6 +346,7 @@ or not applicable (<strong>.</strong>).</p>
 <td><strong>M</strong></td>
 <td><strong>M</strong></td>
 <td>.</td>
+<td><strong>M</strong></td>
 <td><strong>M</strong></td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#sysfw-load-ext"><span class="std std-ref">Load</span></a></td>
@@ -340,6 +356,7 @@ or not applicable (<strong>.</strong>).</p>
 <td><strong>M</strong></td>
 <td>.</td>
 <td><strong>M</strong></td>
+<td><strong>M</strong></td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#sysfw-debug-ext"><span class="std std-ref">Debug</span></a></td>
 <td>O</td>
@@ -347,6 +364,7 @@ or not applicable (<strong>.</strong>).</p>
 <td>.</td>
 <td>.</td>
 <td><strong>M</strong></td>
+<td>.</td>
 <td>.</td>
 </tr>
 <tr class="row-odd"><td><a class="reference internal" href="#sysfw-encryption-ext"><span class="std std-ref">Encryption</span></a></td>
@@ -356,10 +374,12 @@ or not applicable (<strong>.</strong>).</p>
 <td>O</td>
 <td>.</td>
 <td>O</td>
+<td>O</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#sysfw-hs-bcfg-ext"><span class="std std-ref">HS Boardcfg</span></a></td>
 <td>.</td>
 <td>O <a class="footnote-reference" href="#opt-boardcfg-footnote" id="id8">[5]</a></td>
+<td>.</td>
 <td>.</td>
 <td>.</td>
 <td>.</td>
@@ -372,6 +392,7 @@ or not applicable (<strong>.</strong>).</p>
 <td>O</td>
 <td>.</td>
 <td>.</td>
+<td>.</td>
 </tr>
 <tr class="row-even"><td><a class="reference internal" href="#sysfw-encryption-extended-ext"><span class="std std-ref">Extended Encryption</span></a></td>
 <td>.</td>
@@ -380,6 +401,25 @@ or not applicable (<strong>.</strong>).</p>
 <td>O</td>
 <td>.</td>
 <td>.</td>
+<td>.</td>
+</tr>
+<tr class="row-odd"><td><a class="reference internal" href="#sysfw-key-info-ext"><span class="std std-ref">Key info Config</span></a> <a class="footnote-reference" href="#key-info-footnote" id="id9">[6]</a></td>
+<td>.</td>
+<td>.</td>
+<td>O</td>
+<td>O</td>
+<td>O</td>
+<td>O</td>
+<td>.</td>
+</tr>
+<tr class="row-even"><td><a class="reference internal" href="#sysfw-keyring-info-ext"><span class="std std-ref">Keyring info</span></a></td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td>.</td>
+<td><strong>M</strong></td>
 </tr>
 </tbody>
 </table>
@@ -434,6 +474,13 @@ use and is mandatory to protect for compatibility.</li>
 <tbody valign="top">
 <tr><td class="label"><a class="fn-backref" href="#id8">[5]</a></td><td>This is only used for outer certificate to enable
 optimized boot. See <a class="reference internal" href="../../6_topic_user_guides/hs_boardcfg_signing.html#sysfw-pub-hs-bcfg-in-cert"><span class="std std-ref">Including board configuration information in System Firmware outer certificate</span></a></td></tr>
+</tbody>
+</table>
+<table class="docutils footnote" frame="void" id="key-info-footnote" rules="none">
+<colgroup><col class="label" /><col /></colgroup>
+<tbody valign="top">
+<tr><td class="label"><a class="fn-backref" href="#id9">[6]</a></td><td>This is only used if the data blob is signed with a key from
+a keyring.</td></tr>
 </tbody>
 </table>
 </div>
@@ -662,8 +709,8 @@ as part of authentication. The load extension is identified by OID <strong>1.3.6
 <span class="p">};</span>
 </pre></div>
 </div>
-<div class="section" id="id9">
-<h4>Populating the certificate fields<a class="headerlink" href="#id9" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id10">
+<h4>Populating the certificate fields<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
 <ol class="arabic">
 <li><p class="first"><code class="docutils literal"><span class="pre">destAddr</span></code></p>
 <ul class="simple">
@@ -748,8 +795,8 @@ additional information is required. This is identified by OID
 <span class="p">};</span>
 </pre></div>
 </div>
-<div class="section" id="id10">
-<h4>Populating the certificate fields<a class="headerlink" href="#id10" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id11">
+<h4>Populating the certificate fields<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
 <ol class="arabic simple">
 <li><code class="docutils literal"><span class="pre">initialVector</span></code><ul>
 <li>This is the 16 byte initialization vector to be used in AES-CBC
@@ -820,8 +867,8 @@ Every region configuration group is decoded into a structure shown below.</p>
 <span class="p">}</span>
 </pre></div>
 </div>
-<div class="section" id="id11">
-<h4>Populating the certificate fields<a class="headerlink" href="#id11" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id12">
+<h4>Populating the certificate fields<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
 <p>For an example, please refer to the section <code class="docutils literal"><span class="pre">[</span> <span class="pre">sysfw_fwl_ext</span> <span class="pre">]</span></code> in <a class="reference internal" href="#sysfw-x509-template-example"><span class="std std-ref">Sample x509 template</span></a>.
 The examples demonstrates requesting two region configurations through the certificate.</p>
 <ol class="arabic simple">
@@ -838,6 +885,68 @@ of this field as the value of numPermissions, for each configuration group.</li>
 <p>Author will also have to provide a host ID as specified in <a class="reference internal" href="#sysfw-load-ext"><span class="std std-ref">System Firmware Load Extension</span></a>
 (refer to <a class="reference internal" href="PROC_BOOT.html#proc-boot-authenticate-image-and-configure-processor"><span class="std std-ref">TISCI_MSG_PROC_AUTH_BOOT</span></a> for more information.)
 Adding firewall extension without a host ID would lead to API failure.</p>
+</div>
+</div>
+<div class="section" id="sysfw-key-info-configuration-extension">
+<span id="sysfw-key-info-ext"></span><h3>System Firmware Key Info Configuration Extension<a class="headerlink" href="#sysfw-key-info-configuration-extension" title="Permalink to this headline">¶</a></h3>
+<p>System Firmware This is identified by OID <strong>1.3.6.1.4.1.294.1.38</strong>.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="n">KEYRING</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">SEQUENCE</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">AUTH_KEYRING_ID</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span>
+<span class="w">   </span><span class="n">ENC_KEYRING_ID</span><span class="w">  </span><span class="n">INTEGER</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The encryption extension is decoded into the following data structure.</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">ti_kr_config</span><span class="w"> </span><span class="p">{</span>
+<span class="w">    </span><span class="n">u8</span><span class="w"> </span><span class="n">auth_key_id</span><span class="p">;</span>
+<span class="w">    </span><span class="n">u8</span><span class="w"> </span><span class="n">enc_key_id</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<div class="section" id="id13">
+<h4>Populating the certificate fields<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
+<ol class="arabic simple">
+<li><code class="docutils literal"><span class="pre">auth_key_id</span></code><ul>
+<li>Keyid for authentication using asymmetric keys.</li>
+</ul>
+</li>
+<li><code class="docutils literal"><span class="pre">enc_key_id</span></code><ul>
+<li>Keyid for decryption using symmetric keys.</li>
+</ul>
+</li>
+</ol>
+</div>
+</div>
+<div class="section" id="sysfw-keyring-info-extension">
+<span id="sysfw-keyring-info-ext"></span><h3>System Firmware Keyring info Extension<a class="headerlink" href="#sysfw-keyring-info-extension" title="Permalink to this headline">¶</a></h3>
+<p>System Firmware This is identified by OID <strong>1.3.6.1.4.1.294.1.39</strong>.</p>
+<div class="highlight-cpp"><div class="highlight"><pre><span></span><span class="n">SYSFW</span><span class="o">-</span><span class="n">KEYRING</span><span class="o">-</span><span class="n">INFO</span><span class="w"> </span><span class="o">:=</span><span class="w"> </span><span class="n">SEQUENCE</span>
+<span class="p">{</span>
+<span class="w">   </span><span class="n">NUM_ASYMM</span><span class="w"> </span><span class="n">INTEGER</span><span class="p">,</span>
+<span class="w">   </span><span class="n">NUM_SYMM</span><span class="w">  </span><span class="n">INTEGER</span><span class="p">,</span>
+<span class="p">}</span>
+</pre></div>
+</div>
+<p>The encryption extension is decoded into the following data structure.</p>
+<div class="highlight-c"><div class="highlight"><pre><span></span><span class="k">struct</span><span class="w"> </span><span class="nc">ti_num_keys_config</span><span class="w"> </span><span class="p">{</span>
+<span class="w">  </span><span class="n">u8</span><span class="w">  </span><span class="n">num_asymm_keys</span><span class="p">;</span>
+<span class="w">  </span><span class="n">u8</span><span class="w">  </span><span class="n">num_symm_keys</span><span class="p">;</span>
+<span class="p">};</span>
+</pre></div>
+</div>
+<div class="section" id="id14">
+<h4>Populating the certificate fields<a class="headerlink" href="#id14" title="Permalink to this headline">¶</a></h4>
+<ol class="arabic simple">
+<li><code class="docutils literal"><span class="pre">num_symm_keys</span></code><ul>
+<li>Number of symmetric keys in the keyring.</li>
+</ul>
+</li>
+<li><code class="docutils literal"><span class="pre">num_asymm_keys</span></code><ul>
+<li>Number of asymmetric keys in the keyring.</li>
+</ul>
+</li>
+</ol>
 </div>
 </div>
 <div class="section" id="sysfw-extended-encryption-extension">
@@ -857,8 +966,8 @@ Adding firewall extension without a host ID would lead to API failure.</p>
 <span class="p">};</span>
 </pre></div>
 </div>
-<div class="section" id="id12">
-<h4>Populating the certificate fields<a class="headerlink" href="#id12" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id15">
+<h4>Populating the certificate fields<a class="headerlink" href="#id15" title="Permalink to this headline">¶</a></h4>
 <ol class="arabic simple">
 <li><code class="docutils literal"><span class="pre">nPaddingBytes</span></code><ul>
 <li>This is number of bytes appended to the payload binary before encrypting it.</li>
@@ -1036,8 +1145,8 @@ extension is identified by OID <strong>1.3.6.1.4.1.294.1.36</strong>.</p>
 <span class="p">};</span>
 </pre></div>
 </div>
-<div class="section" id="id13">
-<h4>Populating the certificate fields<a class="headerlink" href="#id13" title="Permalink to this headline">¶</a></h4>
+<div class="section" id="id16">
+<h4>Populating the certificate fields<a class="headerlink" href="#id16" title="Permalink to this headline">¶</a></h4>
 <ol class="arabic simple">
 <li><code class="docutils literal"><span class="pre">initialVector</span></code><ul>
 <li>This is the 16 byte initialization vector to be used in AES-CBC
@@ -1640,6 +1749,14 @@ Image integrity (<code class="docutils literal"><span class="pre">sysfw_image_in
 <span class="nv">pmBoardcfgHash</span><span class="w">  </span><span class="o">=</span><span class="w">  </span>FORMAT:HEX,OCT:PM_BCFG_HASH
 <span class="nv">rmBoardcfgHash</span><span class="w">  </span><span class="o">=</span><span class="w">  </span>FORMAT:HEX,OCT:RM_BCFG_HASH
 <span class="nv">boardcfgHash</span><span class="w">    </span><span class="o">=</span><span class="w">  </span>FORMAT:HEX,OCT:BCFG_HASH
+
+<span class="o">[</span><span class="w"> </span>keyring<span class="w"> </span><span class="o">]</span>
+<span class="nv">auth_key_id</span><span class="w"> </span><span class="o">=</span><span class="w">  </span>INTEGER:AUTH_KEYRING_ID
+<span class="nv">enc_key_id</span><span class="w">  </span><span class="o">=</span><span class="w">  </span>INTEGER:ENC_KEYRING_ID
+
+<span class="o">[</span><span class="w"> </span>num_of_keys<span class="w"> </span><span class="o">]</span>
+<span class="nv">num_of_asymm_keys</span><span class="w"> </span><span class="o">=</span><span class="w">  </span>INTEGER:NUM_ASYMM
+<span class="nv">num_of_symm_keys</span><span class="w"> </span><span class="o">=</span><span class="w">  </span>INTEGER:NUM_SYMM
 </pre></div>
 </div>
 <div class="section" id="keywriter-sample-x509-template">
@@ -1691,7 +1808,7 @@ Image integrity (<code class="docutils literal"><span class="pre">sysfw_image_in
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'09.00.06',
+            VERSION:'09.01.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

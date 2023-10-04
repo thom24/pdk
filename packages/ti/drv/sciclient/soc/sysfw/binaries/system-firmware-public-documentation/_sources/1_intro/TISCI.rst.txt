@@ -53,8 +53,8 @@ devices.
    | TDA4VLX        |   SMS (M4 based)        |  SMS (M4 based)         |  Library on MCU R5* |
    |                |                         |                         |                     |
    +----------------+-------------------------+-------------------------+---------------------+
-   | AM62X, AM62Ax  |   SMS (M4 based)        |  SMS (M4 based)         |  Library on DM R5*  |
-   |                |                         |                         |                     |
+   | AM62X, AM62Ax, |   SMS (M4 based)        |  SMS (M4 based)         |  Library on DM R5*  |
+   | AM62Px         |                         |                         |                     |
    +----------------+-------------------------+-------------------------+---------------------+
 
 

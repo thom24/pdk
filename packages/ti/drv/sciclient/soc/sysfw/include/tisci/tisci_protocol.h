@@ -299,6 +299,9 @@ struct tisci_sec_header {
 /** Message to erase the DKEK register */
 #define TISCI_MSG_SA2UL_RELEASE_DSMEK           (0x9038U)
 
+/** Message to import keyring */
+#define TISCI_MSG_KEYRING_IMPORT                (0X9039U)
+
 /* Processor Control APIs */
 
 /** Message to get a Processor */

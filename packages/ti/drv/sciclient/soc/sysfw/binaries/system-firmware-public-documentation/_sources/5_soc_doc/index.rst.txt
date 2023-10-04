@@ -69,7 +69,6 @@ AM64x
    am64x/proxy_cfg
    am64x/sec_proxy
    am64x/processors
-   am64x/runtime_keystore
    am64x/firewalls
    am64x/soc_devgrps
 
@@ -116,6 +115,28 @@ AM62Ax
    am62ax/processors
    am62ax/firewalls
    am62ax/soc_devgrps
+
+======
+AM62Px
+======
+
+.. toctree::
+   :maxdepth: 1
+
+   am62px/hosts
+   am62px/devices
+   am62px/clocks
+   am62px/pll_data
+   am62px/resasg_types
+   am62px/interrupt_cfg
+   am62px/ra_cfg
+   am62px/dma_cfg
+   am62px/psil_cfg
+   am62px/proxy_cfg
+   am62px/sec_proxy
+   am62px/processors
+   am62px/firewalls
+   am62px/soc_devgrps
 
 =====
 J721E

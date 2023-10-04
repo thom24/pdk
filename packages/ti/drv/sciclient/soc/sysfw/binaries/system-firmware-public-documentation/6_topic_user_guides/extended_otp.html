@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                09.00.06
+                09.01.00
               </div>
             
           
@@ -126,6 +126,7 @@
 <li class="toctree-l2"><a class="reference internal" href="secure_debug.html">Secure Debug User Guide</a></li>
 <li class="toctree-l2"><a class="reference internal" href="key_writer.html">Key  Writer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="otp_revision.html">Run time read/write to KEYREV and SWREV</a></li>
+<li class="toctree-l2"><a class="reference internal" href="keyring.html">Keyring Management</a></li>
 </ul>
 </li>
 </ul>
@@ -275,6 +276,13 @@ offset</th>
 <td>32</td>
 <td>2</td>
 </tr>
+<tr class="row-even"><td>AM62Px</td>
+<td>1024</td>
+<td>25</td>
+<td>42</td>
+<td>32</td>
+<td>2</td>
+</tr>
 </tbody>
 </table>
 <p>On device boot, the data in the OTP area is read into a set of 32 bit memory
@@ -297,7 +305,7 @@ Once the key revision and key count are programmed a HS FS device becomes HS
 Security Enforced(SE) device. Key Writer does not run on a HS SE device.</li>
 <li>System Firmware - System Firmware provides API that can be used to access and
 modify the extended OTP area on a HS SE device for all SoCs. It provides these
-APIs on HS FS and GP device also for AM64x, AM62x and AM62Ax SoCs. System
+APIs on HS FS and GP device also for AM64x, AM62x, AM62Ax and AM62Px SoCs. System
 Firmware is not a standalone executable and must be used along with software
 running on another core to access or modify the extended OTP area.</li>
 </ol>
@@ -405,7 +413,7 @@ to the row even after a device cold/warm reset.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../',
-            VERSION:'09.00.06',
+            VERSION:'09.01.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

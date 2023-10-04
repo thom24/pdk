@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                09.00.06
+                09.01.00
               </div>
             
           
@@ -123,6 +123,7 @@
 <li class="toctree-l3"><a class="reference internal" href="security_handover.html">Security Handover Message Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="keywriter.html">OTP Keywriter TISCI Description</a></li>
 <li class="toctree-l3"><a class="reference internal" href="otp_revision.html">OTP Revision Read/Write Message Description</a></li>
+<li class="toctree-l3"><a class="reference internal" href="keyring.html">KEYRING TISCI Description</a></li>
 </ul>
 </li>
 </ul>
@@ -1467,7 +1468,7 @@ Reads will always return 0. You are expected to read the PM status via the PM me
 </table>
 <p>The usage of R5_LPSC and R5_RESET is only for below mentioned devices,
 - MCU R5F on the J721E, J7200, J721S2 and J784S2 family of devices where the RM and PM functions run on the MCU R5F.
-- DM R5F on the AM62x and AM62Ax family of devices where the RM and PM functions run on the DM R5F.</p>
+- DM R5F on the AM62x, AM62Ax and AM62Px family of devices where the RM and PM functions run on the DM R5F.</p>
 <p>The MCU R5F and DM R5F (where the RM and PM functions run) cannot turn off/on by itself during a re-boot sequence which
 requires the following fundamental sequence of steps:</p>
 <ol class="arabic simple">
@@ -1767,7 +1768,7 @@ gatekeeper for HSM reset control. This is not appicable to general purpose M4 pr
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'09.00.06',
+            VERSION:'09.01.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

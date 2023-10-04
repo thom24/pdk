@@ -590,7 +590,7 @@ ARM R5
 
 The usage of R5_LPSC and R5_RESET is only for below mentioned devices,
 - MCU R5F on the J721E, J7200, J721S2 and J784S2 family of devices where the RM and PM functions run on the MCU R5F.
-- DM R5F on the AM62x and AM62Ax family of devices where the RM and PM functions run on the DM R5F.
+- DM R5F on the AM62x, AM62Ax and AM62Px family of devices where the RM and PM functions run on the DM R5F.
 
 The MCU R5F and DM R5F (where the RM and PM functions run) cannot turn off/on by itself during a re-boot sequence which
 requires the following fundamental sequence of steps:

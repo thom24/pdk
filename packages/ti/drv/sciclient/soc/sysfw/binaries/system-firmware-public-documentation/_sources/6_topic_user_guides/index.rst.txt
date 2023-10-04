@@ -20,3 +20,4 @@
    ./secure_debug
    ./key_writer
    ./otp_revision
+   ./keyring

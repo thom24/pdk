@@ -42,8 +42,8 @@ domain reset would lead to system-wide reset, then no additional board
 configuration calls are necessary.
 
 .. note::
-  On AM62x, AM64x and AM62Ax devices the module parameter is unused. On these
-  devices this API will result in a system-wide warm reset, or
+  On AM62x, AM64x, AM62Ax and AM62Px devices the module parameter is unused.
+  On these devices this API will result in a system-wide warm reset, or
   if MCU reset isolation is enabled, a MAIN domain only reset.
 
 Macros Used in this Document

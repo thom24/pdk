@@ -78,13 +78,13 @@
  * must be used in conjunction with SoC dependencies to identify the
  * overall power domain state being achieved.
  */
-#define TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF    0U
+#define TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF    0
 
 /** Used by TISCI_MSG_SET_DEVICE to disable device but keep in retention. */
 #define TISCI_MSG_VALUE_DEVICE_SW_STATE_RETENTION   1
 
 /** Used by TISCI_MSG_SET_DEVICE to turn device on for usage. */
-#define TISCI_MSG_VALUE_DEVICE_SW_STATE_ON          2U
+#define TISCI_MSG_VALUE_DEVICE_SW_STATE_ON          2
 
 /**
  * TISCI_MSG_GET_DEVICE sets this as current state to indicate device

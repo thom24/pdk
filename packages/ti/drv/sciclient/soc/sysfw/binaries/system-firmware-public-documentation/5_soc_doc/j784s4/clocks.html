@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                09.00.06
+                09.01.00
               </div>
             
           
@@ -111,6 +111,7 @@
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am64x">AM64x</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am62x">AM62x</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#am62ax">AM62Ax</a></li>
+<li class="toctree-l2"><a class="reference internal" href="../index.html#am62px">AM62Px</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j721e">J721E</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j7200">J7200</a></li>
 <li class="toctree-l2"><a class="reference internal" href="../index.html#j721s2">J721S2</a></li>
@@ -10160,6 +10161,62 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="clocks-for-mcu-timer1-clksel-vd-device">
+<span id="soc-doc-j784s4-public-clks-mcu-timer1-clksel-vd"></span><h3>Clocks for MCU_TIMER1_CLKSEL_VD Device<a class="headerlink" href="#clocks-for-mcu-timer1-clksel-vd-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_MCU_TIMER1_CLKSEL_VD</span></a> (ID = 417)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="54%" />
+<col width="39%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_MCU_TIMER1_CLKSEL_VD_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_MCU_TIMER1_CLKSEL_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
+<td>Parent input clock option to DEV_MCU_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_MCU_TIMER1_CLKSEL_VD_CLK_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK16</td>
+<td>Parent input clock option to DEV_MCU_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_MCU_TIMER1_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
+<td>Parent input clock option to DEV_MCU_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_MCU_TIMER1_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT2_CLK</td>
+<td>Parent input clock option to DEV_MCU_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_MCU_TIMER1_CLKSEL_VD_CLK_PARENT_BOARD_0_MCU_EXT_REFCLK0_OUT</td>
+<td>Parent input clock option to DEV_MCU_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_MCU_TIMER1_CLKSEL_VD_CLK_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
+<td>Parent input clock option to DEV_MCU_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_MCU_TIMER1_CLKSEL_VD_CLK_PARENT_CPSW_2GUSS_MCU_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_MCU_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>DEV_MCU_TIMER1_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_32K_CLK</td>
+<td>Parent input clock option to DEV_MCU_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="clocks-for-mcu-timer2-device">
 <span id="soc-doc-j784s4-public-clks-mcu-timer2"></span><h3>Clocks for MCU_TIMER2 Device<a class="headerlink" href="#clocks-for-mcu-timer2-device" title="Permalink to this headline">¶</a></h3>
 <p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_MCU_TIMER2</span></a> (ID = 118)</p>
@@ -10256,6 +10313,62 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tr class="row-odd"><td>4</td>
 <td>DEV_MCU_TIMER3_TIMER_TCLK_CLK_PARENT_DMTIMER_DMC1MS_MCU_2_TIMER_PWM</td>
 <td>Parent input clock option to DEV_MCU_TIMER3_TIMER_TCLK_CLK</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="clocks-for-mcu-timer3-clksel-vd-device">
+<span id="soc-doc-j784s4-public-clks-mcu-timer3-clksel-vd"></span><h3>Clocks for MCU_TIMER3_CLKSEL_VD Device<a class="headerlink" href="#clocks-for-mcu-timer3-clksel-vd-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_MCU_TIMER3_CLKSEL_VD</span></a> (ID = 418)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="54%" />
+<col width="39%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_MCU_TIMER3_CLKSEL_VD_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_MCU_TIMER3_CLKSEL_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
+<td>Parent input clock option to DEV_MCU_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_MCU_TIMER3_CLKSEL_VD_CLK_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK16</td>
+<td>Parent input clock option to DEV_MCU_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_MCU_TIMER3_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
+<td>Parent input clock option to DEV_MCU_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_MCU_TIMER3_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT2_CLK</td>
+<td>Parent input clock option to DEV_MCU_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_MCU_TIMER3_CLKSEL_VD_CLK_PARENT_BOARD_0_MCU_EXT_REFCLK0_OUT</td>
+<td>Parent input clock option to DEV_MCU_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_MCU_TIMER3_CLKSEL_VD_CLK_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
+<td>Parent input clock option to DEV_MCU_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_MCU_TIMER3_CLKSEL_VD_CLK_PARENT_CPSW_2GUSS_MCU_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_MCU_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>DEV_MCU_TIMER3_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_32K_CLK</td>
+<td>Parent input clock option to DEV_MCU_TIMER3_CLKSEL_VD_CLK</td>
 </tr>
 </tbody>
 </table>
@@ -10360,6 +10473,62 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="clocks-for-mcu-timer5-clksel-vd-device">
+<span id="soc-doc-j784s4-public-clks-mcu-timer5-clksel-vd"></span><h3>Clocks for MCU_TIMER5_CLKSEL_VD Device<a class="headerlink" href="#clocks-for-mcu-timer5-clksel-vd-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_MCU_TIMER5_CLKSEL_VD</span></a> (ID = 419)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="54%" />
+<col width="39%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_MCU_TIMER5_CLKSEL_VD_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_MCU_TIMER5_CLKSEL_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
+<td>Parent input clock option to DEV_MCU_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_MCU_TIMER5_CLKSEL_VD_CLK_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK16</td>
+<td>Parent input clock option to DEV_MCU_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_MCU_TIMER5_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
+<td>Parent input clock option to DEV_MCU_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_MCU_TIMER5_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT2_CLK</td>
+<td>Parent input clock option to DEV_MCU_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_MCU_TIMER5_CLKSEL_VD_CLK_PARENT_BOARD_0_MCU_EXT_REFCLK0_OUT</td>
+<td>Parent input clock option to DEV_MCU_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_MCU_TIMER5_CLKSEL_VD_CLK_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
+<td>Parent input clock option to DEV_MCU_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_MCU_TIMER5_CLKSEL_VD_CLK_PARENT_CPSW_2GUSS_MCU_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_MCU_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>DEV_MCU_TIMER5_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_32K_CLK</td>
+<td>Parent input clock option to DEV_MCU_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="clocks-for-mcu-timer6-device">
 <span id="soc-doc-j784s4-public-clks-mcu-timer6"></span><h3>Clocks for MCU_TIMER6 Device<a class="headerlink" href="#clocks-for-mcu-timer6-device" title="Permalink to this headline">¶</a></h3>
 <p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_MCU_TIMER6</span></a> (ID = 122)</p>
@@ -10460,6 +10629,62 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="clocks-for-mcu-timer7-clksel-vd-device">
+<span id="soc-doc-j784s4-public-clks-mcu-timer7-clksel-vd"></span><h3>Clocks for MCU_TIMER7_CLKSEL_VD Device<a class="headerlink" href="#clocks-for-mcu-timer7-clksel-vd-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_MCU_TIMER7_CLKSEL_VD</span></a> (ID = 420)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="54%" />
+<col width="39%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_MCU_TIMER7_CLKSEL_VD_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_MCU_TIMER7_CLKSEL_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
+<td>Parent input clock option to DEV_MCU_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_MCU_TIMER7_CLKSEL_VD_CLK_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK16</td>
+<td>Parent input clock option to DEV_MCU_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_MCU_TIMER7_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
+<td>Parent input clock option to DEV_MCU_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_MCU_TIMER7_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT2_CLK</td>
+<td>Parent input clock option to DEV_MCU_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_MCU_TIMER7_CLKSEL_VD_CLK_PARENT_BOARD_0_MCU_EXT_REFCLK0_OUT</td>
+<td>Parent input clock option to DEV_MCU_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_MCU_TIMER7_CLKSEL_VD_CLK_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
+<td>Parent input clock option to DEV_MCU_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_MCU_TIMER7_CLKSEL_VD_CLK_PARENT_CPSW_2GUSS_MCU_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_MCU_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>DEV_MCU_TIMER7_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_32K_CLK</td>
+<td>Parent input clock option to DEV_MCU_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="clocks-for-mcu-timer8-device">
 <span id="soc-doc-j784s4-public-clks-mcu-timer8"></span><h3>Clocks for MCU_TIMER8 Device<a class="headerlink" href="#clocks-for-mcu-timer8-device" title="Permalink to this headline">¶</a></h3>
 <p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_MCU_TIMER8</span></a> (ID = 124)</p>
@@ -10556,6 +10781,62 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tr class="row-odd"><td>4</td>
 <td>DEV_MCU_TIMER9_TIMER_TCLK_CLK_PARENT_DMTIMER_DMC1MS_MCU_8_TIMER_PWM</td>
 <td>Parent input clock option to DEV_MCU_TIMER9_TIMER_TCLK_CLK</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="clocks-for-mcu-timer9-clksel-vd-device">
+<span id="soc-doc-j784s4-public-clks-mcu-timer9-clksel-vd"></span><h3>Clocks for MCU_TIMER9_CLKSEL_VD Device<a class="headerlink" href="#clocks-for-mcu-timer9-clksel-vd-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_MCU_TIMER9_CLKSEL_VD</span></a> (ID = 421)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="54%" />
+<col width="39%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_MCU_TIMER9_CLKSEL_VD_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_MCU_TIMER9_CLKSEL_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
+<td>Parent input clock option to DEV_MCU_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_MCU_TIMER9_CLKSEL_VD_CLK_PARENT_K3_PLL_CTRL_WRAP_WKUP_0_CHIP_DIV1_CLK_CLK16</td>
+<td>Parent input clock option to DEV_MCU_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_MCU_TIMER9_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
+<td>Parent input clock option to DEV_MCU_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_MCU_TIMER9_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MCU_2_HSDIVOUT2_CLK</td>
+<td>Parent input clock option to DEV_MCU_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_MCU_TIMER9_CLKSEL_VD_CLK_PARENT_BOARD_0_MCU_EXT_REFCLK0_OUT</td>
+<td>Parent input clock option to DEV_MCU_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_MCU_TIMER9_CLKSEL_VD_CLK_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
+<td>Parent input clock option to DEV_MCU_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_MCU_TIMER9_CLKSEL_VD_CLK_PARENT_CPSW_2GUSS_MCU_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_MCU_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>DEV_MCU_TIMER9_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_32K_CLK</td>
+<td>Parent input clock option to DEV_MCU_TIMER9_CLKSEL_VD_CLK</td>
 </tr>
 </tbody>
 </table>
@@ -15668,6 +15949,94 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="clocks-for-timer11-clksel-vd-device">
+<span id="soc-doc-j784s4-public-clks-timer11-clksel-vd"></span><h3>Clocks for TIMER11_CLKSEL_VD Device<a class="headerlink" href="#clocks-for-timer11-clksel-vd-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_TIMER11_CLKSEL_VD</span></a> (ID = 427)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="54%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER11_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK_PARENT_BOARD_0_HFOSC1_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER11_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK</td>
+<td>Parent input clock option to DEV_TIMER11_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK</td>
+<td>Parent input clock option to DEV_TIMER11_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF2</td>
+<td>Parent input clock option to DEV_TIMER11_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF3</td>
+<td>Parent input clock option to DEV_TIMER11_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK_PARENT_CPSW_2GUSS_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER11_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK_PARENT_CPSW_9XUSS_J7AM_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER11_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>9</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK_PARENT_POSTDIV3_16FFT_MAIN_0_HSDIVOUT8_CLK</td>
+<td>Parent input clock option to DEV_TIMER11_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>10</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
+<td>Parent input clock option to DEV_TIMER11_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>11</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER11_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>12</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK_PARENT_BOARD_0_MCU_EXT_REFCLK0_OUT</td>
+<td>Parent input clock option to DEV_TIMER11_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK_PARENT_BOARD_0_EXT_REFCLK1_OUT</td>
+<td>Parent input clock option to DEV_TIMER11_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER11_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK_PARENT_BOARD_0_CPTS0_RFT_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER11_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER11_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER11_CLKSEL_VD_CLK</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="clocks-for-timer12-device">
 <span id="soc-doc-j784s4-public-clks-timer12"></span><h3>Clocks for TIMER12 Device<a class="headerlink" href="#clocks-for-timer12-device" title="Permalink to this headline">¶</a></h3>
 <p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_TIMER12</span></a> (ID = 109)</p>
@@ -15796,6 +16165,94 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tr class="row-odd"><td>4</td>
 <td>DEV_TIMER13_TIMER_TCLK_CLK_PARENT_DMTIMER_DMC1MS_MAIN_12_TIMER_PWM</td>
 <td>Parent input clock option to DEV_TIMER13_TIMER_TCLK_CLK</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="clocks-for-timer13-clksel-vd-device">
+<span id="soc-doc-j784s4-public-clks-timer13-clksel-vd"></span><h3>Clocks for TIMER13_CLKSEL_VD Device<a class="headerlink" href="#clocks-for-timer13-clksel-vd-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_TIMER13_CLKSEL_VD</span></a> (ID = 428)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="54%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER13_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK_PARENT_BOARD_0_HFOSC1_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER13_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK</td>
+<td>Parent input clock option to DEV_TIMER13_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK</td>
+<td>Parent input clock option to DEV_TIMER13_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF2</td>
+<td>Parent input clock option to DEV_TIMER13_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF3</td>
+<td>Parent input clock option to DEV_TIMER13_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK_PARENT_CPSW_2GUSS_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER13_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK_PARENT_CPSW_9XUSS_J7AM_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER13_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>9</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK_PARENT_POSTDIV3_16FFT_MAIN_0_HSDIVOUT8_CLK</td>
+<td>Parent input clock option to DEV_TIMER13_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>10</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
+<td>Parent input clock option to DEV_TIMER13_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>11</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER13_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>12</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK_PARENT_BOARD_0_MCU_EXT_REFCLK0_OUT</td>
+<td>Parent input clock option to DEV_TIMER13_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK_PARENT_BOARD_0_EXT_REFCLK1_OUT</td>
+<td>Parent input clock option to DEV_TIMER13_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER13_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK_PARENT_BOARD_0_CPTS0_RFT_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER13_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER13_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER13_CLKSEL_VD_CLK</td>
 </tr>
 </tbody>
 </table>
@@ -15932,6 +16389,94 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="clocks-for-timer15-clksel-vd-device">
+<span id="soc-doc-j784s4-public-clks-timer15-clksel-vd"></span><h3>Clocks for TIMER15_CLKSEL_VD Device<a class="headerlink" href="#clocks-for-timer15-clksel-vd-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_TIMER15_CLKSEL_VD</span></a> (ID = 429)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="54%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER15_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK_PARENT_BOARD_0_HFOSC1_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER15_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK</td>
+<td>Parent input clock option to DEV_TIMER15_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK</td>
+<td>Parent input clock option to DEV_TIMER15_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF2</td>
+<td>Parent input clock option to DEV_TIMER15_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF3</td>
+<td>Parent input clock option to DEV_TIMER15_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK_PARENT_CPSW_2GUSS_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER15_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK_PARENT_CPSW_9XUSS_J7AM_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER15_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>9</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK_PARENT_POSTDIV3_16FFT_MAIN_0_HSDIVOUT8_CLK</td>
+<td>Parent input clock option to DEV_TIMER15_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>10</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
+<td>Parent input clock option to DEV_TIMER15_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>11</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER15_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>12</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK_PARENT_BOARD_0_MCU_EXT_REFCLK0_OUT</td>
+<td>Parent input clock option to DEV_TIMER15_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK_PARENT_BOARD_0_EXT_REFCLK1_OUT</td>
+<td>Parent input clock option to DEV_TIMER15_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER15_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK_PARENT_BOARD_0_CPTS0_RFT_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER15_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER15_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER15_CLKSEL_VD_CLK</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="clocks-for-timer16-device">
 <span id="soc-doc-j784s4-public-clks-timer16"></span><h3>Clocks for TIMER16 Device<a class="headerlink" href="#clocks-for-timer16-device" title="Permalink to this headline">¶</a></h3>
 <p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_TIMER16</span></a> (ID = 113)</p>
@@ -16008,6 +16553,94 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="clocks-for-timer17-clksel-vd-device">
+<span id="soc-doc-j784s4-public-clks-timer17-clksel-vd"></span><h3>Clocks for TIMER17_CLKSEL_VD Device<a class="headerlink" href="#clocks-for-timer17-clksel-vd-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_TIMER17_CLKSEL_VD</span></a> (ID = 430)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="54%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER17_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK_PARENT_BOARD_0_HFOSC1_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER17_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK</td>
+<td>Parent input clock option to DEV_TIMER17_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK</td>
+<td>Parent input clock option to DEV_TIMER17_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF2</td>
+<td>Parent input clock option to DEV_TIMER17_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF3</td>
+<td>Parent input clock option to DEV_TIMER17_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK_PARENT_CPSW_2GUSS_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER17_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK_PARENT_CPSW_9XUSS_J7AM_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER17_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>9</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK_PARENT_POSTDIV3_16FFT_MAIN_0_HSDIVOUT8_CLK</td>
+<td>Parent input clock option to DEV_TIMER17_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>10</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
+<td>Parent input clock option to DEV_TIMER17_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>11</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER17_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>12</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK_PARENT_BOARD_0_MCU_EXT_REFCLK0_OUT</td>
+<td>Parent input clock option to DEV_TIMER17_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK_PARENT_BOARD_0_EXT_REFCLK1_OUT</td>
+<td>Parent input clock option to DEV_TIMER17_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER17_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK_PARENT_BOARD_0_CPTS0_RFT_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER17_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER17_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER17_CLKSEL_VD_CLK</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="clocks-for-timer18-device">
 <span id="soc-doc-j784s4-public-clks-timer18"></span><h3>Clocks for TIMER18 Device<a class="headerlink" href="#clocks-for-timer18-device" title="Permalink to this headline">¶</a></h3>
 <p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_TIMER18</span></a> (ID = 115)</p>
@@ -16080,6 +16713,182 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tr class="row-odd"><td>4</td>
 <td>DEV_TIMER19_TIMER_TCLK_CLK_PARENT_DMTIMER_DMC1MS_MAIN_18_TIMER_PWM</td>
 <td>Parent input clock option to DEV_TIMER19_TIMER_TCLK_CLK</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="clocks-for-timer19-clksel-vd-device">
+<span id="soc-doc-j784s4-public-clks-timer19-clksel-vd"></span><h3>Clocks for TIMER19_CLKSEL_VD Device<a class="headerlink" href="#clocks-for-timer19-clksel-vd-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_TIMER19_CLKSEL_VD</span></a> (ID = 431)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="54%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER19_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK_PARENT_BOARD_0_HFOSC1_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER19_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK</td>
+<td>Parent input clock option to DEV_TIMER19_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK</td>
+<td>Parent input clock option to DEV_TIMER19_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF2</td>
+<td>Parent input clock option to DEV_TIMER19_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF3</td>
+<td>Parent input clock option to DEV_TIMER19_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK_PARENT_CPSW_2GUSS_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER19_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK_PARENT_CPSW_9XUSS_J7AM_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER19_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>9</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK_PARENT_POSTDIV3_16FFT_MAIN_0_HSDIVOUT8_CLK</td>
+<td>Parent input clock option to DEV_TIMER19_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>10</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
+<td>Parent input clock option to DEV_TIMER19_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>11</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER19_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>12</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK_PARENT_BOARD_0_MCU_EXT_REFCLK0_OUT</td>
+<td>Parent input clock option to DEV_TIMER19_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK_PARENT_BOARD_0_EXT_REFCLK1_OUT</td>
+<td>Parent input clock option to DEV_TIMER19_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER19_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK_PARENT_BOARD_0_CPTS0_RFT_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER19_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER19_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER19_CLKSEL_VD_CLK</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="clocks-for-timer1-clksel-vd-device">
+<span id="soc-doc-j784s4-public-clks-timer1-clksel-vd"></span><h3>Clocks for TIMER1_CLKSEL_VD Device<a class="headerlink" href="#clocks-for-timer1-clksel-vd-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_TIMER1_CLKSEL_VD</span></a> (ID = 422)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="54%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK_PARENT_BOARD_0_HFOSC1_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK</td>
+<td>Parent input clock option to DEV_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK</td>
+<td>Parent input clock option to DEV_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF2</td>
+<td>Parent input clock option to DEV_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF3</td>
+<td>Parent input clock option to DEV_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK_PARENT_CPSW_2GUSS_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK_PARENT_CPSW_9XUSS_J7AM_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>9</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK_PARENT_POSTDIV3_16FFT_MAIN_0_HSDIVOUT8_CLK</td>
+<td>Parent input clock option to DEV_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>10</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
+<td>Parent input clock option to DEV_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>11</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>12</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK_PARENT_BOARD_0_MCU_EXT_REFCLK0_OUT</td>
+<td>Parent input clock option to DEV_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK_PARENT_BOARD_0_EXT_REFCLK1_OUT</td>
+<td>Parent input clock option to DEV_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK_PARENT_BOARD_0_CPTS0_RFT_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER1_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER1_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER1_CLKSEL_VD_CLK</td>
 </tr>
 </tbody>
 </table>
@@ -16216,6 +17025,94 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="clocks-for-timer3-clksel-vd-device">
+<span id="soc-doc-j784s4-public-clks-timer3-clksel-vd"></span><h3>Clocks for TIMER3_CLKSEL_VD Device<a class="headerlink" href="#clocks-for-timer3-clksel-vd-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_TIMER3_CLKSEL_VD</span></a> (ID = 423)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="54%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK_PARENT_BOARD_0_HFOSC1_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK</td>
+<td>Parent input clock option to DEV_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK</td>
+<td>Parent input clock option to DEV_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF2</td>
+<td>Parent input clock option to DEV_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF3</td>
+<td>Parent input clock option to DEV_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK_PARENT_CPSW_2GUSS_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK_PARENT_CPSW_9XUSS_J7AM_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>9</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK_PARENT_POSTDIV3_16FFT_MAIN_0_HSDIVOUT8_CLK</td>
+<td>Parent input clock option to DEV_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>10</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
+<td>Parent input clock option to DEV_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>11</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>12</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK_PARENT_BOARD_0_MCU_EXT_REFCLK0_OUT</td>
+<td>Parent input clock option to DEV_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK_PARENT_BOARD_0_EXT_REFCLK1_OUT</td>
+<td>Parent input clock option to DEV_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK_PARENT_BOARD_0_CPTS0_RFT_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER3_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER3_CLKSEL_VD_CLK</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="clocks-for-timer4-device">
 <span id="soc-doc-j784s4-public-clks-timer4"></span><h3>Clocks for TIMER4 Device<a class="headerlink" href="#clocks-for-timer4-device" title="Permalink to this headline">¶</a></h3>
 <p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_TIMER4</span></a> (ID = 101)</p>
@@ -16344,6 +17241,94 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tr class="row-odd"><td>4</td>
 <td>DEV_TIMER5_TIMER_TCLK_CLK_PARENT_DMTIMER_DMC1MS_MAIN_4_TIMER_PWM</td>
 <td>Parent input clock option to DEV_TIMER5_TIMER_TCLK_CLK</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="clocks-for-timer5-clksel-vd-device">
+<span id="soc-doc-j784s4-public-clks-timer5-clksel-vd"></span><h3>Clocks for TIMER5_CLKSEL_VD Device<a class="headerlink" href="#clocks-for-timer5-clksel-vd-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_TIMER5_CLKSEL_VD</span></a> (ID = 424)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="54%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK_PARENT_BOARD_0_HFOSC1_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK</td>
+<td>Parent input clock option to DEV_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK</td>
+<td>Parent input clock option to DEV_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF2</td>
+<td>Parent input clock option to DEV_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF3</td>
+<td>Parent input clock option to DEV_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK_PARENT_CPSW_2GUSS_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK_PARENT_CPSW_9XUSS_J7AM_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>9</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK_PARENT_POSTDIV3_16FFT_MAIN_0_HSDIVOUT8_CLK</td>
+<td>Parent input clock option to DEV_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>10</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
+<td>Parent input clock option to DEV_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>11</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>12</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK_PARENT_BOARD_0_MCU_EXT_REFCLK0_OUT</td>
+<td>Parent input clock option to DEV_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK_PARENT_BOARD_0_EXT_REFCLK1_OUT</td>
+<td>Parent input clock option to DEV_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK_PARENT_BOARD_0_CPTS0_RFT_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER5_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER5_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER5_CLKSEL_VD_CLK</td>
 </tr>
 </tbody>
 </table>
@@ -16480,6 +17465,94 @@ represented in this section from the <em>perspective of the board</em>.</p>
 </tbody>
 </table>
 </div>
+<div class="section" id="clocks-for-timer7-clksel-vd-device">
+<span id="soc-doc-j784s4-public-clks-timer7-clksel-vd"></span><h3>Clocks for TIMER7_CLKSEL_VD Device<a class="headerlink" href="#clocks-for-timer7-clksel-vd-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_TIMER7_CLKSEL_VD</span></a> (ID = 425)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="54%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK_PARENT_BOARD_0_HFOSC1_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK</td>
+<td>Parent input clock option to DEV_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK</td>
+<td>Parent input clock option to DEV_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF2</td>
+<td>Parent input clock option to DEV_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF3</td>
+<td>Parent input clock option to DEV_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK_PARENT_CPSW_2GUSS_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK_PARENT_CPSW_9XUSS_J7AM_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>9</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK_PARENT_POSTDIV3_16FFT_MAIN_0_HSDIVOUT8_CLK</td>
+<td>Parent input clock option to DEV_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>10</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
+<td>Parent input clock option to DEV_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>11</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>12</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK_PARENT_BOARD_0_MCU_EXT_REFCLK0_OUT</td>
+<td>Parent input clock option to DEV_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK_PARENT_BOARD_0_EXT_REFCLK1_OUT</td>
+<td>Parent input clock option to DEV_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK_PARENT_BOARD_0_CPTS0_RFT_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER7_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER7_CLKSEL_VD_CLK</td>
+</tr>
+</tbody>
+</table>
+</div>
 <div class="section" id="clocks-for-timer8-device">
 <span id="soc-doc-j784s4-public-clks-timer8"></span><h3>Clocks for TIMER8 Device<a class="headerlink" href="#clocks-for-timer8-device" title="Permalink to this headline">¶</a></h3>
 <p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_TIMER8</span></a> (ID = 105)</p>
@@ -16608,6 +17681,94 @@ represented in this section from the <em>perspective of the board</em>.</p>
 <tr class="row-odd"><td>4</td>
 <td>DEV_TIMER9_TIMER_TCLK_CLK_PARENT_DMTIMER_DMC1MS_MAIN_8_TIMER_PWM</td>
 <td>Parent input clock option to DEV_TIMER9_TIMER_TCLK_CLK</td>
+</tr>
+</tbody>
+</table>
+</div>
+<div class="section" id="clocks-for-timer9-clksel-vd-device">
+<span id="soc-doc-j784s4-public-clks-timer9-clksel-vd"></span><h3>Clocks for TIMER9_CLKSEL_VD Device<a class="headerlink" href="#clocks-for-timer9-clksel-vd-device" title="Permalink to this headline">¶</a></h3>
+<p>Device: <a class="reference internal" href="devices.html#soc-doc-j784s4-public-devices-desc-device-list"><span class="std std-ref">J784S4_DEV_TIMER9_CLKSEL_VD</span></a> (ID = 426)</p>
+<p>Following is a mapping of Clocks IDs to function:</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="8%" />
+<col width="54%" />
+<col width="38%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Clock ID</th>
+<th class="head">Name</th>
+<th class="head">Function</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>0</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK</td>
+<td>Input muxed clock</td>
+</tr>
+<tr class="row-odd"><td>1</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK_PARENT_GLUELOGIC_HFOSC0_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>2</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK_PARENT_BOARD_0_HFOSC1_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>3</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK_PARENT_POSTDIV2_16FFT_MAIN_2_HSDIVOUT6_CLK</td>
+<td>Parent input clock option to DEV_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>4</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK_PARENT_HSDIV2_16FFT_MAIN_4_HSDIVOUT2_CLK</td>
+<td>Parent input clock option to DEV_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>5</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF2</td>
+<td>Parent input clock option to DEV_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>6</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK_PARENT_NAVSS512J7AM_MAIN_0_CPTS0_GENF3</td>
+<td>Parent input clock option to DEV_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>7</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK_PARENT_CPSW_2GUSS_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>8</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK_PARENT_CPSW_9XUSS_J7AM_MAIN_0_CPTS_GENF0</td>
+<td>Parent input clock option to DEV_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>9</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK_PARENT_POSTDIV3_16FFT_MAIN_0_HSDIVOUT8_CLK</td>
+<td>Parent input clock option to DEV_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>10</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK_PARENT_J7AM_WAKEUP_16FF_WKUP_0_WKUP_RCOSC_12P5M_CLK</td>
+<td>Parent input clock option to DEV_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>11</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_3_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>12</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK_PARENT_BOARD_0_MCU_EXT_REFCLK0_OUT</td>
+<td>Parent input clock option to DEV_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>13</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK_PARENT_BOARD_0_EXT_REFCLK1_OUT</td>
+<td>Parent input clock option to DEV_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>14</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK_PARENT_GLUELOGIC_LPXOSC_CLKOUT</td>
+<td>Parent input clock option to DEV_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-odd"><td>15</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK_PARENT_BOARD_0_CPTS0_RFT_CLK_OUT</td>
+<td>Parent input clock option to DEV_TIMER9_CLKSEL_VD_CLK</td>
+</tr>
+<tr class="row-even"><td>16</td>
+<td>DEV_TIMER9_CLKSEL_VD_CLK_PARENT_HSDIV4_16FFT_MAIN_1_HSDIVOUT3_CLK</td>
+<td>Parent input clock option to DEV_TIMER9_CLKSEL_VD_CLK</td>
 </tr>
 </tbody>
 </table>
@@ -17748,7 +18909,7 @@ represented in this section from the <em>perspective of the board</em>.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'09.00.06',
+            VERSION:'09.01.00',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true
