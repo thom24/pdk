@@ -2589,7 +2589,7 @@ static int32_t Udma_rmGetSciclientDefaultBoardCfgRmRange(const Udma_RmDefBoardCf
      * a particular SOC dosen't have any.
      * (Here, no TISCI define for those resource will be defined for the SOC)
      */
-    if((UDMA_RM_SCI_REQ_TYPE_INVALID != req.type) && (UDMA_RM_SCI_REQ_SUBTYPE_INVALID != req.type))
+    if((UDMA_RM_SCI_REQ_TYPE_INVALID != req.type) && (UDMA_RM_SCI_REQ_SUBTYPE_INVALID != req.subtype))
     {
         /* Get resource number range */
         retVal =  Sciclient_rmGetResourceRange(
