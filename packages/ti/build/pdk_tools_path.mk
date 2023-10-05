@@ -12,7 +12,7 @@ endif
   GCC_ARCH64_BIN_PREFIX_STR=aarch64-none-elf
   CGT_VERSION=8.3.7
   CGT_C7X_VERSION=3.1.0.LTS
-  CGT_ARMLLVM_VERSION=3.1.0.STS
+  CGT_ARMLLVM_VERSION=3.2.0.LTS
   CG_XML_VERSION=2.61.00
 
 ################################################################################
