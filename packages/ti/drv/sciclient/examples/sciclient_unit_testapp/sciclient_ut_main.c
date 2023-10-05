@@ -925,7 +925,7 @@ static int32_t App_pvu2R5IntrTest(void)
         HwiP_Handle hwiPHandleCmbnIntr;
 
         Osal_RegisterInterrupt_initParams(&intrPrmsCmbnIntr);
-        intrPrmsCmbnIntr.corepacConfig.isrRoutine       = (void*)App_pvu2R5IntrTestIsr;
+        intrPrmsCmbnIntr.corepacConfig.isrRoutine       = (void (*)(uintptr_t))App_pvu2R5IntrTestIsr;
         intrPrmsCmbnIntr.corepacConfig.corepacEventNum  = 0;
         intrPrmsCmbnIntr.corepacConfig.intVecNum        = rmIrqReq.dst_host_irq;
         status = Osal_RegisterInterrupt(&intrPrmsCmbnIntr, &hwiPHandleCmbnIntr);
