@@ -416,7 +416,7 @@ static void Nor_ospiSetOpcode(OSPI_Handle handle)
         }
         else
         {
-            rdDummyCycles = NOR_OCTAL_READ_DUMMY_CYCLE_INDAC - 1U;
+            rdDummyCycles = NOR_OCTAL_READ_DUMMY_CYCLE_INDAC;
             latencyCode   = NOR_OCTAL_READ_DUMMY_CYCLE_LC_INDAC;
         }
 
@@ -424,9 +424,9 @@ static void Nor_ospiSetOpcode(OSPI_Handle handle)
         {
             cmdDummyCycles = NOR_OCTAL_SDR_CMD_READ_DUMMY_CYCLE;
             readCmd = NOR_CMD_OCTAL_DDR_READ;
-            if (gPhyEnable == (bool)false)
+            if (gPhyEnable == (bool)true)
             {
-                rdDummyCycles += 1;
+                rdDummyCycles -= 1;
             }
         }
         else
