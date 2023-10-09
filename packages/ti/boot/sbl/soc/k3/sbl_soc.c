@@ -360,6 +360,11 @@ int32_t SBL_VerifyMulticoreImage(void **img_handle,
         SBL_log(SBL_LOG_MAX,"Copying %d bytes from app to 0x%x\r\n", cert_len + pad_align, scratch_mem_ptr);
         fp_readData(scratch_mem_ptr, *img_handle, cert_len + pad_align);
         fp_seek(*img_handle, *ImageOffsetPtr);
+
+        /* Above API fp_readData() does CPU copy of certificate attached to appimage
+           to SBL scratch memory, Hence write back the R5 cache to OCMC memory, so that
+           M3/M4 can read the latest contents */
+        CacheP_wb(scratch_mem_ptr, cert_len + pad_align);
         cert_load_addr = (uint32_t)scratch_mem_ptr;
 
         img_len = SBL_GetMsgLen(scratch_mem_ptr, cert_len);
