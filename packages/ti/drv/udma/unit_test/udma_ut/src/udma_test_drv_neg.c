@@ -365,7 +365,6 @@ int32_t udmaTestUdmaInitEventRegTc(UdmaTestTaskObj *taskObj)
     int32_t  retVal           = UDMA_SOK;
     uint32_t instId           = 0U;
     uint16_t dst_Idx          = 0U;
-    uint16_t irIntrNum        = 0U;
     uint16_t dst_Id           = 0U;
     UdmaTestObj *testObj      = taskObj->testObj;
     Udma_DrvHandle drvHandle  = (Udma_DrvHandle) NULL_PTR;
@@ -387,51 +386,64 @@ int32_t udmaTestUdmaInitEventRegTc(UdmaTestTaskObj *taskObj)
             drvHandle = &testObj->drvObj[instId];
             UdmaInitPrms_init(instId, &initPrms);
             Udma_initDrvHandle(drvHandle);
-            irIntrNum = initPrms.rmInitPrms.startIrIntr;
             dst_Id  = Udma_getCoreSciDevId();
-
+#if defined (_TMS320C6X)
+            /*
+             * For C66x Sciclient translates NAVSS IR Idx to corresponding C66 IR Idx,
+             * Not the Core Interrupt Idx.
+             */
+            dst_Idx = initPrms.rmInitPrms.startC66xCoreIntr;
+#else
+            uint16_t irIntrNum = initPrms.rmInitPrms.startIrIntr;
             retVal = Sciclient_rmIrqTranslateIrOutput(drvHandle->devIdIr, irIntrNum, dst_Id, &dst_Idx);
             if(UDMA_SOK != retVal)
             {
                 GT_1trace(testObj->traceMask, GT_ERR, "Sciclient RmIrq failed for an instId %d!!!\n", instId);
             }
-            rmIrqReq.valid_params           = 0U;
-            rmIrqReq.valid_params          |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
-            rmIrqReq.valid_params          |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-            rmIrqReq.valid_params          |= TISCI_MSG_VALUE_RM_IA_ID_VALID;
-            rmIrqReq.valid_params          |= TISCI_MSG_VALUE_RM_VINT_VALID;
-            rmIrqReq.global_event           = 0U;
-            rmIrqReq.src_id                 = 0U;
-            rmIrqReq.src_index              = 0U;
-            rmIrqReq.dst_id                 = dst_Id;
-            rmIrqReq.dst_host_irq           = dst_Idx;
-            rmIrqReq.ia_id                  = drvHandle->devIdIa;
-            rmIrqReq.vint                   = initPrms.rmInitPrms.startVintr;
-            rmIrqReq.vint_status_bit_index  = 0U;
-            rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
-
-            /* Get Resource */
-            retVal = Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, UDMA_SCICLIENT_TIMEOUT);
-            if(UDMA_SOK != retVal)
-            {
-                GT_1trace(testObj->traceMask, GT_ERR, "Sciclient Irq Set failed for an instId %d!!!\n", instId);
-            }
-            drvHandle->initPrms.printFxn = &udmaDrvPrint;
-            initPrms.printFxn            = &udmaDrvPrint;
-            retVal = Udma_init(drvHandle, &initPrms);
-            if(UDMA_SOK != retVal)
-            {
-                GT_1trace(testObj->traceMask, GT_INFO1, " |TEST INFO|:: Test%d:: Pass\r\n", instId);
-            }
             else
+#endif
             {
-                GT_1trace(testObj->traceMask, GT_ERR, " |TEST INFO|:: Test%d:: Failed!!!\r\n", instId);
-            }
+                rmIrqReq.valid_params           = 0U;
+                rmIrqReq.valid_params          |= TISCI_MSG_VALUE_RM_DST_ID_VALID;
+                rmIrqReq.valid_params          |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+                rmIrqReq.valid_params          |= TISCI_MSG_VALUE_RM_IA_ID_VALID;
+                rmIrqReq.valid_params          |= TISCI_MSG_VALUE_RM_VINT_VALID;
+                rmIrqReq.global_event           = 0U;
+                rmIrqReq.src_id                 = 0U;
+                rmIrqReq.src_index              = 0U;
+                rmIrqReq.dst_id                 = dst_Id;
+                rmIrqReq.dst_host_irq           = dst_Idx;
+                rmIrqReq.ia_id                  = drvHandle->devIdIa;
+                rmIrqReq.vint                   = initPrms.rmInitPrms.startVintr;
+                rmIrqReq.vint_status_bit_index  = 0U;
+                rmIrqReq.secondary_host         = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
 
-            retVal = Sciclient_rmIrqRelease((struct tisci_msg_rm_irq_release_req*)&rmIrqReq, UDMA_SCICLIENT_TIMEOUT);
-            if(UDMA_SOK != retVal)
-            {
-                GT_1trace(testObj->traceMask, GT_ERR, " Sciclient Irq Release failed for an instId %d!!!\n", instId);
+                /* Get Resource */
+                retVal = Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, UDMA_SCICLIENT_TIMEOUT);
+                if(UDMA_SOK != retVal)
+                {
+                    GT_1trace(testObj->traceMask, GT_ERR, "Sciclient Irq Set failed for an instId %d!!!\n", instId);
+                }
+                else
+                {
+                    drvHandle->initPrms.printFxn = &udmaDrvPrint;
+                    initPrms.printFxn            = &udmaDrvPrint;
+                    retVal = Udma_init(drvHandle, &initPrms);
+                    if(UDMA_SOK != retVal)
+                    {
+                        GT_1trace(testObj->traceMask, GT_INFO1, " |TEST INFO|:: Test%d:: Pass\r\n", instId);
+                    }
+                    else
+                    {
+                        GT_1trace(testObj->traceMask, GT_ERR, " |TEST INFO|:: Test%d:: Failed!!!\r\n", instId);
+                    }
+
+                    retVal = Sciclient_rmIrqRelease((struct tisci_msg_rm_irq_release_req*)&rmIrqReq, UDMA_SCICLIENT_TIMEOUT);
+                    if(UDMA_SOK != retVal)
+                    {
+                        GT_1trace(testObj->traceMask, GT_ERR, " Sciclient Irq Release failed for an instId %d!!!\n", instId);
+                    }
+                }
             }
         }
     }
