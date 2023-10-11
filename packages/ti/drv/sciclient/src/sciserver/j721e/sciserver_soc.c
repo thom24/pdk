@@ -41,6 +41,7 @@
 #include <types/short_types.h>
 #include <lib/mmr_lock.h>
 #include <ti/drv/sciclient/sciserver.h>
+#include <string.h>
 
 static void Sciserver_enableAcspcie (void);
 static void J721E_ClearBootInterrupts (void);
