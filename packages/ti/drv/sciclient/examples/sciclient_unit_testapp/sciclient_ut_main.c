@@ -113,6 +113,10 @@ static int32_t App_pvu2GICIntrTest(void);
 static int32_t App_mainUart2MCUR5IntrTest(void);
 #endif
 
+#if ((defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)) && (BUILD_MCU1_0))
+static int32_t App_sciclientPmMessageTest(void);
+#endif
+
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -228,6 +232,11 @@ int32_t App_sciclientTestMain(App_sciclientTestParams_t *testParams)
 #if ((defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)) && defined (BUILD_MCU1_0))
         case 10:
             testParams->testResult = App_mainUart2MCUR5IntrTest();
+            break;
+#endif
+#if ((defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)) && (BUILD_MCU1_0))
+        case 11:
+            testParams->testResult = App_sciclientPmMessageTest();
             break;
 #endif
         default:
@@ -810,17 +819,17 @@ static int32_t App_fwExcpNotificationTest(void)
     HwiP_Handle hwiPHandleCmbnIntr;
 
     App_sciclientPrintf(" Starting firewall notification handling (from secure queue)\n");
-    
+
     excpRegDmsc = (volatile uint32_t*)DMSC_FW_EXCP_REG;
     excpRegCmbn = (volatile uint32_t*)CMBN_FW_EXCP_REG;
-    
+
     /* Register an abort exception handler */
     Intc_InitExptnHandlers(&sciclientR5ExptnHandlers);
     sciclientR5ExptnHandlers.dabtExptnHandler = (void*)App_fwAbortHandlerIsr;
     Intc_RegisterExptnHandlers(&sciclientR5ExptnHandlers);
 
     /* Interrupt registration for dmsc interrupt notification routing */
-    Osal_RegisterInterrupt_initParams(&intrPrmsCmbnIntr);  
+    Osal_RegisterInterrupt_initParams(&intrPrmsCmbnIntr);
     intrPrmsCmbnIntr.corepacConfig.isrRoutine       =
                                 (void*)App_fwNotiIsrCmbn;
     intrPrmsCmbnIntr.corepacConfig.corepacEventNum  = 0;
@@ -828,13 +837,13 @@ static int32_t App_fwExcpNotificationTest(void)
     status =Osal_RegisterInterrupt(&intrPrmsCmbnIntr, &hwiPHandleCmbnIntr);
 
     /* Interrupt registration for dmsc interrupt notification routing */
-    Osal_RegisterInterrupt_initParams(&intrPrmsDmscIntr);                                                              
+    Osal_RegisterInterrupt_initParams(&intrPrmsDmscIntr);
     intrPrmsDmscIntr.corepacConfig.isrRoutine       =
                                 (void*)App_fwNotiIsrDmsc;
     intrPrmsDmscIntr.corepacConfig.corepacEventNum  = 0;
     intrPrmsDmscIntr.corepacConfig.intVecNum        = DMSC_FW_EXCEPTION_INTR;
     status =Osal_RegisterInterrupt(&intrPrmsDmscIntr, &hwiPHandleDmscIntr);
-    
+
     /* Invoking a firewall exception notification for the dmsc exception handler by writing to dmsc address */
     *excpRegDmsc = 0x01;
 
@@ -908,7 +917,7 @@ static int32_t App_pvu2R5IntrTest(void)
         status  = Sciclient_rmGetResourceRange(&req,
                                                &res,
                                                SCICLIENT_SERVICE_WAIT_FOREVER);
-        
+
         if(status == CSL_PASS)
         {
             App_sciclientPrintf("Sciclient_rmGetResourceRange() execution is successful\n");
@@ -994,7 +1003,7 @@ static int32_t App_pvu2R5IntrTest(void)
         if(pvu2R5_route_status == CSL_PASS)
         {
             App_sciclientPrintf("\nDeleting PVU to Main R5 Interrupt Route\n");
-            
+
             rmIrqReqRel.valid_params   = TISCI_MSG_VALUE_RM_DST_ID_VALID;
             rmIrqReqRel.valid_params  |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
             rmIrqReqRel.src_id         = TISCI_DEV_NAVSS0_PVU_0;
@@ -1024,7 +1033,7 @@ static int32_t App_pvu2R5IntrTest(void)
     {
         status = Sciclient_deinit();
     }
-        
+
     return status;
 }
 #endif
@@ -1067,7 +1076,7 @@ static int32_t App_pvu2GICIntrTest(void)
 
         status  = Sciclient_rmGetResourceRange(&req,
                                                &res,
-                                               SCICLIENT_SERVICE_WAIT_FOREVER);        
+                                               SCICLIENT_SERVICE_WAIT_FOREVER);
         if(status == CSL_PASS)
         {
             App_sciclientPrintf("Sciclient_rmGetResourceRange() execution is successful\n");
@@ -1120,7 +1129,7 @@ static int32_t App_pvu2GICIntrTest(void)
     {
         status = Sciclient_deinit();
     }
-        
+
     return status;
 }
 #endif
@@ -1187,14 +1196,14 @@ static int32_t App_mainUart2MCUR5IntrTest(void)
     /* Sets the Main UART configuration */
     UART_socGetInitCfg(BOARD_UART_INSTANCE, &uartHwAttrs);
     App_setMainUartHwAttrs(BOARD_UART_INSTANCE, &uartHwAttrs);
-    
+
     (uartHwAttrs).configSocIntrPath = NULL;
     /* Programs the interrupt route between Main domain UART and MCU R5F core */
     req.type = TISCI_DEV_MAIN2MCU_LVL_INTRTR0;
     req.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
     status  = Sciclient_rmGetResourceRange(&req,
                                         &res,
-                                        SCICLIENT_SERVICE_WAIT_FOREVER);    
+                                        SCICLIENT_SERVICE_WAIT_FOREVER);
     if(status == CSL_PASS)
     {
         status = Sciclient_rmIrqTranslateIrOutput(req.type,
@@ -1260,5 +1269,293 @@ extern void Osal_initMmuDefault(void);
 void InitMmu(void)
 {
     Osal_initMmuDefault();
+}
+#endif
+
+#if ((defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)) && (BUILD_MCU1_0))
+static int32_t App_sciclientPmMessageTest(void)
+{
+    int32_t status = CSL_PASS;
+    int32_t sciclientInitStatus = CSL_PASS;
+    int32_t pmMessageTestStatus = CSL_PASS;
+    uint64_t reqFreq = 164UL;
+    uint64_t respFreq = 0UL;
+    uint32_t clockStatus = 1U;
+#if defined(SOC_J721S2) || defined(SOC_J784S4)
+    uint32_t parentStatus = 0U;
+    uint32_t numParents = 0U;
+#endif
+    uint64_t freq = 0UL;
+    uint32_t ModuleState = 0U;
+    uint32_t ResetState = 0U;
+    uint32_t ContextLossState = 0U;
+    Sciclient_ConfigPrms_t        config =
+    {
+        SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
+        NULL,
+        1U,
+        0U,
+        TRUE
+    };
+
+    while (gSciclientHandle.initCount != 0)
+    {
+        status = Sciclient_deinit();
+    }
+    status = Sciclient_init(&config);
+    sciclientInitStatus = status;
+
+    if (status == CSL_PASS)
+    {
+        App_sciclientPrintf ("Sciclient_Init Passed.\n");
+        status = Sciclient_pmQueryModuleClkFreq(TISCI_DEV_UART1,
+                                                TISCI_DEV_UART1_FCLK_CLK,
+                                                reqFreq,
+                                                &respFreq,
+                                                SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status == CSL_PASS)
+        {
+            pmMessageTestStatus += CSL_PASS;
+            App_sciclientPrintf ("Sciclient_pmQueryModuleClkFreq Test Passed.\n");
+        }
+        else
+        {
+            pmMessageTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_pmQueryModuleClkFreq Test Failed.\n");
+        }
+
+        status = Sciclient_pmModuleGetClkStatus(TISCI_DEV_UART1,
+                                                TISCI_DEV_UART1_FCLK_CLK,
+                                                &clockStatus,
+                                                SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status == CSL_PASS)
+        {
+            pmMessageTestStatus += CSL_PASS;
+            App_sciclientPrintf ("Sciclient_pmModuleGetClkStatus Test Passed.\n");
+        }
+        else
+        {
+            pmMessageTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_pmModuleGetClkStatus Test Failed.\n");
+        }
+
+        status = Sciclient_pmModuleClkRequest(TISCI_DEV_UART1,
+                                              TISCI_DEV_UART1_FCLK_CLK,
+                                              TISCI_MSG_VALUE_CLOCK_HW_STATE_READY,
+                                              0U,
+                                              SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status == CSL_PASS)
+        {
+            pmMessageTestStatus += CSL_PASS;
+            App_sciclientPrintf ("Sciclient_pmModuleClkRequest Test Passed.\n");
+        }
+        else
+        {
+            pmMessageTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_pmModuleClkRequest Test Failed.\n");
+        }
+
+    #if defined(SOC_J721S2) || defined(SOC_J784S4)
+       status = Sciclient_pmSetModuleClkParent(TISCI_DEV_MCSPI1,
+                                                TISCI_DEV_MCSPI1_IO_CLKSPII_CLK,
+                                                TISCI_DEV_MCSPI1_IO_CLKSPII_CLK_PARENT_BOARD_0_SPI1_CLK_OUT,
+                                                SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status == CSL_PASS)
+        {
+            pmMessageTestStatus += CSL_PASS;
+            App_sciclientPrintf ("Sciclient_pmSetModuleClkParent Test Passed.\n");
+        }
+        else
+        {
+            pmMessageTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_pmSetModuleClkParent Test Failed.\n");
+        }
+
+        status = Sciclient_pmGetModuleClkParent(TISCI_DEV_MCSPI1,
+                                                TISCI_DEV_MCSPI1_IO_CLKSPII_CLK,
+                                                &parentStatus,
+                                                SCICLIENT_SERVICE_WAIT_FOREVER);
+        if ((status == CSL_PASS) && (parentStatus == TISCI_DEV_MCSPI1_IO_CLKSPII_CLK_PARENT_BOARD_0_SPI1_CLK_OUT))
+        {
+            pmMessageTestStatus += CSL_PASS;
+            App_sciclientPrintf ("Sciclient_pmGetModuleClkParent Test Passed.\n");
+        }
+        else
+        {
+            pmMessageTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_pmGetModuleClkParent Test Failed.\n");
+        }
+
+        status = Sciclient_pmGetModuleClkNumParent(TISCI_DEV_MCSPI1_IO_CLKSPII_CLK,
+                                                  TISCI_DEV_MCSPI1_IO_CLKSPII_CLK_PARENT_BOARD_0_SPI1_CLK_OUT,
+                                                  &numParents,
+                                                  SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status == CSL_PASS)
+        {
+            pmMessageTestStatus += CSL_PASS;
+            App_sciclientPrintf ("Sciclient_pmGetModuleClkNumParent Test Passed.\n");
+        }
+        else
+        {
+            pmMessageTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_pmGetModuleClkNumParent Test Failed.\n");
+        }
+    #endif
+
+        status = Sciclient_pmSetModuleClkFreq(TISCI_DEV_UART1,
+                                              TISCI_DEV_UART1_FCLK_CLK,
+                                              reqFreq,
+                                              TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE,
+                                              SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status == CSL_PASS)
+        {
+            pmMessageTestStatus += CSL_PASS;
+            App_sciclientPrintf ("Sciclient_pmSetModuleClkFreq Test Passed.\n");
+        }
+        else
+        {
+            pmMessageTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_pmSetModuleClkFreq Test Failed.\n");
+        }
+
+        status = Sciclient_pmGetModuleClkFreq(TISCI_DEV_UART1,
+                                              TISCI_DEV_UART1_FCLK_CLK,
+                                              &freq,
+                                              SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status == CSL_PASS)
+        {
+            pmMessageTestStatus += CSL_PASS;
+            App_sciclientPrintf ("Sciclient_pmGetModuleClkFreq Test Passed.\n");
+        }
+        else
+        {
+            pmMessageTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_pmGetModuleClkFreq Test Failed.\n");
+        }
+
+        status = Sciclient_pmSetModuleState(SCICLIENT_DEV_MCU_R5FSS0_CORE0,
+                                            TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                                            0U,
+                                            SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status == CSL_PASS)
+        {
+            pmMessageTestStatus += CSL_PASS;
+            App_sciclientPrintf ("Sciclient_pmSetModuleState: SCICLIENT_DEV_MCU_R5FSS0_CORE0 Test Passed.\n");
+        }
+        else
+        {
+            pmMessageTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_pmSetModuleState: SCICLIENT_DEV_MCU_R5FSS0_CORE0 Test Failed.\n");
+        }
+
+        status = Sciclient_pmSetModuleState(SCICLIENT_DEV_MCU_R5FSS0_CORE1,
+                                            TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                                            0U,
+                                            SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status == CSL_PASS)
+        {
+            pmMessageTestStatus += CSL_PASS;
+            App_sciclientPrintf ("Sciclient_pmSetModuleState: SCICLIENT_DEV_MCU_R5FSS0_CORE1 Test Passed.\n");
+        }
+        else
+        {
+            pmMessageTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_pmSetModuleState: SCICLIENT_DEV_MCU_R5FSS0_CORE1 Test Failed.\n");
+        }
+
+        status = Sciclient_pmSetModuleState(TISCI_DEV_BOARD0,
+                                            TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
+                                            TISCI_MSG_FLAG_AOP,
+                                            SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status == CSL_PASS)
+        {
+            pmMessageTestStatus += CSL_PASS;
+            App_sciclientPrintf ("TISCI_DEV_BOARD0 TISCI_MSG_VALUE_DEVICE_SW_STATE_ON Test Passed.\n");
+        }
+        else
+        {
+            pmMessageTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("TISCI_DEV_BOARD0 TISCI_MSG_VALUE_DEVICE_SW_STATE_ON Test Failed.\n");
+        }
+
+        status = Sciclient_pmGetModuleState(SCICLIENT_DEV_MCU_R5FSS0_CORE0,
+                                            &ModuleState,
+                                            &ResetState,
+                                            &ContextLossState,
+                                            SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status == CSL_PASS)
+        {
+            pmMessageTestStatus += CSL_PASS;
+            App_sciclientPrintf ("SCICLIENT_DEV_MCU_R5FSS0_CORE0 States: \n");
+            App_sciclientPrintf("ModuleState: %d\n", ModuleState);
+            App_sciclientPrintf("ResetState: %d\n", ResetState);
+            App_sciclientPrintf("ContextLossState: %d\n", ContextLossState);
+            App_sciclientPrintf ("Sciclient_pmGetModuleState Test Passed.\n");
+        }
+        else
+        {
+            pmMessageTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_pmGetModuleState Test Failed.\n");
+        }
+
+        status = Sciclient_pmSetModuleRst(SCICLIENT_DEV_MCU_R5FSS0_CORE0,
+                                          1U,
+                                          SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status == CSL_PASS)
+        {
+            pmMessageTestStatus += CSL_PASS;
+            App_sciclientPrintf ("Sciclient_pmSetModuleRst: SCICLIENT_DEV_MCU_R5FSS0_CORE0 Test Passed.\n");
+        }
+        else
+        {
+            pmMessageTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_pmSetModuleRst: SCICLIENT_DEV_MCU_R5FSS0_CORE0 Test Failed.\n");
+        }
+
+        status = Sciclient_pmSetModuleRst(SCICLIENT_DEV_MCU_R5FSS0_CORE1,
+                                          1U,
+                                          SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status == CSL_PASS)
+        {
+            pmMessageTestStatus += CSL_PASS;
+            App_sciclientPrintf ("Sciclient_pmSetModuleRst: SCICLIENT_DEV_MCU_R5FSS0_CORE1 Test Passed.\n");
+        }
+        else
+        {
+            pmMessageTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_pmSetModuleRst: SCICLIENT_DEV_MCU_R5FSS0_CORE1 Test Failed.\n");
+        }
+    }
+    else
+    {
+        pmMessageTestStatus += CSL_EFAIL;
+        App_sciclientPrintf ("Sciclient_Init Failed.\n");
+    }
+
+    if (sciclientInitStatus == CSL_PASS)
+    {
+        status = Sciclient_deinit();
+        if(status == CSL_PASS)
+        {
+            pmMessageTestStatus += CSL_PASS;
+            App_sciclientPrintf ("Sciclient_deinit Passed.\n");
+        }
+        else
+        {
+            pmMessageTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_deinit Failed.\n");
+        }
+    }
+
+    if(pmMessageTestStatus < 0U)
+    {
+        pmMessageTestStatus = CSL_EFAIL;
+    }
+    else
+    {
+        pmMessageTestStatus = CSL_PASS;
+    }
+
+    return pmMessageTestStatus;
 }
 #endif

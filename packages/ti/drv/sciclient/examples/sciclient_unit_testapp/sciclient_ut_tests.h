@@ -460,7 +460,44 @@ App_sciclientTestParams_t gSciclientTestcaseParams[] =
 
         /** testType **/
         (APP_SCICLIENT_TEST_TYPE_SANITY)
-    }
+    },
+#endif
+
+#if ((defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)) && (BUILD_MCU1_0))
+{
+    /** enableTest **/
+    TEST_ENABLE,
+
+    /** testCaseId **/
+    11U,
+
+    /** *reqId **/
+    "None",
+
+    /** *testCaseName **/
+    "Sciclient PM Related Functions Testcase",
+
+    /** *userInfo **/
+    "None",
+
+    /** *disableReason **/
+    "None",
+
+    /** *passFailCriteria **/
+    "Testcase to cover PM related functions ",
+
+    /** cpuID **/
+    APP_SCICLIENT_R5F,
+
+    /** sciclientConfigParams **/
+    {},
+
+    /** printEnable **/
+    PRINT_ENABLE,
+
+    /** testType **/
+    (APP_SCICLIENT_TEST_TYPE_NEGATIVE)
+  }
 #endif
 };
 
