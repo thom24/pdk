@@ -46,6 +46,7 @@
 #include <ti/drv/spi/SPI.h>
 #include <ti/drv/spi/src/v0/OSPI_v0.h>
 #include <ti/drv/spi/src/SPI_osal.h>
+#include <ti/csl/src/ip/fss/V0/csl_fss.h>
 
 #define OSPI_DAC_WRITE_TIMEOUT      (500000U)
 #define OSPI_CHECK_IDLE_DELAY       (10U)
@@ -393,9 +394,10 @@ static OSPI_Handle OSPI_open_v0(OSPI_Handle handle, const OSPI_Params *params)
 {
     SemaphoreP_Params        semParams;
     uintptr_t                key;
-    OSPI_Handle               retHandle = handle;
+    OSPI_Handle              retHandle = handle;
     OSPI_v0_Object          *object = NULL;
     OSPI_v0_HwAttrs const   *hwAttrs = NULL;
+    CSL_FssCfg               fssCfg;
 	OsalRegisterIntrParams_t interruptRegParams;
     int32_t                  retFlag = 0;
     uint32_t                 numAddrBytes;
@@ -545,6 +547,14 @@ static OSPI_Handle OSPI_open_v0(OSPI_Handle handle, const OSPI_Params *params)
                 {
                     /* Disable XIP */
                     CSL_ospiXipEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), FALSE);
+                    /** 
+                     * Turn off FSS XIP prefetch when the controller isn’t operating in XIP mode. 
+                     * The FSS prefetches 32 bytes ahead of time, and if the flash data is updated,
+                     * the FSS will still return the prefetched data instead of initiating a new read request.
+                     * XIP prefetch should be enabled only if the controller is in XIP mode else disabled.
+                    */
+                    fssCfg.pFsasRegs = (CSL_fss_fsas_genregsRegs *)CSL_MCU_FSS0_FSAS_CFG_BASE;
+                    CSL_fssOspiSetXipPrefetchEnable(&fssCfg, CSL_FSS_FSAS_INTERFACE_PATH_SELECT_OSPI0, FALSE);
                 }
 
                 /* Disable OSPI controller */
@@ -1684,6 +1694,7 @@ static int32_t OSPI_control_v0(OSPI_Handle handle, uint32_t cmd, const void *arg
     uint32_t               data;
     uint32_t               extOpcodeLo;
     uint32_t               extOpcodeUp;
+    CSL_FssCfg             fssCfg;
 
     if (handle != NULL)
     {
@@ -1871,6 +1882,14 @@ static int32_t OSPI_control_v0(OSPI_Handle handle, uint32_t cmd, const void *arg
                     data = *ctrlData;
 
                     (void)OSPI_enableXip(handle, nvcrCmd , addr, data);
+                    /** 
+                     * Turn on FSS XIP prefetch when the controller is operating in XIP mode. 
+                     * The FSS prefetches 32 bytes ahead of time, and if the flash data is updated,
+                     * the FSS will still return the prefetched data instead of initiating a new read request.
+                     * XIP prefetch should be enabled only if the controller is in XIP mode else disabled.
+                    */
+                    fssCfg.pFsasRegs = (CSL_fss_fsas_genregsRegs *)CSL_MCU_FSS0_FSAS_CFG_BASE;
+                    CSL_fssOspiSetXipPrefetchEnable(&fssCfg, CSL_FSS_FSAS_INTERFACE_PATH_SELECT_OSPI0, TRUE);
                 }
                 /* Enable PHY pipeline mode for read */
                 CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
