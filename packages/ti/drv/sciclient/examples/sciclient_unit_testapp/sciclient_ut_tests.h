@@ -497,7 +497,44 @@ App_sciclientTestParams_t gSciclientTestcaseParams[] =
 
     /** testType **/
     (APP_SCICLIENT_TEST_TYPE_NEGATIVE)
-  }
+  },
+#endif
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+    {
+        /** enableTest **/
+        TEST_ENABLE,
+
+        /** testCaseId **/
+        12U,
+
+        /** *reqId **/
+        "None",
+
+        /** *testCaseName **/
+        "SCICLIENT MSMC Query Negative Testcase",
+
+        /** *userInfo **/
+        "None",
+
+        /** *disableReason **/
+        "None",
+
+        /** *passFailCriteria **/
+        "Sciclient_msmcQuery should fail when \
+         the request parameter is set to NULL ",
+
+        /** cpuID **/
+        APP_SCICLIENT_R5F,
+
+        /** sciclientConfigParams **/
+        {},
+
+        /** printEnable **/
+        PRINT_ENABLE,
+
+        /** testType **/
+        (APP_SCICLIENT_TEST_TYPE_NEGATIVE)
+    }
 #endif
 };
 

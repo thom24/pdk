@@ -112,11 +112,13 @@ static int32_t App_pvu2GICIntrTest(void);
 #if ((defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4) || defined (j784s4_evm)) && defined (BUILD_MCU1_0))
 static int32_t App_mainUart2MCUR5IntrTest(void);
 #endif
-
 #if ((defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)) && (BUILD_MCU1_0))
 static int32_t App_sciclientPmMessageTest(void);
 #endif
 
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+static int32_t App_msmcQueryNegTest(void);
+#endif
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -237,6 +239,11 @@ int32_t App_sciclientTestMain(App_sciclientTestParams_t *testParams)
 #if ((defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)) && (BUILD_MCU1_0))
         case 11:
             testParams->testResult = App_sciclientPmMessageTest();
+            break;
+#endif
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+        case 12:
+            testParams->testResult = App_msmcQueryNegTest();
             break;
 #endif
         default:
@@ -1557,5 +1564,75 @@ static int32_t App_sciclientPmMessageTest(void)
     }
 
     return pmMessageTestStatus;
+}
+#endif
+
+
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+static int32_t App_msmcQueryNegTest(void)
+{
+    int32_t status = CSL_PASS;
+    int32_t sciclientInitStatus = CSL_PASS;
+    int32_t msmcQueryTestStatus = CSL_PASS;
+    struct tisci_query_msmc_resp resp;
+    Sciclient_ConfigPrms_t        config =
+    {
+        SCICLIENT_SERVICE_OPERATION_MODE_INTERRUPT,
+        NULL,
+        0 /* isSecure = 0 un secured for all cores */
+    };
+
+    while (gSciclientHandle.initCount != 0)
+    {
+        status = Sciclient_deinit();
+    }
+    status = Sciclient_init(&config);
+    sciclientInitStatus = status;
+
+    if(status == CSL_PASS)
+    {
+        status = Sciclient_msmcQuery(NULL, &resp, SCICLIENT_SERVICE_WAIT_FOREVER);
+        if (status == CSL_EFAIL)
+        {
+           msmcQueryTestStatus += CSL_PASS;
+           App_sciclientPrintf ("Sciclient_msmcQuery: Negative Arg Test Passed.\n");
+        }
+        else
+        {
+           msmcQueryTestStatus += CSL_EFAIL;
+           App_sciclientPrintf ("Sciclient_msmcQuery: Negative Arg Test Failed.\n");
+        }
+    }
+    else
+    {
+        msmcQueryTestStatus += CSL_EFAIL;
+        App_sciclientPrintf ("Sciclient_init FAILED.\n");
+    }
+
+    if(sciclientInitStatus == CSL_PASS)
+    {
+        status = Sciclient_deinit();
+        if(status == CSL_PASS)
+        {
+            msmcQueryTestStatus += CSL_PASS;
+            App_sciclientPrintf ("Sciclient_deinit PASSED.\n");
+        }
+        else
+        {
+            msmcQueryTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_deinit FAILED.\n");
+        }
+    }
+
+    if(msmcQueryTestStatus < 0U)
+    {
+        msmcQueryTestStatus = CSL_EFAIL;
+    }
+    else
+    {
+        msmcQueryTestStatus = CSL_PASS;
+    }
+
+  return msmcQueryTestStatus;
 }
 #endif
