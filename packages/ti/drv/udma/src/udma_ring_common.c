@@ -812,8 +812,10 @@ uint16_t Udma_ringMonGetNum(Udma_RingMonHandle monHandle)
     return (ringMonNum);
 }
 
-void UdmaRingPrms_init(Udma_RingPrms *ringPrms)
+int32_t UdmaRingPrms_init(Udma_RingPrms *ringPrms)
 {
+    int32_t             retVal = UDMA_SOK;
+
     if(NULL_PTR != ringPrms)
     {
         ringPrms->ringMem       = NULL_PTR;
@@ -827,12 +829,18 @@ void UdmaRingPrms_init(Udma_RingPrms *ringPrms)
         ringPrms->mappedRingGrp = UDMA_MAPPED_GROUP_INVALID;
         ringPrms->mappedChNum   = UDMA_DMA_CH_INVALID;
     }
+    else
+    {
+        retVal = UDMA_EINVALID_PARAMS;
+    }
 
-    return;
+    return retVal;
 }
 
-void UdmaRingMonPrms_init(Udma_RingMonPrms *monPrms)
+int32_t UdmaRingMonPrms_init(Udma_RingMonPrms *monPrms)
 {
+    int32_t             retVal = UDMA_SOK;
+
     if(NULL_PTR != monPrms)
     {
         monPrms->source     = TISCI_MSG_VALUE_RM_MON_SRC_ELEM_CNT;
@@ -841,8 +849,12 @@ void UdmaRingMonPrms_init(Udma_RingMonPrms *monPrms)
         monPrms->data0      = 0U;
         monPrms->data1      = 0U;
     }
+    else
+    {
+        retVal = UDMA_EINVALID_PARAMS;
+    }
 
-    return;
+    return retVal;
 }
 
 int32_t Udma_ringProxyQueueRaw(Udma_RingHandle ringHandle,

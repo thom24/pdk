@@ -577,9 +577,11 @@ uint32_t Udma_flowGetCount(Udma_FlowHandle flowHandle)
     return (flowCnt);
 }
 
-void UdmaFlowPrms_init(Udma_FlowPrms *flowPrms, uint32_t chType)
+int32_t UdmaFlowPrms_init(Udma_FlowPrms *flowPrms, uint32_t chType)
 {
-    (void) chType;  /* MISRAC fix: could be used for future. So not removed */
+    int32_t retVal = UDMA_SOK;
+    (void)  chType;  /* MISRAC fix: could be used for future. So not removed */
+
     if(NULL_PTR != flowPrms)
     {
         flowPrms->rxChHandle    = (Udma_ChHandle) NULL_PTR;
@@ -610,8 +612,12 @@ void UdmaFlowPrms_init(Udma_FlowPrms *flowPrms, uint32_t chType)
         flowPrms->fdq0Sz2Qnum   = UDMA_RING_INVALID;
         flowPrms->fdq0Sz3Qnum   = UDMA_RING_INVALID;
     }
+    else
+    {
+        retVal = UDMA_EINVALID_PARAMS;
+    }
 
-    return;
+    return retVal;
 }
 
 #if((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)

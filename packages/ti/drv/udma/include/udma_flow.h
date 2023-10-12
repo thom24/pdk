@@ -443,8 +443,9 @@ uint32_t Udma_flowGetCount(Udma_FlowHandle flowHandle);
  *  \param flowPrms     [IN] Pointer to #Udma_FlowPrms structure.
  *  \param chType       [IN] UDMA channel type. Refer \ref Udma_ChType.
  *
+ *  \return UDMA_SOK on success or UDMA_EINVALID_PARAMS on error
  */
-void UdmaFlowPrms_init(Udma_FlowPrms *flowPrms, uint32_t chType);
+int32_t UdmaFlowPrms_init(Udma_FlowPrms *flowPrms, uint32_t chType);
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */

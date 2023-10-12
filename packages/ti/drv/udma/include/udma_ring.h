@@ -745,16 +745,18 @@ uint16_t Udma_ringMonGetNum(Udma_RingMonHandle monHandle);
  *
  *  \param ringPrms     [IN] Pointer to #Udma_RingPrms structure.
  *
+ *  \return UDMA_SOK on success or UDMA_EINVALID_PARAMS on error
  */
-void UdmaRingPrms_init(Udma_RingPrms *ringPrms);
+int32_t UdmaRingPrms_init(Udma_RingPrms *ringPrms);
 
 /**
  *  \brief Udma_RingMonPrms structure init function.
  *
  *  \param monPrms      [IN] Pointer to #Udma_RingMonPrms structure.
  *
+ *  \return UDMA_SOK on success or UDMA_EINVALID_PARAMS on error
  */
-void UdmaRingMonPrms_init(Udma_RingMonPrms *monPrms);
+int32_t UdmaRingMonPrms_init(Udma_RingMonPrms *monPrms);
 
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
