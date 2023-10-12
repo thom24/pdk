@@ -113,3 +113,76 @@ int32_t UdmaTest_flowGetNum(UdmaTestTaskObj *taskObj)
      }
      return retVal;
 }
+
+/*
+ * Test Case Description: Verifies the function Udma_flowGetCount when
+ * 1)flowHandle is NULL.
+ * 2)flowInitDone = UDMA_DEINIT_DONE.
+ */
+int32_t UdmaTest_flowGetCount(UdmaTestTaskObj *taskObj)
+{
+    int32_t     retVal = UDMA_SOK;
+    uint32_t    flowCnt = UDMA_FLOW_INVALID;
+    struct Udma_FlowObj flowObj;
+    Udma_FlowHandle flowHandle;
+
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+            " |TEST INFO|:: Task:%d: UDMA Flow get count negative Testcase ::\r\n", taskObj->taskId);
+
+    /* flowHandle is NULL */
+    flowHandle =  NULL_PTR;
+    flowCnt = Udma_flowGetCount(flowHandle);
+    if(UDMA_FLOW_INVALID == flowCnt)
+    {
+        retVal = UDMA_SOK;
+    }
+    else
+    {
+        GT_0trace(taskObj->traceMask, GT_ERR,
+                " |TEST INFO|:: Test:: UDMA Flow get count negative Testcase Failed!!\n");
+    }
+
+    /* flowInitDone = UDMA_DEINIT_DONE */
+    flowHandle               = &flowObj;
+    flowHandle->flowInitDone = UDMA_DEINIT_DONE;
+    flowCnt = Udma_flowGetCount(flowHandle);
+    if(UDMA_FLOW_INVALID == flowCnt)
+    {
+        retVal = UDMA_SOK;
+    }
+    else
+    {
+        GT_0trace(taskObj->traceMask, GT_ERR,
+                " |TEST INFO|:: Test:: UDMA Flow get count negative Testcase Failed!!\n");
+    }
+
+    return retVal;
+}
+
+/*
+  * Test Case Description: Verifies the function Udma_flowFree when
+  * flowHandle is NULL.
+  */
+ int32_t UdmaTest_flowFree(UdmaTestTaskObj *taskObj)
+ {
+     int32_t   retVal = UDMA_SOK;
+     Udma_FlowHandle flowHandle;
+
+     GT_1trace(taskObj->traceMask, GT_INFO1,
+               " |TEST INFO|:: Task:%d: UDMA Flow free negative Testcase ::\r\n", taskObj->taskId);
+
+     /* flowHandle is NULL */
+     flowHandle = (Udma_FlowHandle)NULL_PTR;
+     retVal = Udma_flowFree(flowHandle);
+     if(UDMA_SOK != retVal)
+     {
+         retVal = UDMA_SOK;
+     }
+     else
+     {
+         GT_0trace(taskObj->traceMask, GT_ERR,
+                " |TEST INFO|:: Test:: UDMA Flow free negative Testcase failed\n");
+     }
+
+     return retVal;
+ }

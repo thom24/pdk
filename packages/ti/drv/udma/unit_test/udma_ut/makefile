@@ -58,6 +58,7 @@ SRCS_COMMON += udma_test_drv_neg.c
 SRCS_COMMON += udma_test_utils_neg.c
 SRCS_COMMON += udma_test_flow_neg.c
 SRCS_COMMON += udma_test_ring_normal.c
+SRCS_COMMON += udma_test_ring_common.c
 
 ifeq ($(BUILD_OS_TYPE), freertos)
   SRCS_COMMON += utils_prf.c

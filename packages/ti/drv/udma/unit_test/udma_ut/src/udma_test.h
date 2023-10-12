@@ -715,11 +715,19 @@ int32_t udmaTestRingGetElementCntNormal(UdmaTestTaskObj *taskObj);
 int32_t udmaTestRingGetRingOccNormal(UdmaTestTaskObj *taskObj);
 int32_t udmaTestRingGetWrIdxNormal(UdmaTestTaskObj *taskObj);
 int32_t udmaTestRingGetRdIdxNormal(UdmaTestTaskObj *taskObj);
+int32_t UdmaTestRingAttach(UdmaTestTaskObj *taskObj);
+int32_t UdmaTestRingDetach(UdmaTestTaskObj *taskObj);
+int32_t UdmaTestRingGetNum(UdmaTestTaskObj *taskObj);
+int32_t UdmaTestRingDequeueRaw(UdmaTestTaskObj *taskObj);
+int32_t UdmaTestRingQueueRaw(UdmaTestTaskObj *taskObj);
+int32_t udmaTestRingFree(UdmaTestTaskObj *taskObj);
 
 /*
  *UDMA Flow Negative test case functions
  */
 int32_t UdmaTest_flowGetNum(UdmaTestTaskObj *taskObj);
+int32_t UdmaTest_flowFree(UdmaTestTaskObj *taskObj);
+int32_t UdmaTest_flowGetCount(UdmaTestTaskObj *taskObj);
 
 /*
  * UDMA Utils Negative test case functions
