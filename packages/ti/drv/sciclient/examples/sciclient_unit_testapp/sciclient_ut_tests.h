@@ -349,7 +349,7 @@ App_sciclientTestParams_t gSciclientTestcaseParams[] =
         (APP_SCICLIENT_TEST_TYPE_SANITY)
     },
 #endif
-#if defined (SOC_J721S2) || defined (SOC_J784S4)
+#if ((defined (SOC_J721S2) || defined (SOC_J784S4)) && defined(BUILD_MCU2_0))
     {
         /** enableTest **/
         TEST_ENABLE,
