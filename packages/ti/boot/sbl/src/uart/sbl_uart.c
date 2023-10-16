@@ -65,7 +65,6 @@
 #include <ti/csl/arch/csl_arch.h>
 #include <ti/board/board_cfg.h>
 #include "sbl_uart.h"
-#include <ti/osal/CacheP.h>
 
 /**********************************************************************
  ************************** Internal functions ************************
