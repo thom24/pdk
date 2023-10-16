@@ -186,11 +186,9 @@ if [ "$SKIP_BUILD" != "YES" ]; then
         $COPY $ROOTDIR/ti/binary/sciclient_ccs_init/bin/"$SOC"/sciclient_ccs_init_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/"$SOC"/
         $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/"$SOC"/sciserver_testapp_freertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/"$SOC"/
         $COPY $ROOTDIR/ti/binary/sciserver_testapp_freertos/bin/"$SOC"/sciserver_testapp_freertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/"$SOC"/
-        if [ $SOC=="j721e" ] || [ $SOC=="j7200" ] || [ $SOC=="j721s2" ]; then
+        if [ $SOC=="j721e" ] || [ $SOC=="j7200" ] || [ $SOC=="j721s2" ] || [ $SOC=="j784s4" ]; then
             make -j -s sciserver_testapp_safertos_clean BOARD="$SOC"_evm
             make -j -s sciserver_testapp_safertos BOARD="$SOC"_evm
-            $COPY $ROOTDIR/ti/binary/sciserver_testapp_safertos/bin/"$SOC"/sciserver_testapp_safertos_mcu1_0_release.xer5f $SCI_CLIENT_DIR/tools/ccsLoadDmsc/"$SOC"/
-            $COPY $ROOTDIR/ti/binary/sciserver_testapp_safertos/bin/"$SOC"/sciserver_testapp_safertos_mcu1_0_release.rprc $SCI_CLIENT_DIR/tools/ccsLoadDmsc/"$SOC"/
         fi
 
         if [ $SOC=="j7200" ] || [ $SOC=="j721s2" ] || [ $SOC=="j784s4" ]; then
