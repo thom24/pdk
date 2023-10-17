@@ -109,8 +109,8 @@ export lpm_s2r_CORE_DEPENDENCY = no
 export lpm_s2r_SOC_DEPENDENCY = yes
 export lpm_s2r_SOCLIST = j7200
 export lpm_s2r_$(SOC)_CORELIST = mcu1_0
-lpm_LIB_LIST += lpm_s2r
-lpm_PKG_LIST += lpm_s2r
+lpm_s2r_LIB_LIST += lpm_s2r
+lpm_s2r_PKG_LIST += lpm_s2r
 
 ############################
 # lpm examples
