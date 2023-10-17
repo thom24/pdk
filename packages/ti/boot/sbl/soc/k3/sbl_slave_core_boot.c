@@ -80,8 +80,11 @@
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
-#define SBL_DISABLE_MCU_LOCKSTEP    (0)
-#define SBL_ENABLE_MCU_LOCKSTEP     (1)
+#define SBL_DISABLE_MCU_LOCKSTEP         (0U)
+#define SBL_ENABLE_MCU_LOCKSTEP          (1U)
+#define SBL_BIT_MASK_128_BYTE_ALIGNED    (0xFFFFFF80U)
+#define SBL_BIT_MASK_1KB_ALIGNED         (0xFFFFFC00U)
+#define SBL_BIT_MASK_2MB_ALIGNED         (0xFFE00000U)
 
 int32_t c7xCoreID[]={DSP1_C7X_ID,DSP2_C7X_ID,DSP3_C7X_ID,DSP4_C7X_ID};
 
@@ -731,6 +734,39 @@ void SBL_SlaveCoreBoot(cpu_core_id_t core_id, uint32_t freqHz, sblEntryPoint_t *
             ((void(*)(void))0x0)();
     }
 #endif
+
+    /* Check if entry point is aligned correctly */
+    if (pAppEntry->CpuEntryPoint[core_id] <  SBL_INVALID_ENTRY_ADDR)
+    {
+        if ((core_id == MCU1_CPU0_ID) || (core_id == MCU1_CPU1_ID) ||
+            (core_id == MCU2_CPU0_ID) || (core_id == MCU2_CPU1_ID) ||
+            (core_id == MCU3_CPU0_ID) || (core_id == MCU3_CPU1_ID) ||
+            (core_id == MCU4_CPU0_ID) || (core_id == MCU4_CPU1_ID))
+        {
+            if ((pAppEntry->CpuEntryPoint[core_id] & SBL_BIT_MASK_128_BYTE_ALIGNED) != pAppEntry->CpuEntryPoint[core_id])
+            {
+                SBL_log(SBL_LOG_ERR, "Entry Point of R5F application should be aligned to 128 bytes.\n");
+                SblErrLoop(__FILE__, __LINE__);
+            }
+        }
+        else if ((core_id == DSP1_C7X_ID) || (core_id == DSP2_C7X_ID) ||
+                 (core_id == DSP3_C7X_ID) || (core_id == DSP4_C7X_ID))
+        {
+            if ((pAppEntry->CpuEntryPoint[core_id] & SBL_BIT_MASK_2MB_ALIGNED) != pAppEntry->CpuEntryPoint[core_id])
+            {
+                SBL_log(SBL_LOG_ERR, "Entry Point of C7x application should be aligned to 2MB.\n");
+                SblErrLoop(__FILE__, __LINE__);
+            }
+        }
+        else if ((core_id == DSP1_C66X_ID) || (core_id == DSP2_C66X_ID))
+        {
+            if ((pAppEntry->CpuEntryPoint[core_id] & SBL_BIT_MASK_1KB_ALIGNED) != pAppEntry->CpuEntryPoint[core_id])
+            {
+                SBL_log(SBL_LOG_ERR, "Entry Point of C66x application should be aligned to 1KB.\n");
+                SblErrLoop(__FILE__, __LINE__);
+            }
+        }
+    }
 
     /* Request core */
     if (requestCoresFlag == SBL_REQUEST_CORE)

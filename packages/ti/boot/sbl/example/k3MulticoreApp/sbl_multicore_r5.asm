@@ -43,7 +43,7 @@
 	.global _c_int00
 	.global _sblTestResetVectors
 	
-
+    .align(128)
 _c_int00:
 _sblTestResetVectors: LDR pc, sblTestEntry ; Entry
 _sblUndefVectors:     LDR pc, sblUndefLoop
@@ -65,7 +65,7 @@ sblFiqLoop	.long _sblFiqLoop
 	
 
 	.global _sblTestEntry
-	
+
 _sblTestEntry:
 
 	; Setup stack
