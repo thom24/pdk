@@ -141,13 +141,13 @@ indicating an asserted reset, and any cleared bit indicated a de-asserted reset.
 The individual bits can have device specific meanings. Some bits are
 standardized across all devices:
 
-+--------------+----------------------------+
-| Bit Position | Meaning                    |
-+==============+============================+
-|            0 | PSC local reset (LRST)     |
-+--------------+----------------------------+
-|            1 | PSC module reset (MRST)    |
-+--------------+----------------------------+
++--------------+-------------------------------------------------+
+| Bit Position | Meaning                                         |
++==============+=================================================+
+|            0 | Power State Controller (PSC) local reset (LRST) |
++--------------+-------------------------------------------------+
+|            1 | PSC module reset (MRST)                         |
++--------------+-------------------------------------------------+
 
 Note that not all devices implement the above reset types. PSC local reset
 will always assert the local reset regardless of module state. PSC module

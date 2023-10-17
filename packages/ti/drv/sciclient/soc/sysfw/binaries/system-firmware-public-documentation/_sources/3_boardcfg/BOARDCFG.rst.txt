@@ -51,7 +51,7 @@ defines the following for Hosts:
 
 - Resource range assignments
 - Order IDs
-- QoS values
+- Quality of Service (QoS) values
 - Priority values
 - Host hierarchy
 

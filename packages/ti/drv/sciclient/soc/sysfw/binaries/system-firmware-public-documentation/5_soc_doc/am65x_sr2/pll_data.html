@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                09.01.00
+                09.01.02
               </div>
             
           
@@ -112,7 +112,8 @@
 <li class="toctree-l3"><a class="reference internal" href="devices.html">AM65X_SR2 Devices Descriptions</a></li>
 <li class="toctree-l3"><a class="reference internal" href="clocks.html">AM65X_SR2 Clock Identifiers</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">AM65X_SR2 PLL Defaults</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#pll-defaults-for-am6-device">PLL Defaults for AM6 Device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pll-defaults-for-am65x-sr2-device">PLL Defaults for AM65X_SR2 Device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pll-no-reinit-defaults-for-am65x-sr2-device">PLL No Reinit Defaults for AM65X_SR2 Device</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="resasg_types.html">AM65X_SR2 Board Configuration Resource Assignment Type Descriptions</a></li>
@@ -185,10 +186,10 @@
             
   <div class="section" id="am65x-sr2-pll-defaults">
 <h1>AM65X_SR2 PLL Defaults<a class="headerlink" href="#am65x-sr2-pll-defaults" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="pll-defaults-for-am6-device">
-<span id="soc-doc-am65x-sr2-public-plls-desc-intro"></span><h2>PLL Defaults for AM6 Device<a class="headerlink" href="#pll-defaults-for-am6-device" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="pll-defaults-for-am65x-sr2-device">
+<span id="soc-doc-am65x-sr2-public-plls-desc-intro"></span><h2>PLL Defaults for AM65X_SR2 Device<a class="headerlink" href="#pll-defaults-for-am65x-sr2-device" title="Permalink to this headline">¶</a></h2>
 <p>This chapter provides information on the PLL defaults which the System firmware programs
-for AM6 SoC.</p>
+for AM65X_SR2 SoC.</p>
 <p>This is what the system firmware programs after the PM board configuration is provided.
 The exact M and N values programmed are based on the crystal connected on the board.
 The crystal frequency is understood by the ROM from the BOOTPINS. This value is read
@@ -201,6 +202,13 @@ message is sent.</p>
 program individual clocks of individual modules to tweak the clocks based on the usecase
 which differ from the default. The APIs to refer to setting individual module clocks are
 <a class="reference internal" href="../../2_tisci_msgs/pm/clocks.html#pm-clocks-msg-set-freq"><span class="std std-ref">TISCI_MSG_SET_FREQ</span></a>, <a class="reference internal" href="../../2_tisci_msgs/pm/clocks.html#pm-clocks-msg-query-freq"><span class="std std-ref">TISCI_MSG_QUERY_FREQ</span></a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Any PLL configurations that are done before the PM board configuration is provided will be overwritten
+with the PLL defaults mentioned in the below tables. However, there are some PLLs that don’t get
+overwritten and the list can be found in the table
+<a class="reference internal" href="#soc-doc-am65x-sr2-public-plls-no-reinit-status"><span class="std std-ref">PLL No Reinit Defaults for AM65X_SR2 Device</span></a></p>
+</div>
 <p>The following table gives the PLL configurations for the input crystal Frequency of 19.2 MHz.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -976,6 +984,95 @@ which differ from the default. The APIs to refer to setting individual module cl
 </tbody>
 </table>
 </div>
+<div class="section" id="pll-no-reinit-defaults-for-am65x-sr2-device">
+<span id="soc-doc-am65x-sr2-public-plls-no-reinit-status"></span><h2>PLL No Reinit Defaults for AM65X_SR2 Device<a class="headerlink" href="#pll-no-reinit-defaults-for-am65x-sr2-device" title="Permalink to this headline">¶</a></h2>
+<p>The following table gives details on PLLs (CLKOUT and HSDIVs) that are excluded
+from reinitializing when PM board configuration is received.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="41%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+<col width="12%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">PLL Name</th>
+<th class="head">CLKOUT</th>
+<th class="head">HSDIV1</th>
+<th class="head">HSDIV2</th>
+<th class="head">HSDIV3</th>
+<th class="head">HSDIV4</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>MCU0 (ADPLLM_HSDIV_WRAP_MCU_0)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr class="row-odd"><td>CPSW (ADPLLM_HSDIV_WRAP_MCU_1)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr class="row-even"><td>MAIN (ADPLLLJM_HSDIV_WRAP_MAIN_0)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr class="row-odd"><td>PER0 (ADPLLLJM_WRAP_MAIN_1)</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-even"><td>PER1 (ADPLLLJM_HSDIV_WRAP_MAIN_2)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr class="row-odd"><td>DDR (ADPLLLJM_WRAP_MAIN_3)</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-even"><td>DSS (ADPLLLJM_WRAP_MAIN_4)</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-odd"><td>ARM (ADPLLM_WRAP_MAIN_6)</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-even"><td>ARM (ADPLLM_WRAP_MAIN_7)</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
@@ -1019,7 +1116,7 @@ which differ from the default. The APIs to refer to setting individual module cl
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'09.01.00',
+            VERSION:'09.01.02',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

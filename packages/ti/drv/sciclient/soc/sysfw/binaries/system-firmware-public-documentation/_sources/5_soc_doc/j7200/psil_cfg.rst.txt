@@ -74,8 +74,10 @@ thread type. The thread IDs are used in the PSI-L based TISCI messages.
 | navss_main_pdma_main_usart_g2_rx      | 0x4704 to 0x4709 |
 +---------------------------------------+------------------+
 | navss_main_pdma_main_mcan_rx          | 0x470a to 0x473f |
+| (J7200_DEV_NAVSS0)                    |                  |
 +---------------------------------------+------------------+
 | navss_main_pdma_main_mcan_rx          | 0x470c to 0x4729 |
+| (J7200_DEV_MCU_NAVSS0)                |                  |
 +---------------------------------------+------------------+
 | navss_main_cpsw5_rx                   | 0x4a00 to 0x4a00 |
 +---------------------------------------+------------------+
@@ -122,8 +124,10 @@ thread type. The thread IDs are used in the PSI-L based TISCI messages.
 | navss_main_pdma_main_usart_g2_tx      | 0xc704 to 0xc709 |
 +---------------------------------------+------------------+
 | navss_main_pdma_main_mcan_tx          | 0xc70a to 0xc73f |
+| (J7200_DEV_NAVSS0)                    |                  |
 +---------------------------------------+------------------+
 | navss_main_pdma_main_mcan_tx          | 0xc70c to 0xc729 |
+| (J7200_DEV_MCU_NAVSS0)                |                  |
 +---------------------------------------+------------------+
 | navss_main_cpsw5_tx                   | 0xca00 to 0xca07 |
 +---------------------------------------+------------------+

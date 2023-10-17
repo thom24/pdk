@@ -40,7 +40,7 @@ from System Firmware will always be printed.
 
 All trace debug and trace print messages will be routed as strings over
 the UART or memory buffer as there is only a single resource for each of
-these. ITM has multiple channels available that will be partitioned as
+these. ITM (JTAG) has multiple channels available that will be partitioned as
 described below:
 
 +--------------------+----------------------------------+

@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                09.01.00
+                09.01.02
               </div>
             
           
@@ -228,7 +228,7 @@ your SoC.</p>
 </div>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">The SSC controls are not yet available in the system firmware.</p>
+<p class="last">The Spread Spectrum Clocking (SSC) controls are not yet available in the system firmware.</p>
 </div>
 </div>
 <div class="section" id="macros-used-in-this-document">
@@ -597,7 +597,7 @@ attempted.</p>
 </p>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">In the TRM, the parent clock index of the mux starts with 0. But when TISCI_MSG_SET_CLOCK_PARENT is used
+<p class="last">In the Technical Reference Manual (TRM), the parent clock index of the mux starts with 0. But when TISCI_MSG_SET_CLOCK_PARENT is used
 the parent value refers to the corresponding device clock id of the parent.
 Reference <a class="reference internal" href="../../5_soc_doc/index.html#pub-soc-family-doc"><span class="std std-ref">Chapter 5: SoC Family Specific Documentation</span></a> to see the clock id of the parent clock.</p>
 </div>
@@ -876,7 +876,7 @@ set for the clock. Additionally, if other clocks have their frequency modified
 due to this message, they also must have the MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE or
 be disabled.</p>
 <p>Calling set frequency on a clock input to the SoC pseudo-device will inform the
-PMMC of that clock’s frequency. Setting a frequency of zero will indicate the
+Power Manager Micro Controller (PMMC) of that clock’s frequency. Setting a frequency of zero will indicate the
 clock is disabled.</p>
 <p>Calling set frequency on clock outputs from the SoC pseudo-device will function
 similarly to setting the clock frequency on a device.</p>
@@ -1547,7 +1547,7 @@ right multiplexer parent is as below:</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'09.01.00',
+            VERSION:'09.01.02',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

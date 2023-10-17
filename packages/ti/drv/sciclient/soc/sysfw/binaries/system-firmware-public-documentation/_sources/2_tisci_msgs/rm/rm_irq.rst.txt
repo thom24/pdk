@@ -5,7 +5,7 @@ Resource Management IRQ TISCI Message Description
 Introduction
 ============
 
-This chapter provides information on usage of the RM IRQ management TISCI message API parameters.
+This chapter provides information on usage of the RM Interrupt Request (IRQ) management TISCI message API parameters.
 
 +------------------+------------------------------------------------------------------------------+
 | TISCI Message ID |                        Message Name                                          |

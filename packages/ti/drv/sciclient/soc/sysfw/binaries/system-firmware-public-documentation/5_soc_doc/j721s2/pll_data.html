@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                09.01.00
+                09.01.02
               </div>
             
           
@@ -120,6 +120,7 @@
 <li class="toctree-l3"><a class="reference internal" href="clocks.html">J721S2 Clock Identifiers</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">J721S2 PLL Defaults</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pll-defaults-for-j721s2-device">PLL Defaults for J721S2 Device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pll-no-reinit-defaults-for-j721s2-device">PLL No Reinit Defaults for J721S2 Device</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="resasg_types.html">J721S2 Board Configuration Resource Assignment Type Descriptions</a></li>
@@ -200,6 +201,13 @@ message is sent.</p>
 program individual clocks of individual modules to tweak the clocks based on the usecase
 which differ from the default. The APIs to refer to setting individual module clocks are
 <a class="reference internal" href="../../2_tisci_msgs/pm/clocks.html#pm-clocks-msg-set-freq"><span class="std std-ref">TISCI_MSG_SET_FREQ</span></a>, <a class="reference internal" href="../../2_tisci_msgs/pm/clocks.html#pm-clocks-msg-query-freq"><span class="std std-ref">TISCI_MSG_QUERY_FREQ</span></a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Any PLL configurations that are done before the PM board configuration is provided will be overwritten
+with the PLL defaults mentioned in the below tables. However, there are some PLLs that don’t get
+overwritten and the list can be found in the table
+<a class="reference internal" href="#soc-doc-j721s2-public-plls-no-reinit-status"><span class="std std-ref">PLL No Reinit Defaults for J721S2 Device</span></a></p>
+</div>
 <p>The following table gives the PLL configurations for the input crystal Frequency of 19.2 MHz.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -2233,6 +2241,270 @@ which differ from the default. The APIs to refer to setting individual module cl
 </tbody>
 </table>
 </div>
+<div class="section" id="pll-no-reinit-defaults-for-j721s2-device">
+<span id="soc-doc-j721s2-public-plls-no-reinit-status"></span><h2>PLL No Reinit Defaults for J721S2 Device<a class="headerlink" href="#pll-no-reinit-defaults-for-j721s2-device" title="Permalink to this headline">¶</a></h2>
+<p>The following table gives details on PLLs (CLKOUT and HSDIVs) that are excluded
+from reinitializing when PM board configuration is received.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="29%" />
+<col width="8%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="8%" />
+<col width="7%" />
+<col width="7%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">PLL Name</th>
+<th class="head">CLKOUT</th>
+<th class="head">HSDIV0</th>
+<th class="head">HSDIV1</th>
+<th class="head">HSDIV2</th>
+<th class="head">HSDIV3</th>
+<th class="head">HSDIV4</th>
+<th class="head">HSDIV5</th>
+<th class="head">HSDIV6</th>
+<th class="head">HSDIV7</th>
+<th class="head">HSDIV8</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>MAIN (PLLFRACF2_SSMOD_16FFT_MAIN_0)</td>
+<td>No Reinit</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>No Reinit</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr class="row-odd"><td>PER0 (PLLFRACF2_SSMOD_16FFT_MAIN_1)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr class="row-even"><td>PER1 (PLLFRACF2_SSMOD_16FFT_MAIN_2)</td>
+<td>–</td>
+<td>NA</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+</tr>
+<tr class="row-odd"><td>CPSW (PLLFRACF2_SSMOD_16FFT_MAIN_3)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-even"><td>AUDIO (PLLFRACF2_SSMOD_16FFT_MAIN_4)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-odd"><td>VIDEO (PLLFRACF2_SSMOD_16FFT_MAIN_5)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-even"><td>GPU (PLLFRACF2_SSMOD_16FFT_MAIN_6)</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-odd"><td>C7X (PLLFRACF2_SSMOD_16FFT_MAIN_7)</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-even"><td>ARM (PLLFRACF2_SSMOD_16FFT_MAIN_8)</td>
+<td>No Reinit</td>
+<td>No Reinit</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-odd"><td>DDR (PLLFRACF2_SSMOD_16FFT_MAIN_12)</td>
+<td>No Reinit</td>
+<td>No Reinit</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-even"><td>R5F (PLLFRACF2_SSMOD_16FFT_MAIN_14)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-odd"><td>DSS (PLLFRACF2_SSMOD_16FFT_MAIN_16)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-even"><td>DSS (PLLFRACF2_SSMOD_16FFT_MAIN_17)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-odd"><td>DSS (PLLFRACF2_SSMOD_16FFT_MAIN_19)</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-even"><td>VISION (PLLFRACF2_SSMOD_16FFT_MAIN_25)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-odd"><td>DDR (PLLFRACF2_SSMOD_16FFT_MAIN_26)</td>
+<td>No Reinit</td>
+<td>No Reinit</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-even"><td>MCU_PULSAR (PLLFRACF2_SSMOD_16FFT_MCU_0)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-odd"><td>MCU_PER (PLLFRACF2_SSMOD_16FFT_MCU_1)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-even"><td>MCU_CPSW (PLLFRACF2_SSMOD_16FFT_MCU_2)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
@@ -2276,7 +2548,7 @@ which differ from the default. The APIs to refer to setting individual module cl
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'09.01.00',
+            VERSION:'09.01.02',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

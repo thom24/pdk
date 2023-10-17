@@ -36,7 +36,7 @@ Clock configuration and control APIs
    your SoC.
 
 .. note::
-   The SSC controls are not yet available in the system firmware.
+   The Spread Spectrum Clocking (SSC) controls are not yet available in the system firmware.
 
 Macros Used in this Document
 ----------------------------
@@ -192,7 +192,7 @@ Message Data Structures
 .. sysfwapistruct:: tisci_msg_set_clock_parent_req
 
 .. note::
-   In the TRM, the parent clock index of the mux starts with 0. But when TISCI_MSG_SET_CLOCK_PARENT is used
+   In the Technical Reference Manual (TRM), the parent clock index of the mux starts with 0. But when TISCI_MSG_SET_CLOCK_PARENT is used
    the parent value refers to the corresponding device clock id of the parent.
    Reference :ref:`pub_soc_family_doc` to see the clock id of the parent clock.
 
@@ -306,7 +306,7 @@ due to this message, they also must have the MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE or
 be disabled.
 
 Calling set frequency on a clock input to the SoC pseudo-device will inform the
-PMMC of that clock's frequency. Setting a frequency of zero will indicate the
+Power Manager Micro Controller (PMMC) of that clock's frequency. Setting a frequency of zero will indicate the
 clock is disabled.
 
 Calling set frequency on clock outputs from the SoC pseudo-device will function

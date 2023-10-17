@@ -5,7 +5,7 @@ Resource Management PSI-L TISCI Message Description
 Introduction
 ============
 
-This chapter provides information on usage of the RM PSI-L management TISCI
+This chapter provides information on usage of the RM Packet Streaming Interface Link (PSI-L) management TISCI
 message API parameters.
 
 +------------------+-------------------------------------------------------------+

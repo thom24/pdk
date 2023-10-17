@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                09.01.00
+                09.01.02
               </div>
             
           
@@ -114,6 +114,7 @@
 <li class="toctree-l3"><a class="reference internal" href="clocks.html">AM64X Clock Identifiers</a></li>
 <li class="toctree-l3 current"><a class="current reference internal" href="#">AM64X PLL Defaults</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#pll-defaults-for-am64x-device">PLL Defaults for AM64X Device</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pll-no-reinit-defaults-for-am64x-device">PLL No Reinit Defaults for AM64X Device</a></li>
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="resasg_types.html">AM64X Board Configuration Resource Assignment Type Descriptions</a></li>
@@ -200,6 +201,13 @@ message is sent.</p>
 program individual clocks of individual modules to tweak the clocks based on the usecase
 which differ from the default. The APIs to refer to setting individual module clocks are
 <a class="reference internal" href="../../2_tisci_msgs/pm/clocks.html#pm-clocks-msg-set-freq"><span class="std std-ref">TISCI_MSG_SET_FREQ</span></a>, <a class="reference internal" href="../../2_tisci_msgs/pm/clocks.html#pm-clocks-msg-query-freq"><span class="std std-ref">TISCI_MSG_QUERY_FREQ</span></a>.</p>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">Any PLL configurations that are done before the PM board configuration is provided will be overwritten
+with the PLL defaults mentioned in the below tables. However, there are some PLLs that don’t get
+overwritten and the list can be found in the table
+<a class="reference internal" href="#soc-doc-am64x-public-plls-no-reinit-status"><span class="std std-ref">PLL No Reinit Defaults for AM64X Device</span></a></p>
+</div>
 <p>The following table gives the PLL configurations for the input crystal Frequency of 19.2 MHz.</p>
 <table border="1" class="docutils">
 <colgroup>
@@ -1113,6 +1121,126 @@ which differ from the default. The APIs to refer to setting individual module cl
 </tbody>
 </table>
 </div>
+<div class="section" id="pll-no-reinit-defaults-for-am64x-device">
+<span id="soc-doc-am64x-public-plls-no-reinit-status"></span><h2>PLL No Reinit Defaults for AM64X Device<a class="headerlink" href="#pll-no-reinit-defaults-for-am64x-device" title="Permalink to this headline">¶</a></h2>
+<p>The following table gives details on PLLs (CLKOUT and HSDIVs) that are excluded
+from reinitializing when PM board configuration is received.</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="26%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+<col width="7%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">PLL Name</th>
+<th class="head">CLKOUT</th>
+<th class="head">HSDIV0</th>
+<th class="head">HSDIV1</th>
+<th class="head">HSDIV2</th>
+<th class="head">HSDIV3</th>
+<th class="head">HSDIV4</th>
+<th class="head">HSDIV5</th>
+<th class="head">HSDIV6</th>
+<th class="head">HSDIV7</th>
+<th class="head">HSDIV8</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>MCU (PLLFRACF_SSMOD_16FFT_MCU_0)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-odd"><td>MAIN (PLLFRACF_SSMOD_16FFT_MAIN_0)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr class="row-even"><td>PER0 (PLLFRACF_SSMOD_16FFT_MAIN_1)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-odd"><td>PER1 (PLLFRACF_SSMOD_16FFT_MAIN_2)</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+</tr>
+<tr class="row-even"><td>ARM0 (PLLFRACF_SSMOD_16FFT_MAIN_8)</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-odd"><td>DDR (PLLFRACF_SSMOD_16FFT_MAIN_12)</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+<tr class="row-even"><td>R5F (PLLFRACF_SSMOD_16FFT_MAIN_14)</td>
+<td>–</td>
+<td>–</td>
+<td>–</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+<td>NA</td>
+</tr>
+</tbody>
+</table>
+</div>
 </div>
 
 
@@ -1156,7 +1284,7 @@ which differ from the default. The APIs to refer to setting individual module cl
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'09.01.00',
+            VERSION:'09.01.02',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

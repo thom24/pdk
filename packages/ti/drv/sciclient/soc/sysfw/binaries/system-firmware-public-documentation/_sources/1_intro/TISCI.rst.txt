@@ -16,7 +16,7 @@ to ensure system stability. A few of the challenges include:
 - Equivalent system capability entitlement on all variations of operation
   conditions.
 
-K3 devices introduces the concept of a centralized Power, Resource and Security
+Keystone 3 (K3) devices introduces the concept of a centralized Power, Resource and Security
 Management to allow mitigating the challenges of the traditional approach to
 system control.
 
@@ -29,9 +29,9 @@ The Device Manager core can be on the DMSC itself or the MCU R5F.
 The choice of whether this runs on the DMSC or the
 MCU R5F is based on the kind of applications the device is targeting.
 If the device is targetting applications, where there is a need for a dedicated
-HSM, the Device manager core is independent of the DMSC (which is exclusively
+Hardware Security Module (HSM), the Device manager core is independent of the DMSC (which is exclusively
 kept for Security functions). For devices which do not have need for a dedicated
-security island or HSM, the device manager runs on the DMSC. 
+security island or HSM, the device manager runs on the DMSC.
 
 The following table highlights the variations
 of where the RM and PM execute versus the TIFS on the different K3 family of
