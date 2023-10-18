@@ -4,7 +4,7 @@ export DISABLE_RECURSE_DEPS
 
 #Name of the directory created under packages/ti/binary/
 #Extended testapp for freertos and safertos
-APP_NAME = osal_extdd_testapp_$(BUILD_OS_TYPE)
+APP_NAME = osal_extd_testapp_$(BUILD_OS_TYPE)
 
 PACKAGE_SRCS_COMMON = . ../src
 
