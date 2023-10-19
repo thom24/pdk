@@ -113,7 +113,7 @@ static void TaskP_Function ( void *arg )
     /* Task Fxn completed execution. */
     handle->terminated = (bool)true;
     /* Put vTaskSuspend in a loop just in case some calls vTaskResume, it will go back to suspend. */
-    while (handle->terminated)
+    while ((bool)true == handle->terminated)
     {
         xTaskSuspend(NULL);
     }
