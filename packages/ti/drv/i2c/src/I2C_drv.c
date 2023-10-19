@@ -54,7 +54,7 @@ extern void I2C_socInit(void);
 #endif
 
 /* Used to check status and initialization */
-static int32_t gisI2CInitDone = 0U;
+static uint32_t gisI2CInitDone = 0U;
 
 /* Default I2C parameters structure */
 const I2C_Params I2C_defaultParams = {
