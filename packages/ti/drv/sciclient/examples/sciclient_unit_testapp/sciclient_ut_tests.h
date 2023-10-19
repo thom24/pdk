@@ -387,6 +387,42 @@ App_sciclientTestParams_t gSciclientTestcaseParams[] =
 
         /** testType **/
         (APP_SCICLIENT_TEST_TYPE_SANITY)
+    },
+#endif
+#if ((defined (SOC_J721S2) || defined (SOC_J784S4)) && defined(BUILD_MCU2_0))
+    {
+        /** enableTest **/
+        TEST_ENABLE,
+
+        /** testCaseId **/
+        9U,
+
+        /** *reqId **/
+        "PDK-13207",
+
+        /** *testCaseName **/
+        "PVU to GIC Interrupt Route Testing",
+
+        /** *userInfo **/
+        "None",
+
+        /** *disableReason **/
+        "None",
+
+        /** *passFailCriteria **/
+        "Sciclient programs the interrupt route between PVU and GIC in the Main domain.",
+
+        /** cpuID **/
+        APP_SCICLIENT_R5F,
+
+        /** sciclientConfigParams **/
+        {},
+
+        /** printEnable **/
+        PRINT_ENABLE,
+
+        /** testType **/
+        (APP_SCICLIENT_TEST_TYPE_SANITY)
     }
 #endif
 };

@@ -106,6 +106,7 @@ static int32_t App_fwExcpNotificationTest(void);
 #if ((defined (SOC_J721S2) || defined (SOC_J784S4)) && defined(BUILD_MCU2_0))
 static int32_t App_pvu2R5IntrTest(void);
 static void App_pvu2R5IntrTestIsr(void);
+static int32_t App_pvu2GICIntrTest(void);
 #endif
 
 /* ========================================================================== */
@@ -213,6 +214,11 @@ int32_t App_sciclientTestMain(App_sciclientTestParams_t *testParams)
 #if ((defined (SOC_J721S2) || defined (SOC_J784S4)) && defined(BUILD_MCU2_0))
         case 8:
             testParams->testResult = App_pvu2R5IntrTest();
+            break;
+#endif
+#if ((defined (SOC_J721S2) || defined (SOC_J784S4)) && defined(BUILD_MCU2_0))
+        case 9:
+            testParams->testResult = App_pvu2GICIntrTest();
             break;
 #endif
         default:
@@ -999,6 +1005,102 @@ static int32_t App_pvu2R5IntrTest(void)
             {
                 App_sciclientPrintf("Sciclient_rmIrqRelease() has failed\n");
             }
+        }
+    }
+    else
+    {
+        App_sciclientPrintf("Sciclient_init() has failed\n");
+    }
+
+    if (sciclient_init_status == CSL_PASS)
+    {
+        status = Sciclient_deinit();
+    }
+        
+    return status;
+}
+#endif
+
+#if ((defined (SOC_J721S2) || defined (SOC_J784S4)) && defined(BUILD_MCU2_0))
+static int32_t App_pvu2GICIntrTest(void)
+{
+    int32_t status = CSL_PASS;
+    int32_t sciclient_init_status = CSL_PASS;
+    Sciclient_ConfigPrms_t        config =
+    {
+        SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
+        NULL,
+        0 /* isSecure = 0 un secured for all cores */
+    };
+    uint16_t intNum=0;
+    struct tisci_msg_rm_irq_set_req     rmIrqReq;
+    struct tisci_msg_rm_irq_set_resp    rmIrqResp;
+    struct tisci_msg_rm_get_resource_range_req  req;
+    struct tisci_msg_rm_get_resource_range_resp res;
+    memset(&req, 0, sizeof(req));
+    memset(&res, 0, sizeof(res));
+
+    /* This is only needed as this test case is running back to back Sciclient
+     * Init and de-inits.
+     */
+    while (gSciclientHandle.initCount != 0)
+    {
+        status = Sciclient_deinit();
+    }
+    status = Sciclient_init(&config);
+    sciclient_init_status = status;
+
+    if(sciclient_init_status == CSL_PASS)
+    {
+        App_sciclientPrintf("PVU to GIC Interrupt Test\n");
+
+        req.type = TISCI_DEV_NAVSS0_INTR_0;
+        req.secondary_host = TISCI_HOST_ID_A72_2;
+
+        status  = Sciclient_rmGetResourceRange(&req,
+                                               &res,
+                                               SCICLIENT_SERVICE_WAIT_FOREVER);        
+        if(status == CSL_PASS)
+        {
+            App_sciclientPrintf("Sciclient_rmGetResourceRange() execution is successful\n");
+            status = Sciclient_rmIrqTranslateIrOutput(req.type,
+                                                      res.range_start,
+                                                      TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS,
+                                                      &intNum);
+            if(status == CSL_PASS)
+            {
+                App_sciclientPrintf("Sciclient_rmIrqTranslateIrOutput() execution is successful and host interrupt number is %d\n", intNum);
+
+                memset(&rmIrqReq, 0, sizeof(rmIrqReq));
+                rmIrqReq.valid_params   = TISCI_MSG_VALUE_RM_DST_ID_VALID;
+                rmIrqReq.valid_params  |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+                rmIrqReq.valid_params  |= TISCI_MSG_VALUE_RM_SECONDARY_HOST_VALID;
+                rmIrqReq.src_id         = TISCI_DEV_NAVSS0_PVU_0;
+                rmIrqReq.src_index      = 0;
+                rmIrqReq.dst_id         = TISCI_DEV_COMPUTE_CLUSTER0_GIC500SS;
+                rmIrqReq.dst_host_irq   = intNum;
+                rmIrqReq.secondary_host = TISCI_HOST_ID_A72_2;
+
+                status                    = Sciclient_rmIrqSet(&rmIrqReq,
+                                                            &rmIrqResp,
+                                                            SCICLIENT_SERVICE_WAIT_FOREVER);
+                if(status == CSL_PASS)
+                {
+                    App_sciclientPrintf("Sciclient_rmIrqSet() execution is successful\n");
+                }
+                else
+                {
+                    App_sciclientPrintf("Sciclient_rmIrqSet() has failed\n");
+                }
+            }
+            else
+            {
+                App_sciclientPrintf("Sciclient_rmIrqTranslateIrOutput() has failed\n");
+            }
+        }
+        else
+        {
+            App_sciclientPrintf("Sciclient_rmGetResourceRange() has failed\n");
         }
     }
     else
