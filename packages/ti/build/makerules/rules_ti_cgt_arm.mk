@@ -353,7 +353,7 @@ $(EXE_NAME) : $(OBJ_PATHS_ASM) $(OBJ_PATHS_S) $(OBJ_PATHS) $(LIB_PATHS) $(LNKCMD
 else
 $(EXE_NAME) : $(OBJ_PATHS_ASM) $(OBJ_PATHS_S) $(OBJ_PATHS) $(LIB_PATHS) $(LNKCMD_FILE) $(BUILD_LIB_ONCE)
 ifeq ($(BUILD_OS_TYPE), freertos)
-	$(CP) -f $(pdk_PATH)/ti/kernel/freertos/rov/syscfg_c.rov.xs $(BINDIR)
+	$(CP) $(pdk_PATH)/ti/kernel/freertos/rov/syscfg_c.rov.xs $(BINDIR)
 endif
 endif
 	$(ECHO) \# Linking into $(EXE_NAME)...
