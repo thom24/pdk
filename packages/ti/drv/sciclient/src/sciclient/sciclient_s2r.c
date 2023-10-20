@@ -52,12 +52,18 @@
 #include <ti/csl/soc/j7200/src/cslr_soc.h>
 #endif
 #include <ti/drv/sciclient/src/sciclient/sciclient_s2r.h>
+#include <ti/csl/src/ip/msmc/cslr_msmc.h>
+#include <ti/drv/sciclient/sciclient.h>
+#include <TimerP.h>
 
 static void asm_function(void);
 
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
+
+#define CSL_MSMC_CFGS0_RD(r) CSL_REG32_RD_OFF(CSL_COMPUTE_CLUSTER0_MSMC_CFGS0_BASE, r)
+#define CSL_MSMC_CFGS0_WR(r, v) CSL_REG32_WR_OFF(CSL_COMPUTE_CLUSTER0_MSMC_CFGS0_BASE, r, v)
 
 /**
  * This address belongs to the space reserved from the DM firmware for
@@ -106,9 +112,36 @@ static void S2R_cleanAllDCache(void)
     }
 }
 
+static bool S2R_cleanL3Cache(void)
+{
+    uint64_t t;
+
+    CSL_MSMC_CFGS0_WR(CSL_MSMC_CFGS0_CACHE_CTRL, 0);
+
+    t = TimerP_getTimeInUsecs();
+    while (CSL_MSMC_CFGS0_RD(CSL_MSMC_CFGS0_CACHE_CTRL) != 0)
+    {
+	    /*
+	     * timeout set to 100ms
+	     * Maximum value measured for J7200 is 250us
+	     */
+	    if (TimerP_getTimeInUsecs() - t > 100000)
+		    return false;
+    }
+
+    return true;
+}
+
 void S2R_goRetention(uint32_t coreResumeAddr)
 {
     volatile uint32_t* ptr_address = (volatile uint32_t*)(SCLICLIENT_ATF_BL31_DDR_RESTORE_ADDRESS + SCICLIENT_ATF_BL31_CODE_SIZE);
+
+    if (!S2R_cleanL3Cache())
+    {
+        S2R_debugPrintf("Failed to clean L3 cache\n");
+        Sciclient_pmDomainReset(DOMGRP_00, SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+
     CSL_REG32_WR(ptr_address,coreResumeAddr);
     S2R_debugPrintf("Resume address stored = 0x%x\n", coreResumeAddr);
 
