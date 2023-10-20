@@ -48,6 +48,7 @@
 #include <ti/csl/soc.h>
 #include <ti/csl/csl_i2c.h>
 #include <ti/csl/cslr_pmmc.h>
+#include <ti/csl/src/ip/msmc/cslr_msmc.h>
 #if defined(SOC_J7200)
 #include <ti/board/src/j7200_evm/include/board_cfg.h>
 #include <ti/board/src/j7200_evm/include/board_pll.h>
@@ -116,6 +117,9 @@
 #define CSL_CTRL_MMR0_CFG0_WR(r, v)   CSL_REG32_WR_OFF(CSL_CTRL_MMR0_CFG0_BASE, r, v)
 #define CSL_CTRL_MMR0_CFG0_SET(r, m)  CSL_CTRL_MMR0_CFG0_WR(r, CSL_CTRL_MMR0_CFG0_RD(r) | m)
 #define CSL_CTRL_MMR0_CFG0_CLR(r, m)  CSL_CTRL_MMR0_CFG0_WR(r, CSL_CTRL_MMR0_CFG0_RD(r) & ~(m))
+
+#define CSL_MSMC_CFGS0_RD(r) CSL_REG32_RD_OFF(CSL_COMPUTE_CLUSTER0_MSMC_CFGS0_BASE, r)
+#define CSL_MSMC_CFGS0_WR(r, v) CSL_REG32_WR_OFF(CSL_COMPUTE_CLUSTER0_MSMC_CFGS0_BASE, r, v)
 
 #define SCICLIENT_LPM_GPIO2_CONF (0x32)
 #define SCICLIENT_LPM_GPIO3_CONF (0x33)
@@ -220,6 +224,13 @@ static void Lpm_cleanAllDCache(void)
             __asm__ __volatile__ ("mcr p15, 0, %0, c7, c6, 2\t\n": "=r"(val));
             asm("    dsb");
         }
+
+    /* Clean L3 cache and wait until it is done */
+    CSL_MSMC_CFGS0_WR(CSL_MSMC_CFGS0_CACHE_CTRL, 0);
+    while (CSL_MSMC_CFGS0_RD(CSL_MSMC_CFGS0_CACHE_CTRL) != 0) {}
+
+    Lpm_debugPrintf("CSL_MSMC_CFGS0_CACHE_CTRL = 0x%x\n",
+                    CSL_MSMC_CFGS0_RD(CSL_MSMC_CFGS0_CACHE_CTRL));
 }
 
 static void Lpm_ddrFreqChange(void)

@@ -52,7 +52,7 @@
 #define LPM_S2R_H_
 
 
-#define LPM_SRAM_S2R_SIZE_IN_BYTES (1748U)
+#define LPM_SRAM_S2R_SIZE_IN_BYTES (1780U)
 
 /* ========================================================================== */
 /*                         Structure Declarations                             */
@@ -74,7 +74,9 @@
     0xe3a00000U,     0xe3a01c02U,     0xe2511001U,     0xf57ff05fU, \
     0xee072f5aU,     0xee072f56U,     0xf57ff04fU,     0x1afffff9U, \
     0xe2800001U,     0xe3500004U,     0x1afffff5U,     0xe24dd008U, \
-    0xe3031490U,     0xe30b3c5aU,     0xe34618efU,     0xe34d3172U, \
+    0xe3010000U,     0xe3a01000U,     0xe3460e00U,     0xe5801000U, \
+    0xe5901000U,     0xe3510000U,     0x1afffffcU,     0xe3031490U, \
+    0xe5900000U,     0xe30b3c5aU,     0xe34618efU,     0xe34d3172U, \
     0xe3000210U,     0xe30c2010U,     0xe3400299U,     0xe3055008U, \
     0xe3402068U,     0xe3405011U,     0xe5821000U,     0xe5823004U, \
     0xe5851000U,     0xe5853004U,     0xe3003100U,     0xe59010e8U, \
@@ -181,6 +183,6 @@
     0xe1540003U,     0x1afffff9U,     0xe1a03005U,     0xe1530002U, \
     0x28bd8070U,     0xe59e1000U,     0xe3a00000U,     0xe58e1004U, \
     0xe8bd8070U\
-} /* 1748 bytes */
+} /* 1780 bytes */
 
 #endif
