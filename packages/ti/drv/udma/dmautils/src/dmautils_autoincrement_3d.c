@@ -74,7 +74,7 @@
 #endif
 
 #define DMAUTILS_ALIGN_CEIL(VAL, ALIGN)((((VAL) + (ALIGN) - 1) / (ALIGN)) * (ALIGN))
-static int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * channelContext, void * autoIncrementContext, int32_t coreId);
+static int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * channelContext, void * autoIncrementContext, uint32_t coreId);
 
 /**
  *
@@ -425,7 +425,7 @@ static int32_t DmaUtilsAutoInc3d_setupContext(void * autoIncrementContext,const 
   return retVal;
 }
 
-static void DmaUtilsAutoInc3d_getUtcInfo(uint32_t * pUtcId, uint32_t * pDru_local_event_start, int32_t coreId) {
+static void DmaUtilsAutoInc3d_getUtcInfo(uint32_t * pUtcId, uint32_t * pDru_local_event_start, uint32_t coreId) {
   uint32_t utcId = 0;
   uint32_t dru_local_event_start = DRU_LOCAL_EVENT_START_DEFAULT;
 
@@ -493,7 +493,7 @@ static int32_t DmaUtilsAutoInc3d_getClecConfigEvent(const CSL_CLEC_EVTRegs * pRe
 }
 #endif
 
-static int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * channelContext, void * autoIncrementContext, int32_t coreId) {
+static int32_t DmaUtilsAutoInc3d_getEventNum(DmaUtilsAutoInc3d_ChannelContext * channelContext, void * autoIncrementContext, uint32_t coreId) {
   int32_t eventId;
 
   #if!defined(HOST_EMULATION)
@@ -982,7 +982,7 @@ int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t chann
     channelHandle = & channelContext->chHandle;
     #endif
 
-    if (dmautilsContext->blkIdx[channelId] != 0 )
+    if (dmautilsContext->blkIdx[channelId] != 0U )
     {
       retVal = (int32_t) DMAUTILS_EFAIL;
       DmaUtilsAutoInc3d_printf(autoIncrementContext, 0, "DmaUtilsAutoInc3d_deconfigure : Failed : All icnt's configured are not exhaused \n");

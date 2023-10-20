@@ -448,7 +448,7 @@ typedef struct
 
 typedef struct
 {
-    int32_t coreId;
+    uint32_t coreId;
     /**  DRU queue number to which a particular channel should submit its
          transfers */
     int32_t numChannels;
