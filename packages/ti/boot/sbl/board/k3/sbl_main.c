@@ -42,6 +42,7 @@
  /* TI RTOS header files */
 #include "sbl_main.h"
 #include <ti/csl/cslr_gtc.h>
+#include <sbl_err_trap.h>
 
 /**********************************************************************
  ************************** Macros ************************************
@@ -246,6 +247,7 @@ const CSL_ArmR5MpuRegionCfg gCslR5MpuCfg[CSL_ARM_R5F_MPU_REGIONS_MAX] =
 
 int main()
 {
+    int32_t retVal = CSL_PASS;
     #if !defined(SOC_J721E)
         /* Calculating the RBL execution time by reading the MCU Timer9.
            This timer is initialized by ROM at the start of RBL */
@@ -343,7 +345,11 @@ int main()
 #if !defined(SBL_SKIP_PINMUX_ENABLE)
     /* Board pinmux. */
     SBL_ADD_PROFILE_POINT;
-    Board_init(BOARD_INIT_PINMUX_CONFIG);
+    if (CSL_PASS != Board_init(BOARD_INIT_PINMUX_CONFIG))
+    {
+        retVal = CSL_EFAIL;
+        SBL_log(SBL_LOG_ERR, "\n Failed to init Pinmux Config !! \n");
+    }
 #endif
 
 #if !defined(SBL_SKIP_LATE_INIT)
@@ -354,7 +360,11 @@ int main()
 #if defined(SBL_ENABLE_PLL) && !defined(SBL_SKIP_SYSFW_INIT)
     SBL_ADD_PROFILE_POINT;
     SBL_log(SBL_LOG_MAX, "Initlialzing PLLs ...");
-    Board_init(SBL_PLL_INIT);
+    if (CSL_PASS != Board_init(SBL_PLL_INIT))
+    {
+        retVal = CSL_EFAIL;
+        SBL_log(SBL_LOG_ERR, "\n Failed to initialize PLLs !! \n");
+    }
     SBL_log(SBL_LOG_MAX, "done.\n");
 #endif
 
@@ -370,20 +380,32 @@ int main()
 #endif
 #endif
     SBL_ADD_PROFILE_POINT;
-    Board_init(SBL_CLOCK_INIT);
+    if (CSL_PASS != Board_init(SBL_CLOCK_INIT))
+    {
+        retVal = CSL_EFAIL;
+        SBL_log(SBL_LOG_ERR, "\n Failed to initialize clocks !! \n");
+    }
 
     SBL_log(SBL_LOG_MAX, "done.\n");
 #endif
 
 #if defined(SBL_ENABLE_DDR) && defined(SBL_ENABLE_PLL) && defined(SBL_ENABLE_CLOCKS)  && !defined(SBL_SKIP_SYSFW_INIT)
     SBL_log(SBL_LOG_MAX, "Initlialzing DDR ...");
-    Board_init(BOARD_INIT_DDR);
+    if (CSL_PASS != Board_init(BOARD_INIT_DDR))
+    {
+        retVal = CSL_EFAIL;
+        SBL_log(SBL_LOG_ERR, "\n Failed to initialize DDR !! \n");
+    }
     SBL_log(SBL_LOG_MAX, "done.\n");
 #endif
 
 #if defined(SBL_ENABLE_SERDES)
     SBL_log(SBL_LOG_MAX, "Initializing SERDES ...");
-    Board_init(BOARD_INIT_SERDES_PHY);
+    if (CSL_PASS != Board_init(BOARD_INIT_SERDES_PHY))
+    {
+        retVal = CSL_EFAIL;
+        SBL_log(SBL_LOG_ERR, "\n Failed to initialize Serdes PHY !! \n");
+    }
     SBL_log(SBL_LOG_MAX, "done.\n");
 #endif
 
@@ -401,7 +423,11 @@ int main()
 
 #if !defined(BOOT_PERF)
     SBL_log(SBL_LOG_MAX, "Copying EEPROM content to DDR ... \n");
-    Board_initBoardIdData((uint8_t *) EEPROM_DATA_DDR_ADDRESS);
+    if (CSL_PASS != Board_initBoardIdData((uint8_t *) EEPROM_DATA_DDR_ADDRESS))
+    {
+        retVal = CSL_EFAIL;
+        SBL_log(SBL_LOG_ERR, "\n Failed to copy EEPROM Data !! \n");
+    }
     SBL_log(SBL_LOG_MAX, "EEPROM Data Copy Done.\n");
 #endif
 
@@ -422,6 +448,11 @@ int main()
 
     SBL_log(SBL_LOG_MAX, "Begin parsing user application\n");
 
+    if (retVal != CSL_PASS)
+    {
+        SblErrLoop(__FILE__, __LINE__);
+    }
+
     /* Boot all non-SBL cores in multi-core app image */
     SBL_BootImage(&k3xx_evmEntry);
     SBL_ADD_PROFILE_POINT;
@@ -440,7 +471,11 @@ int main()
             SBL_SlaveCoreBoot(core_id, (uint32_t)NULL, &k3xx_evmEntry, SBL_REQUEST_CORE);
     }
 
-    Board_releaseResource(BOARD_RESOURCE_MODULE_CLOCK);
+    if (CSL_PASS != Board_releaseResource(BOARD_RESOURCE_MODULE_CLOCK))
+    {
+        retVal = CSL_EFAIL;
+        SBL_log(SBL_LOG_ERR, "\n Failed to release Board Resources !! \n");
+    }
 
     /* Boot the HLOS on the Cortex-A cores towards the end */
     for(core_id = MPU1_CPU0_ID; core_id <= MPU2_CPU3_ID; core_id ++)
