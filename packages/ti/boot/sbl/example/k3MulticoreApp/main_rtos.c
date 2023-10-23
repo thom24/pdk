@@ -78,7 +78,7 @@
 /* ========================================================================== */
 
 static void taskFxn(void* a0, void* a1);
-extern int sblTestmain(void);
+extern int SBLApp_main(void);
 
 #if defined (BUILD_MCU1_0)
 /**< Initialize SCI Server, to process RM/PM Requests by other cores */
@@ -153,7 +153,7 @@ static void taskFxn(void* a0, void* a1)
     }
 #endif
 
-    sblTestmain();
+    SBLApp_main();
 
     return;
 }

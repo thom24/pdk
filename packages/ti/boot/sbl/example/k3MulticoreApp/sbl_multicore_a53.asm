@@ -62,7 +62,7 @@
 	.section   .sbl_mpu_2_3_resetvector, "ax"
 #endif
 
-	.global sblTestmain
+	.global SBLApp_main
 
 	.global _sblTestResetVectors
 	.func _sblTestResetVectors
@@ -71,7 +71,7 @@ _sblTestResetVectors:
     and     x1, x1, #(~0xf)
     mov     sp, x1
 
-    ldr     x1, =sblTestmain
+    ldr     x1, =SBLApp_main
     blr     x1
     wfi
     add     x0, x0, #0x1

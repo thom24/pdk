@@ -33,7 +33,7 @@
 #include "sbl_amp_multicore_sections.h"
 #include "sbl_print.h"
 
-int sblTestmain(void)
+int SBLApp_main(void)
 {
     volatile int *pokeMemAddr = (volatile int *)POKE_MEM_ADDR;
 #if defined(BOOTAPP_TEST)

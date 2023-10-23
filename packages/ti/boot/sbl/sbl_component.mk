@@ -69,16 +69,16 @@ ifeq ($(sbl_component_make_include), )
 sbl_BOARDLIST = j721e_evm j7200_evm j721s2_evm j784s4_evm
 sbl_SOCLIST = j721e j7200 j721s2 j784s4
 
-j721e_smp_CORELIST := mcu1_0 mcu2_0 mcu3_0 mpu1_0
+j721e_lockstep_CORELIST := mcu1_0 mcu2_0 mcu3_0
 sbl_j721e_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c66xdsp_1 c66xdsp_2 c7x_1 mpu1_0 mpu1_1
 
-j7200_smp_CORELIST := mcu1_0 mcu2_0 mpu1_0
+j7200_lockstep_CORELIST := mcu1_0 mcu2_0
 sbl_j7200_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mpu1_0 mpu1_1
 
-j721s2_smp_CORELIST := mcu1_0 mcu2_0 mcu3_0 mpu1_0
+j721s2_lockstep_CORELIST := mcu1_0 mcu2_0 mcu3_0
 sbl_j721s2_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 c7x_1 c7x_2 mpu1_0 mpu1_1
 
-j784s4_smp_CORELIST := mcu1_0 mcu2_0 mcu3_0 mcu4_0 mpu1_0 mpu2_0
+j784s4_lockstep_CORELIST := mcu1_0 mcu2_0 mcu3_0 mcu4_0
 sbl_j784s4_CORELIST := mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 c7x_1 c7x_2 c7x_3 c7x_4 mpu1_0 mpu1_1 mpu1_2 mpu1_3 mpu2_0 mpu2_1 mpu2_2 mpu2_3
 
 $(SOC)_LASTCORE := $(word $(words $(sbl_$(SOC)_CORELIST)), $(sbl_$(SOC)_CORELIST))
@@ -1158,60 +1158,53 @@ sbl_EXAMPLE_LIST += bootapp_boot_test
 bootapp_boot_test_SBL_APPIMAGEGEN = yes
 export bootapp_boot_test_SBL_APPIMAGEGEN
 
-# R5 Lockstep and MPU SMP Boot Test
-sbl_smp_test_COMP_LIST = sbl_smp_test
-sbl_smp_test_RELPATH = ti/boot/sbl/example/k3MulticoreApp
-sbl_smp_test_BINPATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/binary
-sbl_smp_test_PATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
-sbl_smp_test_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_smp_test.mk BOOTMODE=mmcsd
-export sbl_smp_test_MAKEFILE
-sbl_smp_test_BOARD_DEPENDENCY = no
-sbl_smp_test_SOC_DEPENDENCY = no
-sbl_smp_test_CORE_DEPENDENCY = no
-export sbl_smp_test_COMP_LIST
-export sbl_smp_test_BOARD_DEPENDENCY
-export sbl_smp_test_SOC_DEPENDENCY
-export sbl_smp_test_CORE_DEPENDENCY
-sbl_smp_test_PKG_LIST = sbl_smp_test
-sbl_smp_test_INCLUDE = $(sbl_smp_test_PATH)
-sbl_smp_test_BOARDLIST = $(sbl_BOARDLIST)
-export sbl_smp_test_BOARDLIST
-sbl_smp_test_$(SOC)_CORELIST = $($(SOC)_smp_CORELIST)
-export sbl_smp_test_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), j721s2 j784s4))
-sbl_EXAMPLE_LIST += sbl_smp_test
-endif
-sbl_smp_test_SBL_APPIMAGEGEN = yes
-export sbl_smp_test_SBL_APPIMAGEGEN
+# SBL lockstep example
+sbl_lockstep_boot_test_COMP_LIST = sbl_lockstep_boot_test
+sbl_lockstep_boot_test_RELPATH = ti/boot/sbl/example/k3MulticoreApp
+sbl_lockstep_boot_test_BINPATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/binary
+sbl_lockstep_boot_test_PATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
+sbl_lockstep_boot_test_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/lockstep_example/makefile
+export sbl_lockstep_boot_test_MAKEFILE
+sbl_lockstep_boot_test_BOARD_DEPENDENCY = no
+sbl_lockstep_boot_test_SOC_DEPENDENCY = yes
+sbl_lockstep_boot_test_CORE_DEPENDENCY = yes
+export sbl_lockstep_boot_test_COMP_LIST
+export sbl_lockstep_boot_test_BOARD_DEPENDENCY
+export sbl_lockstep_boot_test_SOC_DEPENDENCY
+export sbl_lockstep_boot_test_CORE_DEPENDENCY
+sbl_lockstep_boot_test_PKG_LIST = sbl_lockstep_boot_test
+sbl_lockstep_boot_test_INCLUDE = $(sbl_lockstep_boot_test_PATH)
+sbl_lockstep_boot_test_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_lockstep_boot_test_BOARDLIST
+sbl_lockstep_boot_test_$(SOC)_CORELIST = $($(SOC)_lockstep_CORELIST)
+export sbl_lockstep_boot_test_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += sbl_lockstep_boot_test
+sbl_lockstep_boot_test_SBL_APPIMAGEGEN = yes
+export sbl_lockstep_boot_test_SBL_APPIMAGEGEN
 
-# Multicore SMP Boot Test
-sbl_multicore_smp_COMP_LIST = sbl_multicore_smp
-sbl_multicore_smp_RELPATH = ti/boot/sbl/example/k3MulticoreApp
-sbl_multicore_smp_BINPATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/binary
-sbl_multicore_smp_PATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
-sbl_multicore_smp_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/build/sbl_multicore_smp.mk
-export sbl_multicore_smp_MAKEFILE
-# SBL multicore smp depends on sbl_smp_test for all the cores
-sbl_multicore_smp_DEPENDS_ON=sbl_smp_test
-export sbl_multicore_smp_DEPENDS_ON
-sbl_multicore_smp_BOARD_DEPENDENCY = no
-sbl_multicore_smp_SOC_DEPENDENCY = no
-sbl_multicore_smp_CORE_DEPENDENCY = no
-export sbl_multicore_smp_COMP_LIST
-export sbl_multicore_smp_BOARD_DEPENDENCY
-export sbl_multicore_smp_SOC_DEPENDENCY
-export sbl_multicore_smp_CORE_DEPENDENCY
-sbl_multicore_smp_PKG_LIST = sbl_multicore_smp
-sbl_multicore_smp_INCLUDE = $(sbl_multicore_smp_PATH)
-sbl_multicore_smp_BOARDLIST = $(sbl_BOARDLIST)
-export sbl_multicore_smp_BOARDLIST
-sbl_multicore_smp_$(SOC)_CORELIST := $($(SOC)_LASTCORE)
-export sbl_multicore_smp_$(SOC)_CORELIST
-ifneq ($(SOC),$(filter $(SOC), j721s2 j784s4))
-sbl_EXAMPLE_LIST += sbl_multicore_smp
-endif
-sbl_multicore_smp_SBL_APPIMAGEGEN = no
-export sbl_multicore_smp_SBL_APPIMAGEGEN
+# SBL lockstep multicore example
+sbl_lockstep_multicore_boot_test_COMP_LIST = sbl_lockstep_multicore_boot_test
+sbl_lockstep_multicore_boot_test_RELPATH = ti/boot/sbl/example/k3MulticoreApp
+sbl_lockstep_multicore_boot_test_BINPATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/binary
+sbl_lockstep_multicore_boot_test_PATH = $(PDK_SBL_COMP_PATH)/example/k3MulticoreApp
+sbl_lockstep_multicore_boot_test_MAKEFILE = -f$(PDK_SBL_COMP_PATH)/example/k3MulticoreApp/lockstep_example/sbl_lockstep_multicore.mk
+export sbl_lockstep_multicore_boot_test_MAKEFILE
+sbl_lockstep_multicore_boot_test_BOARD_DEPENDENCY = no
+sbl_lockstep_multicore_boot_test_SOC_DEPENDENCY = no
+sbl_lockstep_multicore_boot_test_CORE_DEPENDENCY = no
+export sbl_lockstep_multicore_boot_test_COMP_LIST
+export sbl_lockstep_multicore_boot_test_BOARD_DEPENDENCY
+export sbl_lockstep_multicore_boot_test_SOC_DEPENDENCY
+export sbl_lockstep_multicore_boot_test_CORE_DEPENDENCY
+sbl_lockstep_multicore_boot_test_PKG_LIST = sbl_lockstep_multicore_boot_test
+sbl_lockstep_multicore_boot_test_INCLUDE = $(sbl_lockstep_multicore_boot_test_PATH)
+sbl_lockstep_multicore_boot_test_BOARDLIST = $(sbl_BOARDLIST)
+export sbl_lockstep_multicore_boot_test_BOARDLIST
+sbl_lockstep_multicore_boot_test_$(SOC)_CORELIST = $($(SOC)_LASTCORE)
+export sbl_lockstep_multicore_boot_test_$(SOC)_CORELIST
+sbl_EXAMPLE_LIST += sbl_lockstep_multicore_boot_test
+sbl_lockstep_multicore_boot_test_SBL_APPIMAGEGEN = no
+export sbl_lockstep_multicore_boot_test_SBL_APPIMAGEGEN
 
 # R5 boot XIP Test
 sbl_boot_xip_test_COMP_LIST = sbl_boot_xip_test

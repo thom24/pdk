@@ -64,7 +64,7 @@ sblFiqLoop	.long _sblFiqLoop
 
 	.sect   ".sbl_mcu_1_0_resetvector"
 
-	.global sblTestmain
+	.global SBLApp_main
 	.global _sblTestEntry
 	
 _sblTestEntry:
@@ -72,7 +72,7 @@ _sblTestEntry:
 	LDR	r1, _sblTestStackBaseAddr
 	MOV	sp, r1
 
-	LDR	r1, sblTestmainAddr
+	LDR	r1, SBLApp_mainAddr
 	BLX	r1
 
 	; Test complete.
@@ -80,7 +80,7 @@ _sblTestEntry:
 	ADD	r0, r0, #0x1
 _sbTestDone:	B _sbTestDone
 
-sblTestmainAddr	      .long sblTestmain
+SBLApp_mainAddr	      .long SBLApp_main
 _sblTestStackBaseAddr .long _sblTestStackBase
 
 _sblUndefLoop:  B _sblUndefLoop

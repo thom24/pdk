@@ -185,56 +185,56 @@
     #define CORE_NAME "MPU1_0"
     #define BOOT_DELAY (0x140000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MPU1_0)
-    int sblTestmain(void)  __attribute__((section(".sbl_mpu_1_0_resetvector")));
+    int SBLApp_main(void)  __attribute__((section(".sbl_mpu_1_0_resetvector")));
 #endif
 
 #ifdef BUILD_MPU1_1
     #define CORE_NAME "MPU1_1"
     #define BOOT_DELAY (0x180000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MPU1_1)
-    int sblTestmain(void)  __attribute__((section(".sbl_mpu_1_1_resetvector")));
+    int SBLApp_main(void)  __attribute__((section(".sbl_mpu_1_1_resetvector")));
 #endif
 
 #ifdef BUILD_MPU1_2
     #define CORE_NAME "MPU1_2"
     #define BOOT_DELAY (0x1C0000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MPU1_2)
-    int sblTestmain(void)  __attribute__((section(".sbl_mpu_1_2_resetvector")));
+    int SBLApp_main(void)  __attribute__((section(".sbl_mpu_1_2_resetvector")));
 #endif
 
 #ifdef BUILD_MPU1_3
     #define CORE_NAME "MPU1_3"
     #define BOOT_DELAY (0x200000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MPU1_3)
-    int sblTestmain(void)  __attribute__((section(".sbl_mpu_1_3_resetvector")));
+    int SBLApp_main(void)  __attribute__((section(".sbl_mpu_1_3_resetvector")));
 #endif
 
 #ifdef BUILD_MPU2_0
     #define CORE_NAME "MPU2_0"
     #define BOOT_DELAY (0x240000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MPU2_0)
-    int sblTestmain(void)  __attribute__((section(".sbl_mpu_2_0_resetvector")));
+    int SBLApp_main(void)  __attribute__((section(".sbl_mpu_2_0_resetvector")));
 #endif
 
 #ifdef BUILD_MPU2_1
     #define CORE_NAME "MPU2_1"
     #define BOOT_DELAY (0x280000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MPU2_1)
-    int sblTestmain(void)  __attribute__((section(".sbl_mpu_2_1_resetvector")));
+    int SBLApp_main(void)  __attribute__((section(".sbl_mpu_2_1_resetvector")));
 #endif
 
 #ifdef BUILD_MPU2_2
     #define CORE_NAME "MPU2_2"
     #define BOOT_DELAY (0x2C0000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MPU2_2)
-    int sblTestmain(void)  __attribute__((section(".sbl_mpu_2_2_resetvector")));
+    int SBLApp_main(void)  __attribute__((section(".sbl_mpu_2_2_resetvector")));
 #endif
 
 #ifdef BUILD_MPU2_3
     #define CORE_NAME "MPU2_3"
     #define BOOT_DELAY (0x300000)
     #define POKE_MEM_ADDR (POKE_MEM_ADDR_MPU2_3)
-    int sblTestmain(void)  __attribute__((section(".sbl_mpu_2_3_resetvector")));
+    int SBLApp_main(void)  __attribute__((section(".sbl_mpu_2_3_resetvector")));
 #endif
 
 

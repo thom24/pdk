@@ -38,7 +38,7 @@
 
 	.include sbl_multicore_r5_sections.inc
 
-	.global sblTestmain
+	.global SBLApp_main
 
 	.global _c_int00
 	.global _sblTestResetVectors
@@ -73,7 +73,7 @@ _sblTestEntry:
 	BIC	r1, r1, #0xf
 	MOV	sp, r1
 
-	LDR	r1, sblTestmainAddr
+	LDR	r1, SBLApp_mainAddr
 	BLX	r1
 
 	; Test complete.
@@ -81,7 +81,16 @@ _sblTestEntry:
     ADD r0, r0, #0x1
 _sbTestDone:	B _sbTestDone
 
-sblTestmainAddr	.long sblTestmain
+    .global SBLApp_isLockStepModeEnabled
+; Checks if cluster is booted in lockstep or not
+SBLApp_isLockStepModeEnabled:
+    DMB
+    MRC       p15, #0, r0, c15, c2, #1  ; Read Build Options 2 Register
+    LSL       r0, r0, #(1)
+    LSR       r0, r0, #(31)             ; Extract 30th Bit
+    BX        lr
+
+SBLApp_mainAddr	.long SBLApp_main
 
 _sblUndefLoop:  B _sblUndefLoop
 _sblSvcLoop:    B _sblSvcLoop
