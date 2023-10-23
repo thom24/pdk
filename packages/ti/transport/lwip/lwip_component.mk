@@ -122,16 +122,16 @@ lwip_EXAMPLE_LIST =
 define lwipcontrib_RULE
 
 export lwipcontrib_$(1)_COMP_LIST = lwipcontrib_$(1)
-lwipcontrib_$(1)_RELPATH = ti/transport/lwip/lwip-contrib
-lwipcontrib_$(1)_PATH = $(PDK_LWIP_COMP_PATH)/lwip-contrib
+lwipcontrib_$(1)_RELPATH = ti/transport/lwip/lwip-stack/contrib
+lwipcontrib_$(1)_PATH = $(PDK_LWIP_COMP_PATH)/lwip-stack/contrib
 export lwipcontrib_$(1)_LIBNAME = lwipcontrib_$(1)
-export lwipcontrib_$(1)_LIBPATH = $(PDK_LWIP_COMP_PATH)/lwip-contrib/lib/$(1)
-export lwipcontrib_$(1)_OBJPATH = ti/transport/lwip/lwip-contrib/$(1)
-export lwipcontrib_$(1)_MAKEFILE = -f ../makefile_contrib BUILD_OS_TYPE=$(1)
+export lwipcontrib_$(1)_LIBPATH = $(PDK_LWIP_COMP_PATH)/lwip-stack/contrib/lib/$(1)
+export lwipcontrib_$(1)_OBJPATH = ti/transport/lwip/lwip-stack/contrib/$(1)
+export lwipcontrib_$(1)_MAKEFILE = -f ../../makefile_contrib BUILD_OS_TYPE=$(1)
 export lwipcontrib_$(1)_BOARD_DEPENDENCY = no
 export lwipcontrib_$(1)_CORE_DEPENDENCY = no
 lwipcontrib_$(1)_PKG_LIST = lwipcontrib_$(1)
-lwipcontrib_$(1)_INCLUDE = $(PDK_LWIP_COMP_PATH)/lwip-contrib
+lwipcontrib_$(1)_INCLUDE = $(PDK_LWIP_COMP_PATH)/lwip-stack/contrib
 export lwipcontrib_$(1)_SOCLIST = $(drvlwip_SOCLIST)
 export lwipcontrib_$(1)_$(SOC)_CORELIST = $(filter $(DEFAULT_$(SOC)_CORELIST_$(1)), $(drvlwip_$(SOC)_CORELIST))
 ifeq ($(1),$(filter $(1), freertos))

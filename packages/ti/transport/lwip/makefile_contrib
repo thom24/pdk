@@ -11,7 +11,7 @@ MODULE_NAME = lwipcontrib_$(BUILD_OS_TYPE)
 
 LWIP_DIR         = $(PDK_LWIP_COMP_PATH)
 LWIP_STACK_DIR   = $(LWIP_DIR)/lwip-stack
-LWIP_CONTRIB_DIR = $(LWIP_DIR)/lwip-contrib
+LWIP_CONTRIB_DIR = $(LWIP_DIR)/lwip-stack/contrib
 
 SRCDIR =  .
 SRCDIR += $(LWIP_CONTRIB_DIR)/examples
@@ -43,7 +43,7 @@ SRCDIR += $(LWIP_CONTRIB_DIR)/examples/example_app
 
 # Common source files and CFLAGS across all platforms and cores
 PACKAGE_SRCS_COMMON = .
-PACKAGE_SRCS_COMMON += ../makefile_contrib
+PACKAGE_SRCS_COMMON += ../../makefile_contrib
 
 INCDIR =
 INCDIR += $(LWIP_CONTRIB_DIR)
