@@ -1975,6 +1975,37 @@ int LoadImage( const char * imagePath, const char** optionNames, const char** op
 			if( chparam(*optInName, *optInVal) != 0)
 				displayHelp();
 		}
+
+#ifdef WINDOWS
+
+    ifstream hFile;
+    int fsz;
+    /* Check if the file exists */
+	hFile = file_open( (char *)imagePath, &fsz);
+	if(!hFile)
+	{
+		cout<<"Error in opening file..!!\n\n";
+		exit(0);
+	}
+    else
+    {
+        hFile.close();
+    }
+#else
+    FILE *hFile;
+	/* Check if the file exists */
+	hFile = fopen(imagePath, "rb");
+	if(!hFile)
+	{
+		cout<<"Error in opening file..!!\n\n";
+		exit(0);
+	}
+    else
+    {
+        fclose(hFile);
+    }
+#endif
+
 		if(!(strcmp( *optInName,"-f" )))
 		{
 			char* ext;
