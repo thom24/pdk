@@ -425,8 +425,7 @@ int main()
     SBL_log(SBL_LOG_MAX, "Copying EEPROM content to DDR ... \n");
     if (CSL_PASS != Board_initBoardIdData((uint8_t *) EEPROM_DATA_DDR_ADDRESS))
     {
-        retVal = CSL_EFAIL;
-        SBL_log(SBL_LOG_ERR, "\n Failed to copy EEPROM Data !! \n");
+        SBL_log(SBL_LOG_MAX, "\n Failed to copy EEPROM Data !! \n");
     }
     SBL_log(SBL_LOG_MAX, "EEPROM Data Copy Done.\n");
 #endif
