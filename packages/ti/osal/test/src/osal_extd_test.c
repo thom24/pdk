@@ -144,6 +144,13 @@ volatile bool gFlagSwi = false, gFlagIRQ = false;
 /* for HeapP_freertos */
 static uint8_t  gHeapPbuf[HEAP_MAIN];
 
+/* for EventP APIs */
+EventP_Handle gEventP_handle;
+uint32_t geventMask = EventP_ID_01;
+extern int gOsalEventPFreeRtosPool[OSAL_FREERTOS_CONFIGNUM_EVENT];
+extern uint32_t gOsalEventAllocCnt;
+extern uint32_t gOsalQueueAllocCnt;
+
 /**********************************************************************
  ************************** Callback Functions **************************
  **********************************************************************/
@@ -179,6 +186,21 @@ void Hwi_IRQ(uintptr_t arg)
 void SwiP_nonosIRQ(uintptr_t arg0, uintptr_t arg1)
 {
    gFlagSwi = true;
+}
+
+/*isr which calls EventP and ghwip_isr_got_execute which indicates isr got executed*/
+void EventP_IRQ(void *arg)
+{   
+    ghwip_isr_got_execute = 4U;
+    gTestlocalTimeout = 0x300000U;
+    EventP_post(gEventP_handle, geventMask);
+    EventP_getPostedEvents(gEventP_handle);
+}
+
+void EventP_Neg_IRQ(void *arg)
+{
+      gTestlocalTimeout = 0x100000U;
+      EventP_post(gEventP_handle, geventMask);
 }
 
 /**********************************************************************
@@ -384,8 +406,8 @@ void SwiP_nonos_Test(void)
  *      2. Osal_RegisterInterrupt
  *      3. Osal_DeleteInterrupt
  */
- void RegisterIntr_nonos_NegTest(void)
- {
+void RegisterIntr_nonos_NegTest(void)
+{
      HwiP_Handle hwiHandle       = NULL;
      OsalRegisterIntrParams_t    *intrPrms = NULL_PTR;
      OsalInterruptRetCode_e      osalRetVal;
@@ -413,6 +435,16 @@ void SwiP_nonos_Test(void)
      
      if (true == test_pass)
      {
+         /* Osal_DeleteInterrupt positive condition check */
+         osalRetVal = Osal_DeleteInterrupt(&hwiHandle, intrPrms->corepacConfig.corepacEventNum);
+         if(OSAL_INT_SUCCESS == osalRetVal)
+         {
+             OSAL_log("\n Osal_DeleteInterrupt Positive Testcase Passed!! \n");
+         }
+         else
+         {
+             OSAL_log("\n Osal_DeleteInterrupt Positive Testcase Failed!! \n");
+         }
          /* Osal_DeleteInterrupt Negative condition check */
          hwiHandle = NULL;
          osalRetVal = Osal_DeleteInterrupt(&hwiHandle, intrPrms->corepacConfig.corepacEventNum);
@@ -430,6 +462,7 @@ void SwiP_nonos_Test(void)
          OSAL_log("\n RegisterIntr nonos Negative Test failed!! \n");
      }
  }
+#endif
 
 /*
  * Description: Testing Negative condition for the Osal_RegisterInterruptDirect API
@@ -448,7 +481,7 @@ void RegisterIntrDirect_NegTest(void)
     intrPrms.corepacConfig.priority        = 1U;
     intrPrms.corepacConfig.corepacEventNum = CSL_INVALID_EVENT_ID;
     intrPrms.corepacConfig.isrRoutine      = NULL;
-    intrPrms.corepacConfig.intVecNum       = INT_NUM_IRQ;
+    intrPrms.corepacConfig.intVecNum       = 0U;
     
     /* Register interrupt */
     osalRetVal = Osal_RegisterInterruptDirect(&intrPrms, isrFxn, &hwiHandle);
@@ -463,7 +496,99 @@ void RegisterIntrDirect_NegTest(void)
     }
 }
 
-#endif
+void RegisterIntr_pos_Test(void)
+{
+    HwiP_Handle                 hwiHandle;
+    OsalRegisterIntrParams_t    intrPrms;
+    OsalInterruptRetCode_e      osalRetVal;
+    HwiP_DirectFxn              isrFxn = (HwiP_DirectFxn)Hwi_IRQ;
+    bool                        test_pass = true;
+    
+    Osal_RegisterInterrupt_initParams(&intrPrms);
+    
+    /* Populating invalid interrupt parameters to check the Negative condition */
+    intrPrms.corepacConfig.priority        = 1U;
+    intrPrms.corepacConfig.corepacEventNum = EventP_ID_NONE;
+    intrPrms.corepacConfig.isrRoutine      = Hwi_IRQ;
+    intrPrms.corepacConfig.enableIntr      = 0U;
+    
+    /* Register interrupt */
+    osalRetVal = Osal_RegisterInterruptDirect(&intrPrms, isrFxn, &hwiHandle);
+    
+    if (OSAL_INT_SUCCESS != osalRetVal)
+    {
+        OSAL_log("\n Interrupt not register for the event!! \n");
+        test_pass = false;
+    }
+
+    Osal_DisableInterrupt(intrPrms.corepacConfig.corepacEventNum, 0U);
+    
+    osalRetVal = Osal_DeleteInterrupt(&hwiHandle, intrPrms.corepacConfig.corepacEventNum);
+    if(OSAL_INT_SUCCESS != osalRetVal)
+    {
+        OSAL_log("\n Failed to delete Interrupt corresponding to an event \n");
+        test_pass = false;
+    }
+    if(true == test_pass)
+    {
+        OSAL_log("\n Register Interrupt positive Testcase Passed!! \n");
+    }
+    else
+    {
+        OSAL_log("\n Register Interrupt positive Testcase Failed!! \n");
+    }
+}
+
+void RegisterIntr_Neg_Test(void)
+{
+    HwiP_Handle                 hwiHandle = NULL;
+    OsalRegisterIntrParams_t    intrPrms;
+    OsalInterruptRetCode_e      osalRetVal;
+    HwiP_DirectFxn              isrFxn = NULL_PTR;  //(HwiP_DirectFxn)Hwi_IRQ;
+    bool                        test_pass = true;
+    
+    Osal_RegisterInterrupt_initParams(&intrPrms);
+    
+    /* Populating invalid interrupt parameters to check the Negative condition */
+    intrPrms.corepacConfig.arg             = (uintptr_t) 0;
+    intrPrms.corepacConfig.priority        = 1U;
+    intrPrms.corepacConfig.corepacEventNum = CSL_INVALID_EVENT_ID;
+    intrPrms.corepacConfig.isrRoutine      = NULL;
+    intrPrms.corepacConfig.intVecNum       = 0U;
+    
+    /* Register interrupt */
+    osalRetVal = Osal_RegisterInterruptDirect(&intrPrms, isrFxn, &hwiHandle);
+    
+    if (OSAL_INT_SUCCESS == osalRetVal)
+    {
+        OSAL_log("\n Interrupt not register for the event \n");
+        test_pass = false;
+    }
+
+    Osal_DisableInterrupt(intrPrms.corepacConfig.corepacEventNum, 0U);
+    
+    osalRetVal = Osal_DeleteInterrupt(&hwiHandle, intrPrms.corepacConfig.corepacEventNum);
+    if(OSAL_INT_SUCCESS != osalRetVal)
+    {
+        test_pass = false;
+    }
+    if(true == test_pass)
+    {
+        OSAL_log("\n Register InterruptDirect Negative Testcase Passed!! \n");
+    }
+    else
+    {
+        OSAL_log("\n Register InterruptDirect Negative Testcase Failed!! \n");
+    }
+}
+
+/* RegisterIntr_nonos.c Testcases */
+void RegisterIntr_Test(void)
+{
+    RegisterIntrDirect_NegTest();
+    RegisterIntr_pos_Test();
+    RegisterIntr_Neg_Test();
+}
 
 /*
  * Description: Testing negative condition check for the below mentioned APIs :
@@ -477,7 +602,7 @@ void RegisterIntrDirect_NegTest(void)
 void QueueP_nonos_Test(void)
 {
     QueueP_Params *params = (QueueP_Params*)NULL_PTR;
-    QueueP_Handle *handle = NULL;
+    QueueP_Handle handle, handle_val[6];
     QueueP_Status status;
     void * elem = NULL;
     uint32_t i = 0U;
@@ -488,25 +613,26 @@ void QueueP_nonos_Test(void)
     /* To test "for (i = 0; i < maxQueue; i++)" loop in QueueP_create API */
     for (i = 0U; i < LOOP_CNT; i++)
     {
-          handle[i] = QueueP_create(params);
-          if (NULL_PTR == handle[i])
+          handle = QueueP_create(params);
+          handle_val[i] = handle;
+          if (NULL_PTR == handle_val[i])
           {
               OSAL_log("\n\t Creating Queue failed \n");
           }
     }
     
-    QueueP_getQPtr(handle[0]);
+    QueueP_getQPtr(handle_val[0]);
     
     /* Here addr_handle is used to get the memory location of the handle
      * we are corrupting the content of the handle and passing in a corrupt handle to the driver
      * to test negative condition in QueueP_put API
      */
-    uint32_t (*addr_handle) = handle[0];
+    uint32_t (*addr_handle) = handle_val[0];
     for(i = 0U; i <= LOOP_CNT; i++)
     {
         addr_handle[i] = 0U;
     }
-    status = QueueP_put(handle[0], elem);
+    status = QueueP_put(handle_val[0], elem);
     if(QueueP_OK != status)
     {
         OSAL_log("\n QueueP_put Negative Test Passed!! \n");
@@ -516,14 +642,14 @@ void QueueP_nonos_Test(void)
         OSAL_log("\n QueueP_put Negative Test Failed!! \n");
     }
     
-    QueueP_get(handle[0]);
+    QueueP_get(handle_val[0]);
     
-    for(i = 0U; i <= LOOP_CNT; i++)
+    for(i = 0U; i < LOOP_CNT; i++)
     {
-        status = QueueP_delete(handle[i]);
+        status = QueueP_delete(handle_val[i]);
     }
 
-    if(QueueP_OK != status)
+    if(QueueP_OK == status)
     {
         OSAL_log("\n QueueP_delete Nullcheck Test Passed!! \n");
     }
@@ -546,7 +672,7 @@ void HeapP_freertos_NegTest(void)
     memset( gHeapPbuf, 0x00, sizeof( gHeapPbuf ) );
     
     HeapP_Params params;
-    HeapP_Handle *handle = NULL, memhandle;
+    HeapP_Handle handle, memhandle, handle_val[LOOP_CNT];
     HeapP_Status status;
     uint32_t size = 10U, free_size = 5U;
     uint32_t i;
@@ -559,23 +685,24 @@ void HeapP_freertos_NegTest(void)
     /* Testing "for (i = 0; i < maxHeap; i++)" loop in HeapP_create API */
     for (i = 0U; i < LOOP_CNT; i++)
     {
-        handle[i] = HeapP_create(&params);
+        handle = HeapP_create(&params);
+        handle_val[i] = handle;
     }
     
-    memhandle = HeapP_alloc(handle[0], size);
+    memhandle = HeapP_alloc(handle_val[0], size);
     if(NULL_PTR == memhandle)
     {
         OSAL_log("\n\t Heap allocation failed \n");
     }
     
-    status = HeapP_free(handle[0], memhandle, free_size);
+    status = HeapP_free(handle_val[0], memhandle, free_size);
     if(HeapP_OK != status)
     {
         OSAL_log("\n\t Heap is not freed \n");
     }
-    for (i = 0U; i < LOOP_CNT; i++)
+    for(i = 0; i < LOOP_CNT; i++)
     {
-        status = HeapP_delete(handle[i]);
+        status = HeapP_delete(handle_val[i]);
     }
     if(HeapP_OK != status)
     {
@@ -620,6 +747,8 @@ void HeapP_freertos_NullTest(void)
     */
     uint32_t *addr_handle = handle;
     *addr_handle = 0U;
+    status = HeapP_free(handle, fhandle, free_size);
+    OSAL_log("\n status = %d\n \n");
     fhandle = HeapP_alloc(handle, size);
     status = HeapP_free(handle, fhandle, free_size);
   
@@ -643,6 +772,242 @@ void HeapP_Params_init_NullTest(void)
   
     HeapP_Params_init(params);
     OSAL_log("\n HeapP_Params_init Nullcheck Passed!! \n");
+}
+
+/*
+ * Description  : for ISR context in EventP_post and EventP_getPostedEvents APIs
+ */
+static void Osal_isInISRContext_EventP_Test(void)
+{
+    uint32_t      interruptNum = INT_NUM_IRQ;
+    HwiP_Params   hwipParams;
+    HwiP_Handle   handle;
+    HwiP_Status   status;
+    int8_t        ret;
+    volatile int intCount = 0;
+    bool test_pass = true;
+    
+    HwiP_Params_init(&hwipParams);
+    
+    handle = HwiP_create(interruptNum, (HwiP_Fxn)EventP_IRQ, &hwipParams);
+    
+    if(NULL_PTR == handle)
+    {
+        OSAL_log("\t Failed to create the HwiP handle for start \n");
+        test_pass = false;
+    }
+    
+    if(true == test_pass)
+    {
+        HwiP_enableInterrupt(interruptNum);
+        
+        while (intCount != LOOP_CNT - 1)
+        {
+            ret = HwiP_post(interruptNum);
+            if(osal_UNSUPPORTED == ret)
+            {
+                OSAL_log("\t HwiP_post unsupported/failed!\n");
+                test_pass = false;
+                break;
+            }
+            
+            /* Wait for software timeout, ISR should hit
+            * otherwise return the test as failed */
+            while (gTestlocalTimeout != 0U)
+            {
+                gTestlocalTimeout--;
+                if (ghwip_isr_got_execute)
+                {
+                    ghwip_isr_got_execute = 0;
+                    intCount++;
+                    break;
+                }
+            }
+            /* Wait is over - did not get any interrupts posted/received
+            * declare the test as fail
+            */
+            if (gTestlocalTimeout == 0)
+            {
+                OSAL_log("\t Failed to get interrupts \n");
+            }
+        }
+          
+        OSAL_log("\t %d IRQs received.\n",intCount);
+            
+        status = HwiP_delete(handle);
+        if(HwiP_OK != status)
+        {
+            OSAL_log("\t HwiP delete failed\n");
+            test_pass = false;
+        }
+          
+        if((true == test_pass) && (4 == ghwip_isr_got_execute))
+        {
+            OSAL_log("\n EventP ISR executed!!\n");
+        }
+    }
+}
+
+/* 
+ * Description: Testing ISR condition for the below mentioned APIs
+ *      1. EventP_post
+ *      2. EventP_getPostedEvents
+ */
+void EventP_ISR_Test()
+{
+    EventP_Params   params;
+    EventP_Status   status;
+    uint8_t         loop;
+    
+    EventP_Params_init(&params);
+    
+    gEventP_handle = EventP_create(&params);
+    if (NULL_PTR == gEventP_handle)
+    {
+       OSAL_log("\t Failed to create event \n");
+    }
+    
+    for(loop = 0U; loop < LOOP_CNT ; loop++)
+    {
+        Osal_isInISRContext_EventP_Test();
+        if(1U == loop)
+        {
+            /*Code Snippet: if (gOsalEventAllocCnt > 0U) */
+            gOsalEventAllocCnt = 0U;
+        }
+    }
+    
+    status = EventP_delete(&gEventP_handle);
+    if(EventP_OK != status)
+    {
+        OSAL_log("\t Failed to delete event \n");
+    }
+    else
+    {
+        OSAL_log("\n EventP ISR Test passed!! \n"); 
+    }
+}
+
+/*                
+ * Description: Testing Negative condition for the below mentioned APIs
+ *      1. EventP_create
+ *      2. EventP_post
+ */
+void EventP_Neg_Test(void)
+{
+    EventP_Params   params;
+    EventP_Status   status;
+    uint32_t        retEventMask;
+    uint32_t        *addr_handle = NULL;
+    int8_t          loop;
+    bool            test_pass = true;
+    
+    EventP_Params_init(&params);
+  
+    gEventP_handle = EventP_create(&params);
+    if (NULL_PTR == gEventP_handle)
+    {
+          OSAL_log("\t Failed to create event \n");
+          test_pass = false;
+    }
+        
+    if(true == test_pass)
+    {
+          /* to check else condition of "if((NULL_PTR != event) && ((bool)true == event->used))" statement"*/
+          /* Test 1: event post test */
+          addr_handle = gEventP_handle;
+          for(loop = 0U; loop <= LOOP_CNT; loop++)
+          {
+              addr_handle[loop] = 0U;
+          }
+          status = EventP_post(gEventP_handle, EventP_ID_NONE);
+          if(EventP_OK == status)
+          {
+              OSAL_log("\t Negative condition check of EventP_test Failed \n");
+          }
+              
+          /* Test : event get posted events test */
+          retEventMask = EventP_getPostedEvents(gEventP_handle);
+          if((retEventMask & EventP_ID_00) == EventP_ID_00)
+          {
+              OSAL_log("\t EventP_getPostedEvents returned %d, but expect %d \n",EventP_ID_00, retEventMask);
+          }
+            
+          /* Checking the Negative condition */
+          retEventMask = EventP_wait(gEventP_handle, geventMask, EventP_WaitMode_ALL, EventP_WAIT_FOREVER);
+          if((retEventMask & geventMask) == geventMask)
+          {
+              OSAL_log("\t EventP_wait returned %d, but expect %d \n", retEventMask, geventMask);
+          }
+            
+          status = EventP_delete(&gEventP_handle);
+          if(EventP_OK == status)
+          {
+              OSAL_log("\t Failed to check the negative condition of delete event \n");
+              test_pass = false;
+          }
+          if(true == test_pass)
+          {
+              OSAL_log("\n EventP Negative Test passed!! \n"); 
+          }
+          else
+          {
+              OSAL_log("\n EventP Negative Test failed!! \n"); 
+          }
+      }
+}
+
+uint32_t event_num = 20;
+
+/*
+ * Description: Testing Maximum event creation condition
+ */
+void EventP_Max_Test(void)
+{
+    EventP_Params   params;
+    EventP_Handle   handle[2];
+    EventP_Status   status;
+    uint32_t        loop;
+    bool            test_pass = false;
+    
+    
+    EventP_Params_init(&params);
+    
+    for (loop = 0U; loop <= LOOP_CNT ; loop++)
+    {
+        handle[loop] = EventP_create(&params);
+        if (NULL_PTR == handle[loop])
+        {
+            test_pass = true;
+        }
+    }
+    if(true == test_pass)
+    {
+        for (loop = 0; loop < LOOP_CNT ; loop++)
+        {
+            status = EventP_delete(&handle[loop]);
+            if(EventP_OK != status)
+            {
+                OSAL_log("Failed to delete event \n");
+                OSAL_log("\t Maximum event creation test Failed!! \n");
+                test_pass = false;
+            }
+        }
+        if(true == test_pass)
+        {
+            OSAL_log("\t Maximum event creation test Passed!! \n");
+        }
+    }
+    else
+    {
+        OSAL_log("\t Maximum event creation test Failed!! \n");
+    }
+}
+
+void EventP_Test(void)
+{
+    EventP_ISR_Test();
+    EventP_Neg_Test();
 }
 
 /*
@@ -1225,6 +1590,8 @@ void OSAL_tests(void *arg0, void *arg1)
     
     HeapP_Params_init_NullTest();
     
+    EventP_Max_Test();
+    
 #endif
 
 #if defined(BARE_METAL)
@@ -1242,6 +1609,13 @@ void OSAL_tests(void *arg0, void *arg1)
 
 #endif
 
+#if !defined(BARE_METAL)
+    
+    RegisterIntr_Test();
+
+    EventP_Test();
+#endif
+    
 #ifdef BARE_METAL
     while (1)
     {
@@ -1269,7 +1643,7 @@ int main(void)
     OS_init();
     memset( gAppTskStackMain, 0xFF, sizeof( gAppTskStackMain ) );
     TaskP_Params_init(&taskParams);
-    taskParams.priority = 2;
+    taskParams.priority     = 2;
     taskParams.stack        = gAppTskStackMain;
     taskParams.stacksize    = sizeof (gAppTskStackMain);
 #if defined(USE_BIOS)
