@@ -48,7 +48,7 @@ INCLUDE_EXTERNAL_INTERFACES = pdk sciclient board uart $(EXTERNAL_INTERFACES)
 
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON = sciclient_ut_main.c \
-              sciclient_appCommon.c
+              sciclient_appCommon.c uart_utils.c
 
 # SoCs which use firewall exception notification tests (mcu1_0 UT only)
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))

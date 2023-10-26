@@ -56,9 +56,11 @@
 #include <ti/csl/cslr_pvu.h>
 #endif
 #include <ti/drv/sciclient/examples/common/sciclient_appCommon.h>
-
 #include <ti/board/board.h>
 #include <ti/drv/sciclient/examples/sciclient_unit_testapp/sciclient_ut_tests.h>
+#if ((defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)) && defined (BUILD_MCU1_0))
+#include <ti/drv/sciclient/examples/sciclient_unit_testapp/uart_utils.h>
+#endif
 #if defined(ENABLE_FW_NOTIFICATION)
 #include <ti/drv/sciclient/examples/sciclient_unit_testapp/sciclient_fw_notify.h>
 #endif
@@ -70,7 +72,6 @@
  * Init and de-inits.
  */
 #include <ti/drv/sciclient/src/sciclient/sciclient_priv.h>
-
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -107,6 +108,9 @@ static int32_t App_fwExcpNotificationTest(void);
 static int32_t App_pvu2R5IntrTest(void);
 static void App_pvu2R5IntrTestIsr(void);
 static int32_t App_pvu2GICIntrTest(void);
+#endif
+#if ((defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4) || defined (j784s4_evm)) && defined (BUILD_MCU1_0))
+static int32_t App_mainUart2MCUR5IntrTest(void);
 #endif
 
 /* ========================================================================== */
@@ -219,6 +223,11 @@ int32_t App_sciclientTestMain(App_sciclientTestParams_t *testParams)
 #if ((defined (SOC_J721S2) || defined (SOC_J784S4)) && defined(BUILD_MCU2_0))
         case 9:
             testParams->testResult = App_pvu2GICIntrTest();
+            break;
+#endif
+#if ((defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)) && defined (BUILD_MCU1_0))
+        case 10:
+            testParams->testResult = App_mainUart2MCUR5IntrTest();
             break;
 #endif
         default:
@@ -1114,6 +1123,123 @@ static int32_t App_pvu2GICIntrTest(void)
     }
         
     return status;
+}
+#endif
+
+#if ((defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)) && defined (BUILD_MCU1_0))
+static int32_t App_mainUart2MCUR5IntrTest(void)
+{
+    int32_t status = CSL_PASS;
+    int32_t sciclient_init_status = CSL_PASS;
+    int32_t uart_test_status = CSL_PASS;
+    int32_t mainUart2MCUR5_route_status = CSL_PASS;
+    const UART_Params user_params = {
+        UART_MODE_BLOCKING,     /* readMode */
+        UART_MODE_BLOCKING,     /* writeMode */
+        SemaphoreP_WAIT_FOREVER,/* readTimeout */
+        SemaphoreP_WAIT_FOREVER,/* writeTimeout */
+        NULL,                  /* readCallback */
+        NULL,                 /* writeCallback */
+        UART_RETURN_NEWLINE,  /* readReturnMode */
+        UART_DATA_TEXT,       /* readDataMode */
+        UART_DATA_TEXT,       /* writeDataMode */
+        UART_ECHO_ON,         /* readEcho */
+        115200,               /* baudRate */
+        UART_LEN_8,           /* dataLength */
+        UART_STOP_ONE,        /* stopBits */
+        UART_PAR_NONE         /* parityType */
+    };
+    struct UART_HWAttrs UART_HwAttrs;
+    UART_Handle uart_handle;
+    char echoPrompt[] = "Testing Main UART to MCU R5F routing\n";
+
+    struct tisci_msg_rm_irq_set_req     rmIrqReq;
+    struct tisci_msg_rm_irq_set_resp    rmIrqResp;
+    struct tisci_msg_rm_get_resource_range_req  req;
+    struct tisci_msg_rm_get_resource_range_resp res;
+    struct tisci_msg_rm_irq_release_req rmIrqReqRel;
+
+    uint16_t intNum = 0;
+    Sciclient_ConfigPrms_t        config =
+    {
+        SCICLIENT_SERVICE_OPERATION_MODE_POLLED,
+        NULL,
+        0 /* isSecure = 0 un secured for all cores */
+    };
+    /* This is only needed as this test case is running back to back Sciclient
+     * Init and de-inits.
+     */
+    while (gSciclientHandle.initCount != 0)
+    {
+        status = Sciclient_deinit();
+    }
+    status = Sciclient_init(&config);
+    sciclient_init_status = status;
+
+    memset(&req, 0, sizeof(req));
+    memset(&res, 0, sizeof(res));
+    memset(&rmIrqReqRel,0,sizeof(rmIrqReqRel));
+
+    /* Sets the Main UART configuration */
+    UART_init();
+    UART_socGetInitCfg(BOARD_UART_INSTANCE, &UART_HwAttrs);
+    App_setUartHwAttrs(BOARD_UART_INSTANCE, &UART_HwAttrs);
+
+    /* Programs the interrupt route between Main domain UART and MCU R5F core */
+    req.type = TISCI_DEV_MAIN2MCU_LVL_INTRTR0;
+    req.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+    status  = Sciclient_rmGetResourceRange(&req,
+                                           &res,
+                                           SCICLIENT_SERVICE_WAIT_FOREVER);    
+    if(status == CSL_PASS)
+    {
+        status = Sciclient_rmIrqTranslateIrOutput(req.type,
+                                                  res.range_start,
+                                                  TISCI_DEV_MCU_R5FSS0_CORE0,
+                                                  &intNum);
+        if(status == CSL_PASS)
+        {
+            memset(&rmIrqReq, 0, sizeof(rmIrqReq));
+            rmIrqReq.valid_params       = TISCI_MSG_VALUE_RM_DST_ID_VALID;
+            rmIrqReq.valid_params      |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+            rmIrqReq.src_id             = App_getUartSrcID(UART_HwAttrs.baseAddr);
+            rmIrqReq.src_index          = 0;
+            rmIrqReq.dst_id             = TISCI_DEV_MCU_R5FSS0_CORE0;
+            rmIrqReq.dst_host_irq       = intNum;
+            rmIrqReq.secondary_host     = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+            status                      = Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, SCICLIENT_SERVICE_WAIT_FOREVER);
+            mainUart2MCUR5_route_status = status;
+        }
+    }
+    (UART_HwAttrs).intNum = intNum;
+    UART_socSetInitCfg(BOARD_UART_INSTANCE, &UART_HwAttrs);
+    if(status == CSL_PASS)
+    {
+        uart_handle = UART_open(BOARD_UART_INSTANCE, (UART_Params*) &user_params);
+        UART_write(uart_handle, echoPrompt, sizeof(echoPrompt));
+        UART_close(uart_handle);
+    }
+
+    if(mainUart2MCUR5_route_status == CSL_PASS)
+    {
+        /* Release the Route between Main UART and MCU R5F */
+        rmIrqReqRel.valid_params   = TISCI_MSG_VALUE_RM_DST_ID_VALID;
+        rmIrqReqRel.valid_params  |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
+        rmIrqReqRel.src_id         = App_getUartSrcID(UART_HwAttrs.baseAddr);
+        rmIrqReqRel.src_index      = 0;
+        rmIrqReqRel.dst_id         = TISCI_DEV_MCU_R5FSS0_CORE0;
+        rmIrqReqRel.dst_host_irq   = intNum;
+        rmIrqReqRel.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
+
+        status = Sciclient_rmIrqRelease(&rmIrqReqRel, SCICLIENT_SERVICE_WAIT_FOREVER);
+    }
+
+    if (sciclient_init_status == CSL_PASS)
+    {
+        status = Sciclient_deinit();
+    }
+
+    return uart_test_status;
 }
 #endif
 

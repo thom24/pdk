@@ -323,7 +323,7 @@ define SCICLIENT_UNIT_TESTAPP_RULE
 export sciclient_unit_testapp_$(1)_COMP_LIST = sciclient_unit_testapp_$(1)
 export sciclient_unit_testapp_$(1)_RELPATH = ti/drv/sciclient/examples/sciclient_unit_testapp
 export sciclient_unit_testapp_$(1)_PATH = $(PDK_SCICLIENT_COMP_PATH)/examples/sciclient_unit_testapp
-export sciclient_unit_testapp_$(1)_BOARD_DEPENDENCY = no
+export sciclient_unit_testapp_$(1)_BOARD_DEPENDENCY = yes
 export sciclient_unit_testapp_$(1)_CORE_DEPENDENCY = yes
 export sciclient_unit_testapp_$(1)_PKG_LIST = sciclient_unit_testapp_$(1)
 export sciclient_unit_testapp_$(1)_INCLUDE = $(sciclient_unit_testapp_$(1)_PATH)
