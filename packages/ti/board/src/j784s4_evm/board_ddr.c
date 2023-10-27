@@ -519,7 +519,7 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
     HW_WR_REG32(BOARD_DDR_CFG_LOAD,   BOARD_DDR_CFG_LOAD_VALUE);
 
     /* Wait until DDR config load is complete */
-    while(HW_RD_REG32(BOARD_DDR_CFG_LOAD & 0x1) == 0x0);
+    while((HW_RD_REG32(BOARD_DDR_CFG_LOAD) & 0x1) == 0x0);
 
     /* Partition5 lockkey0 */
     HW_WR_REG32(BOARD_CTRL_MMR_PART5_LOCK0, KICK0_UNLOCK);
