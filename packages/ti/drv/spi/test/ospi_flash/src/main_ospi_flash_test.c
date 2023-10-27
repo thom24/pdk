@@ -823,10 +823,15 @@ void OSPI_initConfig(OSPI_Tests *test)
         ospi_cfg.xferLines = OSPI_XFER_LINES_OCTAL;
     }
 
-    if ((test->testId == OSPI_TEST_ID_WR_TUNING) || (test->testId == OSPI_NAND_TEST_ID_WR_TUNING))
+    if (test->testId == OSPI_TEST_ID_WR_TUNING)
     {
         ospi_cfg.phyEnable = false;
         ospi_cfg.cacheEnable = false;
+    }
+
+    if (test->testId == OSPI_NAND_TEST_ID_WR_TUNING)
+    {
+        ospi_cfg.phyEnable = false;
     }
 
     ospi_cfg.funcClk = test->clk;
