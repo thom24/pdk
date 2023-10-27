@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2013-2022, Texas Instruments Incorporated
+# Copyright (c) 2013-2024, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -77,8 +77,7 @@ include $(PDK_INSTALL_PATH)/ti/build/soc_info.mk
 # This is derived from the CORELIST_$(SOC) defined in soc_info.mk which encompasses all the available cores for a SOC.
 # The DEFAULT_$(SOC)_CORELIST is a subset of all the cores and is used for building components.
 
-# Filter out PRU cores from default cores list for building components
-DEFAULT_CORELIST_EXCLUDE_CORES = $(CORE_LIST_PRU)
+DEFAULT_CORELIST_EXCLUDE_CORES =
 
 # For J7 SOCs, any mpu core other than mpu1_0 is not a part of default core list
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2))
@@ -117,11 +116,6 @@ DEFAULT_CORELIST_EXCLUDE_CORES_freertos = $(DEFAULT_$(SOC)_CORELIST)
 endif
 
 DEFAULT_$(SOC)_CORELIST_freertos = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES_freertos), $(DEFAULT_$(SOC)_CORELIST))
-
-# Disable SysBIOS(TI-RTOS) build for all cores
-DEFAULT_CORELIST_EXCLUDE_CORES_tirtos = $(DEFAULT_$(SOC)_CORELIST)
-
-DEFAULT_$(SOC)_CORELIST_tirtos = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES_tirtos), $(DEFAULT_$(SOC)_CORELIST))
 
 ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
 # SafeRTOS is not currently supported on J7 MPU/C7x-hostemu cores
@@ -246,18 +240,6 @@ ifneq ($(pmic_EXAMPLE_LIST),)
 endif
 
 # - used to ignore include if component not present
--include $(PDK_AUD_COMP_PATH)/aud_component.mk
-ifneq ($(aud_LIB_LIST),)
-  pdk_LIB_LIST += $(aud_LIB_LIST)
-endif
-ifneq ($(aud_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(aud_APP_LIB_LIST)
-endif
-ifneq ($(aud_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(aud_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
 -include $(PDK_SBL_COMP_PATH)/sbl_component.mk
 ifneq ($(sbl_LIB_LIST),)
   pdk_LIB_LIST += $(sbl_LIB_LIST)
@@ -282,33 +264,6 @@ ifneq ($(keywriter_EXAMPLE_LIST),)
 endif
 ifneq ($(keywriter_UTILS_LIST),)
   pdk_UTILS_LIST += $(keywriter_UTILS_LIST)
-endif
-
-# - used to ignore include if component not present
--include $(PDK_SBL_AUTO_COMP_PATH)/sbl_auto_component.mk
-ifneq ($(sbl_auto_LIB_LIST),)
-  pdk_LIB_LIST += $(sbl_auto_LIB_LIST)
-endif
-ifneq ($(sbl_auto_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(sbl_auto_APP_LIB_LIST)
-endif
-ifneq ($(sbl_auto_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(sbl_auto_EXAMPLE_LIST)
-endif
-ifneq ($(sbl_auto_DUP_EXAMPLE_LIST),)
-  pdk_DUP_EXAMPLE_LIST += $(sbl_auto_DUP_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
--include $(PDK_CMB_COMP_PATH)/cmb_component.mk
-ifneq ($(cmb_LIB_LIST),)
-  pdk_LIB_LIST += $(cmb_LIB_LIST)
-endif
-ifneq ($(cmb_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(cmb_APP_LIB_LIST)
-endif
-ifneq ($(cmb_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(cmb_EXAMPLE_LIST)
 endif
 
 # - used to ignore include if component not present
@@ -433,18 +388,6 @@ ifneq ($(dss_EXAMPLE_LIST),)
 endif
 
 # - used to ignore include if component not present
--include $(PDK_CAL_COMP_PATH)/cal_component.mk
-ifneq ($(cal_LIB_LIST),)
-  pdk_LIB_LIST += $(cal_LIB_LIST)
-endif
-ifneq ($(cal_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(cal_APP_LIB_LIST)
-endif
-ifneq ($(cal_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(cal_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
 -include $(PDK_SCICLIENT_COMP_PATH)/sciclient_component.mk
 ifneq ($(sciclient_LIB_LIST),)
   pdk_LIB_LIST += $(sciclient_LIB_LIST)
@@ -459,15 +402,6 @@ ifneq ($(sciclient_UTILS_LIST),)
   pdk_UTILS_LIST += $(sciclient_UTILS_LIST)
 endif
 
-# - used to ignore include if component not present
--include $(PDK_IOLINK_COMP_PATH)/iolink_component.mk
-ifneq ($(iolink_LIB_LIST),)
-  pdk_LIB_LIST += $(iolink_LIB_LIST)
-endif
-ifneq ($(iolink_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(iolink_EXAMPLE_LIST)
-endif
-
 #Below applicable only for TDA devices
 
 # - used to ignore include if component not present
@@ -480,30 +414,6 @@ ifneq ($(diag_APP_LIB_LIST),)
 endif
 ifneq ($(diag_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(diag_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
--include $(PDK_FIREWALL_L3L4_COMP_PATH)/firewall_l3l4_component.mk
-ifneq ($(firewall_l3l4_LIB_LIST),)
-  pdk_LIB_LIST += $(firewall_l3l4_LIB_LIST)
-endif
-ifneq ($(firewall_l3l4_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(firewall_l3l4_APP_LIB_LIST)
-endif
-ifneq ($(firewall_l3l4_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(firewall_l3l4_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
--include $(PDK_SDR_COMP_PATH)/sdr_component.mk
-ifneq ($(sdr_LIB_LIST),)
-  pdk_LIB_LIST += $(sdr_LIB_LIST)
-endif
-ifneq ($(sdr_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(sdr_APP_LIB_LIST)
-endif
-ifneq ($(sdr_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(sdr_EXAMPLE_LIST)
 endif
 
 # - used to ignore include if component not present
@@ -531,30 +441,6 @@ ifneq ($(ipc_EXAMPLE_LIST),)
 endif
 ifneq ($(ipc_DUP_EXAMPLE_LIST),)
   pdk_DUP_EXAMPLE_LIST += $(ipc_DUP_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
--include $(PDK_IPCLITE_COMP_PATH)/ipclite_component.mk
-ifneq ($(ipclite_LIB_LIST),)
-  pdk_LIB_LIST += $(ipclite_LIB_LIST)
-endif
-ifneq ($(ipclite_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(ipclite_APP_LIB_LIST)
-endif
-ifneq ($(ipclite_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(ipclite_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
--include $(PDK_TDA3X_SECURITY_COMP_PATH)/security_component.mk
-ifneq ($(security_LIB_LIST),)
-  pdk_LIB_LIST += $(security_LIB_LIST)
-endif
-ifneq ($(security_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(security_APP_LIB_LIST)
-endif
-ifneq ($(security_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(security_EXAMPLE_LIST)
 endif
 
 #Below applicable only for TDA devices for backward compatibility;not applicable for PRSDK
@@ -599,18 +485,6 @@ ifneq ($(stw_lld_DUP_EXAMPLE_LIST),)
 endif
 
 # - used to ignore include if component not present
--include $(PDK_VPS_COMP_PATH)/vps_component.mk
-ifneq ($(vps_LIB_LIST),)
-  pdk_LIB_LIST += $(vps_LIB_LIST)
-endif
-ifneq ($(vps_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(vps_APP_LIB_LIST)
-endif
-ifneq ($(vps_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(vps_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
 -include $(PDK_OSAL_COMP_PATH)/osal_component.mk
 ifneq ($(osal_LIB_LIST),)
   pdk_LIB_LIST += $(osal_LIB_LIST)
@@ -650,28 +524,16 @@ ifneq ($(uart_EXAMPLE_LIST),)
 endif
 
 # - used to ignore include if component not present
--include $(PDK_USB_COMP_PATH)/usb_component.mk
-ifneq ($(usb_LIB_LIST),)
-  pdk_LIB_LIST += $(usb_LIB_LIST)
+-include $(PDK_SERDES_DIAG_COMP_PATH)/serdes_diag_component.mk
+ifneq ($(serdes_diag_LIB_LIST),)
+  pdk_LIB_LIST += $(serdes_diag_LIB_LIST)
 endif
-ifneq ($(usb_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(usb_APP_LIB_LIST)
-endif
-ifneq ($(usb_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(usb_EXAMPLE_LIST)
-endif
-
-  # - used to ignore include if component not present
-  -include $(PDK_SERDES_DIAG_COMP_PATH)/serdes_diag_component.mk
-  ifneq ($(serdes_diag_LIB_LIST),)
-    pdk_LIB_LIST += $(serdes_diag_LIB_LIST)
-  endif
-  ifneq ($(serdes_diag_APP_LIB_LIST),)
+ifneq ($(serdes_diag_APP_LIB_LIST),)
   pdk_APP_LIB_LIST += $(serdes_diag_APP_LIB_LIST)
 endif
-  ifneq ($(serdes_diag_EXAMPLE_LIST),)
-    pdk_EXAMPLE_LIST += $(serdes_diag_EXAMPLE_LIST)
-  endif
+ifneq ($(serdes_diag_EXAMPLE_LIST),)
+  pdk_EXAMPLE_LIST += $(serdes_diag_EXAMPLE_LIST)
+endif
 
   # - used to ignore include if component not present
 -include $(PDK_GPIO_COMP_PATH)/gpio_component.mk
@@ -703,54 +565,6 @@ ifneq ($(copyvecs_LIB_LIST),)
 endif
 
 # - used to ignore include if component not present
--include $(PDK_TRACE_COMP_PATH)/trace_component.mk
-ifneq ($(trace_LIB_LIST),)
-  pdk_LIB_LIST += $(trace_LIB_LIST)
-endif
-ifneq ($(trace_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(trace_APP_LIB_LIST)
-endif
-ifneq ($(trace_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(trace_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
--include $(PDK_NIMU_ICSS_COMP_PATH)/nimu_icss_component.mk
-ifneq ($(nimu_icss_LIB_LIST),)
-  pdk_LIB_LIST += $(nimu_icss_LIB_LIST)
-endif
-ifneq ($(nimu_icss_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(nimu_icss_APP_LIB_LIST)
-endif
-ifneq ($(nimu_icss_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(nimu_icss_EXAMPLE_LIST)
-endif
-
- # - used to ignore include if component not present
--include $(PDK_TIMESYNC_COMP_PATH)/timeSync_component.mk
-ifneq ($(timeSync_LIB_LIST),)
-  pdk_LIB_LIST += $(timeSync_LIB_LIST)
-endif
-ifneq ($(timeSync_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(timeSync_APP_LIB_LIST)
-endif
-ifneq ($(timeSync_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(timeSync_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
--include $(PDK_NIMU_COMP_PATH)/nimu_component.mk
-ifneq ($(nimu_LIB_LIST),)
-  pdk_LIB_LIST += $(nimu_LIB_LIST)
-endif
-ifneq ($(nimu_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(nimu_APP_LIB_LIST)
-endif
-ifneq ($(nimu_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(nimu_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
 -include $(PDK_FATFS_COMP_PATH)/fatfs_component.mk
 ifneq ($(fatfs_LIB_LIST),)
   pdk_LIB_LIST += $(fatfs_LIB_LIST)
@@ -775,18 +589,6 @@ ifneq ($(mmcsd_EXAMPLE_LIST),)
 endif
 
 # - used to ignore include if component not present
--include $(PDK_PCIE_COMP_PATH)/pcie_component.mk
-ifneq ($(pcie_LIB_LIST),)
-  pdk_LIB_LIST += $(pcie_LIB_LIST)
-endif
-ifneq ($(pcie_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(pcie_APP_LIB_LIST)
-endif
-ifneq ($(pcie_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(pcie_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
 -include $(PDK_MCASP_COMP_PATH)/mcasp_component.mk
 ifneq ($(mcasp_LIB_LIST),)
   pdk_LIB_LIST += $(mcasp_LIB_LIST)
@@ -796,18 +598,6 @@ ifneq ($(mcasp_APP_LIB_LIST),)
 endif
 ifneq ($(mcasp_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(mcasp_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
--include $(PDK_MCBSP_COMP_PATH)/mcbsp_component.mk
-ifneq ($(mcbsp_LIB_LIST),)
-  pdk_LIB_LIST += $(mcbsp_LIB_LIST)
-endif
-ifneq ($(mcbsp_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(mcbsp_APP_LIB_LIST)
-endif
-ifneq ($(mcbsp_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(mcbsp_EXAMPLE_LIST)
 endif
 
 # - used to ignore include if component not present
@@ -865,78 +655,6 @@ ifneq ($(spi_EXAMPLE_LIST),)
 endif
 
 # - used to ignore include if component not present
--include $(PDK_GPMC_COMP_PATH)/gpmc_component.mk
-ifneq ($(gpmc_LIB_LIST),)
-  pdk_LIB_LIST += $(gpmc_LIB_LIST)
-endif
-ifneq ($(gpmc_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(gpmc_APP_LIB_LIST)
-endif
-ifneq ($(gpmc_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(gpmc_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
--include $(PDK_SA_COMP_PATH)/sa_component.mk
-ifneq ($(sa_LIB_LIST),)
-  pdk_LIB_LIST += $(sa_LIB_LIST)
-endif
-ifneq ($(sa_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(sa_APP_LIB_LIST)
-endif
-ifneq ($(sa_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(sa_EXAMPLE_LIST)
-endif
-
-#Below applicable only for TPR12 devices
-# - used to ignore include if component not present
--include $(PDK_CRC_COMP_PATH)/crc_component.mk
-ifneq ($(crc_LIB_LIST),)
-  pdk_LIB_LIST += $(crc_LIB_LIST)
-endif
-ifneq ($(crc_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(crc_APP_LIB_LIST)
-endif
-ifneq ($(crc_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(crc_EXAMPLE_LIST)
-endif
-
-#Below applicable only for TPR12 devices
-# - used to ignore include if component not present
--include $(PDK_GPADC_COMP_PATH)/gpadc_component.mk
-ifneq ($(gpadc_LIB_LIST),)
-  pdk_LIB_LIST += $(gpadc_LIB_LIST)
-endif
-ifneq ($(gpadc_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(gpadc_APP_LIB_LIST)
-endif
-ifneq ($(gpadc_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(gpadc_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
--include $(PDK_HWA_COMP_PATH)/hwa_component.mk
-ifneq ($(hwa_LIB_LIST),)
-  pdk_LIB_LIST += $(hwa_LIB_LIST)
-endif
-ifneq ($(hwa_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(hwa_APP_LIB_LIST)
-endif
-ifneq ($(hwa_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(hwa_EXAMPLE_LIST)
-endif
-# - used to ignore include if component not present
--include $(PDK_EDMA_COMP_PATH)/edma_component.mk
-ifneq ($(edma_LIB_LIST),)
-  pdk_LIB_LIST += $(edma_LIB_LIST)
-endif
-ifneq ($(edma_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(edma_APP_LIB_LIST)
-endif
-ifneq ($(edma_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(edma_EXAMPLE_LIST)
-endif
-# - used to ignore include if component not present
 -include $(PDK_MAILBOX_COMP_PATH)/mailbox_component.mk
 ifneq ($(mailbox_LIB_LIST),)
   pdk_LIB_LIST += $(mailbox_LIB_LIST)
@@ -949,17 +667,6 @@ ifneq ($(mailbox_EXAMPLE_LIST),)
 endif
 ifneq ($(mailbox_DUP_EXAMPLE_LIST),)
   pdk_DUP_EXAMPLE_LIST += $(mailbox_DUP_EXAMPLE_LIST)
-endif
-
--include $(PDK_MIBSPI_COMP_PATH)/mibspi_component.mk
-ifneq ($(mibspi_LIB_LIST),)
-  pdk_LIB_LIST += $(mibspi_LIB_LIST)
-endif
-ifneq ($(mibspi_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(mibspi_APP_LIB_LIST)
-endif
-ifneq ($(mibspi_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(mibspi_EXAMPLE_LIST)
 endif
 
 -include $(PDK_CANFD_COMP_PATH)/canfd_component.mk
@@ -995,16 +702,6 @@ ifneq ($(safertos_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(safertos_EXAMPLE_LIST)
 endif
 
--include $(PDK_ESM_COMP_PATH)/esm_component.mk
-ifneq ($(esm_LIB_LIST),)
-  pdk_LIB_LIST += $(esm_LIB_LIST)
-endif
-ifneq ($(esm_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(esm_APP_LIB_LIST)
-endif
-ifneq ($(esm_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(esm_EXAMPLE_LIST)
-endif
 # - used to ignore include if component not present
 -include $(PDK_CAN_COMP_PATH)/can_component.mk
 ifneq ($(can_LIB_LIST),)
@@ -1015,54 +712,6 @@ ifneq ($(can_APP_LIB_LIST),)
 endif
 ifneq ($(can_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(can_EXAMPLE_LIST)
-endif
-
--include $(PDK_WATCHDOG_COMP_PATH)/watchdog_component.mk
-ifneq ($(watchdog_LIB_LIST),)
-  pdk_LIB_LIST += $(watchdog_LIB_LIST)
-endif
-ifneq ($(watchdog_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(watchdog_APP_LIB_LIST)
-endif
-ifneq ($(watchdog_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(watchdog_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
--include $(PDK_ADCBUF_COMP_PATH)/adcbuf_component.mk
-ifneq ($(adcbuf_LIB_LIST),)
-  pdk_LIB_LIST += $(adcbuf_LIB_LIST)
-endif
-ifneq ($(adcbuf_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(adcbuf_APP_LIB_LIST)
-endif
-ifneq ($(adcbuf_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(adcbuf_EXAMPLE_LIST)
-endif
-
-# - used to ignore include if component not present
--include $(PDK_CBUFF_COMP_PATH)/cbuff_component.mk
-ifneq ($(cbuff_LIB_LIST),)
-  pdk_LIB_LIST += $(cbuff_LIB_LIST)
-endif
-ifneq ($(cbuff_APP_LIB_LIST),)
-  pdk_APP_LIB_LIST += $(cbuff_APP_LIB_LIST)
-endif
-ifneq ($(cbuff_EXAMPLE_LIST),)
-  pdk_EXAMPLE_LIST += $(cbuff_EXAMPLE_LIST)
-endif
-
-# Components included for non-baremetal OS
-ifneq ($(BUILD_OS_TYPE), baremetal)
-  #Below applicable only for TDA devices for backward compatibility;not applicable for PRSDK
-  # - used to ignore include if component not present
-  -include $(PDK_BSP_LLD_COMP_PATH)/bsp_lld_component.mk
-  ifneq ($(bsp_lld_LIB_LIST),)
-    pdk_LIB_LIST += $(bsp_lld_LIB_LIST)
-  endif
-  ifneq ($(bsp_lld_EXAMPLE_LIST),)
-    pdk_EXAMPLE_LIST += $(bsp_lld_EXAMPLE_LIST)
-  endif
 endif
 
   #Below applicable only for K3 DMSC; not applicable for PRSDK
@@ -1129,10 +778,7 @@ endif
 
 pdk_PKG_LIST_ALL = $(pdk_EXAMPLE_LIST) $(pdk_LIB_LIST) $(pdk_APP_LIB_LIST) $(pdk_FIRM_LIST)
 
-ifneq ($(CORE),$(filter $(CORE), pru_0 pru_1))
-# By default it is little endian for non pru cores
-  LIB_ENDIAN_LIST = little
-endif
+LIB_ENDIAN_LIST = little
 #
 # PDK Modules
 #
@@ -1226,92 +872,7 @@ ifeq ($(CORE),mpu2_3)
   PDK_LNKFLAGS += --define=BUILD_MPU2_3 --define=BUILD_MPU
 endif
 
-ifeq ($(CORE),ipu1_0)
-  PDK_CFLAGS += -DBUILD_IPU1_0 -DBUILD_IPU1
-  PDK_LNKFLAGS += --define=BUILD_IPU1_0 --define=BUILD_IPU1
-endif
-
-ifeq ($(CORE),ipu1_1)
-  PDK_CFLAGS += -DBUILD_IPU1_1 -DBUILD_IPU1
-  PDK_LNKFLAGS += --define=BUILD_IPU1_1 --define=BUILD_IPU1
-endif
-
-ifeq ($(CORE),ipu2_0)
-  PDK_CFLAGS += -DBUILD_IPU2_0 -DBUILD_IPU2
-  PDK_LNKFLAGS += --define=BUILD_IPU2_0 --define=BUILD_IPU2
-endif
-
-ifeq ($(CORE),ipu2_1)
-  PDK_CFLAGS += -DBUILD_IPU2_1 -DBUILD_IPU2
-  PDK_LNKFLAGS += --define=BUILD_IPU2_1 --define=BUILD_IPU2
-endif
-
-ifeq ($(CORE),m3)
-  PDK_CFLAGS += -DBUILD_M3
-  PDK_LNKFLAGS += --define=BUILD_M3
-endif
-
-ifeq ($(CORE),arp32_1)
-  PDK_CFLAGS += -DBUILD_ARP32 -DBUILD_ARP32_1
-  PDK_LNKFLAGS += --define=BUILD_ARP32 --define=BUILD_ARP32_1
-endif
-
-ifeq ($(CORE),arp32_2)
-  PDK_CFLAGS += -DBUILD_ARP32 -DBUILD_ARP32_2
-  PDK_LNKFLAGS += --define=BUILD_ARP32 --define=BUILD_ARP32_2
-endif
-
-ifeq ($(CORE),arp32_3)
-  PDK_CFLAGS += -DBUILD_ARP32 -DBUILD_ARP32_3
-  PDK_LNKFLAGS += --define=BUILD_ARP32 --define=BUILD_ARP32_3
-endif
-
-ifeq ($(CORE),arp32_4)
-  PDK_CFLAGS += -DBUILD_ARP32 -DBUILD_ARP32_4
-  PDK_LNKFLAGS += --define=BUILD_ARP32 --define=BUILD_ARP32_4
-endif
-
-ifeq ($(CORE),a8host)
-  PDK_CFLAGS += -DBUILD_A8
-  PDK_LNKFLAGS += --define=BUILD_A8
-endif
-
-ifeq ($(CORE),pru_0)
-  PDK_CFLAGS += -DPRU0 -Dpru0
-  PDK_LNKFLAGS += --define=PRU0 --define=pru0
-  # List all the libraries to be built
-  ifeq ($(SOC),$(filter $(SOC), am335x am437x))
-    PRU_VERSION_LIST = REV1
-  endif
-  ifeq ($(SOC),$(filter $(SOC), am571x k2g am574x))
-    PRU_VERSION_LIST = REV2
-  endif
-  ifeq ($(SOC),$(filter $(SOC), am572x))
-    PRU_VERSION_LIST = REV1 REV2
-  endif
-endif
-
-ifeq ($(CORE),pru_1)
-  PDK_CFLAGS += -DPRU1 -Dpru1
-  PDK_LNKFLAGS += --define=PRU1 --define=pru1
-  # List all the libraries to be built
-  ifeq ($(SOC),$(filter $(SOC), am335x am437x))
-    PRU_VERSION_LIST = REV1
-  endif
-  ifeq ($(SOC),$(filter $(SOC), am571x k2g am574x))
-    PRU_VERSION_LIST = REV2
-  endif
-  ifeq ($(SOC),$(filter $(SOC), am572x))
-    PRU_VERSION_LIST = REV1 REV2
-  endif
-endif
-
-ifeq ($(CORE),a15_0)
-  PDK_CFLAGS += -DBUILD_A15_0
-  PDK_LNKFLAGS += --define=BUILD_A15_0
-endif
-
-ifeq ($(CORE),$(filter $(CORE), c66x c66xdsp_1 c66xdsp_2))
+ifeq ($(CORE),$(filter $(CORE), c66xdsp_1 c66xdsp_2))
   ifeq ($(CORE),$(filter $(CORE), c66xdsp_1))
     PDK_CFLAGS += -DBUILD_DSP_1 -DBUILD_C66X_1  -DBUILD_C66X
     PDK_LNKFLAGS += --define=BUILD_DSP_1 --define=BUILD_C66X_1 --define=BUILD_C66X
@@ -1343,8 +904,8 @@ ifeq ($(CORE),$(filter $(CORE), c7x_4))
 endif
 
 ifeq ($(CORE),$(filter $(CORE), m4f_0))
-  PDK_CFLAGS += -DBUILD_M4F_0 -DBUILD_M4F
-  PDK_LNKFLAGS += --define=BUILD_M4F_0 --define=BUILD_M4F
+PDK_CFLAGS += -DBUILD_M4F_0 -DBUILD_M4F
+ PDK_LNKFLAGS += --define=BUILD_M4F_0 --define=BUILD_M4F
 endif
 
 export PDK_CFLAGS

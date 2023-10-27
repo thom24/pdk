@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2017, Texas Instruments Incorporated
+# Copyright (c) 2017-2024, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -61,54 +61,18 @@ ifeq ($(FORMAT),COFF)
   CSWITCH_FORMAT = ti_arm9_abi
   RTSLIB_FORMAT = _tiarm9
   CSWITCH_FORMAT =
-  XDCINTERNAL_DEFINES = -Dxdc_target_types__=ti/targets/std.h
 endif
 ifeq ($(FORMAT),ELF)
   CSWITCH_FORMAT = --abi=eabi
   RTSLIB_FORMAT = _elf
-  XDCINTERNAL_DEFINES = -Dxdc_target_types__=ti/targets/elf/std.h
 endif
 
-#########
-
-# XDC Specific defines
-ifneq ($(XDC_CFG_FILE_$(CORE)),)
-  ifeq ($(BUILD_PROFILE_$(CORE)),debug)
-    CFG_CFILENAMEPART_XDC =p$(FORMAT_EXT)$(ISA_EXT)
-	CFG_LNKFILENAMEPART_XDC=
-  endif
-  ifeq ($(BUILD_PROFILE_$(CORE)),release)
-    CFG_CFILENAMEPART_XDC =p$(FORMAT_EXT)$(ISA_EXT)
-  endif
-  ifeq ($(BUILD_PROFILE_$(CORE)),whole_program_debug)
-    CFG_CFILENAMEPART_XDC =p$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
-    CFG_LNKFILENAMEPART_XDC=_x
-  endif
-  CFG_CFILE_XDC =$(patsubst %.cfg,%_$(CFG_CFILENAMEPART_XDC).c,$(notdir $(XDC_CFG_FILE_$(CORE))))
-  CFG_C_XDC = $(addprefix $(CONFIGURO_DIR)/package/cfg/,$(CFG_CFILE_XDC))
-  CFG_C_NEW_XDC = $(CONFIGURO_DIR)/package/cfg
-  XDCLNKCMD_FILE =$(patsubst %.c, %$(CFG_LNKFILENAMEPART_XDC).xdl, $(CFG_C_XDC))
-  CFG_COBJ_XDC = $(patsubst %.c,%.$(	),$(CFG_CFILE_XDC))
-  LNKCMD_FILE = $(CONFIGURO_DIR)/linker_mod.cmd
-  SPACE :=
-  SPACE +=
-  XDC_GREP_STRING = $(CONFIGURO_DIRNAME)
-  ifneq ($(EXTERNAL_LNKCMD_FILE_LOCAL),)
-   EXTERNAL_LNKCMD_FILE = $(EXTERNAL_LNKCMD_FILE_LOCAL)
-  else
-   EXTERNAL_LNKCMD_FILE = $(CONFIG_BLD_LNK_c7x)
-  endif
+ifneq ($(EXTERNAL_LNKCMD_FILE_LOCAL),)
+  EXTERNAL_LNKCMD_FILE = $(EXTERNAL_LNKCMD_FILE_LOCAL)
+  LNKCMD_FILE :=
 else
-  ifneq ($(EXTERNAL_LNKCMD_FILE_LOCAL),)
-   EXTERNAL_LNKCMD_FILE = $(EXTERNAL_LNKCMD_FILE_LOCAL)
-   LNKCMD_FILE :=
-  else
-   EXTERNAL_LNKCMD_FILE = $(CONFIG_BLD_LNK_c7x)
-  endif
+  EXTERNAL_LNKCMD_FILE = $(CONFIG_BLD_LNK_c7x)
 endif
-
-
-#########
 
 # Internal CFLAGS - normally doesn't change
 CFLAGS_INTERNAL = -mv$(SI_VER) $(CSWITCH_FORMAT) -q -mo -pden -pds=238 -pds=880 -pds1110 --endian=$(ENDIAN) -eo.$(OBJEXT) -ea.$(ASMEXT)
@@ -120,7 +84,6 @@ ifeq ($(SI_VER), 7100)
   CFLAGS_INTERNAL += --silicon_errata_i2117
 endif
 CFLAGS_DIROPTS = -fr=$(OBJDIR) -fs=$(OBJDIR)
-CFLAGS_NEW_DIROPTS = -fr=$(CFG_C_NEW_XDC) -fs=$(CFG_C_NEW_XDC)
 
 #
 # Suppress this warning, 10063-D: entry-point symbol other than "_c_int00"
@@ -136,27 +99,17 @@ LNKFLAGS_INTERNAL_COMMON += --diag_suppress=10063
 #MMu_init depends on constants being set and they are executed before cinit
 LNKFLAGS_INTERNAL_COMMON += --ram_model
 
-#########XDC Config File for DSP##########
-
-
-XDC_HFILE_NAME = $(basename $(notdir $(XDC_CFG_FILE_$(CORE))))
 # CFLAGS based on profile selected
 ifeq ($(BUILD_PROFILE_$(CORE)), debug)
  CFLAGS_INTERNAL +=
- CFLAGS_INTERNAL += -Dxdc_target_name__=C71 -D_DEBUG_=1 -Dxdc_target_types__=ti/targets/elf/std.h
- ifndef MODULE_NAME
-  CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_pec7x.h'
- endif
+ CFLAGS_INTERNAL += -D_DEBUG_=1
  LNKFLAGS_INTERNAL_BUILD_PROFILE =
 endif
 
 ifeq ($(BUILD_PROFILE_$(CORE)), release)
  LNKFLAGS_INTERNAL_BUILD_PROFILE =
  CFLAGS_INTERNAL += --opt_level=3
- CFLAGS_INTERNAL += -Dxdc_target_name__=C71 -D_DEBUG_=1 -Dxdc_target_types__=ti/targets/elf/std.h
- ifndef MODULE_NAME
-  CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_pec7x.h'
- endif
+ CFLAGS_INTERNAL += -D_DEBUG_=1
  ifeq ($(BUILD_OS_TYPE), safertos)
   # SafeRTOS package uses .asmfunc and .endasmfunc directives.
   # This will work only with --symdebug:dwarf
@@ -167,12 +120,6 @@ ifeq ($(BUILD_PROFILE_$(CORE)), release)
 else
  CFLAGS_INTERNAL += --opt_level=0 --symdebug:dwarf
 endif
-
-# For generic board define GENERIC in CFLAGS
-ifeq ($(BOARD),generic)
- CFLAGS_XDCINTERNAL += -DGENERIC
-endif
-CFLAGS_XDCINTERNAL += $(XDCINTERNAL_DEFINES)
 
 ########################################
 
@@ -186,9 +133,6 @@ else
   else
     _CFLAGS += $(CFLAGS_LOCAL_$(SOC)) $(CFLAGS_GLOBAL_$(SOC))
   endif
-endif
-ifneq ($(XDC_CFG_FILE_$(CORE)),)
-  _CFLAGS += $(CFLAGS_XDCINTERNAL) $(CFLAGS_FOR_REENTRANCY_SUPPORT)
 endif
 
 # Decide the compile mode
@@ -262,14 +206,9 @@ else
  endif
 endif
 
-ifneq ($(XDC_CFG_FILE_$(CORE)),)
-$(EXE_NAME) : $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(LIB_PATHS) $(LNKCMD_FILE) $(CFG_C_NEW_XDC)/$(CFG_COBJ_XDC)
-	$(CP) $(CONFIGURO_DIR)/package/cfg/*.rov.xs $(BINDIR)
-else
 $(EXE_NAME) : $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(LIB_PATHS) $(LNKCMD_FILE)
 ifeq ($(BUILD_OS_TYPE), freertos)
 	$(CP) $(pdk_PATH)/ti/kernel/freertos/rov/syscfg_c.rov.xs $(BINDIR)
-endif
 endif
 	$(ECHO) \# Linking into $(EXE_NAME)...
 	$(ECHO) \#
@@ -283,51 +222,14 @@ ifeq ($(BUILD_PROFILE_$(CORE)), release)
 	$(STRP) -p $(EXE_NAME) -o $(EXE_STRIP_NAME)
 endif
 
-# XDC specific - assemble XDC-Configuro command
 ifeq ($(BUILD_PROFILE_$(CORE)),prod_release)
   CONFIGURO_BUILD_PROFILE = release
 else
   CONFIGURO_BUILD_PROFILE = $(BUILD_PROFILE_$(CORE))
 endif
 
-_XDC_GREP_STRING = \"$(XDC_GREP_STRING)\"
-EGREP_CMD = $(EGREP) -ivw $(XDC_GREP_STRING) $(XDCLNKCMD_FILE)
-
 ifeq ($(OS),Windows_NT)
   EVERYONE = $(word 1,$(shell whoami -groups | findstr "S-1-1-0"))
-endif
-
-# Invoke configuro for the rest of the components
-#  NOTE: 1. String handling is having issues with various make versions when the
-#           cammand is directly tried to be given below. Hence, as a work-around,
-#           the command is re-directed to a file (shell or batch file) and then
-#           executed
-#        2. The linker.cmd file generated, includes the libraries generated by
-#           XDC. An egrep to search for these and omit in the .cmd file is added
-#           after configuro is done
-xdc_configuro : $(CFG_C_XDC)
-	$(MAKE) $(LNKCMD_FILE)
-
-ifeq ($(DEST_ROOT),)
-  XDC_BUILD_ROOT = .
-else
-  XDC_BUILD_ROOT = $(DEST_ROOT)
-endif
-
-$(CFG_C_XDC) $(LNKCMD_FILE) : $(XDC_CFG_FILE)
-	$(ECHO) \# Invoking configuro...
-	$(MKDIR) -p $(XDC_BUILD_ROOT)
-	$(xdc_PATH)/xs xdc.tools.configuro --generationOnly -o $(CONFIGURO_DIR) -t $(TARGET_XDC) -p $(PLATFORM_XDC) \
-               -r $(CONFIGURO_BUILD_PROFILE) -b $(CONFIG_BLD_XDC_$(ISA)) --ol $(LNKCMD_FILE) $(XDC_CFG_FILE_NAME)
-	$(ECHO) \# Configuro done!
-
-ifneq ($(XDC_CFG_FILE_$(CORE)),)
-  ifndef MODULE_NAME
-$(CFG_C_NEW_XDC)/$(CFG_COBJ_XDC) : $(CFG_C_XDC)
-	$(ECHO) \# Compiling generated $(CFG_COBJ_XDC)
-	$(CC) -ppd=$(DEPFILE).P $(_CFLAGS) $(INCLUDES) $(CFLAGS_NEW_DIROPTS) -fc $(CFG_C_XDC)
-	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_NEW_DIROPTS) -fc $(CFG_C_XDC)
-  endif
 endif
 
 # Include dependency make files that were generated by $(CC)

@@ -3,15 +3,9 @@ PDK_INSTALL_PATH ?= $(abspath ../../)
 
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 
-XDC = $(XDC_INSTALL_PATH)/xdc
-
 ifeq ($(LIMIT_BOARDS),)
-BOARD_LIST_ALL = evmDRA72x evmDRA75x evmDRA78x evmAM572x idkAM572x idkAM571x idkAM574x
 BOARD_LIST_ALL += $(BOARD_LIST_J6_TDA)
 BOARD_LIST_ALL += $(BOARD_LIST_J7_TDA)
-BOARD_LIST_ALL += $(BOARD_LIST_TPR12)
-BOARD_LIST_ALL += $(BOARD_LIST_AWR294X)
-BOARD_LIST_ALL += am64x_evm am64x_svb
 else
   # If LIMIT_BOARDS is defined use it
   BOARD_LIST_ALL = $(LIMIT_BOARDS)
@@ -31,22 +25,10 @@ ifeq ($(LIMIT_CORES),)
   ifeq ($(BOARD),$(filter $(BOARD), j784s4_evm))
     CORE_LIST_ALL = $(CORE_LIST_j784s4)
   endif
-  ifeq ($(BOARD),$(filter $(BOARD), am65xx_evm am65xx_idk))
-    CORE_LIST_ALL = $(CORE_LIST_am65xx)
-  endif
   ifeq ($(BOARD),$(filter $(BOARD), $(BOARD_LIST_J6_TDA)))
-    CORE_LIST_ALL = a15_0 ipu1_0 ipu1_1 ipu2_0 ipu2_1 c66x c66xdsp_1 c66xdsp_2 arp32_1 arp32_2 arp32_3 arp32_4 arm9_0 c674x
+    CORE_LIST_ALL =c66xdsp_1 c66xdsp_2
     CORE_LIST_ALL += mcu1_0 mcu1_1 mpu1_0 mpu1_1
   endif
-  ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt))
-    CORE_LIST_ALL = $(CORE_LIST_tpr12)
-  endif
-  ifeq ($(BOARD),$(filter $(BOARD), awr294x_evm))
-    CORE_LIST_ALL = $(CORE_LIST_awr294x)
-  endif
-ifeq ($(BOARD),$(filter $(BOARD), am64x_evm am64x_svb))
-  CORE_LIST_ALL = $(CORE_LIST_am64x)
-endif
 else
   # If LIMIT_CORES is defined use it
   CORE_LIST_ALL = $(LIMIT_CORES)
@@ -142,14 +124,14 @@ FINAL_SAFERTOS_EXAMPLE_HAS_DEP_LIST += $(filter %safertos_has_dep, $(FINAL_DUP_E
 FINAL_UTILS_LIST_ALL_HAS_DEP_LIST = $(addsuffix _has_dep, $(filter-out $(FINAL_UTILS_LIST_ALL_DEP_LIST),$(FINAL_UTILS_LIST_ALL)))
 
 
-.PHONY : all all_libs all_apps all_apps_core version pdk_examples pdk_libs lib app_lib apps tar firm doxygen pdk_libs_clean pdk_app_libs pdk_app_libs_clean examples examples_clean clean package $(pdk_PKG_LIST_ALL) $(pdk_DUP_EXAMPLE_LIST) all_firm firm  all_firm_versions all_apps pdk_examples pdk_dup_apps $(FINAL_LIB_HAS_DEP_LIST) $(FINAL_APP_LIB_HAS_DEP_LIST) $(FINAL_EXAMPLE_HAS_DEP_LIST)    $(FINAL_DUP_EXAMPLE_HAS_DEP_LIST) $(FINAL_FIRM_HAS_DEP_LIST) %_has_dep $(FINAL_UTILS_LIST_ALL) $(FINAL_PKG_LIST_INFO) $(FINAL_DUP_EXAMPLE_INFO)
+.PHONY : all all_libs all_apps all_apps_core version pdk_examples pdk_libs lib app_lib apps tar doxygen pdk_libs_clean pdk_app_libs pdk_app_libs_clean examples examples_clean clean package $(pdk_PKG_LIST_ALL) $(pdk_DUP_EXAMPLE_LIST) all_apps pdk_examples pdk_dup_apps $(FINAL_LIB_HAS_DEP_LIST) $(FINAL_APP_LIB_HAS_DEP_LIST) $(FINAL_EXAMPLE_HAS_DEP_LIST)    $(FINAL_DUP_EXAMPLE_HAS_DEP_LIST) $(FINAL_FIRM_HAS_DEP_LIST) %_has_dep $(FINAL_UTILS_LIST_ALL) $(FINAL_PKG_LIST_INFO) $(FINAL_DUP_EXAMPLE_INFO)
 
 all: version all_apps
 
 all_apps: all_libs
 	+$(MAKE) -f $(PDK_INSTALL_PATH)/ti/build/makefile all_apps_core
 
-all_libs: pdk_libs pdk_app_libs firm
+all_libs: pdk_libs pdk_app_libs
 
 all_apps_core: pdk_examples
 	$(MAKE) -f $(PDK_INSTALL_PATH)/ti/build/makefile pdk_dup_apps
@@ -171,10 +153,6 @@ pdk_dup_apps: $(FINAL_DUP_EXAMPLE_HAS_DEP_LIST)
 
 pdk_app_libs_clean: $(FINAL_APP_LIB_LIST_CLEAN)
 
-all_firm: $(FINAL_FIRM_HAS_DEP_LIST)
-
-all_firm_clean: $(FINAL_FIRM_LIST_CLEAN)
-
 examples: $(FINAL_EXAMPLE_HAS_DEP_LIST)
 
 safertos_examples: $(FINAL_SAFERTOS_EXAMPLE_HAS_DEP_LIST)
@@ -183,7 +161,7 @@ examples_clean: $(FINAL_EXAMPLE_LIST_CLEAN)
 
 examples_info: $(FINAL_PKG_LIST_INFO) $(FINAL_DUP_EXAMPLE_INFO)
 
-clean: pdk_libs_clean pdk_app_libs_clean examples_clean all_firm_clean
+clean: pdk_libs_clean pdk_app_libs_clean examples_clean
 	$(foreach dup_app, $(FINAL_DUP_EXAMPLE_LIST_CLEAN),\
 	$(MAKE) $(dup_app);\
 	)
@@ -247,7 +225,6 @@ help:
 	$(ECHO) "    Default: Windows_NT"
 	$(ECHO) "    COMP = $(COMP)"
 	$(ECHO) "    PDK_INSTALL_PATH = $(PDK_INSTALL_PATH)"
-	$(ECHO) "    XDC_INSTALL_PATH = $(XDC_INSTALL_PATH)"
 
 allcores:
 	$(foreach current_core, $(CORE_LIST_ALL),\
@@ -321,19 +298,6 @@ allall_clean:
 	$(MAKE) profiles_clean BOARD=$(current_board);\
 	)
 
-# $(ECHO) "all_firm_versions: HOSTCORE is $(HOSTCORE) CORE is $(CORE) PRUVERSION is $(pru_version)"; \
-
-all_firm_versions:
-	$(foreach pru_version, $(PRU_VERSION_LIST),\
-	$(MAKE) -f $(PDK_INSTALL_PATH)/ti/build/makefile all_firm HOSTCORE=$(HOSTCORE) CORE=$(CORE) PRUVERSION=$(pru_version); \
-	)
-
-# Build firmware targets for PRU cores which are defined in LIMIT_CORES only
-firm:
-	$(foreach pru_core, $(filter $(PRUCORE_LIST), $(LIMIT_CORES)),\
-	$(MAKE) -f $(PDK_INSTALL_PATH)/ti/build/makefile all_firm_versions HOSTCORE=$(CORE) CORE=$(pru_core); \
-	)
-
 lib: pdk_libs
 
 apps: examples
@@ -355,23 +319,9 @@ else
 	$(ECHO) No Doxygen Support available ...
 endif
 
-tar: lib firm doxygen
-	$(ECHO) Creating the Release Tar ball for $(COMP)...
-	$(XDC) clean   XDCBUILDCFG=config_mk.bld
-	$(XDC) release XDCBUILDCFG=config_mk.bld
-	$(ECHO) please check $(COMP)/packages folder for the release tarball
-
 #=================================================================
 #All PDKs libs and tests
 $(FINAL_PKG_LIST_ALL) $(FINAL_DUP_EXAMPLE_LIST):
-	$(if $(filter $(SOC), $(subst emptyreplacement,,$($@_SOCLIST))),\
-	    $(if $(filter $(CORE), $(subst emptyreplacement,,$($@_$(SOC)_CORELIST))),\
-	        $(if $(filter yes, $(subst emptyreplacement,,$($@_XDC_CONFIGURO))),\
-	            $(MAKE) -C $($@_PATH) $($@_MAKEFILE) xdc_configuro,),),\
-	$(if $(filter $(BOARD), $(subst emptyreplacement,,$($@_BOARDLIST))),\
-	    $(if $(filter $(CORE), $(subst emptyreplacement,,$($@_$(SOC)_CORELIST))),\
-	        $(if $(filter yes, $(subst emptyreplacement,,$($@_XDC_CONFIGURO))),\
-	            $(MAKE) -C $($@_PATH) $($@_MAKEFILE) xdc_configuro,),),))
 	$(if $(filter $(SOC), $(subst emptyreplacement,,$($@_SOCLIST))),\
 	    $(if $(filter $(CORE), $(subst emptyreplacement,,$($@_$(SOC)_CORELIST))),\
 	        $(MAKE) -C $($@_PATH) $($@_MAKEFILE),$(ECHO) Nothing to be done for $(SOC) $(CORE) $@),\

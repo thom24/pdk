@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2013-2016, Texas Instruments Incorporated
+# Copyright (c) 2013-2024, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -38,7 +38,6 @@
 # This file needs to change when:
 #     1. Code generation tool chain changes (currently it uses TI ARM CGT)
 #     2. Internal switches (which are normally not touched) has to change
-#     3. XDC specific switches change
 #     4. a rule common for M4/R5F ISA has to be added or modified
 
 # Set compiler/archiver/linker commands and include paths
@@ -75,7 +74,7 @@ endif
 
 # OPTIMIZATION can take two values i.e. CODE and PERFORMANCE
 # This is parameter is only valid for release mode and not for debug mode
-# CODE is recommended for optimizing code size 
+# CODE is recommended for optimizing code size
 # PERFORMANCE is recommended for optimizing performance, but it is likely to increase compiler generated code size
 ifeq ($(OPTIMIZATION),PERFORMANCE)
   OPT_LEVEL = -O3
@@ -92,7 +91,7 @@ ifeq ($(CPLUSPLUS_BUILD), yes)
 endif
 
 # Internal CFLAGS - normally doesn't change
-ifeq ($(CGT_ISA),$(filter $(CGT_ISA), M4 R5 M3))
+ifeq ($(CGT_ISA),$(filter $(CGT_ISA),M4 R5 M3))
   CFLAGS_INTERNAL = -c -Wall -Werror $(SUPRESS_WARNINGS_FLAG) -fno-strict-aliasing -$(RTSLIB_ENDIAN) -eo.$(OBJEXT) -ea.$(ASMEXT) -g -mfloat-abi=hard
   ifeq ($(CGT_ISA),$(filter $(CGT_ISA), R5))
     CFLAGS_INTERNAL += -mfpu=vfpv3-d16 -mcpu=cortex-r5
@@ -122,32 +121,18 @@ ifeq ($(TREAT_WARNINGS_AS_ERROR), yes)
 endif
 
 ifeq ($(CPLUSPLUS_BUILD), yes)
- CFLAGS_INTERNAL += -nostdlibinc 
+ CFLAGS_INTERNAL += -nostdlibinc
 endif
 
 CFLAGS_DIROPTS = -c
 
-ifeq ($(CGT_ISA),$(filter $(CGT_ISA),R5))
-
-ifeq ($(XDC_DISABLE_THUMB_MODE),yes)
- XDC_TARGET_NAME=$(CGT_ISA)F
+ifneq ($(EXTERNAL_LNKCMD_FILE_LOCAL),)
+EXTERNAL_LNKCMD_FILE = $(EXTERNAL_LNKCMD_FILE_LOCAL)
 else
- XDC_TARGET_NAME=$(CGT_ISA)Ft
+EXTERNAL_LNKCMD_FILE = $(CONFIG_BLD_LNK_r5f)
 endif
 
- ifneq ($(EXTERNAL_LNKCMD_FILE_LOCAL),)
- EXTERNAL_LNKCMD_FILE = $(EXTERNAL_LNKCMD_FILE_LOCAL)
- else
- EXTERNAL_LNKCMD_FILE = $(CONFIG_BLD_LNK_r5f)
- endif
-else
- XDC_TARGET_NAME=$(CGT_ISA)
-endif
-
-# Reset the XDC_TARGET_NAME for M4F
 ifeq ($(CGT_ISA),$(filter $(CGT_ISA),M4F))
- XDC_TARGET_NAME=M4
-
  ifneq ($(EXTERNAL_LNKCMD_FILE_LOCAL),)
  EXTERNAL_LNKCMD_FILE = $(EXTERNAL_LNKCMD_FILE_LOCAL)
  else
@@ -155,44 +140,23 @@ ifeq ($(CGT_ISA),$(filter $(CGT_ISA),M4F))
  endif
 endif
 
-XDC_HFILE_NAME = $(basename $(notdir $(XDC_CFG_FILE_$(CORE))))
-
-ifneq ($(PEXT_BIOS),)
-XDC_HFILE_EXT = $(PEXT_BIOS)
-else
-XDC_HFILE_EXT = p$(FORMAT_EXT)$(CGT_EXT)
-endif
-
 # CFLAGS based on profile selected
 ifeq ($(BUILD_PROFILE_$(CORE)), debug)
  LNKFLAGS_INTERNAL_BUILD_PROFILE =
- CFLAGS_XDCINTERNAL = -Dxdc_target_name__=$(XDC_TARGET_NAME) -Dxdc_target_types__=ti/targets/arm/elf/std.h -Dxdc_bld__profile_debug
  CFLAGS_INTERNAL += -D_DEBUG_=1 -O1
- ifndef MODULE_NAME
-  CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_$(XDC_HFILE_EXT).h'
- endif
-
 endif
 ifeq ($(BUILD_PROFILE_$(CORE)), release)
- ifeq ($(CGT_ISA),$(filter $(CGT_ISA), M4 R5 M3))
+ ifeq ($(CGT_ISA),$(filter $(CGT_ISA),M4 R5 M3))
    LNKFLAGS_INTERNAL_BUILD_PROFILE = $(LNKFLAGS_GLOBAL_$(CORE))
    ifeq ($(CGT_ISA),$(filter $(CGT_ISA), R5))
      CFLAGS_INTERNAL += $(OPT_LEVEL) -s
    else
      CFLAGS_INTERNAL += $(OPT_LEVEL) -op0 -os --optimize_with_debug --inline_recursion_limit=20
    endif
-   CFLAGS_XDCINTERNAL = -Dxdc_target_name__=$(XDC_TARGET_NAME) -Dxdc_target_types__=ti/targets/arm/elf/std.h -Dxdc_bld__profile_release
-   ifndef MODULE_NAME
-     CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_$(XDC_HFILE_EXT).h'
-   endif
  endif
  ifeq ($(CGT_ISA), Arm9)
-        LNKFLAGS_INTERNAL_BUILD_PROFILE = --diag_warning=225 --diag_suppress=23000 $(LNKFLAGS_GLOBAL_$(CORE))
-        CFLAGS_INTERNAL += -oe $(OPT_LEVEL) -op0 -os --optimize_with_debug --inline_recursion_limit=20
-	CFLAGS_XDCINTERNAL = -Dxdc_target_name__=$(XDC_TARGET_NAME) -Dxdc_target_types__=ti/targets/arm/elf/std.h -Dxdc_bld__profile_release
-	ifndef MODULE_NAME
-	  CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_$(XDC_HFILE_EXT).h'
-	endif
+    LNKFLAGS_INTERNAL_BUILD_PROFILE = --diag_warning=225 --diag_suppress=23000 $(LNKFLAGS_GLOBAL_$(CORE))
+    CFLAGS_INTERNAL += -oe $(OPT_LEVEL) -op0 -os --optimize_with_debug --inline_recursion_limit=20
  endif
  ifeq ($(CGT_ISA),$(filter $(CGT_ISA), M4F))
 	# LNKFLAGS_INTERNAL_BUILD_PROFILE = --opt='--float_support=FPv4SPD16 --endian=$(ENDIAN) -mv7M4 -Wno-gnu-variable-sized-type-not-at-end -Wno-unused-function $(CFLAGS_GLOBAL_$(CORE)) -oe -g -op2 $(OPT_LEVEL) -os --optimize_with_debug --inline_recursion_limit=20 --diag_suppress=23000' --strict_compatibility=on
@@ -212,18 +176,6 @@ else
     _CFLAGS += $(CFLAGS_LOCAL_$(SOC)) $(CFLAGS_GLOBAL_$(SOC))
   endif
 endif
-ifneq ($(XDC_CFG_FILE_$(CORE)),)
-  _CFLAGS += $(CFLAGS_XDCINTERNAL)
-else
-  ifneq ($(findstring xdc, $(INCLUDE_EXTERNAL_INTERFACES)),)
-      _CFLAGS += $(CFLAGS_XDCINTERNAL)
-  endif
-endif
-
-# For TPR12, fore enum type to int to be compatible with DSP
-ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-  _CFLAGS += --enum_type=int
-endif
 
 # Decide the compile mode
 COMPILEMODE = -x c
@@ -239,7 +191,7 @@ $(OBJ_PATHS): $(OBJDIR)/%.$(OBJEXT): %.c $(GEN_FILE) | $(OBJDIR) $(DEPDIR)
 	$(MKDIR) -p $(dir $@)
 	$(CC) -MMD $(_CFLAGS) $(INCLUDES) -c $(COMPILEMODE) $< -o $@ -MF $(DEPFILE).d
 	$(CC) $(_CFLAGS) $(INCLUDES) -c $(COMPILEMODE) $< -o $@
-   
+
 
 #TODO: Check ASMFLAGS if really required
 ASMFLAGS = -me -g -mthumb --diag_warning=225
@@ -282,7 +234,7 @@ $(LIBDIR)/$(LIBNAME).$(LIBEXT)_size: $(LIBDIR)/$(LIBNAME).$(LIBEXT)
 # Linker options and rules
 LNKFLAGS_INTERNAL_COMMON += -Xlinker -q -Xlinker -u -Xlinker _c_int00 -Xlinker --display_error_number -Xlinker --use_memcpy=fast -Xlinker --use_memset=fast
 # Supress warning for "entry-point symbol other than "_c_int00" specified"
-LNKFLAGS_INTERNAL_COMMON += -Xlinker --diag_suppress=10063-D 
+LNKFLAGS_INTERNAL_COMMON += -Xlinker --diag_suppress=10063-D
 # Supress warning for "no matching section"
 LNKFLAGS_INTERNAL_COMMON += -Xlinker --diag_suppress=10068-D
 # Supress warning for " LOAD placement ignored for "":  object is uninitialized"
@@ -347,27 +299,14 @@ endif
 #	$(CGT_PATH)/lib/mklib --pattern=$(RTSLIB_NAME) --parallel=$(NUM_PROCS) --compiler_bin_dir=$(CGT_PATH)/bin
 #endif
 
-ifneq ($(XDC_CFG_FILE_$(CORE)),)
-$(EXE_NAME) : $(OBJ_PATHS_ASM) $(OBJ_PATHS_S) $(OBJ_PATHS) $(LIB_PATHS) $(LNKCMD_FILE) $(OBJDIR)/$(CFG_COBJ_XDC) $(BUILD_LIB_ONCE)
-	$(CP) $(CONFIGURO_DIR)/package/cfg/*.rov.xs $(BINDIR)
-else
 $(EXE_NAME) : $(OBJ_PATHS_ASM) $(OBJ_PATHS_S) $(OBJ_PATHS) $(LIB_PATHS) $(LNKCMD_FILE) $(BUILD_LIB_ONCE)
 ifeq ($(BUILD_OS_TYPE), freertos)
 	$(CP) $(pdk_PATH)/ti/kernel/freertos/rov/syscfg_c.rov.xs $(BINDIR)
 endif
-endif
+
 	$(ECHO) \# Linking into $(EXE_NAME)...
 	$(ECHO) \#
-ifneq ($(XDC_CFG_FILE_$(CORE)),)
-	$(CP) $(OBJDIR)/$(CFG_COBJ_XDC) $(CONFIGURO_DIR)/package/cfg
-  ifeq ($(BUILD_PROFILE_$(CORE)),whole_program_debug)
-	$(LNK) $(_LNKFLAGS) $(OBJ_PATHS_ASM) $(OBJ_PATHS_S) $(OBJ_PATHS) $(OBJDIR)/$(CFG_COBJ_XDC) $(LNKCMD_FILE) $(EXTERNAL_LNKCMD_FILE) $(APPEND_LNKCMD_FILE) -o $@ -Xlinker -map_file=$@.map $(LNK_LIBS) $(RTSLIB_PATH)
-  else
-	$(LNK) $(_LNKFLAGS) $(OBJ_PATHS_ASM) $(OBJ_PATHS_S) $(OBJ_PATHS) $(LNKCMD_FILE) $(EXTERNAL_LNKCMD_FILE) $(APPEND_LNKCMD_FILE) -o $@ -m $@.map $(LNK_LIBS) $(RTSLIB_PATH)
-  endif
-else
 	$(LNK) $(_LNKFLAGS) $(OBJ_PATHS_ASM) $(OBJ_PATHS_S) $(OBJ_PATHS) -Xlinker $(LNKCMD_FILE) $(EXTERNAL_LNKCMD_FILE) $(APPEND_LNKCMD_FILE) -Xlinker --map_file=$@.map -Xlinker --output_file=$@ $(LNK_LIBS) $(RTSLIB_PATH)
-endif
 	$(ECHO) \#
 	$(ECHO) \# $@ created.
 	$(ECHO) \#
@@ -377,58 +316,9 @@ ifeq ($(BUILD_PROFILE_$(CORE)), release)
 	$(RM)  $(EXE_STRIP_NAME)
 	$(STRP) -p $(EXE_NAME) -o $(EXE_STRIP_NAME)
 endif
-# XDC specific - assemble XDC-Configuro command
-ifeq ($(BUILD_PROFILE_$(CORE)),prod_release)
-  CONFIGURO_BUILD_PROFILE = release
-else
-  CONFIGURO_BUILD_PROFILE = $(BUILD_PROFILE_$(CORE))
-endif
-
-_XDC_GREP_STRING = \"$(XDC_GREP_STRING)\"
-EGREP_CMD = $(EGREP) -ivw $(XDC_GREP_STRING) $(XDCLNKCMD_FILE)
 
 ifeq ($(OS),Windows_NT)
   EVERYONE = $(word 1,$(shell whoami -groups | findstr "S-1-1-0"))
-endif
-
-# Invoke configuro for the rest of the components
-#  NOTE: 1. String handling is having issues with various make versions when the
-#           cammand is directly tried to be given below. Hence, as a work-around,
-#           the command is re-directed to a file (shell or batch file) and then
-#           executed
-#        2. The linker.cmd file generated, includes the libraries generated by
-#           XDC. An egrep to search for these and omit in the .cmd file is added
-#           after configuro is done
-xdc_configuro : $(CFG_C_XDC)
-	$(MAKE) $(LNKCMD_FILE)
-
-ifeq ($(DEST_ROOT),)
-  XDC_BUILD_ROOT = .
-else
-  XDC_BUILD_ROOT = $(DEST_ROOT)
-endif
-
-ifneq ($(OBJEXT_BIOS),)
-# if BIOS' obj extensions are different, xdc generated files's objfiles need to have different extensions as well
-CFG_C_XDC_CFLAGS = $(subst -eo.$(OBJEXT),-eo.$(OBJEXT_BIOS),$(_CFLAGS))
-else
-CFG_C_XDC_CFLAGS = $(_CFLAGS)
-endif
-
-$(CFG_C_XDC) $(LNKCMD_FILE) : $(XDC_CFG_FILE_NAME) $(XDC_CFG_UPDATE)
-	$(ECHO) \# Invoking configuro...
-	$(MKDIR) -p $(XDC_BUILD_ROOT)
-	$(xdc_PATH)/xs xdc.tools.configuro --generationOnly -o $(CONFIGURO_DIR) -t $(TARGET_XDC) -p $(PLATFORM_XDC) \
-               -r $(CONFIGURO_BUILD_PROFILE) -b $(CONFIG_BLD_XDC_$(ISA)) --ol $(LNKCMD_FILE) $(XDC_CFG_FILE_NAME)
-	$(ECHO) \# Configuro done!
-
-ifneq ($(XDC_CFG_FILE_$(CORE)),)
-  ifndef MODULE_NAME
-$(OBJDIR)/$(CFG_COBJ_XDC) : $(CFG_C_XDC)
-	$(ECHO) \# Compiling generated $(CFG_COBJ_XDC)
-	$(CC) -M $(CFG_C_XDC_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) -x c $(CFG_C_XDC)
-	$(CC) $(CFG_C_XDC_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS) -x c $(CFG_C_XDC)
-  endif
 endif
 
 # Include dependency make files that were generated by $(CC)

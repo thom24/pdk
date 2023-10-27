@@ -17,8 +17,6 @@ PDK_OSAL_ROOT_PATH ?= $(pdk_PATH)
 export PDK_OSAL_COMP_PATH = $(PDK_OSAL_ROOT_PATH)/ti/osal
 PDK_I2C_ROOT_PATH ?= $(pdk_PATH)
 export PDK_I2C_COMP_PATH = $(PDK_I2C_ROOT_PATH)/ti/drv/i2c
-PDK_VPS_ROOT_PATH ?= $(pdk_PATH)
-export PDK_VPS_COMP_PATH = $(PDK_VPS_ROOT_PATH)/ti/drv/vps
 PDK_GPIO_ROOT_PATH ?= $(pdk_PATH)
 export PDK_GPIO_COMP_PATH = $(PDK_GPIO_ROOT_PATH)/ti/drv/gpio
 PDK_FATFS_ROOT_PATH ?= $(pdk_PATH)
@@ -45,12 +43,6 @@ PDK_VECT_COPY_ROOT_PATH ?= $(pdk_PATH)
 export PDK_VECT_COPY_PATH = $(PDK_VECT_COPY_ROOT_PATH)/ti/utils/copyVecs2Atcm
 PDK_PRUSS_ROOT_PATH ?= $(pdk_PATH)
 export PDK_PRUSS_COMP_PATH = $(PDK_PRUSS_ROOT_PATH)/ti/drv/pruss
-PDK_NIMU_ROOT_PATH ?= $(pdk_PATH)
-export PDK_NIMU_COMP_PATH = $(PDK_NIMU_ROOT_PATH)/ti/transport/ndk/nimu
-PDK_NIMU_ICSS_ROOT_PATH ?= $(pdk_PATH)
-export PDK_NIMU_ICSS_COMP_PATH = $(PDK_NIMU_ICSS_ROOT_PATH)/ti/transport/ndk/nimu_icss
-PDK_TIMESYNC_ROOT_PATH ?= $(pdk_PATH)
-export PDK_TIMESYNC_COMP_PATH = $(PDK_TIMESYNC_ROOT_PATH)/ti/transport/timeSync
 PDK_ICSS_EMAC_ROOT_PATH ?= $(pdk_PATH)
 export PDK_ICSS_EMAC_COMP_PATH = $(PDK_ICSS_EMAC_ROOT_PATH)/ti/drv/icss_emac
 PDK_EMAC_ROOT_PATH ?= $(pdk_PATH)
@@ -61,30 +53,16 @@ PDK_SPI_ROOT_PATH ?= $(pdk_PATH)
 export PDK_SPI_COMP_PATH = $(PDK_SPI_ROOT_PATH)/ti/drv/spi
 PDK_BOARD_ROOT_PATH ?= $(pdk_PATH)
 export PDK_BOARD_COMP_PATH = $(PDK_BOARD_ROOT_PATH)/ti/board
-PDK_GPMC_ROOT_PATH ?= $(pdk_PATH)
-export PDK_GPMC_COMP_PATH = $(PDK_GPMC_ROOT_PATH)/ti/drv/gpmc
-PDK_AUD_ROOT_PATH ?= $(pdk_PATH)
-export PDK_AUD_COMP_PATH = $(PDK_AUD_ROOT_PATH)/ti/addon/aud
 PDK_SBL_ROOT_PATH ?= $(pdk_PATH)
 export PDK_SBL_COMP_PATH = $(PDK_SBL_ROOT_PATH)/ti/boot/sbl
 PDK_KEYWR_ROOT_PATH ?= $(pdk_PATH)
 export PDK_KEYWR_COMP_PATH = $(PDK_KEYWR_ROOT_PATH)/ti/boot/keywriter
-PDK_SBL_AUTO_ROOT_PATH ?= $(pdk_PATH)
-export PDK_SBL_AUTO_COMP_PATH = $(PDK_SBL_AUTO_ROOT_PATH)/ti/boot/sbl_auto
-PDK_CMB_ROOT_PATH ?= $(pdk_PATH)
-export PDK_CMB_COMP_PATH = $(PDK_CMB_ROOT_PATH)/ti/addon/cmb
 PDK_BOARD_IND_ROOT_PATH ?= $(pdk_PATH)
 export PDK_BOARD_IND_COMP_PATH = $(PDK_BOARD_IND_ROOT_PATH)/ti/addon/board_ind
 PDK_BOARD_UTILS_ROOT_PATH ?= $(pdk_PATH)
 export PDK_BOARD_UTILS_COMP_PATH = $(PDK_BOARD_UTILS_ROOT_PATH)/ti/board/utils
 PDK_BOARD_DIAG_ROOT_PATH ?= $(pdk_PATH)
 export PDK_BOARD_DIAG_COMP_PATH = $(PDK_BOARD_DIAG_ROOT_PATH)/ti/board/diag
-
-PDK_SA_ROOT_PATH ?= $(pdk_PATH)
-export PDK_SA_COMP_PATH = $(PDK_SA_ROOT_PATH)/ti/drv/sa
-
-PDK_IOLINK_ROOT_PATH ?= $(pdk_PATH)
-export PDK_IOLINK_COMP_PATH = $(PDK_IOLINK_ROOT_PATH)/ti/drv/iolink
 
 #Below applicable only for K3 devices
 PDK_UDMA_ROOT_PATH ?= $(pdk_PATH)
@@ -119,14 +97,7 @@ SAFETY_CHECKERS_ROOT_PATH ?= $(pdk_PATH)
 export SAFETY_CHECKERS_COMP_PATH = $(SAFETY_CHECKERS_ROOT_PATH)/ti/safety_checkers
 
 #Below applicable only for TPR12 devices
-PDK_CRC_ROOT_PATH ?= $(pdk_PATH)
-export PDK_CRC_COMP_PATH = $(PDK_CRC_ROOT_PATH)/ti/drv/crc
-PDK_GPADC_ROOT_PATH ?= $(pdk_PATH)
-export PDK_GPADC_COMP_PATH = $(PDK_GPADC_ROOT_PATH)/ti/drv/gpadc
-PDK_EDMA_ROOT_PATH ?= $(pdk_PATH)
-export PDK_EDMA_COMP_PATH = $(PDK_EDMA_ROOT_PATH)/ti/drv/edma
-PDK_HWA_ROOT_PATH ?= $(pdk_PATH)
-export PDK_HWA_COMP_PATH = $(PDK_HWA_ROOT_PATH)/ti/drv/hwa
+
 PDK_MIBSPI_ROOT_PATH ?= $(pdk_PATH)
 export PDK_MIBSPI_COMP_PATH = $(PDK_MIBSPI_ROOT_PATH)/ti/drv/mibspi
 PDK_CANFD_ROOT_PATH ?= $(pdk_PATH)
@@ -153,16 +124,8 @@ PDK_DIAG_ROOT_PATH ?= $(pdk_PATH)
 export PDK_DIAG_COMP_PATH = $(PDK_DIAG_ROOT_PATH)/ti/diag
 PDK_FIREWALL_L3L4_ROOT_PATH ?= $(pdk_PATH)
 export PDK_FIREWALL_L3L4_COMP_PATH = $(PDK_FIREWALL_L3L4_ROOT_PATH)/ti/drv/fw_l3l4
-PDK_IPCLITE_ROOT_PATH ?= $(pdk_PATH)
-export PDK_IPCLITE_COMP_PATH = $(PDK_IPCLITE_ROOT_PATH)/ti/drv/ipc_lite
-PDK_TDA3X_SECURITY_ROOT_PATH ?= $(pdk_PATH)
-export PDK_TDA3X_SECURITY_COMP_PATH = $(PDK_TDA3X_SECURITY_ROOT_PATH)/ti/boot/sbl_auto/security
 
 #Below applicable only for TDA devices for backward compatibility;not applicable for PRSDK
-PDK_NORFLASH_ROOT_PATH ?= $(pdk_PATH)
-export PDK_NORFLASH_COMP_PATH = $(PDK_NORFLASH_ROOT_PATH)/ti/boot/sbl_auto/norflash
-PDK_QSPIFLASH_ROOT_PATH ?= $(pdk_PATH)
-export PDK_QSPIFLASH_COMP_PATH = $(PDK_QSPIFLASH_ROOT_PATH)/ti/boot/sbl_auto/qspiflash
 PDK_STW_LLD_ROOT_PATH ?= $(pdk_PATH)
 export PDK_STW_LLD_COMP_PATH = $(PDK_STW_LLD_ROOT_PATH)/ti/drv/stw_lld
 PDK_BSP_LLD_ROOT_PATH ?= $(pdk_PATH)

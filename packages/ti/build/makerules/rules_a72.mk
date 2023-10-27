@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2018, Texas Instruments Incorporated
+# Copyright (c) 2018-2024, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -82,16 +82,7 @@ ifeq ($(BUILD_PROFILE_$(CORE)), release)
   LNKFLAGS_INTERNAL_BUILD_PROFILE = -O2
 endif
 
-# XDC specific CFLAGS
-CFLAGS_XDCINTERNAL = -Dxdc_target_types__=gnu/targets/arm/std.h -Dxdc_bld__profile_$(BUILD_PROFILE_$(CORE)) -mcpu=cortex-a53 -Dxdc_target_types__=gnu/targets/arm/std.h -Dxdc_target_name__=A53F
-ifndef MODULE_NAME
-  XDC_HFILE_NAME = $(basename $(notdir $(XDC_CFG_FILE_$(CORE))))
-  CFLAGS_XDCINTERNAL += -Dxdc_cfg__header__='$(CONFIGURO_DIR)/package/cfg/$(XDC_HFILE_NAME)_pa72fg.h'
-endif
 LNKFLAGS_INTERNAL_BUILD_PROFILE =
-
-# This CFLAG is added to include header files for re-entrancy support when migrating to BIOS version 6.37.01.24. XDC tools version 3.25.05.94
-CFLAGS_FOR_REENTRANCY_SUPPORT = -I$(BIOSROOT)/packages/gnu/targets/arm/libs/install-native/arm-none-eabi/include
 
 # Assemble CFLAGS from all other CFLAGS definitions
 _CFLAGS = $(CFLAGS_GLOBAL_$(CORE)) $(CFLAGS_INTERNAL) $(CFLAGS_LOCAL_COMMON) $(CFLAGS_LOCAL_$(CORE)) $(CFLAGS_COMP_COMMON)
@@ -103,14 +94,6 @@ else
     _CFLAGS += $(CFLAGS_LOCAL_$(BOARD)) $(CFLAGS_GLOBAL_$(BOARD))
   else
     _CFLAGS += $(CFLAGS_LOCAL_$(SOC)) $(CFLAGS_GLOBAL_$(SOC))
-  endif
-endif
-
-ifneq ($(XDC_CFG_FILE_$(CORE)),)
-  _CFLAGS += $(CFLAGS_XDCINTERNAL) $(CFLAGS_FOR_REENTRANCY_SUPPORT)
-else
-  ifneq ($(findstring xdc, $(INCLUDE_EXTERNAL_INTERFACES)),)
-      _CFLAGS += $(CFLAGS_XDCINTERNAL)
   endif
 endif
 
@@ -179,25 +162,16 @@ ifneq ($(LNKCMD_FILE),)
 LINKER2 = $(addprefix $(LNKCMD_PREFIX), $(LNKCMD_FILE))
 endif
 
-ifneq ($(XDC_CFG_FILE_$(CORE)),)
-  LIB_PATHS_DIR = $(bios_PATH)/packages/gnu/targets/arm/libs/install-native/aarch64-none-elf/lib/
-  #LIB_PATHS     += $(bios_PATH)/packages/gnu/targets/arm/libs/install-native/arm-none-eabi/lib/fpu/librdimon.a
-  # override the linker from build infrastructure with external linker cmd file name if provided
-  ifneq ($(EXTERNAL_LNKCMD_FILE_LOCAL),)
-    LINKER1 = $(addprefix $(LNKCMD_PREFIX), $(EXTERNAL_LNKCMD_FILE_LOCAL))
-  endif
-else
-  #LIB_PATHS_DIR  = $(FPULIB_PATH)
-  #LIB_PATHS_DIR += $(TOOLCHAIN_PATH_A72)/arm-none-eabi/lib/fpu
-  #LIB_PATHS     += $(FPULIB_PATH)/libgcc.a $(TOOLCHAIN_PATH_A72)/arm-none-eabi/lib/fpu/libc.a $(TOOLCHAIN_PATH_A72)/arm-none-eabi/lib/fpu/libm.a  $(TOOLCHAIN_PATH_A72)/arm-none-eabi/lib/fpu/librdimon.a $(TOOLCHAIN_PATH_A72)/arm-none-eabi/lib/fpu/libg.a
-  # Do not consider the linker from build infrastructure if there is a linker override from applications by specifying LNKCMD_FILE
-  ifneq ($(LNKCMD_FILE),)
-    LINKER1 =
-  endif
-  # Backwards compatibility as bare metal apps already supported LNKCMD_FILE variable, if EXTERNAL_LNKCMD_FILE_LOCAL is defined along with LNKCMD_FILE then consider that also
-  ifneq ($(EXTERNAL_LNKCMD_FILE_LOCAL),)
-    LINKER1 = $(addprefix $(LNKCMD_PREFIX), $(EXTERNAL_LNKCMD_FILE_LOCAL))
-  endif
+#LIB_PATHS_DIR  = $(FPULIB_PATH)
+#LIB_PATHS_DIR += $(TOOLCHAIN_PATH_A72)/arm-none-eabi/lib/fpu
+#LIB_PATHS     += $(FPULIB_PATH)/libgcc.a $(TOOLCHAIN_PATH_A72)/arm-none-eabi/lib/fpu/libc.a $(TOOLCHAIN_PATH_A72)/arm-none-eabi/lib/fpu/libm.a  $(TOOLCHAIN_PATH_A72)/arm-none-eabi/lib/fpu/librdimon.a $(TOOLCHAIN_PATH_A72)/arm-none-eabi/lib/fpu/libg.a
+# Do not consider the linker from build infrastructure if there is a linker override from applications by specifying LNKCMD_FILE
+ifneq ($(LNKCMD_FILE),)
+  LINKER1 =
+endif
+# Backwards compatibility as bare metal apps already supported LNKCMD_FILE variable, if EXTERNAL_LNKCMD_FILE_LOCAL is defined along with LNKCMD_FILE then consider that also
+ifneq ($(EXTERNAL_LNKCMD_FILE_LOCAL),)
+  LINKER1 = $(addprefix $(LNKCMD_PREFIX), $(EXTERNAL_LNKCMD_FILE_LOCAL))
 endif
 
 ifneq ($(APPEND_LNKCMD_FILE),)
@@ -224,12 +198,7 @@ else
  endif
 endif
 
-ifneq ($(XDC_CFG_FILE_$(CORE)),)
-$(EXE_NAME) : $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(OBJ_PATHS_CPP) $(LIB_PATHS) $(LNKCMD_FILE) $(OBJDIR)/$(CFG_COBJ_XDC)
-	$(CP) $(CONFIGURO_DIR)/package/cfg/*.rov.xs $(BINDIR)
-else
 $(EXE_NAME) : $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(OBJ_PATHS_CPP) $(LIB_PATHS) $(LNKCMD_FILE)
-endif
 	$(ECHO) \# Linking into $(EXE_NAME)...
 	$(ECHO) \#
 	$(LNK) $(_LNKFLAGS) $(OBJ_PATHS_ASM) $(OBJ_PATHS) $(OBJ_PATHS_CPP) -Wl,--build-id=none -Wl,-Map=$@.map -o $@ $(EXT_LIB_a72_0) $(EXT_LIB_PATHS)  -Wl,--start-group $(LIB_PATHS) -Wl,--end-group $(LINKER1) $(LINKER2)  $(LINKER_APPEND) $(LNK_LIBS)
@@ -237,50 +206,8 @@ endif
 	$(ECHO) \# $@ created.
 	$(ECHO) \#
 
-# XDC specific - assemble XDC-Configuro command
-ifeq ($(BUILD_PROFILE_$(CORE)),prod_release)
-  CONFIGURO_BUILD_PROFILE = release
-else
-  CONFIGURO_BUILD_PROFILE = $(BUILD_PROFILE_$(CORE))
-endif
-
-_XDC_GREP_STRING = \"$(XDC_GREP_STRING)\"
-EGREP_CMD = $(EGREP) -ivw $(XDC_GREP_STRING) $(XDCLNKCMD_FILE)
-
 ifeq ($(OS),Windows_NT)
 EVERYONE = $(word 1,$(shell whoami -groups | findstr "S-1-1-0"))
-endif
-
-# Invoke configuro for the rest of the components
-#  NOTE: 1. String handling is having issues with various make versions when the
-#           cammand is directly tried to be given below. Hence, as a work-around,
-#           the command is re-directed to a file (shell or batch file) and then
-#           executed
-#        2. The linker.cmd file generated, includes the libraries generated by
-#           XDC. An egrep to search for these and omit in the .cmd file is added
-#           after configuro is done
-xdc_configuro : $(CFG_C_XDC)
-	$(MAKE) $(LNKCMD_FILE)
-
-ifeq ($(DEST_ROOT),)
-  XDC_BUILD_ROOT = .
-else
-  XDC_BUILD_ROOT = $(DEST_ROOT)
-endif
-
-$(CFG_C_XDC) $(LNKCMD_FILE) : $(XDC_CFG_FILE) $(XDC_CFG_UPDATE)
-	$(ECHO) \# Invoking configuro...
-	$(MKDIR) -p $(XDC_BUILD_ROOT)
-	$(xdc_PATH)/xs xdc.tools.configuro --generationOnly -o $(CONFIGURO_DIR) -t $(TARGET_XDC) -p $(PLATFORM_XDC) \
-               -r $(CONFIGURO_BUILD_PROFILE) -b $(CONFIG_BLD_XDC_$(ISA)) --ol $(LNKCMD_FILE) $(XDC_CFG_FILE_NAME)
-	$(ECHO) \# Configuro done!
-
-ifneq ($(XDC_CFG_FILE_$(CORE)),)
-  ifndef MODULE_NAME
-$(OBJDIR)/$(CFG_COBJ_XDC) : $(CFG_C_XDC)
-	$(ECHO) \# Compiling generated $< to $(CONFIGURO_DIR)/package/cfg/$(CFG_COBJ_XDC) ...
-	$(CC) $(_CFLAGS) $(INCLUDES) $(CFLAGS_DIROPTS)-o $(CONFIGURO_DIR)/package/cfg/$(CFG_COBJ_XDC) $(CFG_C_XDC)
-  endif
 endif
 
 # Include dependency make files that were generated by $(CC)

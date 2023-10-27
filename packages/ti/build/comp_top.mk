@@ -1,5 +1,5 @@
 #  ============================================================================
-#  (C) Copyright 2016-2019 Texas Instruments, Inc.
+#  (C) Copyright 2016-2024 Texas Instruments, Inc.
 #
 #  Redistribution and use in source and binary forms, with or without
 #  modification, are permitted provided that the following conditions
@@ -45,11 +45,11 @@ include $(PDK_INSTALL_PATH)/ti/build/Rules.make
 # Targets which are BOARD,CORE,SOC specific
 # NOTE: Do not change the order as 'all' needs to be run first if target is unspecified
 
-TARGETS_FOR_MULT_SOC_BOARDS = all 
+TARGETS_FOR_MULT_SOC_BOARDS = all
 TARGETS_FOR_MULT_SOC_BOARDS += apps clean lib app_libs firm
 
 # BOARD,CORE,SOC independent targets
-TARGETS_SOC_BOARD_INDP      = tar help doxygen xdc_meta xdc_meta_clean
+TARGETS_SOC_BOARD_INDP      = tar help doxygen
 
 .PHONY : $(TARGETS_FOR_MULT_SOC_BOARDS) $(TARGETS_SOC_BOARD_INDP) release package
 
@@ -79,7 +79,7 @@ endif
 $(TARGETS_FOR_MULT_SOC_BOARDS):
 	$(foreach current_soc, $(SOC_LIST_ALL),\
 	$(foreach current_board, $(filter $(BOARD_LIST_ALL),$(BOARD_LIST_$(current_soc))), \
-	$(foreach current_core, $(filter $(CORE_LIST_ALL), $(filter-out $(PRUCORE_LIST),$(CORE_LIST_$(current_soc)))),\
+	$(foreach current_core, $(filter $(CORE_LIST_ALL), $(CORE_LIST_$(current_soc))),\
 	$(MAKE) -f $(PDK_INSTALL_PATH)/ti/build/makefile $@ COMP=$(COMP) CORE=$(current_core) BOARD=$(current_board) SOC=$(current_soc);\
 	)))
 
@@ -88,11 +88,11 @@ package:
 	$(MAKE) -f $(PDK_INSTALL_PATH)/ti/build/makefile $@ COMP=$(COMP) BOARD=$(current_board);\
 	)
 
-release: lib firm tar 
+release: lib firm tar
 
 %_var_display:
 	$(ECHO) " $(subst _var_display,,$@) is $($(subst _var_display,,$@))"
-	
+
 # Invoke the ti/build/makefile with COMP name
 $(TARGETS_SOC_BOARD_INDP):
 	$(MAKE) -f $(PDK_INSTALL_PATH)/ti/build/makefile $@ COMP=$(COMP) DOXYGEN_SUPPORT=$($(COMP)_DOXYGEN_SUPPORT)

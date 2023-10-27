@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2013-2022, Texas Instruments Incorporated
+# Copyright (c) 2013-2024, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -83,9 +83,6 @@ ifneq ($(PDK_CSL2_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_CSL2_ROOT_PATH)/ti/csl
 endif
 
-ifneq ($(PDK_SA_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_SA_ROOT_PATH)
-endif
 ifneq ($(PDK_PM_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_PM_ROOT_PATH)
 endif
@@ -98,9 +95,6 @@ endif
 ifneq ($(PDK_I2C_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_I2C_ROOT_PATH)
 endif
-ifneq ($(PDK_VPS_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_VPS_ROOT_PATH)
-endif
 ifneq ($(PDK_GPIO_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_GPIO_ROOT_PATH)
 endif
@@ -110,35 +104,14 @@ endif
 ifneq ($(PDK_MMCSD_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_MMCSD_ROOT_PATH)
 endif
-ifneq ($(PDK_PCIE_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_PCIE_ROOT_PATH)
-endif
-ifneq ($(PDK_USB_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_USB_ROOT_PATH)
-endif
 ifneq ($(PDK_MCASP_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_MCASP_ROOT_PATH)
-endif
-ifneq ($(PDK_TIMESYNC_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_TIMESYNC_ROOT_PATH)
-endif
-ifneq ($(PDK_MCBSP_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_MCBSP_ROOT_PATH)
 endif
 ifneq ($(PDK_PROFILING_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_PROFILING_ROOT_PATH)
 endif
-ifneq ($(PDK_TRACE_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_TRACE_ROOT_PATH)
-endif
 ifneq ($(PDK_PRUSS_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_PRUSS_ROOT_PATH)
-endif
-ifneq ($(PDK_NIMU_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_NIMU_ROOT_PATH)
-endif
-ifneq ($(PDK_NIMU_ICSS_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_NIMU_ICSS_ROOT_PATH)
 endif
 ifneq ($(PDK_ICSS_EMAC_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_ICSS_EMAC_ROOT_PATH)
@@ -154,12 +127,6 @@ ifneq ($(PDK_SPI_ROOT_PATH), $(pdk_PATH))
 endif
 ifneq ($(PDK_BOARD_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_BOARD_ROOT_PATH)
-endif
-ifneq ($(PDK_GPMC_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_GPMC_ROOT_PATH)
-endif
-ifneq ($(PDK_IOLINK_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_IOLINK_ROOT_PATH)
 endif
 ifneq ($(PDK_BOARD_DIAG_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_BOARD_DIAG_ROOT_PATH)
@@ -199,9 +166,6 @@ endif
 ifneq ($(PDK_FVID2_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_FVID2_ROOT_PATH)
 endif
-ifneq ($(PDK_CAL_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_CAL_ROOT_PATH)
-endif
 ifneq ($(SAFETY_CHECKERS_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(SAFETY_CHECKERS_ROOT_PATH)
 endif
@@ -209,9 +173,6 @@ endif
 #Below are used for TDA/DRA SBL
 ifneq ($(PDK_STW_LLD_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_STW_LLD_ROOT_PATH)
-endif
-ifneq ($(PDK_SBL_AUTO_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_SBL_AUTO_ROOT_PATH)
 endif
 ifneq ($(PDK_NORFLASH_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_NORFLASH_ROOT_PATH)
@@ -221,17 +182,8 @@ ifneq ($(PDK_QSPIFLASH_ROOT_PATH), $(pdk_PATH))
 endif
 
 #Below applicable only for TPR12 devices
-ifneq ($(PDK_CRC_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_CRC_ROOT_PATH)
-endif
-ifneq ($(PDK_EDMA_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_EDMA_ROOT_PATH)
-endif
 ifneq ($(PDK_MAILBOX_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_MAILBOX_ROOT_PATH)
-endif
-ifneq ($(PDK_ESM_ROOT_PATH), $(pdk_PATH))
-  pdk_INCLUDE += $(PDK_ESM_ROOT_PATH)
 endif
 ifneq ($(PDK_CAN_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_CAN_ROOT_PATH)
@@ -253,13 +205,6 @@ export PACKAGE_ROOT
 #
 # Tools paths
 #
-
-# Cortex-A8
-CODEGEN_PATH_A8 =
-
-# DSP
-CODEGEN_PATH_C674 = $(C6X_GEN_INSTALL_PATH)
-
 
 # Commands commonly used within the make files
 RM = $(UTILSPATH)rm -f
@@ -287,81 +232,39 @@ else
 endif
 
 ifeq ($(BUILD_OS_TYPE),freertos)
-  ifeq ($(SOC),$(filter $(SOC), am65xx j721e j7200 j721s2 j784s4))
-    ifeq ($(CONFIG_BLD_XDC_r5f),)
-        CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5_freertos.lds
-    endif 
+  ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
+      CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5_freertos.lds
   endif
   ifeq ($(SOC),$(filter $(SOC), j721e))
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-        CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66_freertos.cmd
-    endif
+      CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66_freertos.cmd
   endif
   ifeq ($(SOC),$(filter $(SOC), j721e j721s2 j784s4))
-    ifeq ($(CONFIG_BLD_XDC_c7x),)
-        CONFIG_BLD_LNK_c7x   = $(pdk_PATH)/ti/build/$(SOC)/linker_c7x_freertos.cmd
-    endif
+      CONFIG_BLD_LNK_c7x   = $(pdk_PATH)/ti/build/$(SOC)/linker_c7x_freertos.cmd
   endif
 endif
 
 ifeq ($(BUILD_OS_TYPE),safertos)
   ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
-    ifeq ($(CONFIG_BLD_XDC_r5f),)
-        CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5_safertos.lds
-    endif
+      CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5_safertos.lds
   endif
   ifeq ($(SOC),$(filter $(SOC), j721e j721s2 j784s4))
-    ifeq ($(CONFIG_BLD_XDC_c7x),)
-        CONFIG_BLD_LNK_c7x   = $(pdk_PATH)/ti/build/$(SOC)/linker_c7x_safertos.cmd
-    endif
+      CONFIG_BLD_LNK_c7x   = $(pdk_PATH)/ti/build/$(SOC)/linker_c7x_safertos.cmd
   endif
   ifeq ($(SOC),$(filter $(SOC), j721e))
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-        CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66_safertos.cmd
-    endif
+      CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66_safertos.cmd
   endif
 endif
 
 ifeq ($(BUILD_OS_TYPE),baremetal)
   ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
-    ifeq ($(CONFIG_BLD_XDC_r5f),)
-        CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5.lds
-    endif
-    ifeq ($(CONFIG_BLD_XDC_a72),)
-        CONFIG_BLD_LNK_a72   = $(pdk_PATH)/ti/build/$(SOC)/linker_a72_mpu1_0.lds
-    endif
-    ifeq ($(CONFIG_BLD_XDC_c66),)
-        CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66.cmd
-    endif
+      CONFIG_BLD_LNK_r5f   = $(pdk_PATH)/ti/build/$(SOC)/linker_r5.lds
+      CONFIG_BLD_LNK_a72   = $(pdk_PATH)/ti/build/$(SOC)/linker_a72_mpu1_0.lds
+      CONFIG_BLD_LNK_c66   = $(pdk_PATH)/ti/build/$(SOC)/linker_c66.cmd
   endif
 endif
 
-CGTOOLS = $(TOOLCHAIN_PATH_M4)
-export CGTOOLS
-
-CGTOOLS_DSP = $(CODEGEN_PATH_C674)
-export CGTOOLS_DSP
-
-CGTOOLS_A8 = $(TOOLCHAIN_PATH_A8)
-export CGTOOLS_A8
-
-CGTOOLS_A9 = $(TOOLCHAIN_PATH_A9)
-export CGTOOLS_A9
-
-CGTOOLS_ARM9 = $(TOOLCHAIN_PATH_Arm9)
-export CGTOOLS_ARM9
-
-CGTOOLS_A15 = $(TOOLCHAIN_PATH_A15)
-export CGTOOLS_A15
-
-CGTOOLS_EVE = $(TOOLCHAIN_PATH_EVE)
-export CGTOOLS_EVE
-
-export CGTOOLS_A53 = $(TOOLCHAIN_PATH_A53)
 export CGTOOLS_A72 = $(TOOLCHAIN_PATH_A72)
 
-STRIP470 = $(TOOLCHAIN_PATH_M4)/bin/strip470 -p
-STRIP6x = $(CODEGEN_PATH_C674)/bin/strip6x -p
 STRIP_ALL_ARM = $(CODEGEN_PREFIX)strip -s
 STRIP_DEBUG_ARM = $(CODEGEN_PREFIX)strip --strip-debug
 

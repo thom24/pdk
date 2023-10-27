@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2013-2018, Texas Instruments Incorporated
+# Copyright (c) 2013-2024, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -42,14 +42,6 @@ export BUILD_OS_TYPE ?= freertos
 
 include $(PDK_INSTALL_PATH)/ti/build/procsdk_defs.mk
 
-# Default board
-# Supported values are printed in "make -s help" option. Below are the list for reference.
-#                   evmDRA72x, evmDRA75x, evmDRA78x,
-#                   evmAM572x, idkAM571x, idkAM572x idkAM574x
-#                   evmK2H, evmK2K, evmK2E, evmK2L, evmK2G, evmC6678, evmC6657,
-#                   evmAM335x, icev2AM335x, iceAMIC110, skAM335x, bbbAM335x,
-#                   evmAM437x idkAM437x skAM437x evmOMAPL137 lcdkOMAPL138
-
 ################################################################################
 # Other user configurable variables
 ################################################################################
@@ -65,23 +57,13 @@ export BOARD ?= j721e_evm
 export SOC ?= j721e
 endif
 # Default to m4 build depending on BOARD selected!!
-ifeq ($(BOARD),$(filter $(BOARD), evmAM572x idkAM572x idkAM571x idkAM574x))
-  CORE ?= a15_0
-endif
-ifeq ($(BOARD),$(filter $(BOARD), am65xx_sim am65xx_evm am65xx_idk j721e_sim j721e_qt j721e_evm j7200_evm j7200_sim j721s2_evm am64x_evm am64x_svb j784s4_evm))
+ifeq ($(BOARD),$(filter $(BOARD),j721e_evm j7200_evm j721s2_evm j784s4_evm))
   CORE ?= mcu1_0
-endif
-ifeq ($(BOARD),$(filter $(BOARD), j721e_ccqt j721e_loki))
-  CORE ?= c7x_1
 endif
 ifeq ($(BOARD),$(filter $(BOARD), j721e_hostemu j7200_hostemu j721s2_hostemu j784s4_hostemu))
   CORE = c7x-hostemu
 endif
-ifeq ($(BOARD),$(filter $(BOARD), tpr12_evm tpr12_qt awr294x_evm))
-  CORE ?= mcu1_0
-endif
-CORE ?= ipu1_0
-export CORE
+
 
 # Default Build Profile
 # Supported Values: debug | release
@@ -96,15 +78,11 @@ export COMPILE_MODE ?= thumb
 export TREAT_WARNINGS_AS_ERROR ?= yes
 
 #Various boards support for J7 TDA family of devices
-BOARD_LIST_J7_TDA = j721e_sim j721e_hostemu j721e_ccqt j721e_loki j721e_qt j721e_evm
-BOARD_LIST_J7_TDA += j7200_sim j7200_hostemu j7200_evm
+BOARD_LIST_J7_TDA = j721e_hostemu j721e_evm
+BOARD_LIST_J7_TDA += j7200_hostemu j7200_evm
 BOARD_LIST_J7_TDA += j721s2_evm j721s2_hostemu
 BOARD_LIST_J7_TDA += j784s4_evm j784s4_hostemu
-BOARD_LIST_J7_TDA += am65xx_sim am65xx_evm am65xx_idk
 export BOARD_LIST_J7_TDA
-
-#Various boards support for TPR12 family of devices
-export BOARD_LIST_TPR12 = tpr12_evm tpr12_qt awr294x_evm
 
 ################################################################################
 # Other advanced configurable variables
@@ -133,31 +111,18 @@ export CPLUSPLUS_BUILD ?= no
 include $(PDK_INSTALL_PATH)/ti/build/pdk_tools_path.mk
 
 #safertos_package_path.mk will be packaged only for SOCs with SafeRTOS Build is supported.
-#Hence, include only if available 
+#Hence, include only if available
 ifneq ($(wildcard $(PDK_INSTALL_PATH)/ti/build/safertos_package_path.mk),)
   include $(PDK_INSTALL_PATH)/ti/build/safertos_package_path.mk
 endif
 
 #use <module>_PATH variable as makefile internally expects PATH variable this way for external component path
 export pdk_PATH := $(PDK_INSTALL_PATH)
-export bios_PATH := $(BIOS_INSTALL_PATH)
-export xdc_PATH := $(XDC_INSTALL_PATH)
-export edma3_lld_PATH := $(EDMA3LLD_BIOS6_INSTALLDIR)
-export ndk_PATH := $(NDK_INSTALL_PATH)
-export ns_PATH := $(NS_INSTALL_PATH)
 export radarLink_PATH := $(RADARLINK_INSTALL_PATH)
 export ipc_PATH := $(IPC_INSTALL_PATH)
 export uia_PATH := $(UIA_INSTALL_PATH)
 
 export ROOTDIR := $(pdk_PATH)
-XDCPATH =
-ifeq ($(BUILD_OS_TYPE),tirtos)
-  XDCPATH = $(bios_PATH)/packages;$(xdc_PATH)/packages;$(ndk_PATH)/packages;$(ns_PATH)/;$(pdk_PATH);$(uia_PATH)/packages;
-  ifneq ($(BOARD),$(filter $(BOARD), $(BOARD_LIST_J7_TDA)))
-    XDCPATH := $(addsuffix $(edma3_lld_PATH)/packages;$(ipc_PATH)/packages;,$(XDCPATH))
-  endif
-endif
-export XDCPATH
 
 #Default SECTTI SIZE INFORMATION
 export SECTTI_SIZE_INFO ?= no
@@ -180,8 +145,6 @@ include $(MAKERULEDIR)/build_config.mk
 include $(MAKERULEDIR)/platform.mk
 include $(MAKERULEDIR)/env.mk
 
-export PRUCORE_LIST = $(CORE_LIST_PRU)
-
 ################################################################################
 # Build Tools Configuration
 ################################################################################
@@ -192,9 +155,6 @@ endif
 
 # Compiler Tools:
 # PATH := $(C6X_GEN_INSTALL_PATH)/bin;$(PATH)
-
-# XDC Tools location:
-PATH := $(XDC_INSTALL_PATH);$(XDC_INSTALL_PATH)/bin;$(XDC_INSTALL_PATH)/packages/xdc/services/io/release;$(PATH)
 
 ifeq ($(OS),Windows_NT)
   PATH := $(subst /,\,$(PATH))

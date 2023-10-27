@@ -1,5 +1,5 @@
 #
-# Copyright (c) 2013-2022, Texas Instruments Incorporated
+# Copyright (c) 2013-2024, Texas Instruments Incorporated
 # All rights reserved.
 #
 # Redistribution and use in source and binary forms, with or without
@@ -36,14 +36,14 @@
 #                    across boards/cores/ISAs/SoCs
 #
 # This file needs to change when:
-#     1. common rule/define has to be added or modified
+#     1. Common rule/define has to be added or modified
 #
 
 #
 # Include make paths and options for all supported targets/boards
 #
 
-.PHONY : all clean gendirs c7x_1 c66x c66xdsp_1 c66xdsp_2 ipu1_0 ipu1_1 ipu2_0 ipu2_1 m3 host a15_0 a8host a9host arp32_1 arp32_2 arp32_3 arp32_4 arm9_0 c674x mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 mpu1_0 mpu1_1 mpu2_0 mpu2_1 c7x-hostemu m4f_0 clean_appimagerprc sbl_appimagerprc
+.PHONY : all clean gendirs c7x_1 c66xdsp_1 c66xdsp_2 mcu1_0 mcu1_1 mcu2_0 mcu2_1 mcu3_0 mcu3_1 mcu4_0 mcu4_1 mpu1_0 mpu1_1 mpu2_0 mpu2_1 c7x-hostemu clean_appimagerprc sbl_appimagerprc
 
 all : $(CORE)
 
@@ -64,11 +64,7 @@ ifdef MODULE_NAME
       endif
     else
       ifeq ($($(MODULE_NAME)_CORE_DEPENDENCY),yes)
-        ifeq ($(CORE),$(filter $(CORE), pru_0 pru_1))
-          DEPENDENCY_SUB_PATH = $(SOC)/$(HOSTCORE)/$(PRUVERSION)
-        else
           DEPENDENCY_SUB_PATH = $(SOC)/$(CORE)
-        endif
       else
         DEPENDENCY_SUB_PATH = $(SOC)/$(ISA)
       endif
@@ -92,19 +88,11 @@ ifeq ($(DEST_ROOT),)
   endif
 else
   ifdef MODULE_NAME
-    ifeq ($(CORE),$(filter $(CORE), pru_0 pru_1))
-      ifeq ($($(MODULE_NAME)_OBJPATH), )
-        OBJDIR = $(DEST_ROOT)/$($(MODULE_NAME)_RELPATH)/obj/$(DEPENDENCY_SUB_PATH)/$(CORE)
-      else
-        OBJDIR = $(DEST_ROOT)/$($(MODULE_NAME)_OBJPATH)/obj/$(DEPENDENCY_SUB_PATH)/$(CORE)
-      endif
-    else
       ifeq ($($(MODULE_NAME)_OBJPATH), )
         OBJDIR = $(DEST_ROOT)/$($(MODULE_NAME)_RELPATH)/obj/$(DEPENDENCY_SUB_PATH)/$(BUILD_PROFILE_$(CORE))
       else
         OBJDIR = $(DEST_ROOT)/$($(MODULE_NAME)_OBJPATH)/obj/$(DEPENDENCY_SUB_PATH)/$(BUILD_PROFILE_$(CORE))
       endif
-    endif
     ifeq ($($(MODULE_NAME)_LIBPATH), )
       LIBDIR = $(DEST_ROOT)/$($(MODULE_NAME)_RELPATH)/lib/$(DEPENDENCY_SUB_PATH)/$(BUILD_PROFILE_$(CORE))
     else
@@ -162,20 +150,6 @@ else
 endif
 PACKAGEDIR = package/$(PACKAGE_SELECT)
 
-CONFIGURO_DIRNAME = configuro
-ifeq ($(XDC_CFG_DIR),)
- CONFIGURO_DIR = $(OBJDIR)/$(CONFIGURO_DIRNAME)
-else
- CONFIGURO_DIR = $(XDC_CFG_DIR)/configuro/$(BOARD)/$(CORE)/$(BUILD_PROFILE_$(CORE))/$(CONFIGURO_DIRNAME)
-endif
-
-# Main configuration file
-XDC_CFG_FILE_NAME = $(XDC_CFG_FILE_$(CORE))
-
-# Supplemental XDC configuration file to update common default configuration
-XDC_CFG_UPDATE = $(realpath $(XDC_CFG_UPDATE_$(CORE)))
-export XDC_CFG_UPDATE
-
 DEPDIR = $(OBJDIR)/$(ENDIAN)/.deps
 DEPFILE = $(DEPDIR)/$(*F)
 
@@ -194,11 +168,6 @@ $(BINDIR) :
 
 $(HEADERDIR) :
 	$(MKDIR) -p $(HEADERDIR)
-
-$(CONFIGURO_DIR) :
-	$(MKDIR) -p $(OBJDIR)
-	$(MKDIR) -p $(DEPDIR)
-	$(MKDIR) -p $(CONFIGURO_DIR)
 
 $(PACKAGEDIR) :
 	$(MKDIR) -p $(PACKAGEDIR)
@@ -276,11 +245,7 @@ else
   ifeq ($($(APP_NAME)_BOARD_DEPENDENCY),yes)
     PRINT_MESSAGE = $(BOARD):$(SOC):$(CORE):$(BUILD_PROFILE_$(CORE)):$(APP_NAME)
   else
-    ifeq ($(CORE),$(filter $(CORE), pru_0 pru_1))
-      PRINT_MESSAGE = $(SOC):$(CORE):$(APP_NAME)$(MODULE_NAME)
-    else
       PRINT_MESSAGE = $(SOC):$(CORE):$(BUILD_PROFILE_$(CORE)):$(APP_NAME)$(MODULE_NAME)
-    endif
   endif
 endif
 
@@ -340,27 +305,6 @@ $(foreach LIB,$(PKG_LIST),$(eval $(call GET_COMP_LIBPATH,$(LIB))))
 LIB_PATHS = $(foreach LIB,$(PKG_LIST),$($(LIB)_LIBPATH)/$($(LIB)_DEPSUBPATH)/$(BUILD_PROFILE_$(CORE))/$($(LIB)_LIBNAME).$(LIBEXT))
 EXT_LIB_PATHS = $(EXT_LIB_LIST)
 
-# XDC Specific defines
-ifneq ($(XDC_CFG_FILE_$(CORE)),)
-  CFG_CFILENAMEPART_XDC =p$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
-  ifneq ($(PEXT_BIOS),)
-    #for cases where BIOS extension is different
-    CFG_CFILENAMEPART_XDC =$(PEXT_BIOS)
-  endif
-  CFG_CFILE_XDC =$(patsubst %.cfg,%_$(CFG_CFILENAMEPART_XDC).c, $(notdir $(XDC_CFG_FILE_$(CORE))))
-  CFG_C_XDC = $(addprefix $(CONFIGURO_DIR)/package/cfg/,$(CFG_CFILE_XDC))
-  XDCLNKCMD_FILE =$(patsubst %.c, %$(CFG_LNKFILENAMEPART_XDC).xdl, $(CFG_C_XDC))
-  CFG_COBJ_XDC = $(patsubst %.c,%.$(OBJEXT),$(CFG_CFILE_XDC))
-  ifneq ($(OBJEXT_BIOS),)
-    #for cases where BIOS extension is different
-    CFG_COBJ_XDC = $(patsubst %.c,%.$(OBJEXT_BIOS),$(CFG_CFILE_XDC))
-  endif
-  LNKCMD_FILE = $(CONFIGURO_DIR)/linker_mod.cmd
-  SPACE :=
-  SPACE +=
-   XDC_GREP_STRING = $(CFG_COBJ_XDC)
-endif
-
 # Include make rules for ISA that is built in this iteration
 #   eg: rules_m4.mk
 
@@ -376,15 +320,6 @@ include $(MAKERULEDIR)/rules_$(TOOLCHAINEXT)$(ISA_EXT).mk
 package : $(PACKAGE_PATHS)
 
 ifdef MODULE_NAME
-    # Rules for module; this iteration is for a module
-    ifeq ($(CORE),$(filter $(CORE), pru_0 pru_1))
-      # Clean Object and Library (archive) directories
-      clean :
-	$(RM) -rf $(OBJDIR)/* $(DEPDIR)/*
-
-      # Create dependencies list to ultimately create module archive library file
-      $(CORE) : $(HEADERDIR)/$(HEADERNAME).$(HEADEREXT)
-    else
       # Clean Object and Library (archive) directories
       clean :
 	$(RM) -rf $(OBJDIR)/* $(DEPDIR)/* $(LIBDIR)/$(LIBNAME).$(LIBEXT) $(LIBDIR)/$(LIBNAME).$(LIBEXT)_size.txt
@@ -395,17 +330,15 @@ ifdef MODULE_NAME
       else
         $(CORE) : $(LIBDIR)/$(LIBNAME).$(LIBEXT)
       endif
-    endif
 else
 # Rules for application; this iteration is for an app
 
-# Clean Object, Binary and Configuro generated directories
+# Clean Object, Binary generated directories
 clean :
-	$(RM) -rf $(CONFIGURO_DIR)
 	$(RM) -rf $(OBJDIR)/* $(DEPDIR)/* $(BINDIR)/*
 
 # Create dependencies list to ultimately create application executable binary
-$(CORE) : $(OBJDIR) $(BINDIR) $(DEPDIR) $(CONFIGURO_DIR)
+$(CORE) : $(OBJDIR) $(BINDIR) $(DEPDIR)
 ifneq ($(words $(PKG_LIST)), 0)
 	$(MAKE) $($(APP_NAME)_MAKEFILE) $(PKG_LIST)
 endif
@@ -427,11 +360,7 @@ SBL_OBJ_COPY?=$(TOOLCHAIN_PATH_GCC_ARCH64)/bin/$(GCC_ARCH64_BIN_PREFIX)-objcopy$
 else
 $(error gcc-arm compiler not found. Please refer user guide to download the same)
 endif
-ifneq ("$(wildcard $(PDK_SBL_AUTO_COMP_PATH)/tools)","")
-SBL_TOOLS_PATH=$(PDK_SBL_AUTO_COMP_PATH)/tools
-else
 SBL_TOOLS_PATH=$(PDK_SBL_COMP_PATH)/tools
-endif
 export SBL_OBJ_COPY
 ifneq ("$(wildcard $(SBL_TOOLS_PATH)/out2rprc/out2rprc.exe)","")
 OUTRPRC_PATH=$(SBL_TOOLS_PATH)/out2rprc/out2rprc.exe
@@ -439,8 +368,6 @@ endif
 ifneq ("$(wildcard $(SBL_TOOLS_PATH)/out2rprc/bin/out2rprc.exe)","")
 OUTRPRC_PATH=$(SBL_TOOLS_PATH)/out2rprc/bin/out2rprc.exe
 endif
-SBL_TDA3X_SIGNING_TOOL_DIR=$(PDK_TDA3X_SECURITY_COMP_PATH)/tools/tda3xx
-SBL_CHIMAGE_BIN_FILE=$(SBL_TOOLS_PATH)/chimage/tda3x_chqspi_clock64mhz.bin
 ifeq ($(OS),Windows_NT)
   SBL_OUTRPRC=$(OUTRPRC_PATH)
   ifeq ($($(APP_NAME)_SBL_XIP_APPIMAGEGEN),yes)
@@ -456,12 +383,6 @@ SBL_TIIMAGE=$(SBL_TOOLS_PATH)/tiimage/tiimage$(EXE_EXT)
 SBL_CHIMAGE=$(SBL_TOOLS_PATH)/chimage/chimage$(EXE_EXT)
 ifneq ("$(wildcard $(SBL_TOOLS_PATH)/multicoreImageGen/bin/MulticoreImageGen$(EXE_EXT))","")
   SBL_IMAGE_GEN=$(SBL_TOOLS_PATH)/multicoreImageGen/bin/MulticoreImageGen$(EXE_EXT)
-else
-ifeq ($(SOC),$(filter $(SOC), tda3xx dra78x))
-  SBL_IMAGE_GEN=$(SBL_TOOLS_PATH)/multicore_image_generator/v2/MulticoreImageGen$(EXE_EXT)
-else
-  SBL_IMAGE_GEN=$(SBL_TOOLS_PATH)/multicore_image_generator/v1/MulticoreImageGen$(EXE_EXT)
-endif
 endif
 ENDIAN_SWP=$(SBL_TOOLS_PATH)/endian_swap/endian_swap$(EXE_EXT)
 SBL_CRC_IMAGE_GEN=$(SBL_TOOLS_PATH)/crc_multicore_image/crc_multicore_image$(EXE_EXT)
@@ -472,16 +393,8 @@ ifeq ($(LOCAL_APP_NAME),)
 else
   SBL_IMAGE_NAME=$(LOCAL_APP_NAME)_$(BUILD_PROFILE_$(CORE))
 endif
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2ex tda2px tda3xx dra78x))
-ifeq ($(BUILD_HS),yes)
-  HS_SUFFIX=_unsigned
-  SBL_HS_CHECK_MSHIELD_USES := $(shell grep SOC_VARIANT $(MSHIELD_DK_DIR)/src/config.mk | grep TDA2XX && echo "yes" || echo "no")
-else
-  SBL_HS_CHECK_MSHIELD_USES := no
-endif
-endif
 
-ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC),j721e j7200 j721s2 j784s4))
 SBL_BIN_PATH=$(BINDIR)/$(SBL_IMAGE_NAME).bin
 SBL_TIIMAGE_PATH=$(BINDIR)/$(SBL_IMAGE_NAME).tiimage
 else
@@ -508,11 +421,7 @@ SBL_RPRC_TMP_PATH=$(BINDIR)/$(SBL_IMAGE_NAME).rprc_tmp
 SBL_RPRC_TMP_NAME=$(SBL_IMAGE_NAME).rprc_tmp
 SBL_APPIMAGE_XIP_PATH=$(BINDIR)/$(SBL_IMAGE_NAME).appimage_xip
 MULTI_CORE_APP_PARAMS_XIP = $(SBL_CORE_ID_$(CORE)) $(SBL_RPRC_XIP_PATH)
-  ifeq ($(SOC),$(filter $(SOC), am64x))
-  FLASH_START_ADDR = 0x60000000
-  else
-  FLASH_START_ADDR = 0x50000000
-  endif
+FLASH_START_ADDR = 0x50000000
 endif
 
 # When building apps for cores other than MCU1_0, MCU1_0 should host sciclient
@@ -602,16 +511,6 @@ else
 sbl_imagegen: $(SBL_IMAGE_PATH)
 endif
 
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2ex tda2px))
-  SBL_HS_ADDRESS=0xffffffff
-endif
-ifeq ($(SOC), tda3xx)
-  SBL_HS_ADDRESS=0x00300000
-endif
-ifeq ($(SBL_TYPE), mflash)
-  SBL_HS_ADDRESS=0xffffffff
-endif
-
 ifeq ($(SBL_IMAGE_TYPE),combined)
   # SoC Specific source files
   ifeq ($(SOC),$(filter $(SOC), j7200))
@@ -670,33 +569,7 @@ endif
 
 
 $(SBL_IMAGE_PATH): $(SBL_BIN_FILE)
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2ex tda2px tda3xx dra78x))
-ifeq ($(BOOTMODE),$(filter $(BOOTMODE), sd qspi qspi_sd emmc))
-	$(CHMOD) a+x $(SBL_TIIMAGE)
-#For HS build don't append GP Header at the top of SBL
-  ifeq ($(BUILD_HS),yes)
-	$(SBL_TIIMAGE) $(SBL_HS_ADDRESS) LE $(SBL_BIN_PATH) $(SBL_TIIMAGE_PATH)
-  else
-	$(SBL_TIIMAGE) $(SBL_RUN_ADDRESS) $(SBL_ENDIAN) $(SBL_BIN_PATH) $(SBL_TIIMAGE_PATH)
-  endif
-	$(RM) -f $(SBL_BIN_PATH)
-  ifeq ($(BUILD_HS),no)
-    ifeq ($(SOC),$(filter $(SOC), tda3xx dra78x))
-      ifeq ($(BOOTMODE),$(filter $(BOOTMODE), qspi))
-	  $(CHMOD) a+x $(SBL_CHIMAGE)
-	  $(SBL_CHIMAGE) $(SBL_CHIMAGE_BIN_FILE) $(SBL_TIIMAGE_PATH) $(SBL_CHIMAGE_PATH)
-	  $(ECHO) \# SBL CH image $(SBL_CHIMAGE_PATH) created.
-      endif
-    endif
-  endif
-  ifeq ($(BOOTMODE),$(filter $(BOOTMODE), sd emmc))
-    ifneq ($(BUILD_PROFILE_$(CORE)),release)
-	$(MKDIR) -p $(BINDIR)/$(BUILD_PROFILE_$(CORE))
-    endif
-	$(MV) $(SBL_TIIMAGE_PATH) $(SBL_MLO_PATH)
-  endif
-endif
-else ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 j721s2 j784s4))
+ifeq ($(SOC),$(filter $(SOC),j721e j7200 j721s2 j784s4))
 ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
 endif
@@ -720,45 +593,10 @@ endif
 ifeq ($(BUILD_HS),yes)
 $(SBL_IMAGE_PATH_SIGNED): $(SBL_IMAGE_PATH)
   # K3 build does not support the "secure_sign_sbl" target
-  ifneq ($(SOC), $(filter $(SOC), am65xx am64x j721e j7200 j721s2 j784s4))
+  ifneq ($(SOC), $(filter $(SOC),j721e j7200 j721s2 j784s4))
 	$(MAKE) secure_sign_sbl
   endif
 endif
-
-secure_sign_sbl:
-ifeq ($(SOC),$(filter $(SOC), tda2xx tda2ex tda2px))
-  ifeq ($(SBL_HS_CHECK_MSHIELD_USES),no)
-	$(ECHO) "# !!!! MSHIELD-DK/SECDEV is not setup for TDA2XX"
-	$(ECHO) "# !!!! Set this using"
-	$(ECHO) "# !!!!      cd $(MSHIELD_DK_DIR)/src && ./config.pl && cd -"
-	$(ECHO) "# !!!! Make sure arm-linux-gnueabihf-gcc is present in PATH"
-	$(ECHO) "# !!!! Check user-guide for more details."
-	exit 1
-  endif
-	$(MSHIELD_DK_DIR)/scripts/create-boot-image.sh $(SECURE_IMAGE_TYPE) $(SBL_IMAGE_PATH) $(SBL_IMAGE_PATH_SIGNED) >> $(SBL_STDOUT_FILE)
-  ifeq ($(BOOTMODE),$(filter $(BOOTMODE), qspi))
-	$(CHMOD) a+x $(ENDIAN_SWP)
-	$(ENDIAN_SWP) $(SBL_IMAGE_PATH_SIGNED) $(SBL_TIIMAGE_PATH_SIGNED_BE)
-	$(RM) -f $(SBL_IMAGE_PATH_SIGNED)
-	$(MV) $(SBL_TIIMAGE_PATH_SIGNED_BE) $(SBL_IMAGE_PATH_SIGNED)
-  endif
-endif
-ifeq ($(SOC),$(filter $(SOC), tda3xx))
-	$(CHMOD) u+x $(SBL_TDA3X_SIGNING_TOOL_DIR)/isw_cert_gen.py
-ifeq ($(SBL_TYPE), mflash)
-	$(SBL_TDA3X_SIGNING_TOOL_DIR)/isw_cert_gen.py --isw-file=$(SBL_IMAGE_PATH) --out $(SBL_IMAGE_PATH_SIGNED) --key=$(SBL_TDA3X_SIGNING_TOOL_DIR)/rootkey.pem >$(SBL_STDOUT_FILE) 2>$(SBL_STDOUT_FILE2)
-else
-	$(SBL_TDA3X_SIGNING_TOOL_DIR)/isw_cert_gen.py --isw-file $(SBL_IMAGE_PATH) --out $(SBL_IMAGE_PATH_SIGNED) --key $(SBL_TDA3X_SIGNING_TOOL_DIR)/rootkey.pem --gpimage >$(SBL_STDOUT_FILE) 2>$(SBL_STDOUT_FILE2)
-endif
-  ifeq ($(BOOTMODE),$(filter $(BOOTMODE), qspi qspi-sd))
-	$(CHMOD) a+x $(ENDIAN_SWP)
-	$(ENDIAN_SWP) $(SBL_IMAGE_PATH_SIGNED) $(SBL_TIIMAGE_PATH_SIGNED_BE)
-	$(RM) -f $(SBL_IMAGE_PATH_SIGNED)
-	$(MV) $(SBL_TIIMAGE_PATH_SIGNED_BE) $(SBL_IMAGE_PATH_SIGNED)
-  endif
-endif
-	$(ECHO) \# Signed SBL image $(SBL_IMAGE_PATH_SIGNED) created.
-	$(ECHO) \#
 
 #SBL App image generation
 sbl_appimagegen: $(SBL_APPIMAGE_PATH) $(SBL_APP_BINIMAGE_PATH)
@@ -792,24 +630,13 @@ $(SBL_APPIMAGE_PATH): sbl_appimagerprc
 	$(SBL_IMAGE_GEN) LE $(SBL_DEV_ID) $@                      $(MULTI_CORE_APP_PARAMS) >> $(SBL_STDOUT_FILE)
 	$(SBL_IMAGE_GEN) BE $(SBL_DEV_ID) $(SBL_APPIMAGE_PATH_BE) $(MULTI_CORE_APP_PARAMS) >> $(SBL_STDOUT_FILE)
   endif
-ifeq ($(SOC),$(filter $(SOC), tda3xx))
-  ifneq ($(BUILD_HS),yes)
-	$(RM) -f $(SBL_APPIMAGE_PATH_BE)
-	$(SBL_CRC_IMAGE_GEN) $@ $(SBL_APPIMAGE_PATH_BE) >> $(SBL_STDOUT_FILE)
-  endif
-else
- ifeq ($(SOC),$(filter $(SOC), am65xx am64x j721e j7200 j721s2 j784s4))
+ ifeq ($(SOC),$(filter $(SOC),j721e j7200 j721s2 j784s4))
    ifneq ($(OS),Windows_NT)
 	$(CHMOD) a+x $(SBL_CERT_GEN)
    endif
 	$(SBL_CERT_GEN) -b $@ -o $(SBL_APPIMAGE_PATH_SIGNED)    -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY_HS)
 	$(SBL_CERT_GEN) -b $@ -o $(SBL_APPIMAGE_PATH_HS_FS)     -c R5 -l $(SBL_RUN_ADDRESS) -k $(SBL_CERT_KEY)
- else
-   ifeq ($(SOC),$(filter $(SOC), tpr12 awr294x))
-		@echo "No certificate for SBL for appimage presently supported"
-   endif
  endif
-endif
 	$(ECHO) \# SBL App image $@ and $(SBL_APPIMAGE_PATH_BE) created.
 	$(ECHO) \#
 endif
