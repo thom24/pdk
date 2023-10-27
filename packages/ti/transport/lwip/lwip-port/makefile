@@ -44,6 +44,7 @@ SRCS_COMMON += sys_arch.c
 PACKAGE_SRCS_COMMON =  makefile
 PACKAGE_SRCS_COMMON += freertos safertos
 PACKAGE_SRCS_COMMON += config/$(SOC)
+PACKAGE_SRCS_COMMON += config/lwipopts_common.h
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:
