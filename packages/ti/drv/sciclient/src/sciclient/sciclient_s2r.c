@@ -53,6 +53,8 @@
 #endif
 #include <ti/drv/sciclient/src/sciclient/sciclient_s2r.h>
 
+static void asm_function(void);
+
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
@@ -62,13 +64,13 @@
  * the point of view of Linux, U-boot SPL must use the same address
  * to restore BL31 ATF and resume entry point address.
  */
-#define SCLICLIENT_ATF_BL31_DDR_RESTORE_ADDRESS 0xA5000000
+#define SCLICLIENT_ATF_BL31_DDR_RESTORE_ADDRESS (0xA5000000U)
 
 /**
  * This is actually the biggest possible size of BL31 ATF. This value is defined
  * in ATF.
  */
-#define SCICLIENT_ATF_BL31_CODE_SIZE 0x20000
+#define SCICLIENT_ATF_BL31_CODE_SIZE (0x20000U)
 
 /**
  * Address in BT SRAM where to load the code that will take care of the
@@ -106,21 +108,26 @@ static void S2R_cleanAllDCache(void)
 
 void S2R_goRetention(uint32_t coreResumeAddr)
 {
-    CSL_REG32_WR(SCLICLIENT_ATF_BL31_DDR_RESTORE_ADDRESS + SCICLIENT_ATF_BL31_CODE_SIZE,
-                 coreResumeAddr);
+    volatile uint32_t* ptr_address = (volatile uint32_t*)(SCLICLIENT_ATF_BL31_DDR_RESTORE_ADDRESS + SCICLIENT_ATF_BL31_CODE_SIZE);
+    CSL_REG32_WR(ptr_address,coreResumeAddr);
     S2R_debugPrintf("Resume address stored = 0x%x\n", coreResumeAddr);
 
     S2R_cleanAllDCache();
 
     /* load DDR retention code and PMIC S2R into SRAM */
     memcpy((void*)SCICLIENT_S2R_SRAM_CODE_ADDRESS,
-           (void*)&lpm_sram_s2r[0],
+           (const void*)&lpm_sram_s2r[0],
            LPM_SRAM_S2R_SIZE_IN_BYTES);
 
     S2R_debugPrintf("Suspending\n");
 
-    asm volatile("mov sp, %0" : : "r" (SCICLIENT_S2R_SRAM_STACK_POINTER));
-    asm volatile("blx %0" : : "r" (SCICLIENT_S2R_SRAM_CODE_ADDRESS));
+    asm_function();
 
     /* Never reach this point */
+}
+
+static void asm_function(void)
+{
+    asm volatile("mov sp, %0" : : "r" (SCICLIENT_S2R_SRAM_STACK_POINTER));
+    asm volatile("blx %0" : : "r" (SCICLIENT_S2R_SRAM_CODE_ADDRESS));
 }

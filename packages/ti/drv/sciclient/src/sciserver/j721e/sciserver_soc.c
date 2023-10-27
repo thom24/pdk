@@ -103,7 +103,7 @@ static void J721E_ClearBootInterrupts(void)
     /* Get interrupt number range for MCU1_0 (all others after this fall to MCU1_1) */
     retVal = Sciclient_rmGetResourceRange(&req, &res, SCICLIENT_SERVICE_WAIT_FOREVER);
 
-    if (CSL_PASS != retVal || res.range_num == 0)
+    if ((CSL_PASS != retVal) || (res.range_num == 0U))
     {
         /* Try with HOST_ID_ALL */
         req.secondary_host = TISCI_HOST_ID_ALL;

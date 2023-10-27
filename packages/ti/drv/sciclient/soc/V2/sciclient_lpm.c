@@ -58,7 +58,7 @@ int32_t Sciclient_enterSleep(uint32_t *msg_recv)
 
     uint8_t mode = req->mode;
 
-    if (req->core_resume_hi != 0)
+    if (req->core_resume_hi != 0U)
     {
         S2R_debugPrintf("Adress too high, not reachable, upper 32bits=%x\n",
                         req->core_resume_hi);
@@ -72,7 +72,7 @@ int32_t Sciclient_enterSleep(uint32_t *msg_recv)
     }
     else
     {
-        osal_hwip_disable();
+        (void)osal_hwip_disable();
 
         S2R_goRetention(core_resume_addr);
         /* Never reach this point */

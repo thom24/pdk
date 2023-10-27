@@ -37,6 +37,8 @@
  *
  */
 
+#include <ti/drv/sciclient/sciserver.h>
+
 void Sciserver_socInit(void)
 {
     /* No SOC specific change required for J7200 during Sciserver initialization */
