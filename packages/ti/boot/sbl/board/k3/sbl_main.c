@@ -363,7 +363,11 @@ int main()
     if (CSL_PASS != Board_init(SBL_PLL_INIT))
     {
         retVal = CSL_EFAIL;
+        /* Board_init with MCU PLL is failing, As a work-around bypassing the failure log.
+           This needs to be reverted after fixing - PDK-13497 */
+#if !defined(BOOT_PERF)
         SBL_log(SBL_LOG_ERR, "\n Failed to initialize PLLs !! \n");
+#endif
     }
     SBL_log(SBL_LOG_MAX, "done.\n");
 #endif
@@ -449,7 +453,9 @@ int main()
 
     if (retVal != CSL_PASS)
     {
+#if !defined(BOOT_PERF)
         SblErrLoop(__FILE__, __LINE__);
+#endif
     }
 
     /* Boot all non-SBL cores in multi-core app image */

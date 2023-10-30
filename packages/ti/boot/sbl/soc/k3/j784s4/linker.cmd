@@ -17,6 +17,7 @@
 --retain="*(.abortStack)"
 --retain="*(.undStack)"
 --retain="*(.svcStack)"
+--retain="*(.sbl_profile_info)"
 --fill_value=0
 --stack_size=0x2000
 --heap_size=0x2000
