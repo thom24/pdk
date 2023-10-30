@@ -58,6 +58,7 @@
 #define UART_TISCI_INVALID_DEV_ID       (0xFFFFU)
 
 uint16_t App_getUartSrcID(uint32_t baseAddr);
-void App_setUartHwAttrs(uint32_t uartInst, struct UART_HWAttrs *UART_HwAttrs);
+uint32_t App_getMainUartTestInstance();
+void App_setMainUartHwAttrs(uint32_t uartInst, struct UART_HWAttrs *UART_HwAttrs);
 
 #endif /* #ifndef UART_UTILS_H_ */

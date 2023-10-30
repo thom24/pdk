@@ -800,7 +800,6 @@ static int32_t App_tifs2dmMsgForwardingTest(void)
 extern uint32_t gInterruptRecieved;
 static int32_t App_fwExcpNotificationTest(void)
 {
-    
     int32_t status = CSL_PASS;
     volatile uint32_t* excpRegCmbn;
     volatile uint32_t* excpRegDmsc;
@@ -1130,10 +1129,11 @@ static int32_t App_pvu2GICIntrTest(void)
 static int32_t App_mainUart2MCUR5IntrTest(void)
 {
     int32_t status = CSL_PASS;
-    int32_t sciclient_init_status = CSL_PASS;
-    int32_t uart_test_status = CSL_PASS;
-    int32_t mainUart2MCUR5_route_status = CSL_PASS;
-    const UART_Params user_params = {
+    int32_t sciclientInitStatus = CSL_PASS;
+    int32_t uartWriteStatus = CSL_PASS;
+    int32_t mainUart2MCUR5RouteStatus = CSL_PASS;
+    uint32_t mainUartTestInstance;
+    const UART_Params userParams = {
         UART_MODE_BLOCKING,     /* readMode */
         UART_MODE_BLOCKING,     /* writeMode */
         SemaphoreP_WAIT_FOREVER,/* readTimeout */
@@ -1149,8 +1149,8 @@ static int32_t App_mainUart2MCUR5IntrTest(void)
         UART_STOP_ONE,        /* stopBits */
         UART_PAR_NONE         /* parityType */
     };
-    struct UART_HWAttrs UART_HwAttrs;
-    UART_Handle uart_handle;
+    struct UART_HWAttrs uartHwAttrs;
+    UART_Handle uartHandle = NULL;
     char echoPrompt[] = "Testing Main UART to MCU R5F routing\n";
 
     struct tisci_msg_rm_irq_set_req     rmIrqReq;
@@ -1174,58 +1174,62 @@ static int32_t App_mainUart2MCUR5IntrTest(void)
         status = Sciclient_deinit();
     }
     status = Sciclient_init(&config);
-    sciclient_init_status = status;
+    sciclientInitStatus = status;
 
     memset(&req, 0, sizeof(req));
     memset(&res, 0, sizeof(res));
     memset(&rmIrqReqRel,0,sizeof(rmIrqReqRel));
-
+    mainUartTestInstance = BOARD_UART_INSTANCE;
+    if(BOARD_UART_INSTANCE == 0)
+    {
+        mainUartTestInstance = App_getMainUartTestInstance();
+    }
     /* Sets the Main UART configuration */
-    UART_init();
-    UART_socGetInitCfg(BOARD_UART_INSTANCE, &UART_HwAttrs);
-    App_setUartHwAttrs(BOARD_UART_INSTANCE, &UART_HwAttrs);
-
+    UART_socGetInitCfg(BOARD_UART_INSTANCE, &uartHwAttrs);
+    App_setMainUartHwAttrs(BOARD_UART_INSTANCE, &uartHwAttrs);
+    
+    (uartHwAttrs).configSocIntrPath = NULL;
     /* Programs the interrupt route between Main domain UART and MCU R5F core */
     req.type = TISCI_DEV_MAIN2MCU_LVL_INTRTR0;
     req.secondary_host = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
     status  = Sciclient_rmGetResourceRange(&req,
-                                           &res,
-                                           SCICLIENT_SERVICE_WAIT_FOREVER);    
+                                        &res,
+                                        SCICLIENT_SERVICE_WAIT_FOREVER);    
     if(status == CSL_PASS)
     {
         status = Sciclient_rmIrqTranslateIrOutput(req.type,
-                                                  res.range_start,
-                                                  TISCI_DEV_MCU_R5FSS0_CORE0,
-                                                  &intNum);
+                                                res.range_start,
+                                                TISCI_DEV_MCU_R5FSS0_CORE0,
+                                                &intNum);
         if(status == CSL_PASS)
         {
             memset(&rmIrqReq, 0, sizeof(rmIrqReq));
             rmIrqReq.valid_params       = TISCI_MSG_VALUE_RM_DST_ID_VALID;
             rmIrqReq.valid_params      |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-            rmIrqReq.src_id             = App_getUartSrcID(UART_HwAttrs.baseAddr);
+            rmIrqReq.src_id             = App_getUartSrcID(uartHwAttrs.baseAddr);
             rmIrqReq.src_index          = 0;
             rmIrqReq.dst_id             = TISCI_DEV_MCU_R5FSS0_CORE0;
             rmIrqReq.dst_host_irq       = intNum;
             rmIrqReq.secondary_host     = TISCI_MSG_VALUE_RM_UNUSED_SECONDARY_HOST;
             status                      = Sciclient_rmIrqSet(&rmIrqReq, &rmIrqResp, SCICLIENT_SERVICE_WAIT_FOREVER);
-            mainUart2MCUR5_route_status = status;
+            mainUart2MCUR5RouteStatus = status;
         }
     }
-    (UART_HwAttrs).intNum = intNum;
-    UART_socSetInitCfg(BOARD_UART_INSTANCE, &UART_HwAttrs);
-    if(status == CSL_PASS)
-    {
-        uart_handle = UART_open(BOARD_UART_INSTANCE, (UART_Params*) &user_params);
-        UART_write(uart_handle, echoPrompt, sizeof(echoPrompt));
-        UART_close(uart_handle);
-    }
+    (uartHwAttrs).intNum = intNum;
+    (uartHwAttrs).enableInterrupt = 1;
 
-    if(mainUart2MCUR5_route_status == CSL_PASS)
+    UART_socSetInitCfg(mainUartTestInstance, &uartHwAttrs);
+
+    uartHandle = UART_open(mainUartTestInstance, (UART_Params*) &userParams);
+
+    uartWriteStatus = UART_write(uartHandle, echoPrompt, sizeof(echoPrompt));
+
+    if(mainUart2MCUR5RouteStatus == CSL_PASS)
     {
         /* Release the Route between Main UART and MCU R5F */
         rmIrqReqRel.valid_params   = TISCI_MSG_VALUE_RM_DST_ID_VALID;
         rmIrqReqRel.valid_params  |= TISCI_MSG_VALUE_RM_DST_HOST_IRQ_VALID;
-        rmIrqReqRel.src_id         = App_getUartSrcID(UART_HwAttrs.baseAddr);
+        rmIrqReqRel.src_id         = App_getUartSrcID(uartHwAttrs.baseAddr);
         rmIrqReqRel.src_index      = 0;
         rmIrqReqRel.dst_id         = TISCI_DEV_MCU_R5FSS0_CORE0;
         rmIrqReqRel.dst_host_irq   = intNum;
@@ -1233,13 +1237,21 @@ static int32_t App_mainUart2MCUR5IntrTest(void)
 
         status = Sciclient_rmIrqRelease(&rmIrqReqRel, SCICLIENT_SERVICE_WAIT_FOREVER);
     }
+    UART_close(uartHandle);
 
-    if (sciclient_init_status == CSL_PASS)
+    if (sciclientInitStatus == CSL_PASS)
     {
         status = Sciclient_deinit();
     }
-
-    return uart_test_status;
+    if(uartWriteStatus >= 0)
+    {
+        uartWriteStatus = CSL_PASS;
+    }
+    else
+    {
+        uartWriteStatus =  CSL_EFAIL;
+    }
+    return uartWriteStatus;
 }
 #endif
 

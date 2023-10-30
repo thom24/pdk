@@ -89,45 +89,65 @@ uint16_t App_getUartSrcID(uint32_t baseAddr)
 }
 
 #if defined(SOC_J7200)
-void App_setUartHwAttrs(uint32_t uartInst, struct UART_HWAttrs *UART_HwAttrs)
+uint32_t App_getMainUartTestInstance()
+{
+    uint32_t mainUartPinmuxData[]={9,7,6,5,3,1,0};
+    return mainUartPinmuxData[0];
+}
+void App_setMainUartHwAttrs(uint32_t uartInst, struct UART_HWAttrs *uartHwAttrs)
 {
     uint32_t i = uartInst;
-    (*UART_HwAttrs).baseAddr = (uint32_t)CSL_UART0_BASE + (0x10000U * i);
-    (*UART_HwAttrs).frequency        = UART_INPUT_CLK_48M;
-    (*UART_HwAttrs).rxDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_RX + i;
-    (*UART_HwAttrs).txDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_TX + i;
+    (*uartHwAttrs).baseAddr = (uint32_t)CSL_UART0_BASE + (0x10000U * i);
+    (*uartHwAttrs).frequency        = UART_INPUT_CLK_48M;
+    (*uartHwAttrs).rxDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_RX + i;
+    (*uartHwAttrs).txDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_TX + i;
 }
 #endif
 
 #if defined(SOC_J721E)
-void App_setUartHwAttrs(uint32_t uartInst, struct UART_HWAttrs *UART_HwAttrs)
+uint32_t App_getMainUartTestInstance()
+{
+    uint32_t mainUartPinmuxData[]={4,2,1,0};
+    return mainUartPinmuxData[0];
+}
+void App_setMainUartHwAttrs(uint32_t uartInst, struct UART_HWAttrs *uartHwAttrs)
 {
     uint32_t i = uartInst;
-    (*UART_HwAttrs).baseAddr = (uint32_t)CSL_UART0_BASE + (0x10000U * i);
-    (*UART_HwAttrs).frequency        = UART_INPUT_CLK_48M;
-    (*UART_HwAttrs).rxDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_RX + i;
-    (*UART_HwAttrs).txDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_TX + i;
+    (*uartHwAttrs).baseAddr = (uint32_t)CSL_UART0_BASE + (0x10000U * i);
+    (*uartHwAttrs).frequency        = UART_INPUT_CLK_48M;
+    (*uartHwAttrs).rxDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_RX + i;
+    (*uartHwAttrs).txDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_TX + i;
 }
 #endif
 
 #if defined(SOC_J721S2)
-void App_setUartHwAttrs(uint32_t uartInst, struct UART_HWAttrs *UART_HwAttrs)
+uint32_t App_getMainUartTestInstance()
+{
+    uint32_t mainUartPinmuxData[]={9,8,6,5,3,2};
+    return mainUartPinmuxData[0];
+}
+void App_setMainUartHwAttrs(uint32_t uartInst, struct UART_HWAttrs *uartHwAttrs)
 {
     uint32_t i = uartInst;
-    (*UART_HwAttrs).baseAddr = (uint32_t)CSL_UART0_BASE + (0x10000U * i);
-    (*UART_HwAttrs).frequency        = UART_INPUT_CLK_48M;
-    (*UART_HwAttrs).rxDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_RX + i;
-    (*UART_HwAttrs).txDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_TX + i;
+    (*uartHwAttrs).baseAddr = (uint32_t)CSL_UART0_BASE + (0x10000U * i);
+    (*uartHwAttrs).frequency        = UART_INPUT_CLK_48M;
+    (*uartHwAttrs).rxDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_RX + i;
+    (*uartHwAttrs).txDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_TX + i;
 }
 #endif
 
 #if defined(SOC_J784S4)
-void App_setUartHwAttrs(uint32_t uartInst, struct UART_HWAttrs *UART_HwAttrs)
+uint32_t App_getMainUartTestInstance()
+{
+    uint32_t mainUartPinmuxData[]={9,8,6,5,3,2};
+    return mainUartPinmuxData[0];
+}
+void App_setMainUartHwAttrs(uint32_t uartInst, struct UART_HWAttrs *uartHwAttrs)
 {
     uint32_t i = uartInst;
-    (*UART_HwAttrs).baseAddr = (uint32_t)CSL_UART0_BASE + (0x10000U * i);
-    (*UART_HwAttrs).frequency        = UART_INPUT_CLK_48M;
-    (*UART_HwAttrs).rxDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_RX + i;
-    (*UART_HwAttrs).txDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_TX + i;
+    (*uartHwAttrs).baseAddr = (uint32_t)CSL_UART0_BASE + (0x10000U * i);
+    (*uartHwAttrs).frequency        = UART_INPUT_CLK_48M;
+    (*uartHwAttrs).rxDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_RX + i;
+    (*uartHwAttrs).txDmaEventNumber = CSL_PDMA_CH_MAIN_UART0_CH0_TX + i;
 }
 #endif
