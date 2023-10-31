@@ -723,6 +723,8 @@ int32_t UdmaTestRingQueueRaw(UdmaTestTaskObj *taskObj);
 int32_t udmaTestRingFree(UdmaTestTaskObj *taskObj);
 int32_t UdmaTest_RingPrms_init(UdmaTestTaskObj *taskObj);
 int32_t UdmaTest_RingMonPrms_init(UdmaTestTaskObj *taskObj);
+int32_t udmaTestRingAlloc(UdmaTestTaskObj *taskObj);
+int32_t UdmaTestRingFlushRaw(UdmaTestTaskObj *taskObj);
 
 /*
  *UDMA Flow Negative test case functions
