@@ -291,6 +291,7 @@ static void sblCombinedBootPerfPrint(sblProfileInfo_t *sblBootPerfLog)
     sbl_puts(sbl_test_str);
     if(totalTime < expCanRespTime)
     {
+        sbl_puts("All tests have passed\r\n");
         sprintf(sbl_test_str, "Boot Performance test has passed");
         sbl_puts(sbl_test_str);
     }
@@ -456,7 +457,6 @@ int32_t main()
             if (pmuCntrVal < 20000000)
             {
                 sbl_puts("Boot time is now optimized....\r\n");
-                sbl_puts("All tests have passed\r\n");
             }
             else
             {

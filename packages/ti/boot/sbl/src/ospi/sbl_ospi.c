@@ -212,28 +212,10 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
      * PHY mode cannot be used until sysfw is loaded and OSPI clock is
      * configured to 133MHz.
      */
-#if defined(SIM_BUILD) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
+#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     ospi_cfg.phyEnable = false;
-#endif
-
-if (isXIPEnable == true)
-{
-    ospi_cfg.phyEnable = false;
-    /* OSPI baud rate = (master reference clock) / (baud rate devisor)
-     * Default baud rate devisor is 32
-     * Using a smaller devisor to get higher speeds */
     ospi_cfg.baudRateDiv = 8;
-}
-else
-{
-    #if defined(SOC_J721E)
-        ospi_cfg.phyEnable = false;
-        /* OSPI baud rate = (master reference clock) / (baud rate devisor)
-        * Default baud rate devisor is 32
-        * Using a smaller devisor to get higher speeds */
-        ospi_cfg.baudRateDiv = 8;
-    #endif
-}
+#endif
 
     /* Set the default SPI init configurations */
     if (gIsNandBootEnable == 1)
@@ -447,7 +429,7 @@ int32_t SBL_ospiInit(void *handle)
             #endif
         }
         ospi_cfg.funcClk = ospiFunClk;
-        ospi_cfg.baudRateDiv = 0;
+        ospi_cfg.baudRateDiv = 8;
 
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
         OSPI_configClk(ospiFunClk);
