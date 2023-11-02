@@ -76,8 +76,8 @@ SECTIONS
     GROUP LOAD_START( lnkFlashStartAddr ), LOAD_END( lnkFlashEndAddr )
     {
         .KERNEL_FUNCTION LOAD_START( lnkKernelFuncStartAddr ),
-                         LOAD_END( lnkKernelFuncEndAddr ) : {} align( 0x8000 )
-    } > OCMC_RAM_SCISERVER
+                         LOAD_END( lnkKernelFuncEndAddr ) : {} align( 0x4000 )
+    } > R5F_TCMB0
 
     .unpriv_flash palign( 32 ) :
     {
@@ -122,7 +122,7 @@ SECTIONS
         .svcStack    END( lnkStacksEndAddr )    : {. = . + __SVC_STACK_SIZE;}   align(4)
         RUN_START(__SVC_STACK_START)
         RUN_END(__SVC_STACK_END)
-    } > R5F_TCMA0
+    } > OCMC_RAM_SCISERVER
 
 
 }
