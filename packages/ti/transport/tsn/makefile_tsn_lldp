@@ -1,5 +1,5 @@
 #
-# This file is the makefile for building combase library.
+# This file is the makefile for building lldp library.
 #
 ifeq ($(RULES_MAKE), )
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
@@ -7,35 +7,42 @@ else
 include $(RULES_MAKE)
 endif
 
-MODULE_NAME = tsn_combase
+MODULE_NAME = tsn_lldp
 
-SRCDIR = tsn_combase tsn_combase/tilld tsn_combase/tilld/jacinto
-INCDIR = tsn_combase tsn_combase/tilld/jacinto
+SRCDIR = tsn_lldp tsn_lldp/yangs/generated tsn_lldp/tilld tsn_lldp/tilld/jacinto
+INCDIR = tsn_lldp \
+		 tsn_lldp/yangs/generated \
+		 tsn_combase/tilld/jacinto \
+		 tsn_uniconf/yangs/generated \
+		 tsn_uniconf/yangs
 
-SRC_PATH := $(PDK_TSN_COMP_PATH)/tsn-stack/tsn_combase
-UB_VERSION = $(shell sed -n '/AC_INIT/p' $(SRC_PATH)/configure.ac | awk -F"[][]" '{print $$4}')
+SRC_PATH := $(PDK_TSN_COMP_PATH)/tsn-stack/tsn_lldp
+# We don't have LLDP configure.ac yet. Refer from tsn_gptp
+UB_VERSION = $(shell sed -n '/AC_INIT/p' $(PDK_TSN_COMP_PATH)/tsn-stack/tsn_gptp/configure.ac | awk -F"[][]" '{print $$4}')
 TSNPKGVERSION := $(UB_VERSION)-jacinto
 
+UB_LOGCAT = 4
+UB_LOGTSTYPE = UB_CLOCK_REALTIME
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_INTERNAL_INTERFACES =
-INCLUDE_EXTERNAL_INTERFACES = pdk tsn_unibase
+INCLUDE_EXTERNAL_INTERFACES = pdk tsn_unibase tsn_combase tsn_uniconf
 
 # Common source files and CFLAGS across all platforms and cores
-SRCS_COMMON += cb_noipcshmem.c \
-	cb_lld_ethernet.c \
-	cb_lld_thread.c \
-	cb_lld_tmevent.c \
-	ub_lld_binding.c \
-	lldenet.c \
-	lldtsync.c \
-	cb_link_tilld.c \
-	fs_stdio.c \
-	cb_xtimer.c
+SRCS_COMMON += lldpd.c \
+				interface_mgr.c \
+				rx_state_machine.c \
+				tx_state_machine.c \
+				tx_timer_state_machine.c \
+				lldp_yangdb.c \
+				tlv_data.c \
+				tilld_sock.c \
+				lldp_utils.c
 
-PACKAGE_SRCS_COMMON = ../makefile_tsn_combase
-PACKAGE_SRCS_COMMON += $(SRCDIR) ../tsn_tilld_include.h
+PACKAGE_SRCS_COMMON = ../tsn_component.mk ../makefile_tsn_lldp
+PACKAGE_SRCS_COMMON += $(SRCDIR)
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(TSN_CFLAGS) -DTSNPKGVERSION=\"$(TSNPKGVERSION)\" \
+	-DUB_LOGCAT=$(UB_LOGCAT) -DUB_LOGTSTYPE=$(UB_LOGTSTYPE) \
 	-include $(PDK_TSN_COMP_PATH)/tsn-stack/tsn_buildconf/jacinto_buildconf.h
 
 # Core/SoC/platform specific source files and CFLAGS

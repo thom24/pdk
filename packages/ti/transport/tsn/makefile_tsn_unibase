@@ -19,7 +19,7 @@ TSNPKGVERSION := $(UB_VERSION)-jacinto
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_INTERNAL_INTERFACES =
-INCLUDE_EXTERNAL_INTERFACES = pdk
+INCLUDE_EXTERNAL_INTERFACES = pdk tsn_combase
 
 # Common source files and CFLAGS across all platforms and cores
 SRCS_COMMON += unibase.c \
@@ -33,7 +33,8 @@ SRCS_COMMON += unibase.c \
 
 PACKAGE_SRCS_COMMON = ../makefile_tsn_unibase
 PACKAGE_SRCS_COMMON += $(SRCDIR)
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(TSN_CFLAGS) -DTSNPKGVERSION=\"$(TSNPKGVERSION)\"
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(TSN_CFLAGS) -DTSNPKGVERSION=\"$(TSNPKGVERSION)\" \
+                    -include $(PDK_TSN_COMP_PATH)/tsn-stack/tsn_buildconf/jacinto_buildconf.h
 
 # Core/SoC/platform specific source files and CFLAGS
 # Example:

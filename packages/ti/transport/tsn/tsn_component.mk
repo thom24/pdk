@@ -148,6 +148,40 @@ tsn_gptp_INCLUDE = $(tsn_gptp_PATH)
 export tsn_gptp_SOCLIST = $(tsn_SOCLIST)
 export tsn_gptp_$(SOC)_CORELIST = $(tsn_$(SOC)_CORELIST)
 tsn_LIB_LIST += tsn_gptp
+#
+# lldp library
+#
+export tsn_lldp_COMP_LIST = tsn_lldp
+tsn_lldp_RELPATH = ti/transport/tsn/tsn-stack
+tsn_lldp_PATH = $(PDK_TSN_COMP_PATH)/tsn-stack
+export tsn_lldp_LIBNAME = tsn_lldp
+export tsn_lldp_LIBPATH = $(PDK_TSN_COMP_PATH)/lib
+export tsn_lldp_MAKEFILE = -f ../makefile_tsn_lldp
+export tsn_lldp_BOARD_DEPENDENCY = no
+export tsn_lldp_SOC_DEPENDENCY = no
+export tsn_lldp_CORE_DEPENDENCY = no
+tsn_lldp_PKG_LIST = tsn_lldp
+tsn_lldp_INCLUDE = $(tsn_lldp_PATH)
+export tsn_lldp_SOCLIST = $(tsn_SOCLIST)
+export tsn_lldp_$(SOC)_CORELIST = $(tsn_$(SOC)_CORELIST)
+tsn_LIB_LIST += tsn_lldp
+#
+# tsn_uniconf library
+#
+export tsn_uniconf_COMP_LIST = tsn_uniconf
+tsn_uniconf_RELPATH = ti/transport/tsn/tsn-stack
+tsn_uniconf_PATH = $(PDK_TSN_COMP_PATH)/tsn-stack
+export tsn_uniconf_LIBNAME = tsn_uniconf
+export tsn_uniconf_LIBPATH = $(PDK_TSN_COMP_PATH)/lib
+export tsn_uniconf_MAKEFILE =  -f ../makefile_tsn_uniconf
+export tsn_uniconf_BOARD_DEPENDENCY = no
+export tsn_uniconf_SOC_DEPENDENCY = no
+export tsn_uniconf_CORE_DEPENDENCY = no
+tsn_uniconf_PKG_LIST = tsn_uniconf
+tsn_uniconf_INCLUDE = $(tsn_uniconf_PATH)
+export tsn_uniconf_SOCLIST = $(tsn_SOCLIST)
+export tsn_uniconf_$(SOC)_CORELIST = $(tsn_$(SOC)_CORELIST)
+tsn_LIB_LIST += tsn_uniconf
 endif
 
 # Common CFLAGS for TSN stack components
