@@ -340,6 +340,9 @@ endif
 ifneq ($(lpm_LIB_LIST),)
   pdk_LIB_LIST += $(lpm_LIB_LIST)
 endif
+ifneq ($(lpm_s2r_LIB_LIST),)
+  pdk_LIB_LIST += $(lpm_s2r_LIB_LIST)
+endif
 ifneq ($(lpm_EXAMPLE_LIST),)
   pdk_EXAMPLE_LIST += $(lpm_EXAMPLE_LIST)
 endif
