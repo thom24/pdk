@@ -144,7 +144,7 @@ int32_t trace_debug_buffer(uint8_t channel, uint32_t val)
 
     lib_itoa(val, str, 16);
 
-    trace_print_buffer_string("0x");
+    trace_print_buffer_string((uint8_t *)("0x"));
     trace_print_buffer_string(str);
     trace_print_buffer((uint8_t) '\n');
 

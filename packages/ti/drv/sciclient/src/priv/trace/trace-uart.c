@@ -86,12 +86,12 @@ int32_t trace_debug_uart(uint8_t channel, u32 val)
 
 	lib_itoa(val, str, 16);
 
-	ret = trace_print_uart_string("0x");
+	ret = trace_print_uart_string((uint8_t *)("0x"));
 	if (ret == CSL_PASS) {
 		ret = trace_print_uart_string(str);
 	}
 	if (ret == CSL_PASS) {
-		trace_print_uart_string("\n");
+		trace_print_uart_string((uint8_t *)("\n"));
 	}
 
 	return CSL_PASS;

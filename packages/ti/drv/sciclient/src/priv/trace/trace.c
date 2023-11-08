@@ -140,9 +140,9 @@ static void trace_print_arg_internal(uint8_t level, const uint8_t *fmt, uint32_t
         lib_itoa(arg, str, 16);
 
         /* Output a space for ease of reading */
-        trace_print_internal(level, " 0x", raise_priv);
+        trace_print_internal(level, (uint8_t *)(" 0x"), raise_priv);
         trace_print_internal(level, str, raise_priv);
-        trace_print_internal(level, "\n", raise_priv);
+        trace_print_internal(level, (uint8_t *)("\n"), raise_priv);
     }
 }
 
