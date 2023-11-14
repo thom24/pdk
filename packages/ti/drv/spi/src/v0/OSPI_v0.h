@@ -162,6 +162,12 @@ extern "C" {
  */
 #define OSPI_V0_CMD_EXT_RD_CMD_LEN      (OSPI_CMD_RESERVED + 14U)
 
+/**
+ *
+ *  \brief  Set command to enable XIP Prefetch.
+ */
+#define OSPI_V0_CMD_ENABLE_XIP_PREFETCH (OSPI_CMD_RESERVED + 15U)
+
 /* SPI function table pointer */
 extern const OSPI_FxnTable OSPI_FxnTable_v0;
 

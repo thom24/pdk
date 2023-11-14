@@ -725,6 +725,11 @@ static NAND_STATUS Nand_ospiPageLoad(OSPI_Handle ospiHandle, uint32_t rdAddr)
     uint32_t         pageAddr = 0U;
     uint32_t         pageReadCmdLen = 4U;
     uint8_t          pageReadCmd[4];
+    uint32_t         xipPrefetchEnable;
+
+    /* Disable XIP Prefetch before programming flash memory */
+    xipPrefetchEnable = FALSE;
+    OSPI_control(ospiHandle, OSPI_V0_CMD_ENABLE_XIP_PREFETCH, (void *)&xipPrefetchEnable);
 
     pageAddr = rdAddr / NAND_PAGE_SIZE;
 
@@ -753,6 +758,11 @@ static NAND_STATUS Nand_ospiPageLoad(OSPI_Handle ospiHandle, uint32_t rdAddr)
     {
         return NAND_FAIL;
     }
+
+    /* Enable back XIP prefetch */
+    xipPrefetchEnable = TRUE;
+    OSPI_control(ospiHandle, OSPI_V0_CMD_ENABLE_XIP_PREFETCH, (void *)&xipPrefetchEnable);
+    
     return NAND_PASS;
 }
 

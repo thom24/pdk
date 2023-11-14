@@ -743,6 +743,7 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     uint32_t         chunkLen;
     uint32_t         actual;
     uint32_t         transferType = SPI_TRANSACTION_TYPE_WRITE;
+    uint32_t         xipPrefetchEnable;
     OSPI_v0_HwAttrs *hwAttrs;
     uint8_t         cmdWren[2];
 
@@ -765,6 +766,10 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
 
     spiHandle = (OSPI_Handle)norOspiInfo->hwHandle;
     hwAttrs = (OSPI_v0_HwAttrs *)spiHandle->hwAttrs;
+
+    /* Disable XIP Prefetch before programming flash memory */
+    xipPrefetchEnable = FALSE;
+    OSPI_control(spiHandle, OSPI_V0_CMD_ENABLE_XIP_PREFETCH, (void *)&xipPrefetchEnable);
 
     cmdWren[0]  = NOR_CMD_WREN;
 
@@ -824,6 +829,10 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         }
     }
 
+    /* Enable back XIP prefetch */
+    xipPrefetchEnable = TRUE;
+    OSPI_control(spiHandle, OSPI_V0_CMD_ENABLE_XIP_PREFETCH, (void *)&xipPrefetchEnable);
+
     return NOR_PASS;
 }
 
@@ -833,6 +842,7 @@ NOR_STATUS Nor_xspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     uint32_t        cmdLen;
     uint32_t        address = 0;
     uint8_t         cmdWren[2];
+    uint32_t        xipPrefetchEnable;
     NOR_Info        *norOspiInfo;
     OSPI_Handle      spiHandle;
 
@@ -872,6 +882,10 @@ NOR_STATUS Nor_xspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
         cmdLen = 5;
     }
 
+    /* Disable XIP Prefetch before programming flash memory */
+    xipPrefetchEnable = FALSE;
+    OSPI_control(spiHandle, OSPI_V0_CMD_ENABLE_XIP_PREFETCH, (void *)&xipPrefetchEnable);
+
     if (Nor_xspiWaitReady(spiHandle, NOR_WRR_WRITE_TIMEOUT))
     {
     	return NOR_FAIL;
@@ -896,6 +910,10 @@ NOR_STATUS Nor_xspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     {
     	return NOR_FAIL;
     }
+
+    /* Enable back XIP prefetch */
+    xipPrefetchEnable = TRUE;
+    OSPI_control(spiHandle, OSPI_V0_CMD_ENABLE_XIP_PREFETCH, (void *)&xipPrefetchEnable);
 
     return NOR_PASS;
 }

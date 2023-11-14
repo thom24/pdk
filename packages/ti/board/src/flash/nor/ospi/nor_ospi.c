@@ -570,6 +570,7 @@ NOR_STATUS Nor_ospiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     uint32_t         chunkLen;
     uint32_t         actual;
     uint32_t         transferType = SPI_TRANSACTION_TYPE_WRITE;
+    uint32_t         xipPrefetchEnable;
     OSPI_v0_HwAttrs *hwAttrs;
 
     if (!handle)
@@ -591,6 +592,10 @@ NOR_STATUS Nor_ospiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
 
     spiHandle = (OSPI_Handle)norOspiInfo->hwHandle;
     hwAttrs = (OSPI_v0_HwAttrs *)spiHandle->hwAttrs;
+    
+    /* Disable XIP Prefetch before programming flash memory */
+    xipPrefetchEnable = FALSE;
+    OSPI_control(spiHandle, OSPI_V0_CMD_ENABLE_XIP_PREFETCH, (void *)&xipPrefetchEnable);
 
     /* Set the transfer mode, write op code and tx lines */
     OSPI_control(spiHandle, OSPI_V0_CMD_SET_XFER_MODE, NULL);
@@ -635,6 +640,10 @@ NOR_STATUS Nor_ospiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         byteAddr = 0;
     }
 
+    /* Enable back XIP prefetch */
+    xipPrefetchEnable = TRUE;
+    OSPI_control(spiHandle, OSPI_V0_CMD_ENABLE_XIP_PREFETCH, (void *)&xipPrefetchEnable);
+
     return NOR_PASS;
 }
 
@@ -646,6 +655,7 @@ NOR_STATUS Nor_ospiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     uint8_t         cmdWren  = NOR_CMD_WREN;
     NOR_Info       *norOspiInfo;
     OSPI_Handle      spiHandle;
+    uint32_t         xipPrefetchEnable;
 
     if (!handle)
     {
@@ -702,6 +712,10 @@ NOR_STATUS Nor_ospiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
         }
 
     }
+    
+    /* Disable XIP Prefetch before programming flash memory */
+    xipPrefetchEnable = FALSE;
+    OSPI_control(spiHandle, OSPI_V0_CMD_ENABLE_XIP_PREFETCH, (void *)&xipPrefetchEnable);
 
     if (Nor_ospiCmdWrite(spiHandle, &cmdWren, 1, 0))
     {
@@ -722,6 +736,10 @@ NOR_STATUS Nor_ospiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     {
     	return NOR_FAIL;
     }
+
+    /* Enable back XIP prefetch */
+    xipPrefetchEnable = TRUE;
+    OSPI_control(spiHandle, OSPI_V0_CMD_ENABLE_XIP_PREFETCH, (void *)&xipPrefetchEnable);
 
     return NOR_PASS;
 }
