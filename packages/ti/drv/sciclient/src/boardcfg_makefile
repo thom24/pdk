@@ -214,13 +214,8 @@ SHELL:=/bin/bash
 $(COMBINED_DM_BRDCFG): $(OBJDIR)/$(BRD_CFG)cfg_pm_hex.bin.unsigned $(OBJDIR)/$(BRD_CFG)cfg_rm_hex.bin.unsigned
 	$(PYTHON) $(COMBINE_SCRIPT) -p $(OBJDIR)/$(BRD_CFG)cfg_pm_hex.bin.unsigned -r $(OBJDIR)/$(BRD_CFG)cfg_rm_hex.bin.unsigned -o $@
 	@echo "Created combined-dm-brdcfg.bin file"
-ifeq ($(SOC),$(filter $(SOC), j784s4))
 $(COMBINED_TIFS_BRDCFG): $(OBJDIR)/$(BRD_CFG)cfg_hex.bin.unsigned $(OBJDIR)/$(BRD_CFG)cfg_security_hex.bin.unsigned $(OBJDIR)/$(BRD_CFG)cfg_pm_hex.bin.unsigned $(OBJDIR)/$(BRD_CFG)cfg_tifs_rm_hex.bin.unsigned
 	$(PYTHON) $(COMBINE_SCRIPT) -b $(OBJDIR)/$(BRD_CFG)cfg_hex.bin.unsigned -s $(OBJDIR)/$(BRD_CFG)cfg_security_hex.bin.unsigned -p $(OBJDIR)/$(BRD_CFG)cfg_pm_hex.bin.unsigned -r $(OBJDIR)/$(BRD_CFG)cfg_tifs_rm_hex.bin.unsigned -o $@
-else
-$(COMBINED_TIFS_BRDCFG): $(OBJDIR)/$(BRD_CFG)cfg_hex.bin.unsigned $(OBJDIR)/$(BRD_CFG)cfg_security_hex.bin.unsigned $(OBJDIR)/$(BRD_CFG)cfg_pm_hex.bin.unsigned $(OBJDIR)/$(BRD_CFG)cfg_rm_hex.bin.unsigned
-	$(PYTHON) $(COMBINE_SCRIPT) -b $(OBJDIR)/$(BRD_CFG)cfg_hex.bin.unsigned -s $(OBJDIR)/$(BRD_CFG)cfg_security_hex.bin.unsigned -p $(OBJDIR)/$(BRD_CFG)cfg_pm_hex.bin.unsigned -r $(OBJDIR)/$(BRD_CFG)cfg_rm_hex.bin.unsigned -o $@
-endif
 	@echo "Created combined-tifs-brdcfg.bin"
 endif
 

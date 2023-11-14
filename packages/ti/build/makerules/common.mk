@@ -633,7 +633,15 @@ ifeq ($(SBL_IMAGE_TYPE),combined)
       SYSFW_PATH=$(PDK_INSTALL_PATH)/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-$(SOC)-hs-enc.bin
       SYSFW_INNER_CERT=$(PDK_INSTALL_PATH)/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-$(SOC)-hs-cert.bin
     endif
-	else
+	else ifeq ($(BUILD_HS_FS), yes)
+      ifeq ($(SOC),$(filter $(SOC), j7200))
+        SYSFW_PATH=$(PDK_INSTALL_PATH)/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-$(SOC)_sr2-hs-fs-enc.bin
+        SYSFW_INNER_CERT=$(PDK_INSTALL_PATH)/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-$(SOC)_sr2-hs-fs-cert.bin
+      else
+        SYSFW_PATH=$(PDK_INSTALL_PATH)/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-$(SOC)-hs-fs-enc.bin
+        SYSFW_INNER_CERT=$(PDK_INSTALL_PATH)/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-$(SOC)-hs-fs-cert.bin
+      endif
+  else
     SYSFW_PATH=$(PDK_INSTALL_PATH)/ti/drv/sciclient/soc/sysfw/binaries/ti-fs-firmware-$(SOC)-gp.bin
     SYSFW_INNER_CERT=""
 	endif
