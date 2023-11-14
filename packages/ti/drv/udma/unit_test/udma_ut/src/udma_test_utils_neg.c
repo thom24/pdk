@@ -94,7 +94,7 @@ int32_t udmaTestUdmaVirtToPhyNegTc(UdmaTestTaskObj *taskObj)
     retVal = udmaTestDeinitDriver(testObj);
     if(UDMA_SOK == retVal)
     {
-		for(instId = UDMA_INST_ID_START; instId <= UDMA_TEST_INST_ID_MAX; instId++)
+        for(instId = UDMA_INST_ID_START; instId < UDMA_TEST_INST_ID_MAX; instId++)
 		{
 		    drvHandle = &testObj->drvObj[instId];
         	drvHandle->initPrms.virtToPhyFxn = (Udma_VirtToPhyFxn) NULL_PTR;
