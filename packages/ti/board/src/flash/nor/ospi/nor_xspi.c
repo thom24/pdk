@@ -34,6 +34,7 @@
 #include <ti/board/src/flash/nor/ospi/nor_xspi.h>
 #include <ti/drv/spi/soc/SPI_soc.h>
 #include <ti/csl/soc.h>
+#include <ti/csl/src/ip/fss/V0/csl_fss.h>
 
 static NOR_HANDLE Nor_xspiOpen(uint32_t norIntf, uint32_t portNum, void *params);
 static void Nor_xspiClose(NOR_HANDLE handle);
@@ -743,6 +744,7 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     uint32_t         chunkLen;
     uint32_t         actual;
     uint32_t         transferType = SPI_TRANSACTION_TYPE_WRITE;
+    CSL_FssCfg             fssCfg;
     uint32_t         xipPrefetchEnable;
     OSPI_v0_HwAttrs *hwAttrs;
     uint8_t         cmdWren[2];
@@ -769,7 +771,8 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
 
     /* Disable XIP Prefetch before programming flash memory */
     xipPrefetchEnable = FALSE;
-    OSPI_control(spiHandle, OSPI_V0_CMD_ENABLE_XIP_PREFETCH, (void *)&xipPrefetchEnable);
+    fssCfg.pFsasRegs = (CSL_fss_fsas_genregsRegs *)CSL_MCU_FSS0_FSAS_CFG_BASE;
+    CSL_fssOspiSetXipPrefetchEnable(&fssCfg, CSL_FSS_FSAS_INTERFACE_PATH_SELECT_OSPI0, xipPrefetchEnable);
 
     cmdWren[0]  = NOR_CMD_WREN;
 
@@ -831,7 +834,8 @@ NOR_STATUS Nor_xspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
 
     /* Enable back XIP prefetch */
     xipPrefetchEnable = TRUE;
-    OSPI_control(spiHandle, OSPI_V0_CMD_ENABLE_XIP_PREFETCH, (void *)&xipPrefetchEnable);
+    fssCfg.pFsasRegs = (CSL_fss_fsas_genregsRegs *)CSL_MCU_FSS0_FSAS_CFG_BASE;
+    CSL_fssOspiSetXipPrefetchEnable(&fssCfg, CSL_FSS_FSAS_INTERFACE_PATH_SELECT_OSPI0, xipPrefetchEnable);
 
     return NOR_PASS;
 }
@@ -842,6 +846,7 @@ NOR_STATUS Nor_xspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     uint32_t        cmdLen;
     uint32_t        address = 0;
     uint8_t         cmdWren[2];
+    CSL_FssCfg             fssCfg;
     uint32_t        xipPrefetchEnable;
     NOR_Info        *norOspiInfo;
     OSPI_Handle      spiHandle;
@@ -884,7 +889,8 @@ NOR_STATUS Nor_xspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
 
     /* Disable XIP Prefetch before programming flash memory */
     xipPrefetchEnable = FALSE;
-    OSPI_control(spiHandle, OSPI_V0_CMD_ENABLE_XIP_PREFETCH, (void *)&xipPrefetchEnable);
+    fssCfg.pFsasRegs = (CSL_fss_fsas_genregsRegs *)CSL_MCU_FSS0_FSAS_CFG_BASE;
+    CSL_fssOspiSetXipPrefetchEnable(&fssCfg, CSL_FSS_FSAS_INTERFACE_PATH_SELECT_OSPI0, xipPrefetchEnable);
 
     if (Nor_xspiWaitReady(spiHandle, NOR_WRR_WRITE_TIMEOUT))
     {
@@ -913,7 +919,8 @@ NOR_STATUS Nor_xspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
 
     /* Enable back XIP prefetch */
     xipPrefetchEnable = TRUE;
-    OSPI_control(spiHandle, OSPI_V0_CMD_ENABLE_XIP_PREFETCH, (void *)&xipPrefetchEnable);
+    fssCfg.pFsasRegs = (CSL_fss_fsas_genregsRegs *)CSL_MCU_FSS0_FSAS_CFG_BASE;
+    CSL_fssOspiSetXipPrefetchEnable(&fssCfg, CSL_FSS_FSAS_INTERFACE_PATH_SELECT_OSPI0, xipPrefetchEnable);
 
     return NOR_PASS;
 }

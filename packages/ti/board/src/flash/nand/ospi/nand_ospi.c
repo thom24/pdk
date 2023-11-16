@@ -36,6 +36,7 @@
 #include <ti/drv/spi/soc/SPI_soc.h>
 #include <ti/csl/soc.h>
 #include <ti/osal/CacheP.h>
+#include <ti/csl/src/ip/fss/V0/csl_fss.h>
 
 #define BOARD_FLASH_FULL_PAGE_SIZE    (NAND_PAGE_SIZE + NAND_SPARE_AREA_SIZE)
 static uint8_t nandFullPageBuf[BOARD_FLASH_FULL_PAGE_SIZE] __attribute__((aligned(128)));
@@ -725,11 +726,13 @@ static NAND_STATUS Nand_ospiPageLoad(OSPI_Handle ospiHandle, uint32_t rdAddr)
     uint32_t         pageAddr = 0U;
     uint32_t         pageReadCmdLen = 4U;
     uint8_t          pageReadCmd[4];
+    CSL_FssCfg             fssCfg;
     uint32_t         xipPrefetchEnable;
 
     /* Disable XIP Prefetch before programming flash memory */
     xipPrefetchEnable = FALSE;
-    OSPI_control(ospiHandle, OSPI_V0_CMD_ENABLE_XIP_PREFETCH, (void *)&xipPrefetchEnable);
+    fssCfg.pFsasRegs = (CSL_fss_fsas_genregsRegs *)CSL_MCU_FSS0_FSAS_CFG_BASE;
+    CSL_fssOspiSetXipPrefetchEnable(&fssCfg, CSL_FSS_FSAS_INTERFACE_PATH_SELECT_OSPI0, xipPrefetchEnable);
 
     pageAddr = rdAddr / NAND_PAGE_SIZE;
 
@@ -761,7 +764,8 @@ static NAND_STATUS Nand_ospiPageLoad(OSPI_Handle ospiHandle, uint32_t rdAddr)
 
     /* Enable back XIP prefetch */
     xipPrefetchEnable = TRUE;
-    OSPI_control(ospiHandle, OSPI_V0_CMD_ENABLE_XIP_PREFETCH, (void *)&xipPrefetchEnable);
+    fssCfg.pFsasRegs = (CSL_fss_fsas_genregsRegs *)CSL_MCU_FSS0_FSAS_CFG_BASE;
+    CSL_fssOspiSetXipPrefetchEnable(&fssCfg, CSL_FSS_FSAS_INTERFACE_PATH_SELECT_OSPI0, xipPrefetchEnable);
     
     return NAND_PASS;
 }
