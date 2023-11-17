@@ -103,7 +103,7 @@ if [ "$SKIP_BUILD" != "YES" ]; then
     for SOC in $SOC_LIST
     do
         make -j -s allclean
-        make -j -s lpm_s2r BOARD="$SOC"_evm
+        make -j -s lpm_s2r BOARD="$SOC"_evm COMPILE_MODE="arm"
         OBJDIR="$(find $ROOTDIR/ti/binary/ti/drv/lpm/obj/${SOC}_evm/*/release -maxdepth 0 -type d)"
         $LPM_S2R_LD -Bstatic -T "$SCRIPT_DIR/s2r.lds" "$(ls $OBJDIR/lpm_s2r.o*)" -o "$OBJDIR/lpm_s2r.elf"
         $LPM_S2R_OBJCOPY -S -O binary "$OBJDIR/lpm_s2r.elf" "$OBJDIR/lpm_s2r.bin"
