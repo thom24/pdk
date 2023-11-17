@@ -742,9 +742,58 @@ int32_t SBL_ospiCopyHsmImage(uint8_t** dstAddr, uint32_t srcOffsetAddr, uint32_t
 {
     int32_t retVal = CSL_PASS;
     Board_flashHandle h = (Board_flashHandle) boardHandle;
-    uint64_t ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_200M);
-    /* OSPI clock has been reconfigured by PM Init API. Set clock to 200MHz to match settings while reading SYSFW. */
-    OSPI_configClk(ospiFunClk);
+    /* In combined boot SBL doesn't load tifs, So SBL doesn't configure OSPI.
+       Configure OSPI to load hsm.bin in combined boot */
+    if (TRUE == combinedBootmode)
+    {
+        /* Init SPI driver */
+        OSPI_init();
+
+        /* Get default OSPI cfg */
+        OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+        ospi_cfg.funcClk = OSPI_MODULE_CLK_200M;
+        ospi_cfg.dtrEnable = true;
+        ospi_cfg.phyEnable = false;
+        ospi_cfg.baudRateDiv = 8;
+        if (gIsNandBootEnable == 1)
+        {
+            ospi_cfg.cacheEnable = 1;
+        }
+        OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
+#if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
+        if (gIsNandBootEnable == true)
+        {
+            h = Board_flashOpen(BOARD_FLASH_ID_W35N01JWTBAG,
+                                BOARD_OSPI_NOR_INSTANCE, NULL);
+        }
+        else
+        {
+            h = Board_flashOpen(BOARD_FLASH_ID_S28HS512T,
+                                BOARD_OSPI_NOR_INSTANCE, NULL);
+        }
+#else
+        h = Board_flashOpen(BOARD_FLASH_ID_MT35XU512ABA1G12,
+                            BOARD_OSPI_NOR_INSTANCE, NULL);
+#endif
+        if (h)
+        {
+            /* Disable PHY pipeline mode */
+            CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
+
+            /* Update handle for later use*/
+            boardHandle = (void *)h;
+        }
+        else
+        {
+            SBL_log(SBL_LOG_ERR, "Board_flashOpen failed in SBL_ospiCopyHsmImage \n");
+        }
+    }
+    else
+    {
+        uint64_t ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_200M);
+        /* OSPI clock has been reconfigured by PM Init API. Set clock to 200MHz to match settings while reading SYSFW. */
+        OSPI_configClk(ospiFunClk);
+    }
 
     if (gIsNandBootEnable == true)
     {
