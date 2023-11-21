@@ -410,12 +410,10 @@ int32_t SBL_ospiInit(void *handle)
             if(ospiFrequency == 166)
             {
                 ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_166M);
-                ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_3;
             }
             else
             {
                 ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_133M);
-                ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_2;
             }
         }
         else
@@ -425,9 +423,12 @@ int32_t SBL_ospiInit(void *handle)
                     ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_3;
             #else
                     ospiFunClk = (uint64_t)(OSPI_MODULE_CLK_133M);
-                    ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_2;
             #endif
         }
+        ospi_cfg.devDelays[0] = OSPI_DEV_DELAY_CSDA_A;
+        ospi_cfg.devDelays[1] = OSPI_DEV_DELAY_CSDA_A;
+        ospi_cfg.devDelays[2] = OSPI_DEV_DELAY_CSDA_A;
+        ospi_cfg.devDelays[3] = OSPI_DEV_DELAY_CSDA_A;
         ospi_cfg.funcClk = ospiFunClk;
         ospi_cfg.baudRateDiv = 8;
 
