@@ -925,9 +925,6 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
             }
         }
     }
-    key = HwiP_disable();
-    gSciclient_writeInProgress = 0U;
-    HwiP_restore(key);
 
     /* Wait for response: Interrupt based waiting */
     /* We need to poll (hence no interrupt)  when the message is a forwarded message.
@@ -1027,6 +1024,9 @@ int32_t Sciclient_serviceSecureProxy(const Sciclient_ReqPrm_t *pReqPrm,
         Osal_EnableInterrupt(0, gSciclientMap[contextId].respIntrNum);
         #endif
     }
+    key = HwiP_disable();
+    gSciclient_writeInProgress = 0U;
+    HwiP_restore(key);
     return status;
 }
 
