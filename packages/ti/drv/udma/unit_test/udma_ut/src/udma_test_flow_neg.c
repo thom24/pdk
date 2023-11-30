@@ -186,3 +186,32 @@ int32_t UdmaTest_flowGetCount(UdmaTestTaskObj *taskObj)
 
      return retVal;
  }
+
+ /*
+  * Test Case Description: Verifies the function UdmaFlowPrms_init when
+  * flowPrms is NULL.
+  */
+ int32_t UdmaTest_FlowPrms_init(UdmaTestTaskObj *taskObj)
+ {
+     int32_t  retVal = UDMA_SOK;
+     uint32_t chType = UDMA_CH_TYPE_RX;
+     GT_1trace(taskObj->traceMask, GT_INFO1,
+                " |TEST INFO|:: Task:%d: UDMA Flow prms init negative Testcase ::\r\n", taskObj->taskId);
+
+     /* flowPrms is NULL */
+     Udma_FlowPrms *flowPrms = (Udma_FlowPrms*) NULL_PTR;
+
+     retVal = UdmaFlowPrms_init(flowPrms, chType);
+     if(UDMA_SOK != retVal)
+     {
+         retVal = UDMA_SOK;
+     }
+     else
+     {
+         GT_0trace(taskObj->traceMask, GT_ERR,
+                " |TEST INFO|:: Test:: UDMA Flow free negative Testcase failed\n");
+     }
+
+     return retVal;
+
+ }

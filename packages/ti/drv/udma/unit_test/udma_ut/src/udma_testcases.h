@@ -4526,6 +4526,118 @@ static UdmaTestParams gUdmaTestCases[] =
         .runFlag    = (UDMA_TEST_RF_SOC_ALL | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF | UDMA_TEST_RF_CFG_DYN),
         .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
     },
+    {
+        .enableTest = TEST_ENABLE,
+        .tcId       = 13549U,
+        .tcName     = "UDMA flow params init negative function testcase",
+        .disableInfo= NULL,
+        .printEnable= PRINT_ENABLE,
+        .prfEnable  = PRF_DISABLE,
+        .tcType     = (UDMA_TCT_SANITY | UDMA_TCT_FUNCTIONAL),
+        .dcEnable   = DATA_CHECK_ENABLE,
+        .loopCnt    = 1U,
+        .numTasks   = 1U,
+        .testType   = {UDMA_TT_MISC},
+        .testFxnPtr = {&UdmaTest_FlowPrms_init},
+        .pacingTime = {PACING_NONE},
+        .numCh      = {1U},
+        .instId     = {UDMA_TEST_DEFAULT_UDMA_INST},
+        .chPrmId    = {UDMA_TEST_CH_PRMID_DEF},
+        .qdepth     = {USE_DEF_QDEPTH},
+        .icnt       = {
+                        {UDMA_TEST_DEF_ICNT0, 1U, 1U, 1U}
+                      },
+        .dicnt      = {
+                        {UDMA_TEST_DEF_DICNT0, 1U, 1U, 1U}
+                      },
+        .dim        = {
+                        {0U, 0U, 0U}
+                      },
+        .ddim       = {
+                        {0U, 0U, 0U}
+                      },
+        .heapIdSrc  = {DEF_HEAP_ID},
+        .heapIdDest = {DEF_HEAP_ID},
+        .srcBufSize = {UDMA_TEST_DEF_ICNT0},
+        .destBufSize= {UDMA_TEST_DEF_DICNT0},
+        .runFlag    = (UDMA_TEST_RF_SOC_ALL | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF | UDMA_TEST_RF_CFG_DYN),
+        .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
+    },
+    {
+        .enableTest = TEST_ENABLE,
+        .tcId       = 13547U,
+        .tcName     = "UDMA ring params init negative function testcase",
+        .disableInfo= NULL,
+        .printEnable= PRINT_ENABLE,
+        .prfEnable  = PRF_DISABLE,
+        .tcType     = (UDMA_TCT_SANITY | UDMA_TCT_FUNCTIONAL),
+        .dcEnable   = DATA_CHECK_ENABLE,
+        .loopCnt    = 1U,
+        .numTasks   = 1U,
+        .testType   = {UDMA_TT_MISC},
+        .testFxnPtr = {&UdmaTest_RingPrms_init},
+        .pacingTime = {PACING_NONE},
+        .numCh      = {1U},
+        .instId     = {UDMA_TEST_DEFAULT_UDMA_INST},
+        .chPrmId    = {UDMA_TEST_CH_PRMID_DEF},
+        .qdepth     = {USE_DEF_QDEPTH},
+        .icnt       = {
+                        {UDMA_TEST_DEF_ICNT0, 1U, 1U, 1U}
+                      },
+        .dicnt      = {
+                        {UDMA_TEST_DEF_DICNT0, 1U, 1U, 1U}
+                      },
+        .dim        = {
+                        {0U, 0U, 0U}
+                      },
+        .ddim       = {
+                        {0U, 0U, 0U}
+                      },
+        .heapIdSrc  = {DEF_HEAP_ID},
+        .heapIdDest = {DEF_HEAP_ID},
+        .srcBufSize = {UDMA_TEST_DEF_ICNT0},
+        .destBufSize= {UDMA_TEST_DEF_DICNT0},
+        .runFlag    = (UDMA_TEST_RF_SOC_ALL | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF | UDMA_TEST_RF_CFG_DYN),
+        .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
+    },
+    {
+        .enableTest = TEST_ENABLE,
+        .tcId       = 13548U,
+        .tcName     = "UDMA ring Mon params init negative function testcase",
+        .disableInfo= NULL,
+        .printEnable= PRINT_ENABLE,
+        .prfEnable  = PRF_DISABLE,
+        .tcType     = (UDMA_TCT_SANITY | UDMA_TCT_FUNCTIONAL),
+        .dcEnable   = DATA_CHECK_ENABLE,
+        .loopCnt    = 1U,
+        .numTasks   = 1U,
+        .testType   = {UDMA_TT_MISC},
+        .testFxnPtr = {&UdmaTest_RingMonPrms_init},
+        .pacingTime = {PACING_NONE},
+        .numCh      = {1U},
+        .instId     = {UDMA_TEST_DEFAULT_UDMA_INST},
+        .chPrmId    = {UDMA_TEST_CH_PRMID_DEF},
+        .qdepth     = {USE_DEF_QDEPTH},
+        .icnt       = {
+                        {UDMA_TEST_DEF_ICNT0, 1U, 1U, 1U}
+                      },
+        .dicnt      = {
+                        {UDMA_TEST_DEF_DICNT0, 1U, 1U, 1U}
+                      },
+        .dim        = {
+                        {0U, 0U, 0U}
+                      },
+        .ddim       = {
+                        {0U, 0U, 0U}
+                      },
+        .heapIdSrc  = {DEF_HEAP_ID},
+        .heapIdDest = {DEF_HEAP_ID},
+        .srcBufSize = {UDMA_TEST_DEF_ICNT0},
+        .destBufSize= {UDMA_TEST_DEF_DICNT0},
+        .runFlag    = (UDMA_TEST_RF_SOC_ALL | UDMA_TEST_RF_CORE_ALL | UDMA_TEST_RF_CFG_DEF | UDMA_TEST_RF_CFG_DYN),
+        .ringPrmId  = UDMA_TEST_RING_PRMID_EVENT_NONE,
+    },
+
 };
 
 #ifdef __cplusplus

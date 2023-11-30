@@ -429,3 +429,60 @@ int32_t udmaTestRingFree(UdmaTestTaskObj *taskObj)
 
     return retVal;
 }
+
+/*
+ * Test Case Description: Verifies the function UdmaRingPrms_init when
+ * ringPrms is NULL.
+ */
+int32_t UdmaTest_RingPrms_init(UdmaTestTaskObj *taskObj)
+{
+    int32_t  retVal = UDMA_SOK;
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+               " |TEST INFO|:: Task:%d: UDMA ring prms init negative Testcase ::\r\n", taskObj->taskId);
+
+    /* flowPrms is NULL */
+    Udma_RingPrms *ringPrms = (Udma_RingPrms*) NULL_PTR;
+
+    retVal = UdmaRingPrms_init(ringPrms);
+    if(UDMA_SOK != retVal)
+    {
+        retVal = UDMA_SOK;
+    }
+    else
+    {
+        GT_0trace(taskObj->traceMask, GT_ERR,
+               " |TEST INFO|:: Test:: UDMA ring prms init negative Testcase failed\n");
+    }
+
+    return retVal;
+
+}
+
+/*
+ * Test Case Description: Verifies the function UdmaRingMonPrms_init when
+ * monPrms is NULL.
+ */
+int32_t UdmaTest_RingMonPrms_init(UdmaTestTaskObj *taskObj)
+{
+    int32_t  retVal = UDMA_SOK;
+    GT_1trace(taskObj->traceMask, GT_INFO1,
+               " |TEST INFO|:: Task:%d: UDMA ring prms init negative Testcase ::\r\n", taskObj->taskId);
+
+    /* flowPrms is NULL */
+    Udma_RingMonPrms *monPrms = (Udma_RingMonPrms*) NULL_PTR;
+
+    retVal = UdmaRingMonPrms_init(monPrms);
+    if(UDMA_SOK != retVal)
+    {
+        retVal = UDMA_SOK;
+    }
+    else
+    {
+        GT_0trace(taskObj->traceMask, GT_ERR,
+               " |TEST INFO|:: Test:: UDMA ring Mon prms init negative Testcase failed\n");
+    }
+
+    return retVal;
+
+}
+

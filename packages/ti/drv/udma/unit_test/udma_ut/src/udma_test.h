@@ -721,6 +721,8 @@ int32_t UdmaTestRingGetNum(UdmaTestTaskObj *taskObj);
 int32_t UdmaTestRingDequeueRaw(UdmaTestTaskObj *taskObj);
 int32_t UdmaTestRingQueueRaw(UdmaTestTaskObj *taskObj);
 int32_t udmaTestRingFree(UdmaTestTaskObj *taskObj);
+int32_t UdmaTest_RingPrms_init(UdmaTestTaskObj *taskObj);
+int32_t UdmaTest_RingMonPrms_init(UdmaTestTaskObj *taskObj);
 
 /*
  *UDMA Flow Negative test case functions
@@ -728,6 +730,7 @@ int32_t udmaTestRingFree(UdmaTestTaskObj *taskObj);
 int32_t UdmaTest_flowGetNum(UdmaTestTaskObj *taskObj);
 int32_t UdmaTest_flowFree(UdmaTestTaskObj *taskObj);
 int32_t UdmaTest_flowGetCount(UdmaTestTaskObj *taskObj);
+int32_t UdmaTest_FlowPrms_init(UdmaTestTaskObj *taskObj);
 
 /*
  * UDMA Utils Negative test case functions
