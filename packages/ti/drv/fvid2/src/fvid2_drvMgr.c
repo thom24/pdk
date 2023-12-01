@@ -167,6 +167,8 @@ extern "C" {
 #endif
 static int32_t fdmDriverCbFxn(void *fdmData);
 static int32_t fdmDriverErrCbFxn(void *fdmData, void *errList);
+static int32_t fdmDriverTraceStCbFxn(void *fdmData);
+static int32_t fdmDriverTraceEndCbFxn(void *fdmData);
 static Fdm_Driver *fdmAllocDriverObject(void);
 static int32_t fdmFreeDriverObject(const Fvid2_DrvOps *drvOps);
 static Fdm_Channel *fdmAllocChannelObject(void);
@@ -715,6 +717,22 @@ Fvid2_Handle Fvid2_create(uint32_t              drvId,
                 {
                     fdmCbParams.fdmErrCbFxn = NULL;
                 }
+                if (NULL != cbParams->traceStCbFxn)
+                {
+                    fdmCbParams.fdmTraceStartCbFxn = &fdmDriverTraceStCbFxn;
+                }
+                else
+                {
+                    fdmCbParams.fdmTraceStartCbFxn = NULL;
+                }
+                if (NULL != cbParams->traceEndCbFxn)
+                {
+                    fdmCbParams.fdmTraceEndCbFxn = &fdmDriverTraceEndCbFxn;
+                }
+                else
+                {
+                    fdmCbParams.fdmTraceEndCbFxn = NULL;
+                }
 
                 fdmCbParams.handle   = channel;
                 fdmCbParams.errList  = cbParams->errList;
@@ -811,6 +829,8 @@ int32_t Fvid2_delete(Fvid2_Handle handle, void *deleteArgs)
         channel->drvHandle         = NULL;
         channel->cbParams.cbFxn    = NULL;
         channel->cbParams.errCbFxn = NULL;
+        channel->cbParams.traceStCbFxn = NULL;
+        channel->cbParams.traceEndCbFxn = NULL;
         channel->cbParams.errList  = NULL;
         channel->cbParams.appData  = NULL;
         (void) fdmFreeChannelObject(channel);
@@ -1344,6 +1364,52 @@ static int32_t fdmDriverErrCbFxn(void *fdmData, void *errList)
     OSAL_Assert((Fvid2_ErrCbFxn) NULL_PTR == channel->cbParams.errCbFxn);
     retVal =
         channel->cbParams.errCbFxn(channel, channel->cbParams.appData, errList);
+
+    return (retVal);
+}
+
+/**
+ *  fdmDriverCbFxn
+ *  \brief FVID2 driver manager driver trace start callback function. Whenever the drivers
+ *  wants to call the application trace start callback function, this function will be
+ *  called by the driver and FDM will in turn call the application trace start callback
+ *  function.
+ *  This is used by the drivers and not by the application.
+ */
+static int32_t fdmDriverTraceStCbFxn(void *fdmData)
+{
+    int32_t      retVal;
+    Fdm_Channel *channel;
+
+    /* Check for NULL pointers */
+    OSAL_Assert(NULL_PTR == fdmData);
+
+    channel = (Fdm_Channel *) fdmData;
+    OSAL_Assert((Fvid2_CbFxn) NULL_PTR == channel->cbParams.traceStCbFxn);
+    retVal = channel->cbParams.traceStCbFxn(channel, channel->cbParams.appData);
+
+    return (retVal);
+}
+
+/**
+ *  fdmDriverCbFxn
+ *  \brief FVID2 driver manager driver trace end callback function. Whenever the drivers
+ *  wants to call the application trace end callback function, this function will be
+ *  called by the driver and FDM will in turn call the application trace end callback
+ *  function.
+ *  This is used by the drivers and not by the application.
+ */
+static int32_t fdmDriverTraceEndCbFxn(void *fdmData)
+{
+    int32_t      retVal;
+    Fdm_Channel *channel;
+
+    /* Check for NULL pointers */
+    OSAL_Assert(NULL_PTR == fdmData);
+
+    channel = (Fdm_Channel *) fdmData;
+    OSAL_Assert((Fvid2_CbFxn) NULL_PTR == channel->cbParams.traceEndCbFxn);
+    retVal = channel->cbParams.traceEndCbFxn(channel, channel->cbParams.appData);
 
     return (retVal);
 }

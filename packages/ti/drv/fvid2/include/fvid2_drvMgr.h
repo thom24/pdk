@@ -149,6 +149,12 @@ struct Fvid2_DrvCbParams_t
     Fdm_ErrCbFxn fdmErrCbFxn;
     /**< FDM error callback function used by the driver to initimate
      *   any error occuring at the time of streaming. */
+    Fdm_CbFxn fdmTraceStartCbFxn;
+    /**< FDM trace callback function used by the driver to initimate
+     *   start of operation. */
+    Fdm_CbFxn fdmTraceEndCbFxn;
+    /**< FDM trace callback function used by the driver to initimate
+     *   end of operation. */
     Fvid2_Handle handle;
     /**< FDM layer FVID2 handle. This can be used by the actual driver to call
      *   application callback with proper FVID2 handle instead of routining

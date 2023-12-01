@@ -459,6 +459,16 @@ typedef struct
      *   parameter in case application decides not to get any error callback
      *   and so could be set to NULL. */
 
+    Fvid2_CbFxn    traceStCbFxn;
+    /**< Application callback function used by the driver to intimate any
+     *   start of operation. This is an optional parameter
+     *   in case application doesn't enable trace support */
+
+    Fvid2_CbFxn    traceEndCbFxn;
+    /**< Application callback function used by the driver to intimate any
+     *   end of operation. This is an optional parameter
+     *   in case application doesn't enable trace support */
+
     void           *errList;
     /**< Pointer to a valid Fvid2_FrameList in case of capture
      *   and display drivers or a pointer to a valid Fvid2_ProcessList
@@ -873,10 +883,12 @@ static inline void Fvid2CbParams_init(Fvid2_CbParams *cbPrms)
 {
     if (NULL != cbPrms)
     {
-        cbPrms->cbFxn    = NULL;
-        cbPrms->errCbFxn = NULL;
-        cbPrms->errList  = NULL;
-        cbPrms->appData  = NULL;
+        cbPrms->cbFxn         = NULL;
+        cbPrms->errCbFxn      = NULL;
+        cbPrms->traceStCbFxn  = NULL;
+        cbPrms->traceEndCbFxn = NULL;
+        cbPrms->errList       = NULL;
+        cbPrms->appData       = NULL;
     }
 
     return;
