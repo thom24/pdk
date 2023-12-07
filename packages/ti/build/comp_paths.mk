@@ -115,6 +115,8 @@ PDK_DIAG_EX_ROOT_PATH ?= $(pdk_PATH)
 export PDK_DIAG_EX_COMP_PATH = $(pdk_PATH)/ti/diag/examples
 PDK_LPM_ROOT_PATH ?= $(pdk_PATH)
 export PDK_LPM_COMP_PATH = $(PDK_LPM_ROOT_PATH)/ti/drv/lpm
+SAFETY_CHECKERS_ROOT_PATH ?= $(pdk_PATH)
+export SAFETY_CHECKERS_COMP_PATH = $(SAFETY_CHECKERS_ROOT_PATH)/ti/safety_checkers
 
 #Below applicable only for TPR12 devices
 PDK_CRC_ROOT_PATH ?= $(pdk_PATH)

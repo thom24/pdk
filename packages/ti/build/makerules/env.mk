@@ -202,6 +202,9 @@ endif
 ifneq ($(PDK_CAL_ROOT_PATH), $(pdk_PATH))
   pdk_INCLUDE += $(PDK_CAL_ROOT_PATH)
 endif
+ifneq ($(SAFETY_CHECKERS_ROOT_PATH), $(pdk_PATH))
+  pdk_INCLUDE += $(SAFETY_CHECKERS_ROOT_PATH)
+endif
 
 #Below are used for TDA/DRA SBL
 ifneq ($(PDK_STW_LLD_ROOT_PATH), $(pdk_PATH))
