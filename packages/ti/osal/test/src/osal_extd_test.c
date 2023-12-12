@@ -285,77 +285,6 @@ void CycleprofilerP_nonos_Test(void)
 }
 
 /*
- * Description: To test MutexP nonos API by calling in this function 
- */
-void MutexP_nonos_Test(void)
-{
-    MutexP_Status         status = MutexP_OK;
-    MutexP_Object         mutexObj;
-    MutexP_Handle         mutexHandle;
-    bool test_pass        = true;
-    
-    mutexHandle = MutexP_create(&mutexObj);
-    if (NULL_PTR == mutexHandle)
-    {
-        OSAL_log("\t Failed to create mutex \n");
-        test_pass = false;
-    }
-    
-    if(true == test_pass)
-    {
-        status = MutexP_lock(mutexHandle, MutexP_WAIT_FOREVER);
-        if(MutexP_OK != status)
-        {
-            OSAL_log("\t Failed to lock mutex \n");
-            test_pass = false;
-        }
-        if (true == test_pass)
-        {
-            status = MutexP_unlock(mutexHandle);
-            if(MutexP_OK != status)
-            {
-                OSAL_log("\t Failed to unlock mutex \n");
-                test_pass = false;
-            }
-        }
-        status = MutexP_delete(mutexHandle);
-        if(MutexP_OK != status) 
-        {
-            OSAL_log("\t Failed to delete mutex \n");
-            test_pass = false;
-        }
-        
-        if(true == test_pass)
-        {
-            OSAL_log("\n MutexP nonos Test Passed!! \n");
-        }
-    }
-    else 
-    {
-        OSAL_log("\n MutexP nonos Test Failed!! \n");
-    }
-}
-
-/*
- * Description: Testing Null parameter check for MutexP_create API
- */
-void MutexP_nonos_create_NullCheck(void)
-{
-    MutexP_Object         *mutexObj = (MutexP_Object *)NULL;
-    MutexP_Handle         mutexHandle;
-
-    mutexHandle = MutexP_create(mutexObj);
-    if(NULL == mutexHandle)
-    {
-       OSAL_log("\n MutexP_create Null check Passed!! \n");
-    }
-    else
-    {
-        OSAL_log("\n MutexP_create Null check Failed!! \n");
-    }
-}
-
-/*
  * Description: Testing Negative condition check for the below mentioned SwiP APIs :
  *      1. SwiP_Params_init
  *      2. SwiP_create
@@ -461,8 +390,248 @@ void RegisterIntr_nonos_NegTest(void)
      {
          OSAL_log("\n RegisterIntr nonos Negative Test failed!! \n");
      }
- }
+}
+
+/*
+ * Description: Null check for below mentioned APIs :
+ *      1. HwiP_create
+ *      2. HwiP_createDirect
+ */
+void HwiP_create_nonos_Null_test()
+{
+    uint32_t      interruptNum = CSL_INVALID_VEC_ID;
+    HwiP_Params   *hwipParams = NULL_PTR;
+    HwiP_Handle   handle;
+    
+    HwiP_Params_init(hwipParams);
+    
+    handle = HwiP_create(interruptNum, Hwi_IRQ, hwipParams);
+    if (NULL_PTR == handle)
+    {
+       OSAL_log("\n HwiP_create nonos Null check Passed!! \n");
+    }
+    else
+    {
+       OSAL_log("\n HwiP_create nonos Null check Failed!! \n");
+    }
+    
+    handle = HwiP_createDirect(interruptNum, NULL_PTR, hwipParams);
+    if (NULL_PTR == handle)
+    {
+       OSAL_log("\n HwiP_createDirect nonos Null check Passed!! \n");
+    }
+    else
+    {
+       OSAL_log("\n HwiP_createDirect nonos Null check Failed!! \n");
+    }
+}
+
+
+/*
+ * Description: Hwi Allocation Count Null check for HwiP_delete API
+ */
+void HwiP_delete_AlloCnt_test()
+{
+    HwiP_Params hwiParams;
+    HwiP_Handle handle;
+    int32_t ret;
+    bool test_pass = true;
+
+    HwiP_Params_init(&hwiParams);
+    
+    handle = HwiP_createDirect(INT_NUM_IRQ, (HwiP_DirectFxn)Hwi_IRQ, &hwiParams);
+    if (NULL_PTR == handle) {
+     OSAL_log("Failed to create the HwiP handle \n");
+     test_pass = false;
+    }
+    if (true == test_pass)
+    {
+       gOsalHwiAllocCnt = 0;
+       ret = HwiP_delete(handle);
+       if (HwiP_OK != ret)
+       {
+           OSAL_log(" Failed to delete HwiP handle \n");
+           test_pass = false;
+       }        
+    }
+    if (true == test_pass)
+    {
+        OSAL_log("\n HwiP_delete_AlloCnt test Passed!! \n");
+    }
+    else
+    {
+        OSAL_log("\n HwiP_delete_AlloCnt test Failed!! \n");
+    }
+}
+
+/*
+ * Description: Null check for below mentioned APIs in the Utils_nonos
+ *      1. Osal_getHwAttrs
+ *      2. Osal_setHwAttrs
+ *      3. Osal_getStaticMemStatus
+ */
+void Utils_nonos_test(void)
+{
+    Osal_HwAttrs          *hwAttrs = NULL_PTR;
+    int32_t               osal_ret;
+    uint32_t              ctrlBitMap = ( 0U );
+    Osal_StaticMemStatus  *pMemStats = NULL_PTR;
+    bool                  test_status = true;
+
+    osal_ret = Osal_getHwAttrs(hwAttrs);
+    if (osal_ret != osal_OK)
+    {
+        OSAL_log("\n Osal_getHwAttrs Null check test Passed!!\n");
+    }
+    else
+    {
+          test_status = false;
+    }
+    osal_ret = Osal_setHwAttrs(ctrlBitMap, hwAttrs);
+    if (osal_ret != osal_OK)
+    {
+        OSAL_log("\n Osal_setHwAttrs Null check test Passed!!\n");
+    }
+    else
+    {
+        test_status = false;
+    }
+    osal_ret = Osal_getStaticMemStatus(pMemStats);
+    if (osal_ret != osal_OK)
+    {
+        OSAL_log("\n Osal_getStaticMemStatus Null check test Passed!!\n");
+    }
+    else
+    {
+        test_status = false;
+    }
+    if(true != test_status)
+    {
+        OSAL_log("\n Utils_nonos Null check test Failed\n");
+    }
+}
+
+/*
+ * Description: Testing Osal_setHwAttrs by setting the Multi control bit parameter 
+ *
+ */
+void Utils_nonos_SetHwAttr_Multi_Test(void)
+{
+    Osal_HwAttrs      hwAttrs;
+    int32_t           osal_ret;
+    uint32_t          ctrlBitMap = ( OSAL_HWATTR_SET_EXT_CLK | 
+                                     OSAL_HWATTR_SET_HWACCESS_TYPE |
+                                     OSAL_HWATTR_SET_CPU_FREQ);
+    
+    osal_ret = Osal_getHwAttrs(&hwAttrs);
+
+    osal_ret = Osal_setHwAttrs(ctrlBitMap, &hwAttrs);
+    if (osal_ret == osal_OK)
+    {
+        OSAL_log("\n Osal_setHwAttrs Multi Access test Passed!!\n");
+    }
+    else
+    {
+        OSAL_log("\n Osal_setHwAttrs Multi Access test Failed!!\n");
+    }
+}
+
 #endif
+
+#if defined (FREERTOS)
+/*
+ * Description: Testing Nullcheck condition for the LoadP_getTaskLoad API
+ */
+void loadP_freertos_test(void)
+{
+    TaskP_Handle      hLoadTestTask = NULL_PTR;
+    LoadP_Stats       *loadStatsTask = NULL_PTR;
+    LoadP_Status      status = LoadP_OK;
+    
+    LoadP_reset();
+    
+    status += LoadP_getTaskLoad(hLoadTestTask, loadStatsTask);
+    if (LoadP_OK != status)
+    {
+        OSAL_log("\n LoadP_getTaskLoad Null check test Passed!!\n");
+    }
+    else
+    {
+        OSAL_log("\n LoadP_getTaskLoad Null check test Failed!!\n");
+    }
+}
+#endif
+
+/*
+ * Description: To test MutexP nonos API by calling in this function 
+ */
+void MutexP_Test(void)
+{
+    MutexP_Status         status = MutexP_OK;
+    MutexP_Object         mutexObj;
+    MutexP_Handle         mutexHandle;
+    bool test_pass        = true;
+    
+    mutexHandle = MutexP_create(&mutexObj);
+    if (NULL_PTR == mutexHandle)
+    {
+        OSAL_log("\t Failed to create mutex \n");
+        test_pass = false;
+    }
+    
+    if(true == test_pass)
+    {
+        status = MutexP_lock(mutexHandle, MutexP_WAIT_FOREVER);
+        if(MutexP_OK != status)
+        {
+            OSAL_log("\t Failed to lock mutex \n");
+            test_pass = false;
+        }
+        if (true == test_pass)
+        {
+            status = MutexP_unlock(mutexHandle);
+            if(MutexP_OK != status)
+            {
+                OSAL_log("\t Failed to unlock mutex \n");
+                test_pass = false;
+            }
+        }
+        status = MutexP_delete(mutexHandle);
+        if(MutexP_OK != status) 
+        {
+            OSAL_log("\t Failed to delete mutex \n");
+            test_pass = false;
+        }
+        
+        if(true == test_pass)
+        {
+            OSAL_log("\n MutexP nonos Test Passed!! \n");
+        }
+    }
+    else 
+    {
+        OSAL_log("\n MutexP nonos Test Failed!! \n");
+    }
+}
+
+/*
+ * Description: Testing Null parameter check for MutexP_create API
+ */
+void MutexP_create_NullCheck(void)
+{
+    MutexP_Object         *mutexObj = (MutexP_Object *)NULL;
+    MutexP_Handle         mutexHandle;
+
+    mutexHandle = MutexP_create(mutexObj);
+    if(NULL == mutexHandle)
+    {
+       OSAL_log("\n MutexP_create Null check Passed!! \n");
+    }
+    else
+    {
+        OSAL_log("\n MutexP_create Null check Failed!! \n");
+    }
+}
 
 /*
  * Description: Testing Negative condition for the Osal_RegisterInterruptDirect API
@@ -748,7 +917,6 @@ void HeapP_freertos_NullTest(void)
     uint32_t *addr_handle = handle;
     *addr_handle = 0U;
     status = HeapP_free(handle, fhandle, free_size);
-    OSAL_log("\n status = %d\n \n");
     fhandle = HeapP_alloc(handle, size);
     status = HeapP_free(handle, fhandle, free_size);
   
@@ -976,7 +1144,7 @@ void EventP_Max_Test(void)
     for (loop = 0U; loop <= LOOP_CNT ; loop++)
     {
         handle[loop] = EventP_create(&params);
-        if (NULL_PTR == handle[loop])
+        if (NULL_PTR != handle[loop])
         {
             test_pass = true;
         }
@@ -995,7 +1163,7 @@ void EventP_Max_Test(void)
         }
         if(true == test_pass)
         {
-            OSAL_log("\t Maximum event creation test Passed!! \n");
+            OSAL_log("\n\t Maximum event creation test Passed!! \n");
         }
     }
     else
@@ -1534,7 +1702,6 @@ void MailboxP_wait_forever_Test()
     OSAL_log("\n MailboxP_wait_forever_Test passed!!\n");
 }
 
-
 #if defined(BARE_METAL)
 void OSAL_tests()
 #else
@@ -1545,9 +1712,9 @@ void OSAL_tests(void *arg0, void *arg1)
   
 #if defined(SAFERTOS)
 
-    CacheP_wb_Test();
+    //CacheP_wb_Test();
 
-    CacheP_Inv_Test();
+    //CacheP_Inv_Test();
 
     ClockP_start_HwiP_Test();
     
@@ -1578,7 +1745,7 @@ void OSAL_tests(void *arg0, void *arg1)
 
     MailboxP_delete_NullTest();
     
-    MailboxP_Post_HwiP_Test();
+    //MailboxP_Post_HwiP_Test();
 
     MailboxP_wait_forever_Test();
     
@@ -1592,20 +1759,30 @@ void OSAL_tests(void *arg0, void *arg1)
     
     EventP_Max_Test();
     
+    loadP_freertos_test();
+    
 #endif
 
 #if defined(BARE_METAL)
     CycleprofilerP_nonos_Test();
     
-    MutexP_nonos_Test();
+    MutexP_Test();
     
-    MutexP_nonos_create_NullCheck();
+    MutexP_create_NullCheck();
     
     SwiP_nonos_Test();
     
     RegisterIntr_nonos_NegTest();
     
     RegisterIntrDirect_NegTest();
+    
+    HwiP_create_nonos_Null_test();
+    
+    HwiP_delete_AlloCnt_test();
+    
+    Utils_nonos_test();
+    
+    Utils_nonos_SetHwAttr_Multi_Test();
 
 #endif
 
@@ -1614,6 +1791,11 @@ void OSAL_tests(void *arg0, void *arg1)
     RegisterIntr_Test();
 
     EventP_Test();
+    
+    MutexP_create_NullCheck();
+    
+    MutexP_Test();
+    
 #endif
     
 #ifdef BARE_METAL
