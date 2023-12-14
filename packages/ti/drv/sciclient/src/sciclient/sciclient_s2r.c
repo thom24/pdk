@@ -66,19 +66,6 @@ static void asm_function(void);
 #define CSL_MSMC_CFGS0_WR(r, v) CSL_REG32_WR_OFF(CSL_COMPUTE_CLUSTER0_MSMC_CFGS0_BASE, r, v)
 
 /**
- * This address belongs to the space reserved from the DM firmware for
- * the point of view of Linux, U-boot SPL must use the same address
- * to restore BL31 ATF and resume entry point address.
- */
-#define SCLICLIENT_ATF_BL31_DDR_RESTORE_ADDRESS (0xA5000000U)
-
-/**
- * This is actually the biggest possible size of BL31 ATF. This value is defined
- * in ATF.
- */
-#define SCICLIENT_ATF_BL31_CODE_SIZE (0x20000U)
-
-/**
  * Address in BT SRAM where to load the code that will take care of the
  * DDR retention and PMIC S2R configuration.
  */
@@ -132,20 +119,13 @@ static bool S2R_cleanL3Cache(void)
     return true;
 }
 
-void S2R_goRetention(uint32_t coreResumeAddr)
+void S2R_goRetention(void)
 {
-    volatile uint32_t* ptr_address = (volatile uint32_t*)(SCLICLIENT_ATF_BL31_DDR_RESTORE_ADDRESS + SCICLIENT_ATF_BL31_CODE_SIZE);
-
     if (!S2R_cleanL3Cache())
     {
         S2R_debugPrintf("Failed to clean L3 cache\n");
         Sciclient_pmDomainReset(DOMGRP_00, SCICLIENT_SERVICE_WAIT_FOREVER);
     }
-
-    CSL_REG32_WR(ptr_address,coreResumeAddr);
-    S2R_debugPrintf("Resume address stored = 0x%x\n", coreResumeAddr);
-
-    S2R_cleanAllDCache();
 
     /* load DDR retention code and PMIC S2R into SRAM */
     memcpy((void*)SCICLIENT_S2R_SRAM_CODE_ADDRESS,
