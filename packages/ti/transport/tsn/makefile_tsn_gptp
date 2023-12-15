@@ -70,6 +70,7 @@ SRCS_COMMON += announce_interval_setting_sm.c \
 PACKAGE_SRCS_COMMON = ../tsn_component.mk ../makefile_tsn_gptp
 PACKAGE_SRCS_COMMON += $(SRCDIR)
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(TSN_CFLAGS) -DTSNPKGVERSION=\"$(TSNPKGVERSION)\" \
+	-DUB_LOGCAT=3 -DUB_LOGTSTYPE=UB_CLOCK_REALTIME \
 	-include $(PDK_TSN_COMP_PATH)/tsn-stack/tsn_buildconf/jacinto_buildconf.h \
 	-include $(SRC_PATH)/tilld/lld_gptp_private.h
 

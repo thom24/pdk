@@ -9,7 +9,7 @@ endif
 
 MODULE_NAME = tsn_lldp
 
-SRCDIR = tsn_lldp tsn_lldp/yangs/generated tsn_lldp/tilld tsn_lldp/tilld/jacinto
+SRCDIR = tsn_lldp tsn_lldp/yangs/generated tsn_lldp/tilld 
 INCDIR = tsn_lldp \
 		 tsn_lldp/yangs/generated \
 		 tsn_combase/tilld/jacinto \

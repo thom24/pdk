@@ -28,6 +28,7 @@ SRCS_COMMON += ucman.c \
 	excelfore-tsn-remote_runconf.c \
 	excelfore-tsn-remote.c \
 	yang_modules.c \
+	yang_modules_namespaces.c \
 	yang_db_identiyref.c \
 	yang_db_enumeration.c \
 	yang_db_runtime.c \
