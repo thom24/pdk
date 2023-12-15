@@ -122,6 +122,9 @@ static int32_t App_msmcQueryNegTest(void);
 #if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
 static int32_t App_otpProcessKeyCfgNegTest();
 #endif
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+static int32_t App_dkekNegTest();
+#endif
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -252,6 +255,10 @@ int32_t App_sciclientTestMain(App_sciclientTestParams_t *testParams)
 #if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
         case 13:
             testParams->testResult =  App_otpProcessKeyCfgNegTest();
+#endif
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+        case 14:
+            testParams->testResult =  App_dkekNegTest();
             break;
 #endif
         default:
@@ -1712,5 +1719,98 @@ static int32_t App_otpProcessKeyCfgNegTest()
     }
 
   return otpProcessKeyTestStatus;
+}
+#endif
+
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+static int32_t App_dkekNegTest()
+{
+    int32_t status = CSL_PASS;
+    int32_t sciclientInitStatus = CSL_PASS;
+    int32_t dkekTestStatus = CSL_PASS;
+    Sciclient_ConfigPrms_t        config =
+    {
+       SCICLIENT_SERVICE_OPERATION_MODE_INTERRUPT,
+       NULL,
+       0 /* isSecure = 0 un secured for all cores */
+    };
+
+     while (gSciclientHandle.initCount != 0)
+     {
+         status = Sciclient_deinit();
+     }
+     status = Sciclient_init(&config);
+     sciclientInitStatus = status;
+
+     if(status == CSL_PASS)
+     {
+          App_sciclientPrintf ("Sciclient_init PASSED.\n");
+          status = Sciclient_setDKEK(NULL, NULL, SCICLIENT_SERVICE_WAIT_FOREVER);
+          if (status == CSL_EFAIL)
+          {
+              dkekTestStatus += CSL_PASS;
+              App_sciclientPrintf ("Sciclient_setDKEK: Negative Arg Test Passed.\n");
+          }
+          else
+          {
+             dkekTestStatus += CSL_EFAIL;
+             App_sciclientPrintf ("Sciclient_setDKEK: Negative Arg Test Failed.\n");
+          }
+
+          status = Sciclient_releaseDKEK(NULL, NULL, SCICLIENT_SERVICE_WAIT_FOREVER);
+          if (status == CSL_EFAIL)
+          {
+              dkekTestStatus += CSL_PASS;
+              App_sciclientPrintf ("Sciclient_releaseDKEK: Negative Arg Test Passed.\n");
+          }
+          else
+          {
+             dkekTestStatus += CSL_EFAIL;
+             App_sciclientPrintf ("Sciclient_releaseDKEK: Negative Arg Test Failed.\n");
+          }
+
+          status = Sciclient_getDKEK(NULL, NULL, SCICLIENT_SERVICE_WAIT_FOREVER);
+          if (status == CSL_EFAIL)
+          {
+              dkekTestStatus += CSL_PASS;
+              App_sciclientPrintf ("Sciclient_getDKEK: Negative Arg Test Passed.\n");
+          }
+          else
+          {
+             dkekTestStatus += CSL_EFAIL;
+             App_sciclientPrintf ("Sciclient_getDKEK: Negative Arg Test Failed.\n");
+          }
+    }
+    else
+    {
+        dkekTestStatus += CSL_EFAIL;
+        App_sciclientPrintf ("Sciclient_init FAILED.\n");
+    }
+
+    if(sciclientInitStatus == CSL_PASS)
+    {
+        status = Sciclient_deinit();
+        if(status == CSL_PASS)
+        {
+            dkekTestStatus += CSL_PASS;
+            App_sciclientPrintf ("Sciclient_deinit PASSED.\n");
+        }
+        else
+        {
+            dkekTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_deinit FAILED.\n");
+        }
+    }
+
+    if(dkekTestStatus < 0U)
+    {
+        dkekTestStatus = CSL_EFAIL;
+    }
+    else
+    {
+        dkekTestStatus = CSL_PASS;
+    }
+
+  return dkekTestStatus;
 }
 #endif
