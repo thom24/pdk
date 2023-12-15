@@ -119,6 +119,9 @@ static int32_t App_sciclientPmMessageTest(void);
 #if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
 static int32_t App_msmcQueryNegTest(void);
 #endif
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+static int32_t App_otpProcessKeyCfgNegTest();
+#endif
 /* ========================================================================== */
 /*                            Global Variables                                */
 /* ========================================================================== */
@@ -246,8 +249,13 @@ int32_t App_sciclientTestMain(App_sciclientTestParams_t *testParams)
             testParams->testResult = App_msmcQueryNegTest();
             break;
 #endif
-        default:
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+        case 13:
+            testParams->testResult =  App_otpProcessKeyCfgNegTest();
             break;
+#endif
+        default:
+                break;
     }
     return 0;
 }
@@ -1634,5 +1642,75 @@ static int32_t App_msmcQueryNegTest(void)
     }
 
   return msmcQueryTestStatus;
+}
+#endif
+
+#if defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_J721S2) || defined (SOC_J784S4)
+static int32_t App_otpProcessKeyCfgNegTest()
+{
+    int32_t status = CSL_PASS;
+    int32_t sciclientInitStatus = CSL_PASS;
+    int32_t otpProcessKeyTestStatus = CSL_PASS;
+    uint32_t resp = 0U;
+    Sciclient_ConfigPrms_t        config =
+    {
+       SCICLIENT_SERVICE_OPERATION_MODE_INTERRUPT,
+       NULL,
+       0 /* isSecure = 0 un secured for all cores */
+    };
+
+     while (gSciclientHandle.initCount != 0)
+     {
+         status = Sciclient_deinit();
+     }
+     status = Sciclient_init(&config);
+     sciclientInitStatus = status;
+
+     if(status == CSL_PASS)
+     {
+          App_sciclientPrintf ("Sciclient_init PASSED.\n");
+          status = Sciclient_otpProcessKeyCfg(NULL, SCICLIENT_SERVICE_WAIT_FOREVER, &resp);
+          if (status == CSL_EFAIL)
+          {
+              otpProcessKeyTestStatus += CSL_PASS;
+              App_sciclientPrintf ("Sciclient_otpProcessKeyCfg: Negative Arg Test Passed.\n");
+          }
+          else
+          {
+             otpProcessKeyTestStatus += CSL_EFAIL;
+             App_sciclientPrintf ("Sciclient_otpProcessKeyCfg: Negative Arg Test Failed.\n");
+          }
+    }
+    else
+    {
+        otpProcessKeyTestStatus += CSL_EFAIL;
+        App_sciclientPrintf ("Sciclient_init FAILED.\n");
+    }
+
+    if(sciclientInitStatus == CSL_PASS)
+    {
+        status = Sciclient_deinit();
+        if(status == CSL_PASS)
+        {
+            otpProcessKeyTestStatus += CSL_PASS;
+            App_sciclientPrintf ("Sciclient_deinit PASSED.\n");
+        }
+        else
+        {
+            otpProcessKeyTestStatus += CSL_EFAIL;
+            App_sciclientPrintf ("Sciclient_deinit FAILED.\n");
+        }
+    }
+
+    if(otpProcessKeyTestStatus < 0U)
+    {
+        otpProcessKeyTestStatus = CSL_EFAIL;
+    }
+    else
+    {
+        otpProcessKeyTestStatus = CSL_PASS;
+    }
+
+  return otpProcessKeyTestStatus;
 }
 #endif
