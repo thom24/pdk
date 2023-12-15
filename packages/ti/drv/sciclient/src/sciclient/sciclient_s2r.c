@@ -89,28 +89,11 @@ uint32_t lpm_sram_s2r[] = LPM_SRAM_S2R;
 /*                          Function Definitions                              */
 /* ========================================================================== */
 
-static void S2R_cleanAllDCache(void)
-{
-    uint32_t set, way;
-    uint32_t numSets = CSL_armR5CacheGetNumSets();
-    uint32_t numWays = CSL_armR5CacheGetNumWays();
-
-    for (way = 0; way < numWays ; way++)
-    {
-        for (set = 0; set < numSets; set++)
-        {
-            CSL_armR5CacheCleanDcacheSetWay(set, way);
-        }
-    }
-}
-
 void S2R_goRetention(uint32_t coreResumeAddr)
 {
     CSL_REG32_WR(SCLICLIENT_ATF_BL31_DDR_RESTORE_ADDRESS + SCICLIENT_ATF_BL31_CODE_SIZE,
                  coreResumeAddr);
     S2R_debugPrintf("Resume address stored = 0x%x\n", coreResumeAddr);
-
-    S2R_cleanAllDCache();
 
     /* load DDR retention code and PMIC S2R into SRAM */
     memcpy((void*)SCICLIENT_S2R_SRAM_CODE_ADDRESS,
