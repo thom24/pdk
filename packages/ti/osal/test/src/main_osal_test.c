@@ -97,6 +97,8 @@
 #define ENABLE_DEBUG_LOG_TEST	1
 #endif
 
+#define ENABLE_EXT_BLOCK_TEST   1
+
 #include <ti/csl/soc.h>
 
 #if defined (BUILD_C7X)
