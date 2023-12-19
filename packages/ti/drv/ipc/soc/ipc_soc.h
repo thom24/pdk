@@ -77,6 +77,8 @@ int32_t Ipc_getMailboxInfoRx(uint32_t selfId, uint32_t remoteId,
 int32_t Ipc_getMailboxIntrRouterCfg(uint32_t selfId, uint32_t clusterId,
                  uint32_t userId, Ipc_MbConfig* cfg, uint32_t cnt);
 uintptr_t Ipc_getMailboxBaseAddr(uint32_t clusterId);
+uint32_t Ipc_getNavss512MailboxInputIntr(uint32_t clusterId, uint32_t userId);
+int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt);
 
 /**
  * \brief Returns the core name for get core id

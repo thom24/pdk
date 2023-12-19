@@ -178,6 +178,9 @@ int32_t Rpmsg_Extended_ResponderFxn(uint32_t testId)
       uint32_t         token = 0;
       int32_t          status;
       uint32_t         remoteEndPt;
+      uint32_t         userId;
+      uint32_t         clusterId;
+      uint32_t         queueId;
 
       buf = pRecvTaskBuf;
       if (buf == NULL)
@@ -228,6 +231,18 @@ int32_t Rpmsg_Extended_ResponderFxn(uint32_t testId)
 
       Ipc_mailboxIsr(IPC_APP_ENDPT1);
 
+      Ipc_getMailboxInfoTx(17U,remoteProcId,&clusterId,&userId,&queueId);
+
+      Ipc_getMailboxInfoRx(17U,remoteProcId,&clusterId,&userId,&queueId);
+
+      Ipc_getNavss512MailboxInputIntr(19U,userId);
+
+      Ipc_getNavss512MailboxInputIntr(clusterId,5U);
+
+      Ipc_getNavss512MailboxInputIntr(clusterId,MAILBOX_USER_INVALID);
+
+      Ipc_getNavss512MailboxInputIntr(MAILBOX_CLUSTER_INVALID,userId);
+
       /* Test RPMessage_send with invalid procId */
       status = RPMessage_send(NULL, IPC_APP_INVALID_ID, IPC_APP_ENDPT1, srcEndPt, (Ptr)buf, len);
       if (status != IPC_SOK)
@@ -253,6 +268,8 @@ int32_t IpcApp_Extended_test(uint32_t testId)
        Mailbox_hwiCallback func = NULL;
        uint32_t            arg = 0;
        uint32_t            timeoutCnt = 0;
+       uint32_t            intrCnt = 0;
+       Ipc_MbConfig        cfg;
 
        /* Step 1: Sets configuration parameters for
        *  current processor, number of processors,
@@ -305,6 +322,8 @@ int32_t IpcApp_Extended_test(uint32_t testId)
 
        Ipc_mpSetConfig(selfProcId, 5U, pRemoteProcArray);
 
+       Ipc_isCacheCoherent ();
+
        /* Get MultiProc id for the processor
        * with corresponding MultiProc name
        */
@@ -326,6 +345,8 @@ int32_t IpcApp_Extended_test(uint32_t testId)
        Ipc_mpGetName(17U);
 
        Ipc_mpGetRemoteProcId(IPC_APP_ENDPT1);
+
+       Ipc_getCoreName(17U);
 
        App_printf("IPC_echo_test (core : %s) .....\r\n", Ipc_mpGetSelfName());
 
@@ -374,6 +395,8 @@ int32_t IpcApp_Extended_test(uint32_t testId)
           IpcAPP_ReportResult(TEST_MAILBOX_REGISTER_INVALID_REMOTEPROCID, IPC_EFAIL);
           return IPC_EFAIL;
        }
+
+       Ipc_setCoreEventId(17U,&cfg,intrCnt);
 
        /* Step 3: Initialize RPMessage */
        RPMessage_Params cntrlParam;

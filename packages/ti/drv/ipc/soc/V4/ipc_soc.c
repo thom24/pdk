@@ -378,8 +378,6 @@ static Ipc_MailboxInfo   g_IPC_MailboxInfo[IPC_MAX_PROCS][IPC_MAX_PROCS] =
     }
 };
 
-uint32_t Ipc_getNavss512MailboxInputIntr(uint32_t clusterId, uint32_t userId);
-int32_t Ipc_setCoreEventId(uint32_t selfId, Ipc_MbConfig* cfg, uint32_t intrCnt);
 int32_t Ipc_sciclientIrqTranslate(uint16_t coreId, uint32_t eventId,
         uint16_t *procIrq);
 
