@@ -49,6 +49,7 @@
 #include <startup.h>
 #include <pm.h>
 #include <rm.h>
+#include <fw_caps.h>
 /* Sciclient APIs are kept in the end of the include list to make sure the
  * RM and PM HAL typedefs are used.
  */
@@ -187,6 +188,7 @@ typedef struct {
 static int32_t board_config_pm_handler(uint32_t *msg_recv);
 __attribute__((optnone)) static uint16_t boardcfgRmFindCertSize(uint32_t *msg);
 static int32_t boardcfg_RmAdjustReq(uint32_t *msg, uint16_t adjSize);
+static int32_t Sciclient_queryFwCapsHandler(const uint32_t reqFlags, void *tx_msg);
 
 /* ========================================================================== */
 /*                            Global Variables                                */
@@ -382,6 +384,16 @@ int32_t Sciclient_service (const Sciclient_ReqPrm_t *pReqPrm,
                 ret = Sciclient_serviceSecureProxy(pReqPrm, pRespPrm);
                 break;
             }
+            case TISCI_MSG_QUERY_FW_CAPS:
+                memcpy(message, pReqPrm->pReqPayload, pReqPrm->reqPayloadSize);
+                ret = Sciclient_queryFwCapsHandler(pReqPrm->flags,message);
+                if (pRespPrm->pRespPayload != NULL)
+                {
+                    memcpy(pRespPrm->pRespPayload, message, pRespPrm->respPayloadSize);
+                }
+                hdr = (struct tisci_header *) &message;
+                pRespPrm->flags = hdr->flags;
+                break;
             default:
             {
                 /*
@@ -507,6 +519,24 @@ static int32_t Sciclient_pmSetCpuResetMsgProxy(uint32_t *msg_recv, uint32_t proc
             ret = -EINVAL;
             break;
     }
+    return ret;
+}
+
+static int32_t Sciclient_queryFwCapsHandler(const uint32_t reqFlags __attribute__((unused)), void *tx_msg)
+{
+    int32_t ret = CSL_PASS;
+    uint32_t flags = ((struct tisci_header *) tx_msg)->flags;
+
+    ret = query_fw_caps_handler((uint32_t*)tx_msg);
+
+    if ((flags & TISCI_MSG_FLAG_AOP) != 0UL) {
+        if (ret == CSL_PASS) {
+            Sciclient_TisciMsgSetAckResp((struct tisci_header *) tx_msg);
+        } else {
+            Sciclient_TisciMsgSetNakResp((struct tisci_header *) tx_msg);
+        }
+    }
+
     return ret;
 }
 
