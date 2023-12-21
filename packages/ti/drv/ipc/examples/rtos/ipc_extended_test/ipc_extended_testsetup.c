@@ -58,6 +58,7 @@
 #include <ti/drv/ipc/src/ipc_mailbox.h>
 #include <ti/drv/ipc/src/ipc_virtioPrivate.h>
 #include <ti/drv/ipc/src/ipc_utils.h>
+#include <ti/drv/ipc/src/ipc_priv.h>
 
 #include <ti/osal/osal.h>
 #include <ti/drv/uart/UART.h>
@@ -76,6 +77,7 @@
 #define IPC_APP_INVALID_ID 50U
 #define IPC_APP_NUMMSGS  10000 /* number of message sent per task */
 #define IPC_APP_MP_INVALID_ID            (0xFFFFFFFFU)
+#define IPC_APP_SERVICE_PING   "ti.ipc4.ping-pong.ti.ipc4.ping-pong"
 uint32_t rpmsgNegDataSize = RPMSG_DATA_SIZE;
 
 /* ========================================================================== */
@@ -94,6 +96,7 @@ typedef enum IpcApp_ExtTestId {
       TEST_RPMSG_SND_INVALID_PROCID,
       TEST_MAILBOX_REGISTER_INVALID_REMOTEPROCID,
       TEST_IPCUTILS_HEAPCREATE,
+      TEST_IPC_INIT_PARAM_NULL,
       TEST_END
 } IpcApp_ExtTestId;
 
@@ -116,6 +119,7 @@ IpcApp_TestParams ExtTestCases[] =
       { TEST_RPMSG_SND_INVALID_PROCID, "test_rpmsg_send_invalid_procid"},
       { TEST_MAILBOX_REGISTER_INVALID_REMOTEPROCID, "test_mailbox_register_invalid_remote_procid"},
       { TEST_IPCUTILS_HEAPCREATE, "test_ipcutils_heapcreate"},
+      { TEST_IPC_INIT_PARAM_NULL, "test_ipc_init_param_null"},
       { TEST_END, NULL },
 };
 
@@ -181,6 +185,9 @@ int32_t Rpmsg_Extended_ResponderFxn(uint32_t testId)
       uint32_t         userId;
       uint32_t         clusterId;
       uint32_t         queueId;
+      uint32_t         procId = Ipc_mpGetSelfId();
+      RPMessage_Handle handle = NULL;
+      char             str[IPC_APP_MSGSIZE];
 
       buf = pRecvTaskBuf;
       if (buf == NULL)
@@ -190,6 +197,16 @@ int32_t Rpmsg_Extended_ResponderFxn(uint32_t testId)
       }
 
       RPMessage_unblockGetRemoteEndPt(token);
+
+      /*Test RPMessage_unblockGetRemoteEndPt with NULL Pointer */
+      {
+          Ipc_Object *ipcObjPtr = getIpcObjInst(0U);
+          Ipc_OsalPrms *pOsalPrms = &ipcObjPtr->initPrms.osalPrms;
+          pOsalPrms -> unLockHIsrGate = NULL_PTR ;
+          pOsalPrms -> lockHIsrGate = NULL_PTR ;
+          pOsalPrms -> unlockMutex = NULL_PTR ;
+          RPMessage_unblockGetRemoteEndPt(token);
+      }
 
       uint32_t            selfId     = Ipc_getCoreId();
       status = RPMessage_getRemoteEndPt(selfId, NULL, &remoteProcId,
@@ -214,6 +231,28 @@ int32_t Rpmsg_Extended_ResponderFxn(uint32_t testId)
       {
             IpcAPP_ReportResult(TEST_RPMSG_REMOTE_ENDPT_TOKEN, IPC_EFAIL);
             return IPC_EFAIL;
+      }
+
+      {
+          Ipc_Object *ipcObjPtr = getIpcObjInst(0U);
+          Ipc_OsalPrms *pOsalPrms = &ipcObjPtr->initPrms.osalPrms;
+          pOsalPrms -> createMutex = NULL_PTR ;
+          pOsalPrms -> lockMutex =  NULL_PTR ;
+          pOsalPrms -> deleteMutex = NULL_PTR ;
+          pOsalPrms -> lockHIsrGate = NULL_PTR ;
+          pOsalPrms -> unLockHIsrGate = NULL_PTR ;
+
+          status = RPMessage_getRemoteEndPtToken(IPC_MCU1_0, IPC_APP_SERVICE_PING, &remoteProcId,
+                      &remoteEndPt,1000,0);
+          if (status != IPC_SOK)
+          {
+              IpcAPP_ReportResult(TEST_RPMSG_REMOTE_ENDPT_TOKEN, IPC_SOK);
+          }
+          else
+          {
+              IpcAPP_ReportResult(TEST_RPMSG_REMOTE_ENDPT_TOKEN, IPC_EFAIL);
+              return IPC_EFAIL;
+          }
       }
 
       /*Test RPMessageParams_init with NULL */
@@ -255,6 +294,19 @@ int32_t Rpmsg_Extended_ResponderFxn(uint32_t testId)
           return IPC_EFAIL;
       }
 
+      RPMessage_send(NULL, procId, IPC_APP_ENDPT1, srcEndPt, (Ptr)buf, len);
+
+      RPMessage_recvNb(handle,(Ptr)str,&len,&remoteEndPt,&remoteProcId);
+
+      RPMessage_unblock(handle);
+
+      {
+        Ipc_Object *ipcObjPtr = getIpcObjInst(0U);
+        Ipc_OsalPrms *pOsalPrms = &ipcObjPtr->initPrms.osalPrms;
+        pOsalPrms -> unlockMutex = NULL ;
+        RPMessage_unblock(handle);
+      }
+
       return IPC_SOK;
 }
 
@@ -270,6 +322,7 @@ int32_t IpcApp_Extended_test(uint32_t testId)
        uint32_t            timeoutCnt = 0;
        uint32_t            intrCnt = 0;
        Ipc_MbConfig        cfg;
+       uint32_t            announcedEndpts=0;
 
        /* Step 1: Sets configuration parameters for
        *  current processor, number of processors,
@@ -432,6 +485,20 @@ int32_t IpcApp_Extended_test(uint32_t testId)
           return IPC_EFAIL;
        }
 
+       RPMessage_getMessageBufferSize();
+
+       RPMessage_announce(0U,announcedEndpts,NULL_PTR);
+
+       RPMessage_announce(0U,announcedEndpts,NULL_PTR);
+
+       RPMessage_announce(0U,0U, NULL);
+
+       RPMessage_announce(32U,0U, NULL);
+
+       RPMessage_announce(17U,0U,IPC_APP_SERVICE_PING);
+
+       RPMessage_announce(17U,0U,IPC_APP_SERVICE);
+
        /*Test Ipc_utils Qcreate,Heapcreate will Null parameters */
        IpcUtils_Qcreate(NULL);
 
@@ -466,6 +533,8 @@ int32_t IpcApp_echoExtTest(void)
 
       /* Test rpmessage deinitialization */
       RPMessage_deInit();
+
+       Ipc_deinit();
 
       UART_printf("Tests finished\n");
       UART_printf("Total tests: %d Passed: %d Failed %d\n", gTotalTests, gTotalTestsPassed, gTotalTestsFailed);
