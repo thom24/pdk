@@ -735,6 +735,13 @@ int32_t UdmaTest_flowGetCount(UdmaTestTaskObj *taskObj);
 int32_t UdmaTest_FlowPrms_init(UdmaTestTaskObj *taskObj);
 
 /*
+ *UDMA Proxy Negative test case functions
+ */
+int32_t UdmaTest_proxyFreeNeg(UdmaTestTaskObj *taskObj);
+int32_t UdmaTest_proxyAllocNeg(UdmaTestTaskObj *taskObj);
+int32_t UdmaTest_proxyConfigNeg(UdmaTestTaskObj *taskObj);
+
+/*
  * UDMA Utils Negative test case functions
  */
 int32_t udmaTestUdmaPrinfNegTc(UdmaTestTaskObj *taskObj);
