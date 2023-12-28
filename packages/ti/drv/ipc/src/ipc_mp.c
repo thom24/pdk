@@ -90,11 +90,8 @@ int32_t Ipc_mpSetConfig(uint32_t selfId, uint16_t numProc, uint32_t procArry[IPC
         {
             id = procArry[i];
             pMpCfg->procInfo[i].procId = id;
-            if(id < IPC_MAX_PROCS)
-            {
-                strncpy(pMpCfg->procInfo[i].name, Ipc_getCoreName(id), IPC_MAX_PROC_NAMELEN-1);
-                pMpCfg->procInfo[i].name[IPC_MAX_PROC_NAMELEN-1] = '\0';
-            }
+            strncpy(pMpCfg->procInfo[i].name, Ipc_getCoreName(id), IPC_MAX_PROC_NAMELEN-1);
+            pMpCfg->procInfo[i].name[IPC_MAX_PROC_NAMELEN-1] = '\0';
         }
     }
 

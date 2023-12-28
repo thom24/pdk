@@ -83,24 +83,7 @@ Ipc_UtilsObj gIpcUtilsObj = {IPC_UTILS_UN_INITIALIZED};
 /*                           Function Declaration                              */
 /* ========================================================================== */
 
-/**
- *  \brief  IpcUtils_Qenqueue
- *
- *  \param IpcUtils_QHandle        [IN]
- *  \param IpcUtils_QElem          [IN]
- *
- *  \return None
-*/
-void IpcUtils_Qenqueue(IpcUtils_QHandle *handle, IpcUtils_QElem *elem);
-
-/**
- *  \brief  IpcUtils_Qdequeue
- *
- *  \param IpcUtils_QHandle        [IN]
- *
- *  \return None
-*/
-void* IpcUtils_Qdequeue(IpcUtils_QHandle *handle);
+ /* None */
 
 /* ========================================================================== */
 /*                              API's                                         */

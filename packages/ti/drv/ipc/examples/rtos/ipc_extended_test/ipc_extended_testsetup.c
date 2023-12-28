@@ -182,12 +182,17 @@ int32_t Rpmsg_Extended_ResponderFxn(uint32_t testId)
       uint32_t         token = 0;
       int32_t          status;
       uint32_t         remoteEndPt;
-      uint32_t         userId;
-      uint32_t         clusterId;
-      uint32_t         queueId;
+      IpcUtils_QHandle qhandle;
+      IpcUtils_QElem   qelem;
+      uint32_t         daAddr = 0;
+      uint32_t         size = 0;
       uint32_t         procId = Ipc_mpGetSelfId();
       RPMessage_Handle handle = NULL;
       char             str[IPC_APP_MSGSIZE];
+      uint32_t         userId;
+      uint32_t         clusterId;
+      uint32_t         queueId;
+      uint32_t         timeoutCnt=0;
 
       buf = pRecvTaskBuf;
       if (buf == NULL)
@@ -197,6 +202,16 @@ int32_t Rpmsg_Extended_ResponderFxn(uint32_t testId)
       }
 
       RPMessage_unblockGetRemoteEndPt(token);
+
+      /* Test IpcUtils to get Data associated
+       * with this node with invalid parameters */
+      IpcUtils_QgetHeadNode(&qhandle);
+
+      IpcUtils_QgetHeadNode(NULL_PTR);
+
+      IpcUtils_Qnext(&qelem);
+
+      IpcUtils_Qnext(NULL_PTR);
 
       /*Test RPMessage_unblockGetRemoteEndPt with NULL Pointer */
       {
@@ -232,6 +247,8 @@ int32_t Rpmsg_Extended_ResponderFxn(uint32_t testId)
             IpcAPP_ReportResult(TEST_RPMSG_REMOTE_ENDPT_TOKEN, IPC_EFAIL);
             return IPC_EFAIL;
       }
+
+      IpcUtils_Qput(NULL,NULL);
 
       {
           Ipc_Object *ipcObjPtr = getIpcObjInst(0U);
@@ -270,6 +287,8 @@ int32_t Rpmsg_Extended_ResponderFxn(uint32_t testId)
 
       Ipc_mailboxIsr(IPC_APP_ENDPT1);
 
+      IpcUtils_getMemoryAddress(daAddr,size);
+
       Ipc_getMailboxInfoTx(17U,remoteProcId,&clusterId,&userId,&queueId);
 
       Ipc_getMailboxInfoRx(17U,remoteProcId,&clusterId,&userId,&queueId);
@@ -294,7 +313,17 @@ int32_t Rpmsg_Extended_ResponderFxn(uint32_t testId)
           return IPC_EFAIL;
       }
 
+      IpcUtils_QgetHead(&qhandle);
+
       RPMessage_send(NULL, procId, IPC_APP_ENDPT1, srcEndPt, (Ptr)buf, len);
+
+      {
+        Ipc_Object *ipcObjPtr = getIpcObjInst(0U);
+        Ipc_OsalPrms *pOsalPrms = &ipcObjPtr->initPrms.osalPrms;
+        pOsalPrms -> disableAllIntr = NULL ;
+        pOsalPrms -> restoreAllIntr = NULL ;
+        Ipc_mailboxSend(selfId,remoteProcId,1U,timeoutCnt);
+      }
 
       RPMessage_recvNb(handle,(Ptr)str,&len,&remoteEndPt,&remoteProcId);
 
@@ -320,9 +349,14 @@ int32_t IpcApp_Extended_test(uint32_t testId)
        Mailbox_hwiCallback func = NULL;
        uint32_t            arg = 0;
        uint32_t            timeoutCnt = 0;
+       IpcUtils_HeapHandle pHndl;
+       uint32_t            size = 0;
+       uint32_t            align = 0;
+       IpcUtils_HeapParams hparam;
+       uint32_t            announcedEndpts=0;
        uint32_t            intrCnt = 0;
        Ipc_MbConfig        cfg;
-       uint32_t            announcedEndpts=0;
+       uint32_t            remoteProcId=0;
 
        /* Step 1: Sets configuration parameters for
        *  current processor, number of processors,
@@ -449,6 +483,10 @@ int32_t IpcApp_Extended_test(uint32_t testId)
           return IPC_EFAIL;
        }
 
+       Ipc_mailboxRegister(selfProcId,remoteProcId,func,arg,timeoutCnt);
+
+       Ipc_mailboxRegister(selfProcId,remoteProcId,func,arg,100U);
+
        Ipc_setCoreEventId(17U,&cfg,intrCnt);
 
        /* Step 3: Initialize RPMessage */
@@ -485,6 +523,10 @@ int32_t IpcApp_Extended_test(uint32_t testId)
           return IPC_EFAIL;
        }
 
+       Ipc_mailboxEnableNewMsgInt(IPC_APP_ENDPT1,remoteProcId);
+
+       Ipc_mailboxEnableNewMsgInt(selfProcId,IPC_APP_ENDPT1);
+
        RPMessage_getMessageBufferSize();
 
        RPMessage_announce(0U,announcedEndpts,NULL_PTR);
@@ -504,6 +546,15 @@ int32_t IpcApp_Extended_test(uint32_t testId)
 
        IpcUtils_HeapCreate(NULL,NULL);
 
+       {
+         hparam . buf = NULL;
+         IpcUtils_HeapCreate(&pHndl,&hparam);
+       }
+
+       IpcUtils_HeapAlloc(&pHndl,size,align);
+
+       IpcUtils_HeapAlloc(NULL_PTR,size,align);
+
        Virtio_setCallback(p,NULL,NULL);
 
        return Rpmsg_Extended_ResponderFxn(testId);
@@ -511,10 +562,15 @@ int32_t IpcApp_Extended_test(uint32_t testId)
 
 int32_t IpcApp_echoExtTest(void)
 {
-      uint32_t  i = 0;
-      uintptr_t baseAddr = 0;
-      uint32_t  queueId = 0;
-      uint32_t  remoteProcId=0;
+      uint32_t            i = 0;
+      uintptr_t           baseAddr = 0;
+      uint32_t            queueId = 0;
+      uint32_t            remoteProcId=0;
+      IpcUtils_HeapHandle pHndl;
+      uint32_t            size=0;
+      IpcUtils_QHandle    qhandle;
+      RPMessage_Handle    *payload = NULL;
+      IpcUtils_QElem      elem;
 
       IpcApp_Extended_test(i);
 
@@ -529,12 +585,39 @@ int32_t IpcApp_echoExtTest(void)
 
       Ipc_mailboxDisableNewMsgInt(15U,IPC_APP_ENDPT1);
 
+      /* Test IpcUtils API's with invalid parameters
+       * to Delete,Remove and Free up the
+       * queue and HeapMemory */
+      IpcUtils_Qdelete(&qhandle);
+
+      IpcUtils_Qdelete(NULL_PTR);
+
       IpcUtils_Qremove(NULL);
+
+      IpcUtils_Qenqueue(&qhandle,&elem);
+
+      IpcUtils_Qenqueue(&qhandle, NULL);
+
+      IpcUtils_Qdequeue(&qhandle);
+
+      IpcUtils_DeInit();
+
+      IpcUtils_HeapFree(&pHndl,NULL,size);
+
+      IpcUtils_HeapFree(&pHndl,&payload,size);
+
+      IpcUtils_HeapFree(NULL,&payload,size);
+
+      IpcUtils_DeInit();
+
+      IpcUtils_HeapDelete(&pHndl);
+
+      IpcUtils_HeapDelete(NULL_PTR);
 
       /* Test rpmessage deinitialization */
       RPMessage_deInit();
 
-       Ipc_deinit();
+      Ipc_deinit();
 
       UART_printf("Tests finished\n");
       UART_printf("Total tests: %d Passed: %d Failed %d\n", gTotalTests, gTotalTestsPassed, gTotalTestsFailed);
@@ -544,4 +627,3 @@ int32_t IpcApp_echoExtTest(void)
       }
       return 0;
 }
-
