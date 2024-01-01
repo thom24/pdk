@@ -1,24 +1,29 @@
-# Makefile for UART unit test app
+#
+# Makefile for OSAL extended rtos test app.
+#
+ifeq ($(RULES_MAKE), )
 include $(PDK_INSTALL_PATH)/ti/build/Rules.make
-export DISABLE_RECURSE_DEPS
-
-#Name of the directory created under packages/ti/binary/
-#Extended testapp for freertos and safertos
-APP_NAME = osal_extd_testapp_$(BUILD_OS_TYPE)
-
-PACKAGE_SRCS_COMMON = . ../src
-
-ifeq ($(SOC),$(filter $(SOC), j721e j7200 j721s2 j784s4))
-SRCDIR = . ../src ../
-INCDIR = . ../src ../
-# Common source files across all platforms and cores
-SRCS_COMMON += osal_extd_test.c
+else
+include $(RULES_MAKE)
 endif
+
+#App Name
+APP_NAME = osal_extended_testapp_$(BUILD_OS_TYPE)
+
+PACKAGE_SRCS_COMMON = src osal_extended_test.h makefile_rtos.mk
+
+SRCDIR = src
+INCDIR = . ../src
+# Common source files across all platforms and cores
+SRCS_COMMON += osal_extended_testapp.c
+SRCS_COMMON += osal_extended_testapp_hwi.c osal_extended_testapp_mutex.c osal_extended_testapp_cache.c
+SRCS_COMMON += osal_extended_testapp_mailbox.c osal_extended_testapp_task.c
 
 ifeq ($(BUILD_OS_TYPE),freertos)
 CFLAGS_OS_DEFINES = -DFREERTOS
 EXTERNAL_INTERFACES = freertos
 COMP_LIST_COMMON    = $(PDK_COMMON_FREERTOS_COMP)
+SRCS_COMMON += osal_extended_testapp_queue.c osal_extended_testapp_heap.c
 endif
 
 ifeq ($(BUILD_OS_TYPE),safertos)
@@ -27,20 +32,11 @@ EXTERNAL_INTERFACES = safertos
 COMP_LIST_COMMON    = $(PDK_COMMON_SAFERTOS_COMP)
 endif
 
-ifeq ($(SOC),$(filter $(SOC),j721e j7200 j721s2 j784s4))
-  CFLAGS_OSAL_UT += -DENABLE_TIMER_TEST
-endif
-
 # List all the external components/interfaces, whose interface header files
 # need to be included for this component
 INCLUDE_EXTERNAL_INTERFACES = pdk $(EXTERNAL_INTERFACES)
 
-CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OSAL_UT) $(CFLAGS_OS_DEFINES)
-
-# Core/SoC/platform specific source files and CFLAGS
-# Example:
-#   SRCS_<core/SoC/platform-name> =
-#   CFLAGS_LOCAL_<core/SoC/platform-name> =
+CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(CFLAGS_OS_DEFINES)
 
 # Include common make files
 ifeq ($(MAKERULEDIR), )

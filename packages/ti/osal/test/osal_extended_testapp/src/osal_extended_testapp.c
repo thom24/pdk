@@ -1,12 +1,5 @@
-/**
- *  \file   osal_extd_test.c
- *
- *  \brief  OSAL driver test application main file.
- *
- */
-
 /*
- * Copyright (C) 2023 Texas Instruments Incorporated - http://www.ti.com/
+ * Copyright (C) 2024 Texas Instruments Incorporated - http://www.ti.com/
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -35,6 +28,13 @@
  * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
  * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ */
+
+/**
+ *  \file   osal_extended_testapp.c
+ *
+ *  \brief  OSAL driver test application main file.
  *
  */
 
@@ -67,22 +67,7 @@
 #include <ti/csl/csl_timer.h>
 #endif
 
-#include <stdio.h>
-#include <string.h>
-#include <math.h>
-
-/* TI-RTOS Header files */
-#include <ti/osal/osal.h>
-#include <ti/osal/soc/osal_soc.h>
-#include "OSAL_log.h"
-#include "OSAL_board.h"
-#include <ti/osal/src/nonos/Nonos_config.h>
-#include <ti/osal/SwiP.h>
-#include <ti/drv/sciclient/sciclient.h>
-
-#include <ti/csl/soc.h>
-#include <ti/csl/tistdtypes.h>
-#include <ti/csl/arch/csl_arch.h>
+#include "osal_extended_test.h"
 
 /*===========================================================================*/
 /*                             Macros & Typedefs                             */
@@ -99,8 +84,7 @@
 
 #define INT_NUM_IRQ 32
 #define LOOP_CNT 2
-#define HEAP_MAIN 1024U
-#define TSK_STACK (32U * 1024U)
+
 /*Semaphore*/
 #if defined(FREERTOS)
     #define SEMP_BLOCK_SIZE (1 * OSAL_FREERTOS_SEMAPHOREP_SIZE_BYTES)
@@ -135,9 +119,6 @@ static uint8_t  gAppTskStackMain[APP_TSK_STACK_MAIN] __attribute__(( aligned( 0x
 #endif
 #endif
 
-#define TaskP_PRIORITY_HIGHEST      ((int8_t)configMAX_PRIORITIES - 1)
-#define TaskP_PRIORITY_LOWEST       0
-
 /* ==========================================================================*/
 /*                         Structure Declarations                            */
 /* ==========================================================================*/
@@ -160,28 +141,14 @@ extern uint32_t gOsalHwiAllocCnt;
 
 ClockP_Handle gclockp_handle;
 
-/*Mailbox*/
-MailboxP_Handle gmailboxp_handle;/*mailbox handle passed to mailbox post in isr*/
-uint8_t gmailbox_str[] = {"Texas Instruments"};
-void * gmsg_in_isr = gmailbox_str;/*msg parameter passed to mailbox_post which is getting call in isr*/
-uint32_t gmailbox_timeout_isr = 1U;/*timeout passed to mailbox_post in isr*/
-
 volatile uint64_t gTestlocalTimeout = 0x100000U;
 volatile bool gFlagSwi = false, gFlagIRQ = false;
-
-/* for HeapP_freertos */
-static uint8_t  gHeapPbuf[HEAP_MAIN];
 
 /* for EventP APIs */
 EventP_Handle gEventP_handle;
 uint32_t geventMask = EventP_ID_01;
 extern int gOsalEventPFreeRtosPool[OSAL_FREERTOS_CONFIGNUM_EVENT];
 extern uint32_t gOsalEventAllocCnt;
-extern uint32_t gOsalQueueAllocCnt;
-
-/*TaskP_RTOS*/
-static uint8_t  gTskStack[TSK_STACK];
-volatile uint8_t gtaskp_taskpfxn_got_execute = 0U;
 
 /*Semaphore block*/
 uint8_t semPMemBlock[SEMP_BLOCK_SIZE]
@@ -202,13 +169,6 @@ void clockp_start_isr(void *arg)
 {
     ghwip_isr_got_execute = 1U;
     ClockP_start(gclockp_handle);
-}
-
-/*isr which calls MailboxP_post and ghwip_isr_got_execute which indicates isr got executed*/
-void mailboxp_post_isr(void *arg)
-{
-    ghwip_isr_got_execute = 3U;
-    MailboxP_post(gmailboxp_handle,gmsg_in_isr,gmailbox_timeout_isr);
 }
 
 /* ISR which is called to check whether the hardware ISR got executed in RegisterIntr_nonos, HwiP_nonos Tests */
@@ -237,12 +197,6 @@ void EventP_Neg_IRQ(void *arg)
 {
       gTestlocalTimeout = 0x100000U;
       EventP_post(gEventP_handle, geventMask);
-}
-
-/*Callback function for taskp_create and gtaskp_taskpfxn_got_execute indicates it got called*/
-static void Taskp_TaskpFxn(void *arg)
-{
-    gtaskp_taskpfxn_got_execute = 1U;
 }
 
 /*=============================================================================*/
@@ -435,78 +389,6 @@ void RegisterIntr_nonos_NegTest(void)
 }
 
 /*
- * Description: Null check for below mentioned APIs :
- *      1. HwiP_create
- *      2. HwiP_createDirect
- */
-void HwiP_create_nonos_Null_test()
-{
-    uint32_t      interruptNum = CSL_INVALID_VEC_ID;
-    HwiP_Params   *hwipParams = NULL_PTR;
-    HwiP_Handle   handle;
-
-    HwiP_Params_init(hwipParams);
-
-    handle = HwiP_create(interruptNum, Hwi_IRQ, hwipParams);
-    if (NULL_PTR == handle)
-    {
-       OSAL_log("\n HwiP_create nonos Null check Passed!! \n");
-    }
-    else
-    {
-       OSAL_log("\n HwiP_create nonos Null check Failed!! \n");
-    }
-
-    handle = HwiP_createDirect(interruptNum, NULL_PTR, hwipParams);
-    if (NULL_PTR == handle)
-    {
-       OSAL_log("\n HwiP_createDirect nonos Null check Passed!! \n");
-    }
-    else
-    {
-       OSAL_log("\n HwiP_createDirect nonos Null check Failed!! \n");
-    }
-}
-
-
-/*
- * Description: Hwi Allocation Count Null check for HwiP_delete API
- */
-void HwiP_delete_AlloCnt_test()
-{
-    HwiP_Params hwiParams;
-    HwiP_Handle handle;
-    int32_t ret;
-    bool test_pass = true;
-
-    HwiP_Params_init(&hwiParams);
-
-    handle = HwiP_createDirect(INT_NUM_IRQ, (HwiP_DirectFxn)Hwi_IRQ, &hwiParams);
-    if (NULL_PTR == handle) {
-     OSAL_log("Failed to create the HwiP handle \n");
-     test_pass = false;
-    }
-    if (true == test_pass)
-    {
-       gOsalHwiAllocCnt = 0;
-       ret = HwiP_delete(handle);
-       if (HwiP_OK != ret)
-       {
-           OSAL_log(" Failed to delete HwiP handle \n");
-           test_pass = false;
-       }
-    }
-    if (true == test_pass)
-    {
-        OSAL_log("\n HwiP_delete_AlloCnt test Passed!! \n");
-    }
-    else
-    {
-        OSAL_log("\n HwiP_delete_AlloCnt test Failed!! \n");
-    }
-}
-
-/*
  * Description: Null check for below mentioned APIs in the Utils_nonos
  *      1. Osal_getHwAttrs
  *      2. Osal_setHwAttrs
@@ -603,77 +485,6 @@ void loadP_freertos_test(void)
     }
 }
 #endif
-
-/*
- * Description: To test MutexP nonos API by calling in this function
- */
-void MutexP_Test(void)
-{
-    MutexP_Status         status = MutexP_OK;
-    MutexP_Object         mutexObj;
-    MutexP_Handle         mutexHandle;
-    bool test_pass        = true;
-
-    mutexHandle = MutexP_create(&mutexObj);
-    if (NULL_PTR == mutexHandle)
-    {
-        OSAL_log("\t Failed to create mutex \n");
-        test_pass = false;
-    }
-
-    if(true == test_pass)
-    {
-        status = MutexP_lock(mutexHandle, MutexP_WAIT_FOREVER);
-        if(MutexP_OK != status)
-        {
-            OSAL_log("\t Failed to lock mutex \n");
-            test_pass = false;
-        }
-        if (true == test_pass)
-        {
-            status = MutexP_unlock(mutexHandle);
-            if(MutexP_OK != status)
-            {
-                OSAL_log("\t Failed to unlock mutex \n");
-                test_pass = false;
-            }
-        }
-        status = MutexP_delete(mutexHandle);
-        if(MutexP_OK != status)
-        {
-            OSAL_log("\t Failed to delete mutex \n");
-            test_pass = false;
-        }
-
-        if(true == test_pass)
-        {
-            OSAL_log("\n MutexP nonos Test Passed!! \n");
-        }
-    }
-    else
-    {
-        OSAL_log("\n MutexP nonos Test Failed!! \n");
-    }
-}
-
-/*
- * Description: Testing Null parameter check for MutexP_create API
- */
-void MutexP_create_NullCheck(void)
-{
-    MutexP_Object         *mutexObj = (MutexP_Object *)NULL;
-    MutexP_Handle         mutexHandle;
-
-    mutexHandle = MutexP_create(mutexObj);
-    if(NULL == mutexHandle)
-    {
-       OSAL_log("\n MutexP_create Null check Passed!! \n");
-    }
-    else
-    {
-        OSAL_log("\n MutexP_create Null check Failed!! \n");
-    }
-}
 
 /*
  * Description: Testing Negative condition for the Osal_RegisterInterruptDirect API
@@ -799,189 +610,6 @@ void RegisterIntr_Test(void)
     RegisterIntrDirect_NegTest();
     RegisterIntr_pos_Test();
     RegisterIntr_Neg_Test();
-}
-
-/*
- * Description: Testing negative condition check for the below mentioned APIs :
- *      1. QueueP_Params_init
- *      2. QueueP_create
- *      3. QueueP_getQPtr
- *      4. QueueP_put
- *      5. QueueP_get
- *      6. QueueP_delete
- */
-void QueueP_nonos_Test(void)
-{
-    QueueP_Params *params = (QueueP_Params*)NULL_PTR;
-    QueueP_Handle handle, handle_val[6];
-    QueueP_Status status;
-    void * elem = NULL;
-    uint32_t i = 0U;
-
-    /* checking QueueP_Params_init else condition */
-    QueueP_Params_init(params);
-
-    /* To test "for (i = 0; i < maxQueue; i++)" loop in QueueP_create API */
-    for (i = 0U; i < LOOP_CNT; i++)
-    {
-          handle = QueueP_create(params);
-          handle_val[i] = handle;
-          if (NULL_PTR == handle_val[i])
-          {
-              OSAL_log("\n\t Creating Queue failed \n");
-          }
-    }
-
-    QueueP_getQPtr(handle_val[0]);
-
-    /* Here addr_handle is used to get the memory location of the handle
-     * we are corrupting the content of the handle and passing in a corrupt handle to the driver
-     * to test negative condition in QueueP_put API
-     */
-    uint32_t (*addr_handle) = handle_val[0];
-    for(i = 0U; i <= LOOP_CNT; i++)
-    {
-        addr_handle[i] = 0U;
-    }
-    status = QueueP_put(handle_val[0], elem);
-    if(QueueP_OK != status)
-    {
-        OSAL_log("\n QueueP_put Negative Test Passed!! \n");
-    }
-    else
-    {
-        OSAL_log("\n QueueP_put Negative Test Failed!! \n");
-    }
-
-    QueueP_get(handle_val[0]);
-
-    for(i = 0U; i < LOOP_CNT; i++)
-    {
-        status = QueueP_delete(handle_val[i]);
-    }
-
-    if(QueueP_OK == status)
-    {
-        OSAL_log("\n QueueP_delete Nullcheck Test Passed!! \n");
-    }
-    else
-    {
-        OSAL_log("\n QueueP_delete Nullcheck Test Failed!! \n");
-    }
-}
-
-/*
- * Description: Testing negative condition for below mentioned APIs :
- *      1. HeapP_Params_init
- *      2. HeapP_create
- *      3. HeapP_alloc
- *      4. HeapP_free
- *      5. HeapP_delete
- */
-void HeapP_freertos_NegTest(void)
-{
-    memset( gHeapPbuf, 0x00, sizeof( gHeapPbuf ) );
-
-    HeapP_Params params;
-    HeapP_Handle handle, memhandle, handle_val[LOOP_CNT];
-    HeapP_Status status;
-    uint32_t size = 10U, free_size = 5U;
-    uint32_t i;
-
-    HeapP_Params_init(&params);
-
-    params.buf = gHeapPbuf;
-    params.size = sizeof(gHeapPbuf);
-
-    /* Testing "for (i = 0; i < maxHeap; i++)" loop in HeapP_create API */
-    for (i = 0U; i < LOOP_CNT; i++)
-    {
-        handle = HeapP_create(&params);
-        handle_val[i] = handle;
-    }
-
-    memhandle = HeapP_alloc(handle_val[0], size);
-    if(NULL_PTR == memhandle)
-    {
-        OSAL_log("\n\t Heap allocation failed \n");
-    }
-
-    status = HeapP_free(handle_val[0], memhandle, free_size);
-    if(HeapP_OK != status)
-    {
-        OSAL_log("\n\t Heap is not freed \n");
-    }
-    for(i = 0; i < LOOP_CNT; i++)
-    {
-        status = HeapP_delete(handle_val[i]);
-    }
-    if(HeapP_OK != status)
-    {
-        OSAL_log("\n\t Deleting the heap failed \n");
-        OSAL_log("\n HeapP Freertos Negative Test Failed!! \n");
-    }
-    else
-    {
-        OSAL_log("\n HeapP Freertos Negative Test Passed!! \n");
-    }
-}
-
-/*
- * Description: Testing Null paramter check for the below mentioned APIs :
- *      1. HeapP_create
- *      2. HeapP_alloc
- *      3. HeapP_free
- *      4. HeapP_delete
- */
-void HeapP_freertos_NullTest(void)
-{
-    memset( gHeapPbuf, 0xFF, sizeof( gHeapPbuf ) );
-    HeapP_Params params;
-    HeapP_Handle handle;
-    HeapP_Status status;
-    void *fhandle = NULL_PTR;
-    uint32_t size = 10U, free_size = 5U;
-
-    HeapP_Params_init(&params);
-
-    params.buf = gHeapPbuf;
-    params.size = sizeof(gHeapPbuf);
-
-    handle = HeapP_create(&params);
-    if(NULL_PTR == handle)
-    {
-        OSAL_log("\n\t HEAP create failed\n");
-    }
-    /* Here addr_handle is used to get the memory location of the handle
-    * we are corrupting the content of the handle and passing in a corrupt handle to the driver
-    * to test negative condition for HeapP_alloc API
-    */
-    uint32_t *addr_handle = handle;
-    *addr_handle = 0U;
-    status = HeapP_free(handle, fhandle, free_size);
-    fhandle = HeapP_alloc(handle, size);
-    status = HeapP_free(handle, fhandle, free_size);
-
-    status = HeapP_delete(handle);
-    if(HeapP_OK != status)
-    {
-        OSAL_log("\n HeapP_delete Negative Test Passed!! \n");
-    }
-    else
-    {
-        OSAL_log("\n HeapP_delete Negative Test Failed!! \n");
-    }
-}
-
-/*
- * Description: Testing null parameter check for HeapP_Params_init API
- */
-void HeapP_Params_init_NullTest(void)
-{
-    HeapP_Params *params = (HeapP_Params*)NULL_PTR;
-
-    HeapP_Params_init(params);
-    OSAL_log("\n HeapP_Params_init Nullcheck Passed!! \n");
 }
 
 /*
@@ -1580,47 +1208,6 @@ void ClockP_timerCallbackFunction_NULL_test()
     }
 }
 
-
-/*
- * Description  : Testing by storing data in array and reading it and then passing to CacheP_wb
- */
-void CacheP_wb_Test()
-{
-    uint8_t cachep_nonos_arr[1000];
-    int32_t i = 0;
-    for(i = 0; i < 1000; i++)
-    {
-        cachep_nonos_arr[i]='T';
-    }
-    if(cachep_nonos_arr[0] == 'T' && cachep_nonos_arr[999] == 'T')
-        OSAL_log("\t array written properly\n");
-    else
-        OSAL_log("\t array not written properly\n");
-
-    CacheP_wb(cachep_nonos_arr,1000);
-    OSAL_log("\n CacheP_wb_Test passed!!\n");
-}
-
-/*
- * Description  : Testing by storing data in array and reading it and then paasing to CacheP_Inv
- */
-void CacheP_Inv_Test()
-{
-    uint8_t cachep_nonos_arr[1000];
-    int32_t i = 0;
-    for(i = 0; i < 1000; i++)
-    {
-        cachep_nonos_arr[i]='T';
-    }
-    if(cachep_nonos_arr[0] == 'T' && cachep_nonos_arr[999] == 'T')
-        OSAL_log("\t array written properly\n");
-    else
-        OSAL_log("\t array not written properly\n");
-
-    CacheP_Inv(cachep_nonos_arr,1000);
-    OSAL_log("\n CacheP_Inv_Test passed!!\n");
-}
-
 /*
  * Description  : Testing below mentioned DebugP APIs by passing required data :
  *      1. DebugP_log0
@@ -1645,299 +1232,6 @@ void DebugP_log_Test()
     DebugP_log4(format, p1, p2, p3, p4);
 
     OSAL_log("\nDebugP_log_Test passed!!\n");
-}
-
-/*
- * Description  : Testing freertos mailbox by calling below mentioned APIs :
- *      1. MailboxP_Params_init
- *      2. MailboxP_create
- *      3. MailboxP_delete
- *      4. MailboxP_post
- *      5. MailboxP_pend
- */
-void MailboxP_freertos_Test()
-{
-    MailboxP_Params params;
-    MailboxP_Handle ret_handle;
-    uint8_t str[] = {"Texas Instruments"};
-    void * msg = str;
-    uint32_t timeout = 1;
-    MailboxP_Status ret_val = MailboxP_OK;
-    uint8_t data_arr[30];
-
-    MailboxP_Params_init(&params);
-    params.buf = data_arr;
-    params.bufsize = 50;
-    params.count = 5;
-    params.size  = 6;
-    ret_handle = data_arr;
-
-    ret_handle = MailboxP_create(&params);
-    if(ret_handle == NULL_PTR)
-    {
-        OSAL_log("\t Err : Mailbox creation failed\n");
-    }
-
-    ret_val = MailboxP_post(ret_handle,msg,timeout);
-    if(ret_val == MailboxP_TIMEOUT)
-    {
-        OSAL_log("\t Err : MailboxP_TIMEOUT\n");
-    }
-
-    MailboxP_pend(ret_handle,msg,timeout);
-
-    MailboxP_getNumPendingMsgs(ret_handle);
-
-    MailboxP_delete(ret_handle);
-    OSAL_log("\n MailboxP_freertos_Test passed!!\n");
-}
-
-/*
- * Description  : Testing null parameter check for MailboxP_Params_init API
- */
-void MailboxP_params_init_null_test()
-{
-    MailboxP_Params_init(NULL_PTR);
-    OSAL_log("\n MailboxP_params_init_null_test passed!!\n");
-}
-
-/*
- * Description  : Testing multiple mailbox create for MailboxP_create API
- */
-void MailboxP_create_multiple_test()
-{
-    MailboxP_Params params;
-    MailboxP_Handle ret_handle;
-    uint8_t data_arr[30];
-    uint32_t i = 0U;
-
-    MailboxP_Params_init(&params);
-    params.buf = data_arr;
-    params.bufsize = 50;
-    params.count = 5;
-    params.size  = 6;
-    ret_handle = data_arr;
-
-    ret_handle = MailboxP_create(&params);
-    for(i = 0U;i <= (OSAL_FREERTOS_CONFIGNUM_MAILBOX + 1U); i++)
-    {
-        MailboxP_create(&params);
-
-        MailboxP_delete(ret_handle);
-    }
-
-    OSAL_log("\n MailboxP_create_multiple_test passed!!\n");
-}
-
-/*
- * Description  : Testing null parameter check for MailboxP_delete API
- */
-void MailboxP_delete_null_test()
-{
-    MailboxP_Params params;
-    MailboxP_Handle ret_handle;
-    uint8_t data_arr[30];
-
-    MailboxP_Params_init(&params);
-    params.buf = data_arr;
-    params.bufsize = 50;
-    params.count = 5;
-    params.size  = 6;
-    ret_handle = data_arr;
-
-    ret_handle = MailboxP_create(&params);
-    MailboxP_create(&params);
-
-    uint32_t (*addr_handle) = ret_handle;
-    addr_handle[0] = 0U;                     /*To make mailbox->used zero to achieve negative case*/
-    MailboxP_delete(ret_handle);
-    OSAL_log("\n MailboxP_delete_null_test passed!!\n");
-}
-
-/*
- * Description  : Testing the scenario when MailboxP_post in in ISR context.
- */
-void MailboxP_post_hwiP_test()
-{
-    uint32_t interruptNum = INT_NUM_IRQ;
-    const HwiP_Params *hwip_test_params;
-    HwiP_Params hwipParams;
-    HwiP_Handle hHwi;
-
-    MailboxP_Params params;
-    MailboxP_Handle ret_handle;
-
-    uint8_t data_arr[30];
-
-    MailboxP_Params_init(&params);
-    params.buf = data_arr;
-    params.bufsize = 50;
-    params.count = 5;
-    params.size  = 6;
-    ret_handle = data_arr;
-
-    ret_handle = MailboxP_create(&params);
-    if(NULL_PTR == ret_handle)
-    {
-        OSAL_log("\t Err : Mailbox creation failed\n");
-    }
-
-    HwiP_Params_init(&hwipParams);
-
-    hHwi = HwiP_create(interruptNum,(HwiP_Fxn) mailboxp_post_isr,(void *)&hwip_test_params);
-    if (NULL_PTR == hHwi)
-    {
-      OSAL_log("\t Failed to create the HwiP handle for stop \n");
-    }
-
-    HwiP_enableInterrupt(interruptNum);
-
-    HwiP_post(interruptNum);
-
-    HwiP_delete( hHwi );
-
-    if(3U == ghwip_isr_got_execute)
-    {
-        OSAL_log("\t MailboxP_Post ISR executed\n");
-    }
-
-    OSAL_log("\n MailboxP_post_hwiP_test passed!!\n");
-}
-
-/*
- * Description  : Testing scenario when MailboxP_post is not in ISR and timeout is 0.
- */
-void MailboxP_wait_forever_test()
-{
-    MailboxP_Params params;
-    MailboxP_Handle ret_handle;
-
-    MailboxP_Status ret_val = MailboxP_OK;
-    uint8_t data_arr[30];
-
-    MailboxP_Params_init(&params);
-    params.buf = data_arr;
-    params.bufsize = 50;
-    params.count = 5;
-    params.size  = 6;
-    ret_handle = data_arr;
-
-    uint8_t str[] = {"Texas Instruments"};
-    void * msg = str;
-    uint32_t timeout = 0U;
-
-    ret_handle = MailboxP_create(&params);
-    if(NULL_PTR == ret_handle)
-    {
-        OSAL_log("\t Err : Mailbox creation failed\n");
-    }
-
-    ret_val = MailboxP_post(ret_handle,msg,timeout);
-    if(ret_val == MailboxP_TIMEOUT)
-    {
-        OSAL_log("\t Err : MailboxP_TIMEOUT\n");
-    }
-    OSAL_log("\n MailboxP_wait_forever_Test passed!!\n");
-}
-
-/*
-Description  : Creating a task having priority zero to fulfill condition TaskP_PRIORITY_LOWEST >= taskPriority
-*/
-void TaskP_priority_zero_test()
-{
-    TaskP_Params params;
-    TaskP_Handle tskHandle = NULL;
-
-    TaskP_Params_init(&params);
-    params.priority = 0;
-    params.stack    = gTskStack;
-    params.stacksize= sizeof (gTskStack);
-
-    tskHandle = TaskP_create((TaskP_Fxn)Taskp_TaskpFxn,(void *)&params);
-    if(params.priority == TaskP_PRIORITY_LOWEST)
-    {
-        OSAL_log("Task got created with the lowest possible priority\n");
-    }
-    else
-    {
-        OSAL_log("Lowest priority 0 not got set to task\n");
-    }
-    if(tskHandle == NULL)
-    {
-        OSAL_log("Task handle is not valid\n");
-    }
-    else
-    {
-        OSAL_log("Task handle is valid deleted a task\n");
-        TaskP_delete(tskHandle);
-    }
-    OSAL_log("TaskP_priority_zero_test passed !!\n");
-}
-
-/*
-Description  : Creating more than 1 tasks so i++ will get trigger and additionally when task
-               tasks count go beyond limit that test also
-*/
-void TaskP_create_max_task_creation_test()
-{
-    TaskP_Params params;
-    TaskP_Handle tskHandle = NULL;
-    TaskP_Params_init(&params);
-    params.priority = 17;
-    params.stack    = gTskStack;
-    params.stacksize= sizeof (gTskStack);
-#if defined(FREERTOS)
-    int i = 0;
-    for(i=0;i<=(OSAL_FREERTOS_CONFIGNUM_TASK+1);i++)
-#endif
-#if defined(SAFERTOS)
-    int i = 0;
-    for(i=0;i<=(OSAL_SAFERTOS_CONFIGNUM_TASK+1);i++)
-#endif
-    {
-        tskHandle = TaskP_create((TaskP_Fxn)Taskp_TaskpFxn,(void *)&params);
-    }
-
-    if(tskHandle == NULL)
-    {
-        OSAL_log("Task cration fail while checking for max task creation\n");
-    }
-    else
-    {     
-        OSAL_log("task handle is valid and deleting the task\n");
-        TaskP_delete(tskHandle);
-    }
-    OSAL_log("TaskP_create_max_task_creation_test passed !!\n");
-}
-
-/*
-Description  : Creating a task having priority more than zero to fulfill condition TaskP_PRIORITY_HIGHEST < taskPriority
-               calling TaskP_sleepInMsecs to configure sleep time in msec.
-               Calling TaskP_self to get handle of current task
-               TaskP_selfmacro calls TaskP_self
-               finally calling taskp sleep
-*/
-void TaskP_safertos_auxilary_test()
-{
-    TaskP_Params params;
-    TaskP_Handle taskp_handle;
-    TaskP_Params_init(&params);
-    params.priority = 3;
-    params.stack    = gTskStack;
-    params.stacksize= sizeof (gTskStack);
-    TaskP_sleepInMsecs(10);
-    taskp_handle = TaskP_create((TaskP_Fxn)Taskp_TaskpFxn,(void *)&params);
-
-    if(taskp_handle == TaskP_selfmacro())
-    {
-        OSAL_log("received task handle is correct\n");
-    }
-    else
-    {
-        OSAL_log("Current task handle and received task handle not same\n");
-    }
-    TaskP_sleep(1000);
-    OSAL_log("TaskP_safertos_auxilary_test passed !!\n");
 }
 
 /*
@@ -2257,14 +1551,13 @@ void Sema_delete_sems_used_zero_test()
     }
 }
 
-
-
 #if defined(BARE_METAL)
 void OSAL_tests()
 #else
 void OSAL_tests(void *arg0, void *arg1)
 #endif
 {
+    int32_t result = osal_OK;
     Board_initOSAL();
 
 #if defined(SAFERTOS)
@@ -2281,8 +1574,6 @@ void OSAL_tests(void *arg0, void *arg1)
 
     ClockP_create_callback_NullTest();
 
-    TaskP_safertos_auxilary_test();
-
 #endif
 
 #if defined(FREERTOS)
@@ -2296,29 +1587,13 @@ void OSAL_tests(void *arg0, void *arg1)
 
     DebugP_log_Test();
 
-    MailboxP_freertos_Test();
+    result += OsalApp_heapFreertosTest();
 
-    MailboxP_params_init_null_test();
-
-    MailboxP_create_multiple_test();
-
-    MailboxP_delete_null_test();
-
-    //MailboxP_post_hwiP_test();
-
-    MailboxP_wait_forever_test();
-
-    QueueP_nonos_Test();
-
-    HeapP_freertos_NegTest();
-
-    HeapP_freertos_NullTest();
-
-    HeapP_Params_init_NullTest();
+    result += OsalApp_queueTests();
 
     Sema_create_extended_mem_block_test();
 
-	Semaphore_create_null_param_test();
+    Semaphore_create_null_param_test();
 
     EventP_Max_Test();
 
@@ -2327,11 +1602,10 @@ void OSAL_tests(void *arg0, void *arg1)
 #endif
 
 #if defined(BARE_METAL)
+
+    result += OsalApp_cacheTests();
+
     CycleprofilerP_nonos_Test();
-
-    MutexP_Test();
-
-    MutexP_create_NullCheck();
 
     SwiP_nonos_Test();
 
@@ -2339,13 +1613,11 @@ void OSAL_tests(void *arg0, void *arg1)
 
     RegisterIntrDirect_NegTest();
 
-    HwiP_create_nonos_Null_test();
-
-    HwiP_delete_AlloCnt_test();
-
     Utils_nonos_test();
 
     Utils_nonos_SetHwAttr_Multi_Test();
+    
+    result += OsalApp_hwiTests();
 
     SemaphoreP_create_extended_mem_block_test();
 
@@ -2355,9 +1627,10 @@ void OSAL_tests(void *arg0, void *arg1)
 
     Sema_delete_sems_used_zero_test();
 
-    //CacheP_wb_Test();
+    result += OsalApp_cacheTests();
 
-    //CacheP_Inv_Test();
+    result += OsalApp_mutexTests();
+
 #endif
 
 #if !defined(BARE_METAL)
@@ -2366,13 +1639,7 @@ void OSAL_tests(void *arg0, void *arg1)
 
     EventP_Test();
 
-    MutexP_create_NullCheck();
-
-    MutexP_Test();
-
-    TaskP_priority_zero_test();
-
-    TaskP_create_max_task_creation_test();
+    result += OsalApp_taskTests();
 
     Semaphore_flow_test();
 
@@ -2380,7 +1647,22 @@ void OSAL_tests(void *arg0, void *arg1)
 
     ClockP_init_start_stop_null_test();
 
+    result += OsalApp_mutexTests();
+    
+    result += OsalApp_hwiTests();
+    
+    result += OsalApp_mailboxTests();
+
 #endif
+
+    if(osal_OK == result)
+    {
+        OSAL_log("\n All tests have passed. \n");
+    }
+    else
+    {
+        OSAL_log("\n Some tests have failed. \n");
+    }
 
 #ifdef BARE_METAL
     while (1)
@@ -2398,12 +1680,7 @@ int main(void)
 #ifdef BARE_METAL
     OSAL_tests();
 #else
-    /* All other platforms have the task created under RTSC cfg file
-     * hence not needed to be created again as below
-     * For AM65XX TPR12 and J7 the common RTSC cfg file is used and hence there is
-     * no test application specific task is created in teh RTSC cfg file
-     */
-#if defined (SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
+
     TaskP_Params taskParams;
 
     OS_init();
@@ -2412,12 +1689,16 @@ int main(void)
     taskParams.priority     = 2;
     taskParams.stack        = gAppTskStackMain;
     taskParams.stacksize    = sizeof (gAppTskStackMain);
-#if defined(USE_BIOS)
-    taskParams.pErrBlk      = &eb;
-#endif
-    TaskP_create(&OSAL_tests, &taskParams);
-#endif
-    OS_start();
+
+    if (NULL_PTR != TaskP_self())
+    {
+        OSAL_log("TaskP self should return NULL, as this is main thread..!");
+    }
+    else
+    {
+        TaskP_create(&OSAL_tests, &taskParams);
+        OS_start();
+    }
 #endif
     return (0);
 }
