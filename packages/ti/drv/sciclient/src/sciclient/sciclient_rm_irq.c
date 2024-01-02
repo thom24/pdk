@@ -1695,7 +1695,7 @@ static bool Sciclient_rmIrqRouteValidate(struct Sciclient_rmIrqCfg  *cfg)
             req.subtype = TISCI_RESASG_SUBTYPE_IR_OUTPUT;
             if (Sciclient_rmGetResourceRange(&req, &host_resp,
                     SCICLIENT_SERVICE_WAIT_FOREVER) != CSL_PASS) {
-                valid = FALSE;
+                valid = BFALSE;
             }
             req.secondary_host = TISCI_HOST_ID_ALL;
             if ((valid == BTRUE) && (Sciclient_rmGetResourceRange(&req, &all_resp,
