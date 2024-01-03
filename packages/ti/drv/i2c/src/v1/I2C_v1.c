@@ -1345,7 +1345,7 @@ static int16_t I2C_transfer_v1(I2C_Handle handle,
         ret_flag = BTRUE;
     }
 
-    if ((BTRUE == ret_flag) &&
+    if ((BFALSE == ret_flag) &&
         ((0U != transaction->writeCount) ||
          (0U != transaction->readCount)))
     {
