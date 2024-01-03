@@ -61,7 +61,7 @@
 
 /* Example/Board Header files */
 
-#include "profiling.h"
+#include "mmc_profiling_test.h"
 
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
 #include <ti/csl/src/ip/intr_router/V0/csl_intr_router.h>
@@ -341,7 +341,7 @@ mmcsdTestMMCProfile_t * mmcsdTestProfiles[] = {
 	&EMMCProfiles_HS_SDR,
 	&EMMCProfiles_HS_DDR,
 	&EMMCProfiles_HS200,
-#if !defined(SOC_J721E) && !defined(SOC_J721S2) && !defined(SOC_J784S4)
+#if !defined(SOC_J721E)
     /* HS400 mode for AM65x has been descoped for AM65x & J721E */
 	&EMMCProfiles_HS400,
 #endif
@@ -568,7 +568,7 @@ void mmcsd_test(void *arg0, void *arg1)
 #endif
 
 #ifdef MEASURE_TIME
-	 profile_init();
+	 mmcApp_profileInit();
 #endif
 
   while(testID!=MMCSD_REGRESSION_TEST_EXIT)
@@ -702,7 +702,7 @@ void mmcsd_test(void *arg0, void *arg1)
 #ifdef MEASURE_TIME
        MMCSD_log("\n-------- Benchmarks for the below profile -----------\n");
        display_testProfile(testProfilePtr);
-       mmcsd_display_benchmarks(testProfilePtr->benchmarks);
+       mmcApp_displayBenchmarks(testProfilePtr->benchmarks, testProfilePtr->testID);
 #endif
 	}
 	num_tests_run++;
@@ -875,12 +875,12 @@ int32_t HSMMCSDReadWriteTest_RAW(mmcsdTestMMCProfile_t *testProfilePtr)
     fillMmcPageData(&rx[0], (SECTORSIZE*num_blocks_read), DATA_PATTERN_00,NULL);
 
 #ifdef MEASURE_TIME
-     profile_reset_results();
-     mmcsd_reset_benchmarks(&(testProfilePtr->benchmarks->RAW_measurements[sizes]));
+     mmcApp_profileResetResults();
+     mmcApp_resetBenchmarks(&(testProfilePtr->benchmarks->RAW_measurements[sizes]));
 #endif
      MMCSD_log("\nRAW READ/WRITE: Writing test pattern (%d KB) to the EMMC starting at sector 0x%x in %d block(s) %d KB each \n",mmcsd_test_sizes[sizes]/1024,(unsigned int)mmcStartSector,(num_blocks_write/num_blocks_write_per_iteration),(num_blocks_write_per_iteration*SECTORSIZE)/1024);
 #ifdef MEASURE_TIME
-     profile_start_point(PROFILE_MMCSD_WRITE);
+     mmcApp_profileStartPoint(MMC_APP_PROFILE_MMCSD_WRITE);
 #endif
     /* Write TEST_GROUP_SECTORS_WRITE blocks at a time */
      for(block=0;block<(num_blocks_write);block+=num_blocks_write_per_iteration)
@@ -893,12 +893,12 @@ int32_t HSMMCSDReadWriteTest_RAW(mmcsdTestMMCProfile_t *testProfilePtr)
        }
      }
 #ifdef MEASURE_TIME
-     profile_end_point(PROFILE_MMCSD_WRITE);
+     mmcApp_profileEndPoint(MMC_APP_PROFILE_MMCSD_WRITE);
 #endif
 
      MMCSD_log("RAW READ/WRITE: Reading test pattern (%d KB) from the EMMC starting at sector 0x%x in %d block(s) %d KB each \n",mmcsd_test_sizes[sizes]/1024,(unsigned int)mmcStartSector,(num_blocks_read/num_blocks_read_per_iteration),(num_blocks_read_per_iteration*SECTORSIZE)/1024);
 #ifdef MEASURE_TIME
-     profile_start_point(PROFILE_MMCSD_READ);
+     mmcApp_profileStartPoint(MMC_APP_PROFILE_MMCSD_READ);
 #endif
 
      for(block=0;block<(num_blocks_read);block+=num_blocks_read_per_iteration)
@@ -912,7 +912,7 @@ int32_t HSMMCSDReadWriteTest_RAW(mmcsdTestMMCProfile_t *testProfilePtr)
      }
 
 #ifdef MEASURE_TIME
-     profile_end_point(PROFILE_MMCSD_READ);
+     mmcApp_profileEndPoint(MMC_APP_PROFILE_MMCSD_READ);
 #endif
 
     if(retVal != MMCSD_OK)
@@ -940,8 +940,7 @@ int32_t HSMMCSDReadWriteTest_RAW(mmcsdTestMMCProfile_t *testProfilePtr)
       MMCSD_log ("RAW READ/WRITE: PASS: Read/Write Success for this size (%d KB)\r\n",mmcsd_test_sizes[sizes]/1024);
 
 #ifdef MEASURE_TIME
-     profile_calculate_results(mmcsd_test_sizes[sizes]);
-     mmcsd_store_benchmarks(&(testProfilePtr->benchmarks->RAW_measurements[sizes]),mmcsd_test_sizes[sizes]);
+     mmcApp_storeBenchmarks(&(testProfilePtr->benchmarks->RAW_measurements[sizes]),mmcsd_test_sizes[sizes]);
 #endif
 
   }

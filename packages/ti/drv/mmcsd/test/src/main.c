@@ -71,15 +71,9 @@ FATFS_DrvFxnTable FATFS_drvFxnTable = {
 /* FATFS configuration structure */
 FATFS_HwAttrs FATFS_initCfg[_VOLUMES] =
 {
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
     {  /* MMC1 is SD card  for J7 GP EVM */
         1U
     },
-#else
-    {
-        0U
-    },
-#endif
     {
         1U
     },
@@ -126,20 +120,16 @@ const FATFSConfigList FATFS_config = {
 #endif
 
 
-/* TI-RTOS Header files */
 #include <ti/csl/cslr_device.h>
-#include "MMCSD_log.h"
+#include <ti/csl/src/ip/intr_router/V0/csl_intr_router.h>
 #include <ti/drv/mmcsd/MMCSD.h>
 #include <ti/drv/mmcsd/src/MMCSD_osal.h>
 #include <ti/drv/mmcsd/soc/MMCSD_soc.h>
-
 #include <ti/board/board.h>
+#include "mmc_profiling_test.h"
+#include "MMCSD_log.h"
 
-#include "profiling.h"
 
-#if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-#include <ti/csl/src/ip/intr_router/V0/csl_intr_router.h>
-#endif
 /**********************************************************************
  ************************** Macros ************************************
  **********************************************************************/
@@ -686,7 +676,7 @@ void mmcsd_test(void *arg0, void *arg1)
 #endif
 
 #ifdef MEASURE_TIME
-	 profile_init();
+	 mmcApp_profileInit();
 #endif
 
   while(testID!=MMCSD_REGRESSION_TEST_EXIT)
@@ -832,7 +822,7 @@ void mmcsd_test(void *arg0, void *arg1)
             /* Display the test profile selected */
        MMCSD_log("\n-------- Benchmarks for the below profile -----------");
        display_testProfile(testProfilePtr);
-       mmcsd_display_benchmarks(testProfilePtr->benchmarks);
+       mmcApp_displayBenchmarks(testProfilePtr->benchmarks, testProfilePtr->testID);
       #endif
 
 	    num_tests_passed++;
@@ -1047,17 +1037,15 @@ int32_t HSMMCSDReadWriteTest_RAW(mmcsdTestSDProfile_t *testProfilePtr)
     fillMmcPageData(&rx[0], (SECTORSIZE*num_blocks_read), DATA_PATTERN_00,NULL);
 
 #ifdef MEASURE_TIME
-     profile_reset_results();
-     mmcsd_reset_benchmarks(&(testProfilePtr->benchmarks->RAW_measurements[sizes]));
+     mmcApp_profileResetResults();
+     mmcApp_resetBenchmarks(&(testProfilePtr->benchmarks->RAW_measurements[sizes]));
 #endif
 
     MMCSD_log("\nRAW READ/WRITE: Writing test pattern (%d KB) to the SD card starting at sector 0x%x in %d block(s) %d KB each \n",mmcsd_test_sizes[sizes]/1024,mmcStartSector,(num_blocks_write/num_blocks_write_per_iteration),(num_blocks_write_per_iteration*SECTORSIZE)/1024);
 
 #ifdef MEASURE_TIME
-     profile_start_point(PROFILE_MMCSD_WRITE);
+     mmcApp_profileStartPoint(MMC_APP_PROFILE_MMCSD_WRITE);
 #endif
-
-
     /* Write TEST_GROUP_SECTORS_WRITE blocks at a time */
      for(block=0;block<(num_blocks_write);block+=num_blocks_write_per_iteration)
      {
@@ -1070,15 +1058,12 @@ int32_t HSMMCSDReadWriteTest_RAW(mmcsdTestSDProfile_t *testProfilePtr)
      }
 
 #ifdef MEASURE_TIME
-     profile_end_point(PROFILE_MMCSD_WRITE);
+     mmcApp_profileEndPoint(MMC_APP_PROFILE_MMCSD_WRITE);
 #endif
-
-
-
     MMCSD_log("RAW READ/WRITE: Reading test pattern (%d KB) from the SD card starting at sector 0x%x in %d block(s) %d KB each \n",mmcsd_test_sizes[sizes]/1024,(unsigned int)mmcStartSector,(num_blocks_read/num_blocks_read_per_iteration),(num_blocks_read_per_iteration*SECTORSIZE)/1024);
 
 #ifdef MEASURE_TIME
-     profile_start_point(PROFILE_MMCSD_READ);
+     mmcApp_profileStartPoint(MMC_APP_PROFILE_MMCSD_READ);
 #endif
     for(block=0;block<(num_blocks_read);block+=num_blocks_read_per_iteration)
     {
@@ -1092,7 +1077,7 @@ int32_t HSMMCSDReadWriteTest_RAW(mmcsdTestSDProfile_t *testProfilePtr)
 
 
 #ifdef MEASURE_TIME
-     profile_end_point(PROFILE_MMCSD_READ);
+     mmcApp_profileEndPoint(MMC_APP_PROFILE_MMCSD_READ);
 #endif
 
     if(retVal != MMCSD_OK)
@@ -1120,8 +1105,7 @@ int32_t HSMMCSDReadWriteTest_RAW(mmcsdTestSDProfile_t *testProfilePtr)
       MMCSD_log ("RAW READ/WRITE: PASS: Read/Write Success for this size (%d KB)\r\n",mmcsd_test_sizes[sizes]/1024);
 
 #ifdef MEASURE_TIME
-     profile_calculate_results(mmcsd_test_sizes[sizes]);
-     mmcsd_store_benchmarks(&(testProfilePtr->benchmarks->RAW_measurements[sizes]),mmcsd_test_sizes[sizes]);
+     mmcApp_storeBenchmarks(&(testProfilePtr->benchmarks->RAW_measurements[sizes]),mmcsd_test_sizes[sizes]);
 #endif
 
   }
@@ -1209,8 +1193,8 @@ int32_t HSMMCSDReadWriteTest_FATFS(mmcsdTestSDProfile_t *testProfilePtr)
      fillMmcPageData(&rx[0], mmcsd_test_sizes[sizes], DATA_PATTERN_00,NULL);
 
 #ifdef MEASURE_TIME
-     profile_reset_results();
-     mmcsd_reset_benchmarks(&(testProfilePtr->benchmarks->FATFS_measurements[sizes]));
+     mmcApp_profileResetResults();
+     mmcApp_resetBenchmarks(&(testProfilePtr->benchmarks->FATFS_measurements[sizes]));
 #endif
 
     fresultWrite = f_open(&MMCSD_FS_WriteFileObj, MMCSD_FS_filepath,FA_WRITE|FA_OPEN_ALWAYS);
@@ -1227,12 +1211,12 @@ int32_t HSMMCSDReadWriteTest_FATFS(mmcsdTestSDProfile_t *testProfilePtr)
        MMCSD_log("\nFATFS READ/WRITE: Writing test pattern (%d KB) to file %s with \n",mmcsd_test_sizes[sizes]/1024,MMCSD_FS_filepath);
 
 #ifdef MEASURE_TIME
-       profile_start_point(PROFILE_MMCSD_WRITE);
+       mmcApp_profileStartPoint(MMC_APP_PROFILE_MMCSD_WRITE);
 #endif
        fresultWrite = f_write(&MMCSD_FS_WriteFileObj, &tx[0],
                                        mmcsd_test_sizes[sizes], &bytesWrite);
 #ifdef MEASURE_TIME
-       profile_end_point(PROFILE_MMCSD_WRITE);
+       mmcApp_profileEndPoint(MMC_APP_PROFILE_MMCSD_WRITE);
 #endif
        if(fresultWrite != FR_OK)  {
           MMCSD_log("\n FATFS READ/WRITE: Fail to write into file with error code %d!!!!\n",fresultWrite);
@@ -1272,11 +1256,11 @@ int32_t HSMMCSDReadWriteTest_FATFS(mmcsdTestSDProfile_t *testProfilePtr)
      MMCSD_log("FATFS READ/WRITE: Reading test pattern (%d KB) from file %s with \n",mmcsd_test_sizes[sizes]/1024,MMCSD_FS_filepath);
 
 #ifdef MEASURE_TIME
-      profile_start_point(PROFILE_MMCSD_READ);
+      mmcApp_profileStartPoint(MMC_APP_PROFILE_MMCSD_READ);
 #endif
       fresultRead = f_read(&MMCSD_FS_ReadFileObj, &rx[0], mmcsd_test_sizes[sizes], &bytesRead);
 #ifdef MEASURE_TIME
-      profile_end_point(PROFILE_MMCSD_READ);
+      mmcApp_profileEndPoint(MMC_APP_PROFILE_MMCSD_READ);
 #endif
 
 
@@ -1329,8 +1313,7 @@ int32_t HSMMCSDReadWriteTest_FATFS(mmcsdTestSDProfile_t *testProfilePtr)
      MMCSD_log ("FATFS PASS: Read/Write Success for this size (%d KB)  \r\n",mmcsd_test_sizes[sizes]/1024 );
 
 #ifdef MEASURE_TIME
-     profile_calculate_results(mmcsd_test_sizes[sizes]);
-     mmcsd_store_benchmarks(&(testProfilePtr->benchmarks->FATFS_measurements[sizes]),mmcsd_test_sizes[sizes]);
+     mmcApp_storeBenchmarks(&(testProfilePtr->benchmarks->FATFS_measurements[sizes]),mmcsd_test_sizes[sizes]);
 #endif
 
   }

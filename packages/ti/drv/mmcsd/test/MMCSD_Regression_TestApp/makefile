@@ -20,7 +20,7 @@ CFLAGS_MMCSD_UT += -DMMCSD_ADMA_ENABLED -DMMCSD_REGRESSION_TEST -DMEASURE_TIME -
 SRCDIR = ../src ../../
 INCDIR = ../src ../include ../../
 # Common source files across all platforms and cores
-SRCS_COMMON += main.c profiling.c
+SRCS_COMMON += main.c mmc_profiling_test.c
 
 # List all the components required by the application
 COMP_LIST_COMMON += mmcsd fatfs_indp

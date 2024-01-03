@@ -21,7 +21,7 @@ endif
 SRCDIR = ../src ../../
 INCDIR = ../src ../include ../../
 # Common source files across all platforms and cores
-SRCS_COMMON += main_emmc.c profiling.c
+SRCS_COMMON += main_emmc.c mmc_profiling_test.c
 
 
 # List all the components required by the application
