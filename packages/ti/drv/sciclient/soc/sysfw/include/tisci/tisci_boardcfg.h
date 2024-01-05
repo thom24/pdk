@@ -261,7 +261,8 @@ struct tisci_boardcfg_sa2ul_cfg {
     struct tisci_boardcfg_substructure_header    subhdr;
     uint8_t                    auth_resource_owner;
     uint8_t                    enable_saul_psil_global_config_writes;
-    uint8_t                    rsvd[2];
+    uint8_t                    safety_host_present;
+    uint8_t                    safety_host;
 };
 
 

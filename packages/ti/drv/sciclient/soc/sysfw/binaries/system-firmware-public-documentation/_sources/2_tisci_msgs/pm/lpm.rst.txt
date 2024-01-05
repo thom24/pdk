@@ -3,7 +3,7 @@ TISCI PM Low Power Mode API Documentation
 =========================================
 .. note::
 
-  This document is only applicable to AM62 device.
+  This document is only applicable to AM62x and AM62Ax devices.
 
 Introduction
 ============
@@ -19,6 +19,21 @@ Supported low power modes
 .. sysfwapimacro:: TISCI_MSG_VALUE_SLEEP_MODE_MCU_ONLY
 
 .. sysfwapimacro:: TISCI_MSG_VALUE_SLEEP_MODE_STANDBY
+
+.. sysfwapimacro:: TISCI_MSG_VALUE_SLEEP_MODE_PARTIAL_IO
+
++----------------+-------------------+
+| Low power mode |  Supported by     | 
++================+===================+
+| DEEP_SLEEP     | am62x, am62ax     | 
++----------------+-------------------+
+| MCU_ONLY       | am62x             | 
++----------------+-------------------+
+| STANDBY        | None              | 
++----------------+-------------------+
+| PARTIAL_IO     | am62x             | 
++----------------+-------------------+
+
 
 Device configuration and control APIs
 -------------------------------------

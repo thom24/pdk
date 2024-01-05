@@ -50,8 +50,8 @@ devices.
    | DRA82X, TDA4X  |   DMSC (M3 based)       | DMSC (M3 based)         |  Library on MCU R5* |
    |                |                         |                         |                     |
    +----------------+-------------------------+-------------------------+---------------------+
-   | TDA4VLX        |   SMS (M4 based)        |  SMS (M4 based)         |  Library on MCU R5* |
-   |                |                         |                         |                     |
+   | TDA4VLX,       |   SMS (M4 based)        |  SMS (M4 based)         |  Library on MCU R5* |
+   | TDA4VHX        |                         |                         |                     |
    +----------------+-------------------------+-------------------------+---------------------+
    | AM62X, AM62Ax, |   SMS (M4 based)        |  SMS (M4 based)         |  Library on DM R5*  |
    | AM62Px         |                         |                         |                     |

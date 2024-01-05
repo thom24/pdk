@@ -12,6 +12,7 @@
    ./domgrp_usage
    ./secure_boot_signing
    ./hs_boardcfg_signing
+   ./openssl_usage
    ./extended_otp
    ./dkek_management
    ./firewall_faq

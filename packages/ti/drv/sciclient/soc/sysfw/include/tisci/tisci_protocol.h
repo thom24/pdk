@@ -83,20 +83,13 @@
  * \param type Type of message identified by a TISCI_MSG_* ID
  * \param host Host of the message.
  * \param seq Message identifier indicating a transfer sequence.
- * \param flags TISCI_MSG_FLAG_* for the message.
- * \param payload Placeholder pointer that can be used to access the raw message body.
+ * \param flags TISCI_MSG_FLAG_* for the message
  */
 struct tisci_header {
     uint16_t    type;
     uint8_t    host;
     uint8_t    seq;
     uint32_t    flags;
-    /* Both GCC-11 and Windows Visual Studio build has issues with payload[], changing it for host emulation build */
-#ifdef HOST_EMULATION
-    uint8_t    payload; 
-#else 
-    uint8_t    payload[]; 
-#endif
 };
 
 /*
@@ -267,6 +260,12 @@ struct tisci_sec_header {
 
 /** Message to derive a KEK and return it via TISCI */
 #define TISCI_MSG_SA2UL_GET_DKEK                (0x9029U)
+
+/** Message to allow safety host to read fwl control region */
+#define TISCI_MSG_ALLOW_FWL_CTRL_READ           (0x902CU)
+
+/** Message to forbid hosts other than tifs from reading fwl control region */
+#define TISCI_MSG_FORBID_FWL_CTRL_READ          (0x902DU)
 
 /** Message for handing over subset of security functionality to
  * another core. Only available on certain platforms.

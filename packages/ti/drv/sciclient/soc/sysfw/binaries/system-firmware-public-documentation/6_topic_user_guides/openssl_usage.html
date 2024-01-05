@@ -8,7 +8,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Domain Group Primer &mdash; TISCI User Guide</title>
+  <title>Using OpenSSL for certificate creation &mdash; TISCI User Guide</title>
   
 
   
@@ -39,8 +39,8 @@
         <link rel="search" title="Search" href="../search.html"/>
     <link rel="top" title="TISCI User Guide" href="../index.html"/>
         <link rel="up" title="Chapter 6: Topic User Guides" href="index.html"/>
-        <link rel="next" title="Signing binaries for Secure Boot on HS Devices" href="secure_boot_signing.html"/>
-        <link rel="prev" title="Device Group Primer" href="devgrp_usage.html"/> 
+        <link rel="next" title="Using Extended OTP" href="extended_otp.html"/>
+        <link rel="prev" title="Signing Board Configuration on HS devices" href="hs_boardcfg_signing.html"/> 
 
   
   <script src="../_static/js/modernizr.min.js"></script>
@@ -109,15 +109,14 @@
 <li class="toctree-l1 current"><a class="reference internal" href="index.html">Chapter 6: Topic User Guides</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="authentication.html">System Firmware Authentication and Decryption Requests</a></li>
 <li class="toctree-l2"><a class="reference internal" href="devgrp_usage.html">Device Group Primer</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Domain Group Primer</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#introduction">Introduction</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#definition">Definition</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#domgrp-values">DOMGRP values</a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="domgrp_usage.html">Domain Group Primer</a></li>
 <li class="toctree-l2"><a class="reference internal" href="secure_boot_signing.html">Signing binaries for Secure Boot on HS Devices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="hs_boardcfg_signing.html">Signing Board Configuration on HS devices</a></li>
-<li class="toctree-l2"><a class="reference internal" href="openssl_usage.html">Using OpenSSL for certificate creation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Using OpenSSL for certificate creation</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-certificate-with-rsassa-pkcs-v1-5-scheme-using-openssl">Create a certificate with RSASSA PKCS v1.5 scheme using OpenSSL</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#create-a-certificate-with-rsassa-pss-scheme-using-openssl">Create a certificate with RSASSA PSS scheme using OpenSSL</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="extended_otp.html">Using Extended OTP</a></li>
 <li class="toctree-l2"><a class="reference internal" href="dkek_management.html">Using Derived KEK on HS devices</a></li>
 <li class="toctree-l2"><a class="reference internal" href="firewall_faq.html">Firewall FAQ</a></li>
@@ -161,7 +160,7 @@
       
           <li><a href="index.html">Chapter 6: Topic User Guides</a> &raquo;</li>
       
-    <li>Domain Group Primer</li>
+    <li>Using OpenSSL for certificate creation</li>
       <li class="wy-breadcrumbs-aside">
         
           
@@ -173,98 +172,50 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="domain-group-primer">
-<h1>Domain Group Primer<a class="headerlink" href="#domain-group-primer" title="Permalink to this headline">¶</a></h1>
-<p>This document provides a quick primer on what domain group is
-and provides guidance on usage of domain groups.</p>
-<div class="section" id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>The SoC is partitioned into different functional domains, each containing
-specific processing cores and peripherals. In the K3 platform SoCs,
-the domains are Wake-up (WKUP), MCU, MAIN. The domain fragmentation
-allows domains to be reset and allows efficient addressing of safety
-requirements.</p>
-<p>The focus on the functional domain differentiates domain group from device
-group. The domain group’s purpose is to identify the region to be reset.
-The device group may have overlapping definitions with domain group, but device
-group can have devices not meant to be reset. For example, the EARLY_CAN may
-become a device for early CAN response, but it is not meant to be a reset option.</p>
+  <div class="section" id="using-openssl-for-certificate-creation">
+<h1>Using OpenSSL for certificate creation<a class="headerlink" href="#using-openssl-for-certificate-creation" title="Permalink to this headline">¶</a></h1>
+<p>This document specifies the following:</p>
+<ol class="arabic simple">
+<li><a class="reference internal" href="#cert-with-rsa-pkcs-v1-5"><span class="std std-ref">Create a certificate with RSASSA PKCS v1.5 scheme using OpenSSL</span></a></li>
+<li><a class="reference internal" href="#cert-with-rsassa-pss"><span class="std std-ref">Create a certificate with RSASSA PSS scheme using OpenSSL</span></a></li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<p class="last">The commands would be helpful for creating firmware/boardconfig/debug-unlock certificates.</p>
 </div>
-<div class="section" id="definition">
-<h2>Definition<a class="headerlink" href="#definition" title="Permalink to this headline">¶</a></h2>
-<p>Each “Domain Group” or DOMGRP is used to denote the functional domains of the
-SoC. Each domain’s reset can be invoked with corresponding reset API call
-<a class="reference internal" href="../2_tisci_msgs/pm/sysreset.html#pub-sysreset-tisci"><span class="std std-ref">TISCI_MSG_SYS_RESET</span></a>.</p>
-<p>The specific grouping of device instances are documented in the SoC
-specific documentation.</p>
+<p>This document does not specify the following:</p>
+<ol class="arabic simple">
+<li>The X509 template to be used for certificate creation; the template depends on the application - firmware/board-config/debug-unlock.</li>
+<li>The operations needed before or after the creation of the certificate. See <a class="reference internal" href="secure_boot_signing.html"><span class="doc">Signing binaries for Secure Boot on HS Devices</span></a>.</li>
+</ol>
+<div class="section" id="create-a-certificate-with-rsassa-pkcs-v1-5-scheme-using-openssl">
+<span id="cert-with-rsa-pkcs-v1-5"></span><h2>Create a certificate with RSASSA PKCS v1.5 scheme using OpenSSL<a class="headerlink" href="#create-a-certificate-with-rsassa-pkcs-v1-5-scheme-using-openssl" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>openssl<span class="w"> </span>req<span class="w"> </span>-new<span class="w"> </span>-x509<span class="w"> </span>-key<span class="w"> </span><span class="o">[</span>keypath<span class="o">]</span><span class="w"> </span>-nodes<span class="w"> </span>-outform<span class="w"> </span>DER<span class="w"> </span>-out<span class="w"> </span><span class="o">[</span>cert<span class="o">]</span><span class="w"> </span>-config<span class="w"> </span><span class="o">[</span>x509_config<span class="o">]</span><span class="w"> </span>-sha512
+</pre></div>
 </div>
-<div class="section" id="domgrp-values">
-<h2>DOMGRP values<a class="headerlink" href="#domgrp-values" title="Permalink to this headline">¶</a></h2>
-<p>Domain group identification follows a generic bitfield format.</p>
-<ul class="simple">
-<li>domgrp_t type is u8 (8 bits)</li>
-<li>Values for the field is defined as follows:</li>
-</ul>
-<table border="1" class="docutils">
-<colgroup>
-<col width="19%" />
-<col width="7%" />
-<col width="74%" />
-</colgroup>
-<thead valign="bottom">
-<tr class="row-odd"><th class="head">Device Group</th>
-<th class="head">Value</th>
-<th class="head">Description</th>
-</tr>
-</thead>
-<tbody valign="top">
-<tr class="row-even"><td>DOMGRP_COMPATIBILITY</td>
-<td>0</td>
-<td>SoC SYSFW domgrp for backward compatibility. When sysreset did not have domain as
-an input parameter, use this value as a replacement.</td>
-</tr>
-<tr class="row-odd"><td>DOMGRP_00</td>
-<td>1 &lt;&lt; 0</td>
-<td>SoC specific domgrp 0.
-Please refer to <a class="reference internal" href="../5_soc_doc/index.html#pub-soc-family-doc"><span class="std std-ref">SoC information</span></a> for the specific SoC.</td>
-</tr>
-<tr class="row-even"><td>DOMGRP_01</td>
-<td>1 &lt;&lt; 1</td>
-<td>SoC specific domgrp 1.
-Please refer to <a class="reference internal" href="../5_soc_doc/index.html#pub-soc-family-doc"><span class="std std-ref">SoC information</span></a> for the specific SoC.</td>
-</tr>
-<tr class="row-odd"><td>DOMGRP_02</td>
-<td>1 &lt;&lt; 2</td>
-<td>SoC specific domgrp 2.
-Please refer to <a class="reference internal" href="../5_soc_doc/index.html#pub-soc-family-doc"><span class="std std-ref">SoC information</span></a> for the specific SoC.</td>
-</tr>
-<tr class="row-even"><td>DOMGRP_03</td>
-<td>1 &lt;&lt; 3</td>
-<td>SoC specific domgrp 3.
-Please refer to <a class="reference internal" href="../5_soc_doc/index.html#pub-soc-family-doc"><span class="std std-ref">SoC information</span></a> for the specific SoC.</td>
-</tr>
-<tr class="row-odd"><td>DOMGRP_04</td>
-<td>1 &lt;&lt; 4</td>
-<td>SoC specific domgrp 4.
-Please refer to <a class="reference internal" href="../5_soc_doc/index.html#pub-soc-family-doc"><span class="std std-ref">SoC information</span></a> for the specific SoC.</td>
-</tr>
-<tr class="row-even"><td>DOMGRP_05</td>
-<td>1 &lt;&lt; 5</td>
-<td>SoC specific domgrp 5.
-Please refer to <a class="reference internal" href="../5_soc_doc/index.html#pub-soc-family-doc"><span class="std std-ref">SoC information</span></a> for the specific SoC.</td>
-</tr>
-<tr class="row-odd"><td>DOMGRP_06</td>
-<td>1 &lt;&lt; 6</td>
-<td>SoC specific domgrp 6.
-Please refer to <a class="reference internal" href="../5_soc_doc/index.html#pub-soc-family-doc"><span class="std std-ref">SoC information</span></a> for the specific SoC.</td>
-</tr>
-</tbody>
-</table>
-<div class="admonition warning">
-<p class="first admonition-title">Warning</p>
-<ul class="last simple">
-<li>SoC specific domain grouping is predefined and NOT configurable by user.</li>
-</ul>
+<ol class="arabic simple">
+<li>[keypath]: path to rsa private key</li>
+<li>[cert]: path to the output certificate binary</li>
+<li>[x509Config]: path to the file containing x509 template</li>
+</ol>
+</div>
+<div class="section" id="create-a-certificate-with-rsassa-pss-scheme-using-openssl">
+<span id="cert-with-rsassa-pss"></span><h2>Create a certificate with RSASSA PSS scheme using OpenSSL<a class="headerlink" href="#create-a-certificate-with-rsassa-pss-scheme-using-openssl" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-bash"><div class="highlight"><pre><span></span>openssl<span class="w"> </span>req<span class="w"> </span>-new<span class="w"> </span>-x509<span class="w"> </span>-key<span class="w"> </span><span class="o">[</span>keypath<span class="o">]</span><span class="w"> </span>-nodes<span class="w"> </span>-outform<span class="w"> </span>DER<span class="w"> </span>-out<span class="w"> </span><span class="o">[</span>cert<span class="o">]</span><span class="w"> </span>-config<span class="w"> </span><span class="o">[</span>x509_config<span class="o">]</span><span class="w"> </span>-sha512<span class="w"> </span>-sigopt<span class="w"> </span>rsa_padding_mode:pss<span class="w"> </span>-sigopt<span class="w"> </span>rsa_pss_saltlen:64
+</pre></div>
+</div>
+<ol class="arabic simple">
+<li>[keypath]: path to rsa private key</li>
+<li>[cert]: path to the output certificate binary</li>
+<li>[x509Config]: path to the file containing x509 template</li>
+</ol>
+<div class="admonition note">
+<p class="first admonition-title">Note</p>
+<ol class="last arabic simple">
+<li>Recommended OpenSSL version: OpenSSL 3.0.10 1 Aug 2023 (Library: OpenSSL 3.0.10 1 Aug 2023)</li>
+<li>If signing with RSASSA-PKCS v1.5 scheme, use a PKCS#1 RSA key.</li>
+<li>If signing with RSASSA-PSS scheme, use a PKCS#8 RSA key that was generated for RSASSA-PSS signing scheme.</li>
+</ol>
 </div>
 </div>
 </div>
@@ -276,10 +227,10 @@ Please refer to <a class="reference internal" href="../5_soc_doc/index.html#pub-
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="secure_boot_signing.html" class="btn btn-neutral float-right" title="Signing binaries for Secure Boot on HS Devices" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="extended_otp.html" class="btn btn-neutral float-right" title="Using Extended OTP" accesskey="n">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="devgrp_usage.html" class="btn btn-neutral" title="Device Group Primer" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="hs_boardcfg_signing.html" class="btn btn-neutral" title="Signing Board Configuration on HS devices" accesskey="p"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

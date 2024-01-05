@@ -79,7 +79,7 @@
             
             
               <div class="version">
-                09.01.02
+                09.01.09
               </div>
             
           
@@ -175,7 +175,7 @@
 <h1>TISCI PM Low Power Mode API Documentation<a class="headerlink" href="#tisci-pm-low-power-mode-api-documentation" title="Permalink to this headline">¶</a></h1>
 <div class="admonition note">
 <p class="first admonition-title">Note</p>
-<p class="last">This document is only applicable to AM62 device.</p>
+<p class="last">This document is only applicable to AM62x and AM62Ax devices.</p>
 </div>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
@@ -193,6 +193,34 @@ supported by the SOC.</p>
 <p>Sleep mode in which software is in low power mode but the hardware remains
  on.</p>
 </p>
+<p><p><code class="docutils literal"><span class="pre">TISCI_MSG_VALUE_SLEEP_MODE_PARTIAL_IO</span>&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160;&#160; <span class="pre">0x3</span></code></p>
+<p>Sleep mode in which complete SOC except the CAN IOs is turned off.</p>
+</p>
+<table border="1" class="docutils">
+<colgroup>
+<col width="46%" />
+<col width="54%" />
+</colgroup>
+<thead valign="bottom">
+<tr class="row-odd"><th class="head">Low power mode</th>
+<th class="head">Supported by</th>
+</tr>
+</thead>
+<tbody valign="top">
+<tr class="row-even"><td>DEEP_SLEEP</td>
+<td>am62x, am62ax</td>
+</tr>
+<tr class="row-odd"><td>MCU_ONLY</td>
+<td>am62x</td>
+</tr>
+<tr class="row-even"><td>STANDBY</td>
+<td>None</td>
+</tr>
+<tr class="row-odd"><td>PARTIAL_IO</td>
+<td>am62x</td>
+</tr>
+</tbody>
+</table>
 </div>
 <div class="section" id="device-configuration-and-control-apis">
 <h3>Device configuration and control APIs<a class="headerlink" href="#device-configuration-and-control-apis" title="Permalink to this headline">¶</a></h3>
@@ -695,7 +723,7 @@ called to prepare for the low power mode.</p>
     <script type="text/javascript">
         var DOCUMENTATION_OPTIONS = {
             URL_ROOT:'../../',
-            VERSION:'09.01.02',
+            VERSION:'09.01.09',
             COLLAPSE_INDEX:false,
             FILE_SUFFIX:'.html',
             HAS_SOURCE:  true

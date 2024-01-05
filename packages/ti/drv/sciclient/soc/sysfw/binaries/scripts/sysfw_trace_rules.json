@@ -4708,6 +4708,12 @@
                                 },
                                 "0x32":{
                                     "msg": "TIFS context restored"
+                                },
+                                "0x33":{
+                                    "msg": "Removed DM reset mask"
+                                },
+                                "0x34":{
+                                    "msg": "Removed main domain reset isolation"
                                 }
                             }
                         },
