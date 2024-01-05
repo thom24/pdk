@@ -119,7 +119,7 @@ static void* Ipc_qnxMutexCreate(void)
 
 static void Ipc_qnxMutexDestroy(Ipc_OsalHIsrGateHandle *handle)
 {
-    if(NULL != handle)
+    if(handle != NULL)
     {
         pthread_mutex_destroy((pthread_mutex_t*) handle);
     }
@@ -131,7 +131,7 @@ static void Ipc_qnxMutexDestroy(Ipc_OsalHIsrGateHandle *handle)
 static int32_t Ipc_qnxMutexLock(void* handle)
 {
     int32_t rtnVal = IPC_EFAIL;
-    if(NULL != handle)
+    if(handle != NULL)
     {
         if (EOK == pthread_mutex_lock((pthread_mutex_t *) handle))
         {
@@ -144,7 +144,7 @@ static int32_t Ipc_qnxMutexLock(void* handle)
 
 static void Ipc_qnxMutexUnlock(void* handle, int32_t key)
 {
-    if(NULL != handle)
+    if(handle != NULL)
     {
         pthread_mutex_unlock((pthread_mutex_t *) handle);
     }
@@ -170,7 +170,7 @@ static void *Ipc_qnxSemCreate(void)
 
 static void Ipc_qnxSemDestroy(void *handle)
 {
-    if(NULL != handle)
+    if(handle != NULL)
     {
         sem_destroy((sem_t *)handle);
     }
@@ -183,9 +183,9 @@ static int32_t Ipc_qnxSemWait(void *handle, uint32_t timeout)
     struct timespec ts;
     uint64_t timeout_ns = timeout*1000;
 
-    if(NULL != handle)
+    if(handle != NULL)
     {
-        if (IPC_RPMESSAGE_TIMEOUT_FOREVER == timeout)
+        if (timeout == IPC_RPMESSAGE_TIMEOUT_FOREVER)
         {
             ret = sem_wait((sem_t *)handle);
         }
@@ -198,7 +198,7 @@ static int32_t Ipc_qnxSemWait(void *handle, uint32_t timeout)
             ret = sem_timedwait((sem_t *)handle, &ts);
         }
         if (ret < 0) {
-            if (ETIMEDOUT == errno)
+            if (errno == ETIMEDOUT)
             {
                     rtnVal = IPC_ETIMEOUT;
             }
@@ -222,7 +222,7 @@ static int32_t Ipc_qnxSemWait(void *handle, uint32_t timeout)
 
 static void Ipc_qnxSemPost(void *handle)
 {
-    if(NULL != handle)
+    if(handle != NULL)
     {
         sem_post((sem_t *)handle);
     }

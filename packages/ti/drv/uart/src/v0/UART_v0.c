@@ -91,29 +91,29 @@ const UART_FxnTable UART_FxnTable_v0 =
  *  ======== UART_v0_writeData ========
  *  Write and process data to the UART.
  */
-static inline uint32_t UART_writeData_v0(UART_Handle handle, uint32_t size);  /*for misra warnings*/
-static inline uint32_t UART_writeData_v0(UART_Handle handle, uint32_t size)
+static inline int32_t UART_writeData_v0(UART_Handle handle, int32_t size);  /*for misra warnings*/
+static inline int32_t UART_writeData_v0(UART_Handle handle, int32_t size)
 {
     UART_V0_Object     *object = (UART_V0_Object*)handle->object;
     UART_HwAttrs const *hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
     uint32_t            fifoCnt;
 
-    fifoCnt = 0U;
+    fifoCnt = 0;
 
-    uint8_t FIFO_FULL_FLAG = (uint8_t)BFALSE;
+    uint8_t FIFO_FULL_FLAG = 0U;
 
     /* Send characters until FIFO is full or done. */
-    while ((0U != size) && ((uint8_t)BFALSE == FIFO_FULL_FLAG))
+    while ((size != 0) && (FIFO_FULL_FLAG == 0U))
     {
         /* If mode is TEXT process the characters */
-        if (UART_DATA_TEXT == object->params.writeDataMode)
+        if (object->params.writeDataMode == UART_DATA_TEXT)
         {
             if (object->writeCR)
             {
-                if (TX_FIFO_SIZE == fifoCnt)
+                if (fifoCnt == TX_FIFO_SIZE)
                 {
                     /* Character was not sent, FIFO is full */
-                    FIFO_FULL_FLAG = (uint8_t)BTRUE;
+                    FIFO_FULL_FLAG = 1U;
                 }
 
                 /* FIFO is empty, write '\r' to FIFO */
@@ -123,7 +123,7 @@ static inline uint32_t UART_writeData_v0(UART_Handle handle, uint32_t size)
                     fifoCnt++;
                     size--;
                     object->writeCount++;
-                    object->writeCR = UFALSE;
+                    object->writeCR = 0;
 
                     UART_drv_log1("UART:(%p) Wrote character 0x%x",
                                hwAttrs->baseAddr);
@@ -132,21 +132,21 @@ static inline uint32_t UART_writeData_v0(UART_Handle handle, uint32_t size)
             else
             {
                 /* Add a return if next character is a newline. */
-                if ((uint8_t)'\n' == *(uint8_t *)object->writeBuf)
+                if (*(uint8_t *)object->writeBuf == (uint8_t)'\n')
                 {
                     size++;
-                    object->writeCR = UTRUE;
+                    object->writeCR = (uint32_t)TRUE;
                 }
 
-                if (TX_FIFO_SIZE == fifoCnt)
+                if (fifoCnt == TX_FIFO_SIZE)
                 {
                     /* FIFO full */
                     if (object->writeCR)
                     {
                         size--;
-                        object->writeCR = UFALSE;
+                        object->writeCR = (uint32_t)FALSE;
                     }
-                    FIFO_FULL_FLAG = (uint8_t)BTRUE;
+                    FIFO_FULL_FLAG = 1U;
                 }
                 /* FIFO not full, write to FIFO */
                 else
@@ -165,10 +165,10 @@ static inline uint32_t UART_writeData_v0(UART_Handle handle, uint32_t size)
         }
         else
         {
-            if (TX_FIFO_SIZE == fifoCnt)
+            if (fifoCnt == TX_FIFO_SIZE)
             {
                 /* FIFO full */
-                FIFO_FULL_FLAG = (uint8_t)BTRUE;
+                FIFO_FULL_FLAG = 1U;
             }
 
             /* FIFO not full, write character */
@@ -193,8 +193,8 @@ static inline uint32_t UART_writeData_v0(UART_Handle handle, uint32_t size)
  *  ======== UART_v0_readData ========
  *  Read and process data from the UART.
  */
-static inline uint32_t UART_v0_readData(UART_Handle handle, uint32_t size);  /*for misra warnings*/
-static inline uint32_t UART_v0_readData(UART_Handle handle, uint32_t size)
+static inline int32_t UART_v0_readData(UART_Handle handle, int32_t size);  /*for misra warnings*/
+static inline int32_t UART_v0_readData(UART_Handle handle, int32_t size)
 {
     uint8_t             readIn;
     UART_V0_Object     *object = (UART_V0_Object*)handle->object;
@@ -203,13 +203,13 @@ static inline uint32_t UART_v0_readData(UART_Handle handle, uint32_t size)
 
     readSuccess = UART_charGetNonBlocking2_v0(hwAttrs->baseAddr, &readIn);
     /* Receive chars until empty or done. */
-    while ((0U     != size) &&
-           (UFALSE != readSuccess))
+    while ((size != (int32_t)(0)) &&
+           (readSuccess != FALSE))
     {
         /* If data mode is set to TEXT replace return with a newline. */
-        if (UART_DATA_TEXT == object->params.readDataMode)
+        if (object->params.readDataMode == UART_DATA_TEXT)
         {
-            if ((uint8_t)'\r' == readIn)
+            if (readIn == (uint8_t)'\r')
             {
                 /* Echo character if enabled. */
                 if (object->params.readEcho)
@@ -235,22 +235,22 @@ static inline uint32_t UART_v0_readData(UART_Handle handle, uint32_t size)
         }
 
         /* If read return mode is newline, finish if a newline was received. */
-        if ((UART_RETURN_NEWLINE == object->params.readReturnMode) &&
-            ((uint8_t)'\n') == readIn)
+        if ((object->params.readReturnMode == UART_RETURN_NEWLINE) &&
+            (readIn == (uint8_t)'\n'))
         {
             UART_drv_log1("UART:(%p) Newline character received, "
                        , hwAttrs->baseAddr);
 
-            size = 0U;
+            size = 0;
             break;
         }
 
         /* If read returnMode is UART_RETURN_FULL, avoids missing input character
          * of next read
          */
-        if (0U != size)
+        if (size != 0)
         {
-            readSuccess = UART_charGetNonBlocking2_v0(hwAttrs->baseAddr, &readIn);
+            readSuccess = (int32_t)UART_charGetNonBlocking2_v0(hwAttrs->baseAddr, &readIn);
         }
     }
 
@@ -262,7 +262,7 @@ void UART_v0_callback(UART_Handle handle, bool readTrans)
     UART_V0_Object     *object = (UART_V0_Object*)handle->object;
 
     /* Call back to application */
-    if (BTRUE == readTrans)
+    if (readTrans == true)
     {
         if (object->params.readCallback2)
         {
@@ -314,10 +314,10 @@ static inline void UART_procLineStatusErr(UART_Handle handle)
         {
             /* empty the RX FIFO which contains data with errors */
 #ifdef UART_DMA_ENABLE
-            if (UTRUE == hwAttrs->dmaMode)
+            if (hwAttrs->dmaMode == TRUE)
             {
                 /* Disable DMA RX channel */
-                UART_disableDmaChannel(handle, BFALSE);
+                UART_disableDmaChannel(handle, false);
 
                 if (object->readTrans != NULL)
                 {
@@ -364,7 +364,7 @@ static inline void UART_procLineStatusErr(UART_Handle handle)
             }
 
             /* Call back to application if in callback mode */
-            UART_v0_callback(handle, BTRUE);
+            UART_v0_callback(handle, true);
             object->readTrans = NULL;
         }
     }
@@ -421,7 +421,7 @@ static void UART_v0_hwiIntFxn(uintptr_t arg)
     UART_HwAttrs const *hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
     uint32_t            intType;
 
-    while (BTRUE)
+    while (TRUE)
     {
         intType = UART_intIdentityGet_v0(hwAttrs->baseAddr);
         if (intType & UART_INTID_RX_THRES_REACH)
@@ -457,7 +457,7 @@ static void UART_v0_hwiIntFxn(uintptr_t arg)
                         }
 
                         /* Call back to application if in callback mode */
-                        UART_v0_callback(handle, BTRUE);
+                        UART_v0_callback(handle, true);
                         object->readTrans = NULL;
                     }
                 }
@@ -481,20 +481,20 @@ static void UART_v0_hwiIntFxn(uintptr_t arg)
                     }
 
                     /* Call back to application if in callback mode */
-                    UART_v0_callback(handle, BFALSE);
+                    UART_v0_callback(handle, false);
                     object->writeTrans = NULL;
                 }
             }
             else
             {
-                if (UTRUE == object->txDataSent)
+                if (object->txDataSent == TRUE)
                 {
                     UART_intDisable_v0(hwAttrs->baseAddr, UART_INT_THR);
 
                     /* Call back to application if in callback mode */
-                    UART_v0_callback(handle, BFALSE);
+                    UART_v0_callback(handle, false);
                     object->writeTrans = NULL;
-                    object->txDataSent = UFALSE;
+                    object->txDataSent = FALSE;
                 }
             }
         }
@@ -511,7 +511,7 @@ static void UART_v0_hwiIntFxn(uintptr_t arg)
 static void UART_init_v0(UART_Handle handle)
 {
     /* Mark the object as available */
-    ((UART_V0_Object *)(handle->object))->isOpen = UFALSE;
+    ((UART_V0_Object *)(handle->object))->isOpen = (uint32_t)FALSE;
 }
 
 static uint32_t UART_getRxTrigLvl_v0(UART_RxTrigLvl trigLevel);
@@ -613,7 +613,7 @@ static UART_Handle UART_open_v0(UART_Handle handle, const UART_Params *params)
     key = UART_osalHardwareIntDisable();
 
     /* Check if the UART is open already with the base addr. */
-    if(UTRUE == object->isOpen)
+    if(object->isOpen == TRUE)
     {
         UART_osalHardwareIntRestore(key);
 
@@ -625,7 +625,7 @@ static UART_Handle UART_open_v0(UART_Handle handle, const UART_Params *params)
     /* UART is open by setting base addr */
     else
     {
-        object->isOpen = UTRUE;
+        object->isOpen = (uint32_t)TRUE;
         UART_osalHardwareIntRestore(key);
 
         /* Set UART variables to defaults. */
@@ -633,9 +633,9 @@ static UART_Handle UART_open_v0(UART_Handle handle, const UART_Params *params)
         object->readBuf = NULL;
         object->writeCount = 0;
         object->readCount = 0;
-        object->writeSize = 0U;
-        object->readSize = 0U;
-        object->writeCR = UFALSE;
+        object->writeSize = 0;
+        object->readSize = 0;
+        object->writeCR = (uint32_t)FALSE;
         object->readTrans = NULL;
         object->writeTrans = NULL;
 
@@ -725,7 +725,7 @@ static UART_Handle UART_open_v0(UART_Handle handle, const UART_Params *params)
                                UART_INT_RHR_CTI | UART_INT_THR | UART_INT_LINE_STAT);
             rxTrigLevel = UART_getRxTrigLvl_v0(hwAttrs->rxTrigLvl);
 #ifdef UART_DMA_ENABLE
-            if (UTRUE == hwAttrs->dmaMode)
+            if (hwAttrs->dmaMode == TRUE)
             {
                 /*FIFO and DMA setting */
                 UART_fIFORegisterWrite_v0((uint32_t) hwAttrs->baseAddr,
@@ -772,7 +772,7 @@ static UART_Handle UART_open_v0(UART_Handle handle, const UART_Params *params)
             /* Disable Break Control. */
             UART_breakCtl_v0(hwAttrs->baseAddr, UART_BREAK_COND_DISABLE);
 
-            if (UTRUE == hwAttrs->loopback)
+            if (hwAttrs->loopback == TRUE)
             {
                 UART_loopbackModeControl_v0(hwAttrs->baseAddr, UART_LOOPBACK_MODE_ENABLE);
             }
@@ -809,7 +809,7 @@ static void UART_close_v0(UART_Handle handle)
     /* Disable preemption while checking if the UART is open. */
     key = UART_osalHardwareIntDisable();
 
-    if (object->isOpen == UFALSE)
+    if (object->isOpen == (uint32_t)FALSE)
     {
         UART_drv_log1("UART:(%p) is already closed", hwAttrs->baseAddr);
         UART_osalHardwareIntRestore(key);
@@ -826,7 +826,7 @@ static void UART_close_v0(UART_Handle handle)
     UART_operatingModeSelect_v0(hwAttrs->baseAddr, UART_DISABLED_MODE);
 
 #ifdef UART_DMA_ENABLE
-    if (UTRUE == hwAttrs->dmaMode)
+    if (hwAttrs->dmaMode == TRUE)
     {
         UART_freeDmaChannel(handle);
     }
@@ -845,7 +845,7 @@ static void UART_close_v0(UART_Handle handle)
       }
 	}  
 
-    object->isOpen = UFALSE;
+    object->isOpen = (uint32_t)FALSE;
 
     UART_drv_log1("UART:(%p) closed", hwAttrs->baseAddr);
 }
@@ -951,11 +951,11 @@ static int32_t UART_write2_v0(UART_Handle handle, UART_Transaction * transaction
             }
             object->writeBuf = transaction->buf;
             object->writeCount = 0;
-            object->txDataSent = UFALSE;
+            object->txDataSent = FALSE;
             UART_fifoWait_v0(hwAttrs->baseAddr);
 
 #ifdef UART_DMA_ENABLE
-            if (UTRUE == hwAttrs->dmaMode)
+            if (hwAttrs->dmaMode == TRUE)
             {
                 /* DMA mode */
                 object->writeSize = transaction->count;
@@ -1017,8 +1017,8 @@ static int32_t UART_write2_v0(UART_Handle handle, UART_Transaction * transaction
                 /* Disable TX threshold interrupt */
                 UART_intDisable_v0(hwAttrs->baseAddr, UART_INT_THR);
 
-                object->writeSize = UART_writeData_v0(handle, transaction->count);
-                if ((object->writeSize) == 0U)
+                object->writeSize = UART_writeData_v0(handle, (int32_t)(transaction->count));
+                if ((object->writeSize) == 0)
                 {
                     /* Write is finished. */
                     UART_drv_log2("UART(%p): Write finished, %d bytes written",
@@ -1031,7 +1031,7 @@ static int32_t UART_write2_v0(UART_Handle handle, UART_Transaction * transaction
                         object->writeTrans->count = object->writeCount;
                         object->writeTrans->status = UART_TRANSFER_STATUS_SUCCESS;
                     }
-                    object->txDataSent = UTRUE;
+                    object->txDataSent = TRUE;
                     UART_intEnable_v0(hwAttrs->baseAddr, UART_INT_THR);
                 }
                 /* If writeMode is blocking, block and get the status. */
@@ -1111,16 +1111,16 @@ static uint32_t UART_charPut(UART_HwAttrs const *hwAttrs, uint8_t data, uint32_t
 {
     uint32_t status;
     uint32_t timeoutCnt = *timeout;
-    uint32_t retVal = UTRUE;
+    uint32_t retVal = TRUE;
 
-    while (UTRUE == retVal)
+    while (retVal == TRUE)
     {
         status = UART_fifoEmpty_v0(hwAttrs->baseAddr);
-        if (UFALSE == status)
+        if (status == FALSE)
         {
-            if (0U == timeoutCnt)
+            if (timeoutCnt == 0)
             {
-                retVal = UFALSE;
+                retVal = FALSE;
             }
             else
             {
@@ -1151,18 +1151,18 @@ static int32_t UART_writePolling_v0(UART_Handle handle, const void *buf,
     UART_HwAttrs const *hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
     uint8_t            *buffer = (uint8_t *)buf;
     uint32_t            timeout;
-    uint32_t            timeoutErr = UFALSE;
+    uint32_t            timeoutErr = FALSE;
 
     timeout = object->params.writeTimeout;
 
     /* Write characters. */
-    while ((0U != size) && (UFALSE == timeoutErr))
+    while ((size != 0) && (timeoutErr == FALSE))
     {
         if ((object->params.writeDataMode == UART_DATA_TEXT) && (*buffer == (uint8_t)'\n'))
         {
-            if (UFALSE == UART_charPut(hwAttrs, ((uint8_t)('\r')), &timeout))
+            if (UART_charPut(hwAttrs, ((uint8_t)('\r')), &timeout) == FALSE)
             {
-                timeoutErr = UTRUE;
+                timeoutErr = TRUE;
             }
             else
             {
@@ -1170,11 +1170,11 @@ static int32_t UART_writePolling_v0(UART_Handle handle, const void *buf,
             }
         }
 
-        if (UFALSE == timeoutErr)
+        if (timeoutErr == FALSE)
         {
-            if (UFALSE == UART_charPut(hwAttrs, *buffer, &timeout))
+            if (UART_charPut(hwAttrs, *buffer, &timeout) == FALSE)
             {
-                timeoutErr = UTRUE;
+                timeoutErr = TRUE;
             }
             else
             {
@@ -1188,7 +1188,7 @@ static int32_t UART_writePolling_v0(UART_Handle handle, const void *buf,
         }
     }
 
-    if (UTRUE == timeoutErr)
+    if (timeoutErr == TRUE)
     {
         UART_drv_log2("UART:(%p) Write polling timed out, %d bytes written",
                       hwAttrs->baseAddr, count);
@@ -1208,9 +1208,9 @@ static int32_t UART_writePolling_v0(UART_Handle handle, const void *buf,
 static void UART_writeCancel_v0(UART_Handle handle);   /* for misra warnings*/
 static void UART_writeCancel_v0(UART_Handle handle)
 {
-    if (BTRUE == UART_writeCancelNoCB(handle))
+    if (UART_writeCancelNoCB(handle) == true)
     {
-        UART_v0_callback(handle, BFALSE);
+        UART_v0_callback(handle, false);
 
         UART_drv_log2("UART:(%p) Write cancelled, %d bytes written",
                       ((UART_HwAttrs const *)(handle->hwAttrs))->baseAddr,
@@ -1229,17 +1229,17 @@ static uint32_t UART_charGet(UART_HwAttrs const *hwAttrs, uint8_t *data, uint32_
 {
     uint8_t  rdData;
     uint32_t timeoutCnt = *timeout;
-    uint32_t retVal = UTRUE;
+    uint32_t retVal = TRUE;
     uint32_t rdSuccess;
 
-    while (UTRUE == retVal)
+    while (retVal == TRUE)
     {
         rdSuccess = UART_charGetNonBlocking2_v0(hwAttrs->baseAddr, &rdData);
-        if (UFALSE == rdSuccess)
+        if (rdSuccess == FALSE)
         {
-            if (0U == timeoutCnt)
+            if (timeoutCnt == 0)
             {
-                retVal = UFALSE;
+                retVal = FALSE;
             }
             else
             {
@@ -1270,16 +1270,16 @@ static int32_t UART_readPolling_v0(UART_Handle handle, void *buf, size_t size)
     uint8_t               *buffer = (uint8_t *)buf;
     uint32_t               timeout;
     uint8_t                ret_flag = 0U;
-    uint32_t               timeoutErr = UFALSE;
+    uint32_t               timeoutErr = FALSE;
 
     timeout = object->params.readTimeout;
 
     /* Read characters. */
-    while ((0U != size) && (UFALSE == timeoutErr))
+    while ((size != 0) && (timeoutErr == FALSE))
     {
-        if (UFALSE == UART_charGet(hwAttrs, buffer, &timeout))
+        if (UART_charGet(hwAttrs, buffer, &timeout) == FALSE)
         {
-            timeoutErr = UTRUE;
+            timeoutErr = TRUE;
         }
         else
         {
@@ -1294,28 +1294,28 @@ static int32_t UART_readPolling_v0(UART_Handle handle, void *buf, size_t size)
                 /* Echo character if enabled. */
                 if (object->params.readEcho)
                 {
-                    if (UFALSE == UART_charPut(hwAttrs, ((uint8_t)('\r')), &timeout))
+                    if (UART_charPut(hwAttrs, ((uint8_t)('\r')), &timeout) == FALSE)
                     {
-                        timeoutErr = UTRUE;
+                        timeoutErr = TRUE;
                     }
                 }
-                if (UFALSE == timeoutErr)
+                if (timeoutErr == FALSE)
                 {
                     *buffer = (uint8_t)'\n';
                 }
             }
 
             /* Echo character if enabled. */
-            if ((UFALSE == timeoutErr) && (object->params.readEcho == UART_ECHO_ON))
+            if ((timeoutErr == FALSE) && (object->params.readEcho == UART_ECHO_ON))
             {
-                if (UFALSE == UART_charPut(hwAttrs, *buffer, &timeout))
+                if (UART_charPut(hwAttrs, *buffer, &timeout) == FALSE)
                 {
-                    timeoutErr = UTRUE;
+                    timeoutErr = TRUE;
                 }
             }
 
             /* If read return mode is newline, finish if a newline was received. */
-            if ((UFALSE == timeoutErr) &&
+            if ((timeoutErr == FALSE) &&
                 (object->params.readReturnMode == UART_RETURN_NEWLINE) &&
                 (*buffer == ((uint8_t)('\n'))))
             {
@@ -1329,7 +1329,7 @@ static int32_t UART_readPolling_v0(UART_Handle handle, void *buf, size_t size)
         }
     }
 
-    if(UFALSE == timeoutErr)
+    if(timeoutErr == FALSE)
     {
         UART_drv_log2("UART:(%p) Read polling timed out, %d bytes read",
                       hwAttrs->baseAddr, count);
@@ -1350,9 +1350,9 @@ static int32_t UART_readPolling_v0(UART_Handle handle, void *buf, size_t size)
 static void UART_readCancel_v0(UART_Handle handle);   /* for misra warnings*/
 static void UART_readCancel_v0(UART_Handle handle)
 {
-    if (BTRUE == UART_readCancelNoCB(handle))
+    if (UART_readCancelNoCB(handle) == true)
     {
-    	UART_v0_callback(handle, BTRUE);
+    	UART_v0_callback(handle, true);
 
         UART_drv_log2("UART:(%p) Read cancelled, %d bytes read",
                       ((UART_HwAttrs const *)(handle->hwAttrs))->baseAddr,
@@ -1476,7 +1476,7 @@ static int32_t UART_read2_v0(UART_Handle handle, UART_Transaction *transaction)
                 object->readCount = 0;
 
 #ifdef UART_DMA_ENABLE
-                if (UTRUE == hwAttrs->dmaMode)
+                if (hwAttrs->dmaMode == TRUE)
                 {
                     /* DMA mode */
                     object->readSize = transaction->count;
@@ -1539,8 +1539,8 @@ static int32_t UART_read2_v0(UART_Handle handle, UART_Transaction *transaction)
                     /* Disable RX threshold and line status error interrupt */
                     UART_intDisable_v0(hwAttrs->baseAddr, UART_INT_RHR_CTI | UART_INT_LINE_STAT);
 
-                    object->readSize = UART_v0_readData(handle, transaction->count);
-                    if ((object->readSize) == 0U)
+                    object->readSize = UART_v0_readData(handle, (int32_t)(transaction->count));
+                    if ((object->readSize) == 0)
                     {
                         /* Read is finished. */
                         UART_drv_log2("UART:(0x%x) Read finished, %d bytes read",
@@ -1551,7 +1551,7 @@ static int32_t UART_read2_v0(UART_Handle handle, UART_Transaction *transaction)
 
                         if (object->params.readMode == UART_MODE_CALLBACK)
                         {
-                            UART_v0_callback(handle, BTRUE);
+                            UART_v0_callback(handle, true);
                         }
                         ret_val = UART_SUCCESS;
                     }
@@ -1623,7 +1623,7 @@ static bool UART_writeCancelNoCB(UART_Handle handle)
     uint32_t            key;
     UART_V0_Object     *object = (UART_V0_Object*)handle->object;
     UART_HwAttrs const *hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
-    bool                retVal = BTRUE;
+    bool                retVal = true;
 
     UART_intDisable_v0(hwAttrs->baseAddr, UART_INT_THR);
 
@@ -1631,18 +1631,18 @@ static bool UART_writeCancelNoCB(UART_Handle handle)
     key = UART_osalHardwareIntDisable();
 
     /* Return if there is no write. */
-    if (0U == (object->writeSize))
+    if ((object->writeSize) == 0U)
     {
         UART_osalHardwareIntRestore(key);
-        retVal = BFALSE;
+        retVal = false;
     }
     else
     {
 #ifdef UART_DMA_ENABLE
-        if (UTRUE == hwAttrs->dmaMode)
+        if (hwAttrs->dmaMode == TRUE)
         {
             /* Disable DMA TX channel */
-            UART_disableDmaChannel(handle, BTRUE);
+            UART_disableDmaChannel(handle, true);
 
             if (object->writeTrans != NULL)
             {
@@ -1665,7 +1665,7 @@ static bool UART_writeCancelNoCB(UART_Handle handle)
         }
 
         /* Set size = 0 to prevent writing and restore interrupts. */
-        object->writeSize = 0U;
+        object->writeSize = 0;
         UART_osalHardwareIntRestore(key);
 
         /* Flush the TX FIFO */
@@ -1680,7 +1680,7 @@ static bool UART_readCancelNoCB(UART_Handle handle)
     uint32_t            key;
     UART_V0_Object     *object = (UART_V0_Object*)handle->object;
     UART_HwAttrs const *hwAttrs = (UART_HwAttrs const *)handle->hwAttrs;
-    bool                retVal = BTRUE;
+    bool                retVal = true;
     uint8_t             rdData;
 
     UART_intDisable_v0(hwAttrs->baseAddr,
@@ -1688,18 +1688,18 @@ static bool UART_readCancelNoCB(UART_Handle handle)
 
     /* Disable interrupts to avoid reading data while changing state. */
     key = UART_osalHardwareIntDisable();
-    if (0U == (object->readSize))
+    if ((object->readSize) == 0U)
     {
         UART_osalHardwareIntRestore(key);
-        retVal = BFALSE;
+        retVal = false;
     }
     else
     {
 #ifdef UART_DMA_ENABLE
-        if (UTRUE == hwAttrs->dmaMode)
+        if (hwAttrs->dmaMode == TRUE)
         {
             /* Disable DMA RX channel */
-            UART_disableDmaChannel(handle, BFALSE);
+            UART_disableDmaChannel(handle, false);
 
             if (object->readTrans != NULL)
             {
@@ -1722,11 +1722,11 @@ static bool UART_readCancelNoCB(UART_Handle handle)
         }
 
         /* Set size = 0 to prevent reading and restore interrupts. */
-        object->readSize = 0U;
+        object->readSize = 0;
         UART_osalHardwareIntRestore(key);
 
         /* Flush the RX FIFO */
-        while (UFALSE != UART_charGetNonBlocking2_v0(hwAttrs->baseAddr, &rdData));
+        while (UART_charGetNonBlocking2_v0(hwAttrs->baseAddr, &rdData) != FALSE);
     }
 
     return (retVal);

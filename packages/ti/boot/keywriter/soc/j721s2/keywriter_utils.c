@@ -167,11 +167,11 @@ void OTP_VppEn(void)
     Board_I2cInitCfg_t i2cCfg;
     Board_IDInfo_v2    info;
     Board_STATUS       status;
-    bool               skBoardDet = BFALSE;
+    bool               skBoardDet = FALSE;
 
     i2cCfg.i2cInst    = BOARD_I2C_EEPROM_INSTANCE;
     i2cCfg.socDomain  = BOARD_SOC_DOMAIN_WKUP;
-    i2cCfg.enableIntr = BFALSE;
+    i2cCfg.enableIntr = FALSE;
     Board_setI2cInitConfig(&i2cCfg);
 
     /* Check if the board is SK */
@@ -183,11 +183,11 @@ void OTP_VppEn(void)
                      BOARD_BOARD_NAME_LEN)))
         {
             UART_printf("AM68 SK Detected!!\n");
-            skBoardDet = BTRUE;
+            skBoardDet = TRUE;
         }
     }
 
-    if(skBoardDet == BTRUE)
+    if(skBoardDet == TRUE)
     {
         /* Enable VPP for AM68 SK board */
         OTP_VppEn_SK();

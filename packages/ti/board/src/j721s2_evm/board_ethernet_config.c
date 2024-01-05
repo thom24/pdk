@@ -76,8 +76,8 @@ static Board_STATUS Board_ethCfgKickCtrl(uint32_t domain, uint32_t lockCtrl)
  * \param   baseAddr [IN]   MDIO base address
  *
  * \return  uint32_t
-            UTRUE     Read is successful.
- *          UFALSE    Read is not acknowledged properly.
+            TRUE     Read is successful.
+ *          FALSE    Read is not acknowledged properly.
  */
 static void Board_mdioInit(uint32_t baseAddr)
 {
@@ -104,8 +104,8 @@ static void Board_ethPhyRegWrite(uint32_t baseAddr, uint32_t phyAddr,
     uint32_t regVal = 0U;
 
     /* Wait till transaction completion if any */
-    while(1U == HW_RD_FIELD32(baseAddr + CSL_MDIO_USER_GROUP_USER_ACCESS_REG(0U),
-          CSL_MDIO_USER_GROUP_USER_ACCESS_REG_GO))
+    while(HW_RD_FIELD32(baseAddr + CSL_MDIO_USER_GROUP_USER_ACCESS_REG(0U),
+          CSL_MDIO_USER_GROUP_USER_ACCESS_REG_GO) == 1)
     {}
 
     HW_SET_FIELD(regVal, CSL_MDIO_USER_GROUP_USER_ACCESS_REG_GO, 1);
@@ -116,8 +116,8 @@ static void Board_ethPhyRegWrite(uint32_t baseAddr, uint32_t phyAddr,
     HW_WR_REG32(baseAddr + CSL_MDIO_USER_GROUP_USER_ACCESS_REG(0U), regVal);
 
     /* wait for command completion */
-    while(1U == HW_RD_FIELD32(baseAddr + CSL_MDIO_USER_GROUP_USER_ACCESS_REG(0U),
-          CSL_MDIO_USER_GROUP_USER_ACCESS_REG_GO))
+    while(HW_RD_FIELD32(baseAddr + CSL_MDIO_USER_GROUP_USER_ACCESS_REG(0U),
+          CSL_MDIO_USER_GROUP_USER_ACCESS_REG_GO) == 1)
     {}
 }
 
@@ -132,8 +132,8 @@ static void Board_ethPhyRegWrite(uint32_t baseAddr, uint32_t phyAddr,
  *          regData  [OUT]  Pointer where the read value shall be written
  *
  * \return  uint32_t
-            UTRUE     Read is successful.
- *          UFALSE    Read is not acknowledged properly.
+            TRUE     Read is successful.
+ *          FALSE    Read is not acknowledged properly.
  */
 static uint32_t BoardDiag_ethPhyRegRead(uint32_t baseAddr, uint32_t phyAddr,
                                         uint32_t regAddr, uint16_t *regData)
@@ -142,8 +142,8 @@ static uint32_t BoardDiag_ethPhyRegRead(uint32_t baseAddr, uint32_t phyAddr,
     uint32_t retVal = 0U;
 
     /* Wait till transaction completion if any */
-    while(1U == HW_RD_FIELD32(baseAddr + CSL_MDIO_USER_GROUP_USER_ACCESS_REG(0U),
-               CSL_MDIO_USER_GROUP_USER_ACCESS_REG_GO))
+    while(HW_RD_FIELD32(baseAddr + CSL_MDIO_USER_GROUP_USER_ACCESS_REG(0U),
+        CSL_MDIO_USER_GROUP_USER_ACCESS_REG_GO) == 1)
     {}
     HW_SET_FIELD(regVal, CSL_MDIO_USER_GROUP_USER_ACCESS_REG_GO,1);
     HW_SET_FIELD(regVal, CSL_MDIO_USER_GROUP_USER_ACCESS_REG_WRITE, 0);
@@ -152,22 +152,22 @@ static uint32_t BoardDiag_ethPhyRegRead(uint32_t baseAddr, uint32_t phyAddr,
     HW_WR_REG32(baseAddr + CSL_MDIO_USER_GROUP_USER_ACCESS_REG(0U), regVal);
 
     /* wait for command completion */
-    while(1U == HW_RD_FIELD32(baseAddr + CSL_MDIO_USER_GROUP_USER_ACCESS_REG(0U),
-               CSL_MDIO_USER_GROUP_USER_ACCESS_REG_GO))
+    while(HW_RD_FIELD32(baseAddr + CSL_MDIO_USER_GROUP_USER_ACCESS_REG(0U),
+          CSL_MDIO_USER_GROUP_USER_ACCESS_REG_GO) == 1)
     {}
 
     /* Store the data if the read is acknowledged */
-    if(1U == HW_RD_FIELD32(baseAddr + CSL_MDIO_USER_GROUP_USER_ACCESS_REG(0U),
-            CSL_MDIO_USER_GROUP_USER_ACCESS_REG_ACK))
+    if(HW_RD_FIELD32(baseAddr + CSL_MDIO_USER_GROUP_USER_ACCESS_REG(0U),
+        CSL_MDIO_USER_GROUP_USER_ACCESS_REG_ACK) == 1)
     {
         *regData = (uint16_t)(HW_RD_FIELD32(baseAddr + \
                     CSL_MDIO_USER_GROUP_USER_ACCESS_REG(0U),
                     CSL_MDIO_USER_GROUP_USER_ACCESS_REG_DATA));
-        retVal = UTRUE;
+        retVal = (uint32_t)TRUE;
     }
     else
     {
-        retVal = UFALSE;
+        retVal = (uint32_t)FALSE;
     }
 
     return(retVal);
@@ -238,7 +238,7 @@ Board_STATUS Board_cpsw2gMainEthPhyConfig(void)
 {
     uint32_t baseAddr;
     uint8_t  phyAddr;
-    uint16_t regData = 0U;
+    uint16_t regData = 0;
     Board_STATUS status = BOARD_SOK;
 
     baseAddr = (CSL_CPSW1_NUSS_BASE + 0x0F00);
@@ -270,7 +270,7 @@ Board_STATUS Board_cpsw2gMainEthPhyConfig(void)
                                  BOARD_ETHPHY_GPIO_MUX_CTRL2_REG_ADDR,
                                  regData);
 
-    regData = 0U;
+    regData = 0;
     BoardDiag_ethPhyRegRead(baseAddr, phyAddr,
                             BOARD_ETHPHY_LEDCR1_REG_ADDR, &regData);
     regData  = (regData & ~(BOARD_ETHPHY_LEDCR1_REG_MASK)) |
@@ -285,22 +285,22 @@ Board_STATUS Board_cpsw2gMainEthPhyConfig(void)
     * As a workaround, write a value of 0x1 in this bit field if
     * bit 10 of STRAP_STS2 (0x6f) register is set (enable FLD).
     */
-    regData = 0U;
+    regData = 0;
     Board_ethPhyExtendedRegRead(baseAddr, phyAddr,
                                 BOARD_ETHPHY_STRAP_STS2_REG_ADDR,
                                 &regData);
     if (regData & BOARD_ETHPHY_STRAP_FLD_MASK)
     {
-        regData = 0U;
+        regData = 0;
         Board_ethPhyExtendedRegRead(baseAddr, phyAddr,
                                     BOARD_ETHPHY_FLD_THRESH_REG_ADDR,
                                     &regData);
-        if (BOARD_ETHPHY_STRAP_FLD_THS_CHECK_FLAG == regData)
+        if (regData == BOARD_ETHPHY_STRAP_FLD_THS_CHECK_FLAG)
         {
-            regData &= ~0x7U;
+            regData &= ~0x7;
             Board_ethPhyExtendedRegWrite(baseAddr, phyAddr,
                                          BOARD_ETHPHY_FLD_THRESH_REG_ADDR,
-                                         (regData | 0x1U));
+                                         (regData | 0x1));
         }
     }
 
@@ -318,7 +318,7 @@ Board_STATUS Board_cpsw2gMainEthPhyConfig(void)
 Board_STATUS Board_cpsw2gEthPhyConfig(void)
 {
     uint32_t baseAddr;
-    uint16_t regData = 0U;
+    uint16_t regData = 0;
 
     baseAddr = (CSL_MCU_CPSW0_NUSS_BASE + 0x0F00);
 
@@ -334,7 +334,7 @@ Board_STATUS Board_cpsw2gEthPhyConfig(void)
                                  BOARD_ETHPHY_GPIO_MUX_CTRL2_REG_ADDR,
                                  regData);
 
-    regData = 0U;
+    regData = 0;
     BoardDiag_ethPhyRegRead(baseAddr, BOARD_MCU_EMAC_PHY_ADDR,
                             BOARD_ETHPHY_LEDCR1_REG_ADDR, &regData);
     regData  = (regData & ~(BOARD_ETHPHY_LEDCR1_REG_MASK)) |
@@ -349,29 +349,29 @@ Board_STATUS Board_cpsw2gEthPhyConfig(void)
      * As a workaround, write a value of 0x1 in this bit field if
      * bit 10 of STRAP_STS2 (0x6f) register is set (enable FLD).
      */
-     regData = 0U;
+     regData = 0;
      Board_ethPhyExtendedRegRead(baseAddr, BOARD_MCU_EMAC_PHY_ADDR,
                                  BOARD_ETHPHY_STRAP_STS2_REG_ADDR,
                                  &regData);
      if (regData & BOARD_ETHPHY_STRAP_FLD_MASK)
      {
-         regData = 0U;
+         regData = 0;
          Board_ethPhyExtendedRegRead(baseAddr, BOARD_MCU_EMAC_PHY_ADDR,
                                      BOARD_ETHPHY_FLD_THRESH_REG_ADDR,
                                      &regData);
-         if (BOARD_ETHPHY_STRAP_FLD_THS_CHECK_FLAG == regData)
+         if (regData == BOARD_ETHPHY_STRAP_FLD_THS_CHECK_FLAG)
          {
-             regData &= ~0x7U;
+             regData &= ~0x7;
              Board_ethPhyExtendedRegWrite(baseAddr, BOARD_MCU_EMAC_PHY_ADDR,
                                           BOARD_ETHPHY_FLD_THRESH_REG_ADDR,
-                                          (regData | 0x1U));
+                                          (regData | 0x1));
          }
      }
 
     /* Enabling the TX and RX delay */
     Board_ethPhyExtendedRegRead(baseAddr, BOARD_MCU_EMAC_PHY_ADDR,
                                 BOARD_ETHPHY_RGMIICTL_REG_ADDR, &regData);
-    regData = regData | 0x3U;
+    regData = regData | 0x3;
     Board_ethPhyExtendedRegWrite(baseAddr, BOARD_MCU_EMAC_PHY_ADDR,
                                  BOARD_ETHPHY_RGMIICTL_REG_ADDR, regData);
 
@@ -477,7 +477,7 @@ Board_STATUS Board_ethConfigCpsw2g(void)
 
     /* Configures the MCU Ethernet */
     status = Board_cpsw2gMacModeConfig(RGMII);
-    if(BOARD_SOK != status)
+    if(status != BOARD_SOK)
     {
         return BOARD_FAIL;
     }
@@ -497,7 +497,7 @@ Board_STATUS Board_ethConfigCpsw2gMain(void)
     Board_STATUS status = BOARD_SOK;
     /* Configures the CPSW2G Main Domain RGMII ports */
     status = Board_cpsw2gMainEthConfig(RGMII);
-    if(BOARD_SOK != status)
+    if(status != BOARD_SOK)
     {
         return BOARD_FAIL;
     }

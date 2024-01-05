@@ -130,7 +130,7 @@ void spi_test(UArg arg0, UArg arg1)
     Board_FlashInfo   *flashInfo;
     uint32_t           blockNum, pageNum;
     SPI_Params       spiParams;                        /* SPI params structure */
-    bool               testPassed = BTRUE;
+    bool               testPassed = true;
 
 #ifdef BARE_METAL
     /* Call board init functions */
@@ -160,7 +160,7 @@ void spi_test(UArg arg0, UArg arg1)
                                    &blockNum, &pageNum))
     {
         SPI_log("\n Board_flashOffsetToBlkPage failed. \n");
-        testPassed = BFALSE;
+        testPassed = false;
         goto err;
     }
 
@@ -172,14 +172,14 @@ void spi_test(UArg arg0, UArg arg1)
                         TEST_TX_LENGTH, NULL))
     {
         SPI_log("\n Board_flashRead failed. \n");
-        testPassed = BFALSE;
+        testPassed = false;
         goto err;
     }
 
     Board_flashClose(boardHandle);
 
 err:
-    if(BTRUE == testPassed)
+    if(true == testPassed)
     {
         SPI_log("\n All tests have passed. \n");
     }

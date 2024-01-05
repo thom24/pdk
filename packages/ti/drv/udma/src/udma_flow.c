@@ -100,7 +100,7 @@ int32_t Udma_flowAlloc(Udma_DrvHandle drvHandle,
 
     if(UDMA_SOK == retVal)
     {
-        Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
+        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
         drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
         freeFlowOffset =
@@ -152,7 +152,7 @@ int32_t Udma_flowAlloc(Udma_DrvHandle drvHandle,
             retVal = UDMA_EALLOC;
         }
 
-        Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
+        Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
         drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
     }
 #else
@@ -177,7 +177,7 @@ int32_t Udma_flowAllocMapped(Udma_DrvHandle drvHandle,
     }
     if(UDMA_SOK == retVal)
     {
-        if(UDMA_INIT_DONE != drvHandle->drvInitDone)
+        if(drvHandle->drvInitDone != UDMA_INIT_DONE)
         {
             retVal = UDMA_EFAIL;
         }
@@ -190,7 +190,7 @@ int32_t Udma_flowAllocMapped(Udma_DrvHandle drvHandle,
     {
         /* Allocate mapped ring */
         mappedFlowNum = Udma_rmAllocMappedRing(drvHandle, flowAllocMappedPrms->mappedFlowGrp, flowAllocMappedPrms->mappedChNum);
-        if(UDMA_RING_INVALID != mappedFlowNum)
+        if(mappedFlowNum != UDMA_RING_INVALID)
         {
             /* Subtract RX Ring Number Offset */
             mappedFlowNum -= drvHandle->rxChOffset;
@@ -233,7 +233,7 @@ int32_t Udma_flowFree(Udma_FlowHandle flowHandle)
     }
     if(UDMA_SOK == retVal)
     {
-        if(UDMA_INIT_DONE != flowHandle->flowInitDone)
+        if(flowHandle->flowInitDone != UDMA_INIT_DONE)
         {
             retVal = UDMA_EFAIL;
         }
@@ -241,7 +241,7 @@ int32_t Udma_flowFree(Udma_FlowHandle flowHandle)
     if(UDMA_SOK == retVal)
     {
         drvHandle = flowHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }
@@ -254,7 +254,7 @@ int32_t Udma_flowFree(Udma_FlowHandle flowHandle)
             if(UDMA_INST_TYPE_NORMAL == drvHandle->instType)
             {
 #if (UDMA_SOC_CFG_UDMAP_PRESENT == 1)
-                Udma_assert(drvHandle, ((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex));
+                Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.lockMutex != (Udma_OsalMutexLockFxn) NULL_PTR);
                 drvHandle->initPrms.osalPrms.lockMutex(drvHandle->rmLock);
 
                 rmInitPrms = &drvHandle->initPrms.rmInitPrms;
@@ -271,11 +271,11 @@ int32_t Udma_flowFree(Udma_FlowHandle flowHandle)
                     bitPos = i - (offset << 5U);
                     bitMask = (uint32_t) 1U << bitPos;
                     Udma_assert(drvHandle,
-                        (0U == (drvHandle->freeFlowFlag[offset] & bitMask)));
+                        (drvHandle->freeFlowFlag[offset] & bitMask) == 0U);
                     drvHandle->freeFlowFlag[offset] |= bitMask;
                 }
 
-                Udma_assert(drvHandle, ((Udma_OsalMutexUnlockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.unlockMutex));
+                Udma_assert(drvHandle, drvHandle->initPrms.osalPrms.unlockMutex != (Udma_OsalMutexUnlockFxn) NULL_PTR);
                 drvHandle->initPrms.osalPrms.unlockMutex(drvHandle->rmLock);
 #endif
             }
@@ -288,7 +288,7 @@ int32_t Udma_flowFree(Udma_FlowHandle flowHandle)
         {
             /* Free Mapped Ring in devices like AM64x */
 #if((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
-            Udma_assert(drvHandle, (1U == flowHandle->flowCnt));
+            Udma_assert(drvHandle, flowHandle->flowCnt == 1U);
             /* Add RX Ring Number Offset */
             Udma_rmFreeMappedRing(flowHandle->flowStart + drvHandle->rxChOffset, drvHandle, flowHandle->mappedFlowGrp, flowHandle->mappedChNum);
 #else
@@ -322,7 +322,7 @@ int32_t Udma_flowAttach(Udma_DrvHandle drvHandle,
     }
     if(UDMA_SOK == retVal)
     {
-        if(UDMA_INIT_DONE != drvHandle->drvInitDone)
+        if(drvHandle->drvInitDone != UDMA_INIT_DONE)
         {
             retVal = UDMA_EFAIL;
         }
@@ -357,7 +357,7 @@ int32_t Udma_flowAttachMapped(Udma_DrvHandle drvHandle,
     }
     if(UDMA_SOK == retVal)
     {
-        if(UDMA_INIT_DONE != drvHandle->drvInitDone)
+        if(drvHandle->drvInitDone != UDMA_INIT_DONE)
         {
             retVal = UDMA_EFAIL;
         }
@@ -395,7 +395,7 @@ int32_t Udma_flowDetach(Udma_FlowHandle flowHandle)
     }
     if(UDMA_SOK == retVal)
     {
-        if(UDMA_INIT_DONE != flowHandle->flowInitDone)
+        if(flowHandle->flowInitDone != UDMA_INIT_DONE)
         {
             retVal = UDMA_EFAIL;
         }
@@ -428,7 +428,7 @@ int32_t Udma_flowConfig(Udma_FlowHandle flowHandle,
     memset(&rmFlowResp, 0, sizeof(rmFlowResp));
     /* Error check */
     if((NULL_PTR == flowHandle) ||
-       (UDMA_INIT_DONE != flowHandle->flowInitDone) ||
+       (flowHandle->flowInitDone != UDMA_INIT_DONE) ||
        (NULL_PTR == flowPrms))
     {
         retVal = UDMA_EBADARGS;
@@ -436,7 +436,7 @@ int32_t Udma_flowConfig(Udma_FlowHandle flowHandle,
     if(UDMA_SOK == retVal)
     {
         drvHandle = flowHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }
@@ -544,7 +544,7 @@ uint32_t Udma_flowGetNum(Udma_FlowHandle flowHandle)
 
     /* Error check */
     if((NULL_PTR == flowHandle) ||
-       (UDMA_INIT_DONE != flowHandle->flowInitDone))
+       (flowHandle->flowInitDone != UDMA_INIT_DONE))
     {
         retVal = UDMA_EBADARGS;
     }
@@ -564,7 +564,7 @@ uint32_t Udma_flowGetCount(Udma_FlowHandle flowHandle)
 
     /* Error check */
     if((NULL_PTR == flowHandle) ||
-       (UDMA_INIT_DONE != flowHandle->flowInitDone))
+       (flowHandle->flowInitDone != UDMA_INIT_DONE))
     {
         retVal = UDMA_EBADARGS;
     }
@@ -630,8 +630,8 @@ static int32_t Udma_mappedFlowCheckParams(Udma_DrvHandle drvHandle,
 
     /* Check for valid RX mapped group */
     if((UDMA_MAPPED_GROUP_INVALID == flowAllocMappedPrms->mappedFlowGrp) ||
-       (UDMA_NUM_MAPPED_TX_GROUP > flowAllocMappedPrms->mappedFlowGrp) ||
-       ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) <= flowAllocMappedPrms->mappedFlowGrp))
+       (flowAllocMappedPrms->mappedFlowGrp < UDMA_NUM_MAPPED_TX_GROUP) ||
+       (flowAllocMappedPrms->mappedFlowGrp >= (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP)))
     {
         retVal = UDMA_EINVALID_PARAMS;
         Udma_printf(drvHandle, "[Error] Incorrect Mapped Flow Group!!!\n");

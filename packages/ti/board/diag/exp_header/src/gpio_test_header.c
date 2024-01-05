@@ -527,14 +527,14 @@ int8_t BoardDiag_expHeaderFuctionalTest(void)
 {
     int8_t ret = 0;
 #if defined(SOC_J721E)
-    bool isAlpha = BFALSE;
+    bool isAlpha = 0;
     /*
      * There is a Update in PRG1 MUX-01, PRG1_PWM pins are DNI in
      * GESI Beta HW revision.
      * PRG1_PWM pins are enabled only for Alpha GESI boards.
      */
     isAlpha = Board_isAlpha(BOARD_ID_GESI);
-    if(BTRUE == isAlpha)
+    if(isAlpha == TRUE)
     {
         UART_printf("ALPHA GESI Board\n");
         gMainPadConfigMaxCount = MAIN_PADCONFIG_MAX_COUNT_ALPHA;

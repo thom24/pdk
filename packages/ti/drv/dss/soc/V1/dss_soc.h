@@ -65,7 +65,7 @@ extern "C" {
 /**
  * \brief DP HPD callback function prototype.
  *
- * \param hpdState [OUT] HPD state UTRUE / UFALSE.
+ * \param hpdState [OUT] HPD state TRUE / FALSE.
  * \param appData  [OUT] Application's private data.
  *
  * \return None.
@@ -375,7 +375,7 @@ typedef struct
  *
  *  \param  instId  [IN]Driver Instance Id.
  *
- *  \return UTRUE if instance is Video pipeline else returns UFALSE.
+ *  \return TRUE if instance is Video pipeline else returns FALSE.
  */
 static inline uint32_t Dss_dispIsVidInst(uint32_t instId);
 
@@ -384,7 +384,7 @@ static inline uint32_t Dss_dispIsVidInst(uint32_t instId);
  *
  *  \param  instId  [IN]Driver Instance Id.
  *
- *  \return UTRUE if instance is Video lite pipeline else returns UFALSE.
+ *  \return TRUE if instance is Video lite pipeline else returns FALSE.
  */
 static inline uint32_t Dss_dispIsVidLInst(uint32_t instId);
 
@@ -445,12 +445,12 @@ static inline void Dss_dctrlDpHpdCbParamsInit(Dss_DctrlDpHpdCbParams *cbParams);
 
 static inline uint32_t Dss_dispIsVidInst(uint32_t instId)
 {
-    uint32_t isVidInst = UFALSE;
+    uint32_t isVidInst = FALSE;
 
     if((DSS_DISP_INST_VID1 == instId) ||
        (DSS_DISP_INST_VID2 == instId))
     {
-        isVidInst = UTRUE;
+        isVidInst = TRUE;
     }
 
     return (isVidInst);
@@ -458,12 +458,12 @@ static inline uint32_t Dss_dispIsVidInst(uint32_t instId)
 
 static inline uint32_t Dss_dispIsVidLInst(uint32_t instId)
 {
-    uint32_t isVidLInst = UFALSE;
+    uint32_t isVidLInst = FALSE;
 
     if((DSS_DISP_INST_VIDL1 == instId) ||
        (DSS_DISP_INST_VIDL2 == instId))
     {
-        isVidLInst = UTRUE;
+        isVidLInst = TRUE;
     }
 
     return (isVidLInst);
@@ -490,23 +490,23 @@ static inline void Dss_rmInfoInit(Dss_RmInfo *rmInfo)
     {
         for(i=CSL_DSS_COMM_REG_ID_0; i<CSL_DSS_COMM_REG_ID_MAX; i++)
         {
-            rmInfo->isCommRegAvailable[i] = UTRUE;
+            rmInfo->isCommRegAvailable[i] = TRUE;
         }
         for(i=CSL_DSS_VID_PIPE_ID_VID1; i<CSL_DSS_VID_PIPE_ID_MAX; i++)
         {
-            rmInfo->isPipeAvailable[i] = UTRUE;
+            rmInfo->isPipeAvailable[i] = TRUE;
         }
         for(i=CSL_DSS_OVERLAY_ID_1; i<CSL_DSS_OVERLAY_ID_MAX; i++)
         {
-            rmInfo->isOverlayAvailable[i] = UTRUE;
+            rmInfo->isOverlayAvailable[i] = TRUE;
         }
         for(i=CSL_DSS_VP_ID_1; i<CSL_DSS_VP_ID_MAX; i++)
         {
-            rmInfo->isPortAvailable[i] = UTRUE;
+            rmInfo->isPortAvailable[i] = TRUE;
         }
         for(i=CSL_DSS_WB_PIPE_ID_1; i<CSL_DSS_WB_PIPE_ID_MAX; i++)
         {
-            rmInfo->isWbPipeAvailable[i] = UTRUE;
+            rmInfo->isWbPipeAvailable[i] = TRUE;
         }
     }
 }
@@ -515,8 +515,8 @@ static inline void Dss_dpInitParamsInit(Dss_DpInitParams *dpInitParams)
 {
     if(NULL != dpInitParams)
     {
-        dpInitParams->isAvailable    = UTRUE;
-        dpInitParams->isHpdSupported = UTRUE;
+        dpInitParams->isAvailable = TRUE;
+        dpInitParams->isHpdSupported = TRUE;
     }
 }
 
@@ -524,7 +524,7 @@ static inline void Dss_dsiInitParamsInit(Dss_DsiInitParams *dsiInitParams)
 {
     if(NULL != dsiInitParams)
     {
-        dsiInitParams->isAvailable   = UTRUE;
+        dsiInitParams->isAvailable = TRUE;
         dsiInitParams->isConnectedTo = DSS_DSI_CONNECTION_FPD;
     }
 }

@@ -189,7 +189,7 @@ int32_t SBL_uartXmodemRead(uint8_t *dest, uint32_t destsz)
             {
                 UART_putc(trychar);
             }
-            if(READBYTE_WITH_TIMEOUT(sbl_uart_baseAddr, SBL_XMODEM_DELAY, &c) == BTRUE)
+            if(READBYTE_WITH_TIMEOUT(sbl_uart_baseAddr, SBL_XMODEM_DELAY, &c) == TRUE)
             {
                 switch(c)
                 {
@@ -203,7 +203,7 @@ int32_t SBL_uartXmodemRead(uint8_t *dest, uint32_t destsz)
                         UART_putc(XMODEM_STS_ACK);
                         return len; /* normal end */
                     case XMODEM_CMD_CAN:
-                        if((READBYTE_WITH_TIMEOUT(sbl_uart_baseAddr, SBL_XMODEM_DELAY, &c) == BTRUE) &&
+                        if((READBYTE_WITH_TIMEOUT(sbl_uart_baseAddr, SBL_XMODEM_DELAY, &c) == TRUE) &&
                            (c == XMODEM_CMD_CAN))
                         {
                             UART_putc(XMODEM_STS_ACK);
@@ -234,7 +234,7 @@ int32_t SBL_uartXmodemRead(uint8_t *dest, uint32_t destsz)
         ( Packet Number + 1's complement of Packet Number ) */
         for (i = 0; i < (bufsz + 4); ++i)
         {
-            if (READBYTE_WITH_TIMEOUT(sbl_uart_baseAddr, SBL_XMODEM_DELAY, &c) != BTRUE)
+            if (READBYTE_WITH_TIMEOUT(sbl_uart_baseAddr, SBL_XMODEM_DELAY, &c) != TRUE)
                 goto reject;
             *p++ = c;
         }

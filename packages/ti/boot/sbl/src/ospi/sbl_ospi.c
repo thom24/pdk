@@ -89,11 +89,11 @@ static void *boardHandle = NULL;
 static OSPI_v0_HwAttrs ospi_cfg;
 
 /* Global variable to check whether BUILD_XIP is defined or not */
-bool isXIPEnable = BFALSE; 
+bool isXIPEnable = false; 
 /* Global variable to check whether OSPI needs to run on 133 MHZ or 166 MHz while booting an application in XIP mode */
 uint32_t ospiFrequency;
 /* Global variable to check whether OSPI_NAND_BOOT is defined or not */
-bool gIsNandBootEnable = BFALSE;
+bool gIsNandBootEnable = false;
 /* Global variable to check whether combined ROM boot image format is used or not */
 extern uint8_t combinedBootmode;
 
@@ -206,26 +206,26 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     /*        can work with direct ROM load once it is stable */
     /* true:  stable, CPU read @60Mbytes per sec, will not    */
     /*        work with ROM, as ROM needs byte accesses       */
-    ospi_cfg.dtrEnable = BTRUE;
+    ospi_cfg.dtrEnable = true;
 
     /* OSPI clock is set to 200MHz by RBL on J7200, J721S2 & J784S4 platforms.
      * PHY mode cannot be used until sysfw is loaded and OSPI clock is
      * configured to 133MHz.
      */
 #if defined(SOC_J721E) || defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    ospi_cfg.phyEnable = BFALSE;
+    ospi_cfg.phyEnable = false;
     ospi_cfg.baudRateDiv = 8;
 #endif
 
     /* Set the default SPI init configurations */
-    if (gIsNandBootEnable == BTRUE)
+    if (gIsNandBootEnable == 1)
     {
-        ospi_cfg.cacheEnable = BTRUE;
+        ospi_cfg.cacheEnable = 1;
     }
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
 #if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    if (gIsNandBootEnable == BTRUE)
+    if (gIsNandBootEnable == true)
     {
         h = Board_flashOpen(BOARD_FLASH_ID_W35N01JWTBAG,
                             BOARD_OSPI_NOR_INSTANCE, NULL);
@@ -244,14 +244,14 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     {
 
         /* Disable PHY pipeline mode */
-        CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), UFALSE);
+        CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
 
 #if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
         /* Until OSPI PHY + DMA is enabled at this early stage, the
          * ROM can more efficiently load the SYSFW directly from xSPI flash */
         if(pBuffer)
         {
-            if (gIsNandBootEnable == BTRUE)
+            if (gIsNandBootEnable == true)
             {
                 if (Board_flashRead(h, SBL_OSPI_OFFSET_SYSFW, (uint8_t *) *pBuffer, SBL_SYSFW_MAX_SIZE, NULL))
                 {
@@ -263,7 +263,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
             {
                 /* Set up ROM to load system firmware */
                 *pBuffer = (void *)(ospi_cfg.dataAddr + SBL_OSPI_OFFSET_SYSFW);
-            }   /* (gIsNandBootEnable == BTRUE) && defined(SOC_J721S2) */
+            }   /* (gIsNandBootEnable == true) && defined(SOC_J721S2) */
         }
 #else
         /* Optimized CPU copy loop - can be removed once ROM load is working */
@@ -387,7 +387,7 @@ int32_t SBL_ospiInit(void *handle)
      && !(defined(SBL_BYPASS_OSPI_DRIVER_FOR_SYSFW_DOWNLOAD) && defined(SIM_BUILD)))
 
     Board_flashHandle h = *(Board_flashHandle *) handle;
-    static uint32_t enableTuning = UTRUE;
+    static uint32_t enableTuning = TRUE;
 
     if (h)
     {
@@ -405,7 +405,7 @@ int32_t SBL_ospiInit(void *handle)
          * that issue is fixed
          */
         uint64_t ospiFunClk;
-        if(isXIPEnable == BTRUE)
+        if(isXIPEnable == true)
         {
             if(ospiFrequency == 166)
             {
@@ -453,10 +453,10 @@ int32_t SBL_ospiInit(void *handle)
     }
 #endif
 
-    ospi_cfg.dtrEnable = BTRUE;
+    ospi_cfg.dtrEnable = true;
 
 #if SBL_USE_DMA
-    ospi_cfg.dmaEnable = BTRUE;
+    ospi_cfg.dmaEnable = true;
     Ospi_udma_init(&ospi_cfg);
 
     #if defined(SOC_J721E)
@@ -467,31 +467,31 @@ int32_t SBL_ospiInit(void *handle)
 #if SBL_USE_DMA
     /* J721E: PHY mode was already previously enabled, so we keep it enabled */
     /* J7200/J721S2/J784S4: Enable the PHY mode which was disabled in SBL_ReadSysfwImage */
-    ospi_cfg.phyEnable = BTRUE;
+    ospi_cfg.phyEnable = true;
 #else
 #if defined(SOC_J721E)
-    ospi_cfg.phyEnable = BTRUE;
-    ospi_cfg.cacheEnable = BTRUE;
+    ospi_cfg.phyEnable = true;
+    ospi_cfg.cacheEnable = true;
 #else
-    ospi_cfg.phyEnable = BFALSE;
+    ospi_cfg.phyEnable = false;
 #endif
-if(isXIPEnable == BTRUE)
+if(isXIPEnable == true)
 {
-    ospi_cfg.phyEnable = BTRUE;
-    ospi_cfg.cacheEnable = BTRUE;
+    ospi_cfg.phyEnable = true;
+    ospi_cfg.cacheEnable = true;
 }
 #endif
     /* Set the default SPI init configurations */
-    if (gIsNandBootEnable == BTRUE)
+    if (gIsNandBootEnable == true)
     {
-        ospi_cfg.cacheEnable = BTRUE;
+        ospi_cfg.cacheEnable = 1;
     }
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
     /* Currently there is a dependence for Board_flashClose() to be called before SBL_ospiInit() to reset
      * OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_SAMPLE_EDGE_SEL_FLD. In the combined boot case, where SBL_ReadSysfwImage
      * is not called, setting this bit before opening the flash is necessary for clock frequencies of 166 MHz  */
-    if(combinedBootmode == 1)
+    if(combinedBootmode == TRUE)
     {
         const CSL_ospi_flash_cfgRegs *pRegs = (const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr);
         CSL_REG32_FINS(&pRegs->RD_DATA_CAPTURE_REG, OSPI_FLASH_CFG_RD_DATA_CAPTURE_REG_SAMPLE_EDGE_SEL_FLD, 0);
@@ -499,7 +499,7 @@ if(isXIPEnable == BTRUE)
     }
 
 #if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    if (gIsNandBootEnable == BTRUE)
+    if (gIsNandBootEnable == true)
     {
         h = Board_flashOpen(BOARD_FLASH_ID_W35N01JWTBAG,
                             BOARD_OSPI_NOR_INSTANCE, (void *)(enableTuning));
@@ -519,10 +519,10 @@ if(isXIPEnable == BTRUE)
         /* Update the static handle as well, for later use */
         boardHandle = (void *)h;
 #if !(SBL_USE_DMA) && !defined(SOC_J721E)
-        if(isXIPEnable == BFALSE)
+        if(isXIPEnable == false)
         {
             /* Disable PHY pipeline mode if not using DMA */
-            CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), UFALSE);
+            CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
         }
 #endif
     }
@@ -583,7 +583,7 @@ int32_t SBL_ospiFlashRead(const void *handle, uint8_t *dst, uint32_t length,
 
 #else
 
-    if((isXIPEnable == BTRUE) || (gIsNandBootEnable == BTRUE))
+    if((isXIPEnable == true) || (gIsNandBootEnable == true))
     {
         Board_flashHandle h = *(const Board_flashHandle *) handle;
         uint32_t ioMode = OSPI_FLASH_OCTAL_READ;
@@ -652,17 +652,17 @@ int32_t SBL_ospiLeaveConfigSPI()
     /* Configure the flash for SPI mode */
     ospi_cfg.xferLines = OSPI_XFER_LINES_SINGLE;
     /* Put controller in DAC mode so flash ID can be read directly */
-    ospi_cfg.dacEnable = BTRUE;
+    ospi_cfg.dacEnable = true;
     /* Disable PHY in legacy SPI mode (1-1-1) */
-    ospi_cfg.phyEnable = BFALSE;
-    ospi_cfg.dtrEnable = BFALSE;
-    ospi_cfg.xipEnable = BFALSE;
+    ospi_cfg.phyEnable = false;
+    ospi_cfg.dtrEnable = false;
+    ospi_cfg.xipEnable = false;
 
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 
 #if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-    if (gIsNandBootEnable == BTRUE)
+    if (gIsNandBootEnable == true)
     {
         h = Board_flashOpen(BOARD_FLASH_ID_W35N01JWTBAG,
                             BOARD_OSPI_NOR_INSTANCE, NULL);
@@ -714,7 +714,7 @@ int32_t SBL_OSPIBootImage(sblEntryPoint_t *pEntry)
 
     SBL_ospiClose(&boardHandle);
 
-if(isXIPEnable == BTRUE)
+if(isXIPEnable == true)
 {
     #if (defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4))
         /* These fields are reset by Nor_xspiClose but are required for XIP */
@@ -745,7 +745,7 @@ int32_t SBL_ospiCopyHsmImage(uint8_t** dstAddr, uint32_t srcOffsetAddr, uint32_t
     Board_flashHandle h = (Board_flashHandle) boardHandle;
     /* In combined boot SBL doesn't load tifs, So SBL doesn't configure OSPI.
        Configure OSPI to load hsm.bin in combined boot */
-    if (1 == combinedBootmode)
+    if (TRUE == combinedBootmode)
     {
         /* Init SPI driver */
         OSPI_init();
@@ -753,16 +753,16 @@ int32_t SBL_ospiCopyHsmImage(uint8_t** dstAddr, uint32_t srcOffsetAddr, uint32_t
         /* Get default OSPI cfg */
         OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
         ospi_cfg.funcClk = OSPI_MODULE_CLK_200M;
-        ospi_cfg.dtrEnable = BTRUE;
-        ospi_cfg.phyEnable = BFALSE;
+        ospi_cfg.dtrEnable = true;
+        ospi_cfg.phyEnable = false;
         ospi_cfg.baudRateDiv = 8;
-        if (gIsNandBootEnable == BTRUE)
+        if (gIsNandBootEnable == 1)
         {
-            ospi_cfg.cacheEnable = BTRUE;
+            ospi_cfg.cacheEnable = 1;
         }
         OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
 #if defined(SOC_J7200) || defined(SOC_J721S2) || defined(SOC_J784S4)
-        if (gIsNandBootEnable == BTRUE)
+        if (gIsNandBootEnable == true)
         {
             h = Board_flashOpen(BOARD_FLASH_ID_W35N01JWTBAG,
                                 BOARD_OSPI_NOR_INSTANCE, NULL);
@@ -779,7 +779,7 @@ int32_t SBL_ospiCopyHsmImage(uint8_t** dstAddr, uint32_t srcOffsetAddr, uint32_t
         if (h)
         {
             /* Disable PHY pipeline mode */
-            CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), UFALSE);
+            CSL_ospiPipelinePhyEnable((const CSL_ospi_flash_cfgRegs *)(ospi_cfg.baseAddr), FALSE);
 
             /* Update handle for later use*/
             boardHandle = (void *)h;
@@ -796,7 +796,7 @@ int32_t SBL_ospiCopyHsmImage(uint8_t** dstAddr, uint32_t srcOffsetAddr, uint32_t
         OSPI_configClk(ospiFunClk);
     }
 
-    if (gIsNandBootEnable == BTRUE)
+    if (gIsNandBootEnable == true)
     {
         /* In case of OSPI NAND, first hsm.bin should be copied to OCMC memory and then 
         pointer to OCMC memory should be passed to Sciclient_procBootAuthAndStart() API */
@@ -854,12 +854,13 @@ void SBL_OSPI_seek(void *srcAddr, uint32_t location)
 
 void SBL_enableXIPMode(uint32_t freq)
 {
-    isXIPEnable = BTRUE;
+    isXIPEnable = true;
     ospiFrequency = freq;
 }
 
 void SBL_enableNandBoot()
 {
-    gIsNandBootEnable = BTRUE;
+    gIsNandBootEnable = true;
 }
+
 

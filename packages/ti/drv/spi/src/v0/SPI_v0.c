@@ -79,13 +79,13 @@ static void SPI_close_v0(SPI_Handle handle)
     SPI_v0_HWAttrs const *hwAttrs = NULL;
 
     /* Input parameter validation */
-    if (NULL != handle)
+    if (handle != NULL)
     {
     /* Get the pointer to the object and hwAttrs */
     hwAttrs = (const SPI_v0_HWAttrs *)handle->hwAttrs;
     object = (SPI_v0_Object*)handle->object;
 
-    if(SPI_OPER_MODE_POLLING != object->operMode)
+    if(object->operMode != SPI_OPER_MODE_POLLING)
     {
         /* Destruct the Hwi */
         SPI_osalHardwareIntDestruct(object->hwi, hwAttrs->eventId);
@@ -96,20 +96,20 @@ static void SPI_close_v0(SPI_Handle handle)
     SPI_osalDeleteBlockingLock(object->mutex);
 
 
-    if(SPI_OPER_MODE_BLOCKING == object->operMode)
+    if(object->operMode == SPI_OPER_MODE_BLOCKING)
     {
         /* Destruct the semaphore */
         SPI_osalDeleteBlockingLock(object->transferComplete);
     }
 
 #ifdef SPI_DMA_ENABLE
-    if (BTRUE == hwAttrs->dmaMode)
+    if (hwAttrs->dmaMode == true)
     {
         SPI_dmaFreeChannel(handle);
     }
 #endif
 
-    object->isOpen = BFALSE;
+    object->isOpen = (bool)false;
     }
 }
 
@@ -170,12 +170,12 @@ void *SPI_transmitData_v0 (uint32_t baseAddr, uint32_t csHold, SPI_v0_FrameSize 
 static bool SPI_pollingXferTimeout_v0(uint32_t *timeout, uint32_t *timeoutLoop, uint32_t timeoutVal);
 static bool SPI_pollingXferTimeout_v0(uint32_t *timeout, uint32_t *timeoutLoop, uint32_t timeoutVal)
 {
-    bool     timeoutFlag = BFALSE;
+    bool     timeoutFlag = (bool)false;
 
     if (*timeout > 0)
     {
         *timeout -= 1U;
-        if (0U == *timeout)
+        if (*timeout == 0U)
         {
             if (*timeoutLoop > 0U)
             {
@@ -186,10 +186,10 @@ static bool SPI_pollingXferTimeout_v0(uint32_t *timeout, uint32_t *timeoutLoop, 
     }
     else
     {
-        if (0U == *timeoutLoop)
+        if (*timeoutLoop == 0U)
         {
             /* Polling transfer timed out */
-            timeoutFlag = BTRUE;
+            timeoutFlag = (bool)true;
         }
     }
 
@@ -215,7 +215,7 @@ static void SPI_primeTransfer_v0(SPI_Handle handle,
     uint32_t                 intCode;
     uint32_t                 timeout;
     uint32_t                 timeoutLoop;
-    bool                     timeoutFlag = BFALSE;
+    bool                     timeoutFlag = (bool)false;
 
     /* Get the pointer to the object and hwAttrs */
     hwAttrs = (const SPI_v0_HWAttrs *)handle->hwAttrs;
@@ -232,18 +232,18 @@ static void SPI_primeTransfer_v0(SPI_Handle handle,
 
     terminateXfer = *(uint32_t *)object->transaction->arg;
 
-	transaction->status = SPI_TRANSFER_STARTED;
+	transaction->status=SPI_TRANSFER_STARTED;
     /* Clear out any pending read data */
     do {
 		SPIReceiveData(hwAttrs->baseAddr);
     } while(SPIRxFull(hwAttrs->baseAddr));
 
-    if(SPI_OPER_MODE_POLLING != object->operMode)
+    if(object->operMode != SPI_OPER_MODE_POLLING)
     {
         SPIIntStatusClear(hwAttrs->baseAddr, SPI_INT_RX_FULL | SPI_INT_DMA_ENABLE |
                           SPI_INT_RX_OVERRUN | SPI_INT_TX_BITERR);
 #ifdef SPI_DMA_ENABLE
-        if (BTRUE == hwAttrs->dmaMode)
+        if (hwAttrs->dmaMode == TRUE)
         {
             SPIIntEnable(hwAttrs->baseAddr, 
                          SPI_INT_RX_OVERRUN | SPI_INT_TX_BITERR);
@@ -263,12 +263,12 @@ static void SPI_primeTransfer_v0(SPI_Handle handle,
         timeoutLoop = SPI_POLLING_TIMEOUT_LOOP;
 
         /* Polling mode transfer */
-        while ((0 != object->writeCountIdx) && (BFALSE == timeoutFlag))
+        while ((0 != object->writeCountIdx) && (timeoutFlag == (bool)false))
         {
             intCode = SPIIntStatusGet(hwAttrs->baseAddr);
 
             /* For the last write byte, release the hold if no data read */
-            if ((1U == object->writeCountIdx) && (0U != terminateXfer))
+            if ((object->writeCountIdx == 1U) && (terminateXfer != 0U))
             {
                 csHold = SPI_CSHOLD_OFF;
             }
@@ -282,19 +282,19 @@ static void SPI_primeTransfer_v0(SPI_Handle handle,
             }
 
             /* Wait until TX buffer is empty */
-            while (UFALSE == SPITxEmpty(hwAttrs->baseAddr))
+            while (SPITxEmpty(hwAttrs->baseAddr) == false)
             {
                 timeoutFlag = SPI_pollingXferTimeout_v0(&timeout,
                                                         &timeoutLoop,
                                                         object->waitTimeout);
-                if (BTRUE == timeoutFlag)
+                if (timeoutFlag == (bool)true)
                 {
                     break;
                 }
             }
 
             /* Write data to TX buffer, if no write data, write 0 */
-            if (BFALSE == timeoutFlag)
+            if (timeoutFlag == (bool)false)
             {
                 if (object->writeBufIdx)
                 {
@@ -311,12 +311,12 @@ static void SPI_primeTransfer_v0(SPI_Handle handle,
             }
 
             /* Wait until RX buffer is full */
-            while(UFALSE == SPIRxFull(hwAttrs->baseAddr))
+            while(SPIRxFull(hwAttrs->baseAddr) == false)
             {
                 timeoutFlag = SPI_pollingXferTimeout_v0(&timeout,
                                                         &timeoutLoop,
                                                         object->waitTimeout);
-                if (BTRUE == timeoutFlag)
+                if (timeoutFlag == (bool)true)
                 {
                     break;
                 }
@@ -330,7 +330,7 @@ static void SPI_primeTransfer_v0(SPI_Handle handle,
                 object->transferErr = SPI_XFER_ERR_RXOR;
             }
 
-            if ((object->readCountIdx) && (BFALSE == timeoutFlag))
+            if ((object->readCountIdx) && (timeoutFlag == (bool)false))
             {
                 if (object->readBufIdx)
                 {
@@ -350,19 +350,19 @@ static void SPI_primeTransfer_v0(SPI_Handle handle,
                                                     &timeoutLoop,
                                                     object->waitTimeout);
 
-            if ((0U != object->readCountIdx) || (0U != object->writeCountIdx))
+            if ((object->readCountIdx != 0U) || (object->writeCountIdx != 0U))
             {
-                if (BTRUE == timeoutFlag)
+                if (timeoutFlag == (bool)true)
                 {
                     object->transferErr = SPI_XFER_ERR_TIMEOUT;
                 }
             }
         }
-        if (SPI_XFER_ERR_NONE == object->transferErr)
+        if (object->transferErr == SPI_XFER_ERR_NONE)
         {
             transaction->status = SPI_TRANSFER_COMPLETED;
         }
-        else if (SPI_XFER_ERR_TIMEOUT == object->transferErr)
+        else if (object->transferErr == SPI_XFER_ERR_TIMEOUT)
         {
             transaction->status = SPI_TRANSFER_TIMEOUT;
         }
@@ -385,13 +385,13 @@ static void SPI_v0_hwiFxn (void* arg)
     uint32_t               intCode = 0;
     uint32_t               csHold = SPI_CSHOLD_ON;
     uint32_t               terminateXfer;
-    bool                   loop = BTRUE;
+    bool                   loop = true;
 
     /* Get the pointer to the object and hwAttrs */
     object = (SPI_v0_Object*)(((SPI_Handle)arg)->object);
     hwAttrs = (const SPI_v0_HWAttrs *)(((SPI_Handle)arg)->hwAttrs);
 
-    if (INVALID_INTC_MUX_NUM != hwAttrs->intcMuxNum)
+    if (hwAttrs->intcMuxNum != INVALID_INTC_MUX_NUM)
     {
         SPI_osalMuxIntcDisableHostInt(hwAttrs->intcMuxNum, hwAttrs->intcMuxOutEvent);
         SPI_osalMuxIntcClearSysInt(hwAttrs->intcMuxNum, hwAttrs->intcMuxInEvent);
@@ -402,7 +402,7 @@ static void SPI_v0_hwiFxn (void* arg)
     intCode = SPIIntStatusGet(hwAttrs->baseAddr);
 
     /* Loop till all the pending interrupts are serviced */
-    while ((0 != (intCode & SPI_INT_MASK)) && (BTRUE == loop))
+    while (((intCode & SPI_INT_MASK) != 0) && (loop == true))
     {
         /*
          * Refill the TX FIFO if an TX-empty interrupt has occurred & there is more
@@ -413,9 +413,9 @@ static void SPI_v0_hwiFxn (void* arg)
             if (object->writeCountIdx)
             {
                 /* For the last write byte, release the hold if no data read */
-                if ((1U == object->writeCountIdx) &&
-                    (0U != terminateXfer) &&
-                    (SPI_MASTER == object->spiMode))
+                if ((object->writeCountIdx == 1U) &&
+                    (terminateXfer != 0U) &&
+                    (object->spiMode == SPI_MASTER))
                 {
                     csHold = SPI_CSHOLD_OFF;
                 }
@@ -443,7 +443,7 @@ static void SPI_v0_hwiFxn (void* arg)
                     }
                 }
 
-                if (0 == object->writeCountIdx)
+                if (object->writeCountIdx == 0)
                 {
                     SPIIntDisable(hwAttrs->baseAddr, SPI_INT_TX_EMPTY);
                 }
@@ -466,7 +466,7 @@ static void SPI_v0_hwiFxn (void* arg)
                 }
 
                 object->readCountIdx--;
-                if (0 == object->readCountIdx)
+                if (object->readCountIdx == 0)
                 {
                     SPIIntDisable(hwAttrs->baseAddr, SPI_INT_RX_FULL);
                 }
@@ -507,41 +507,41 @@ static void SPI_v0_hwiFxn (void* arg)
             object->transaction->status=SPI_TRANSFER_FAILED;
             object->transferErr = SPI_XFER_ERR_BE;
             object->transferCallbackFxn((SPI_Handle)arg, object->transaction);
-            if (SPI_OPER_MODE_CALLBACK == object->operMode)
+            if (object->operMode == SPI_OPER_MODE_CALLBACK)
             {
                 object->transaction = NULL;
             }
 
-            loop = BFALSE;
+            loop = false;
         }
 
-        if ((BTRUE == loop) && (0U == object->readCountIdx) && (0U == object->writeCountIdx))
+        if ((loop == true) && (object->readCountIdx == 0U) && (object->writeCountIdx == 0U))
         {
             SPIIntInit2(hwAttrs->baseAddr, hwAttrs->intrLine);
-            if (SPI_XFER_ERR_NONE == object->transferErr)
+            if (object->transferErr == SPI_XFER_ERR_NONE)
             {
-                object->transaction->status = SPI_TRANSFER_COMPLETED;
+                object->transaction->status=SPI_TRANSFER_COMPLETED;
             }
             else
             {
-                object->transaction->status = SPI_TRANSFER_FAILED;
+                object->transaction->status=SPI_TRANSFER_FAILED;
             }
             object->transferCallbackFxn((SPI_Handle)arg, object->transaction);
-            if (SPI_OPER_MODE_CALLBACK == object->operMode)
+            if (object->operMode == SPI_OPER_MODE_CALLBACK)
             {
                 object->transaction = NULL;
             }
 
-            loop = BFALSE;
+            loop = false;
         }
 
-        if (BTRUE == loop)
+        if (loop == true)
         {
             /* Read the interrupt status to check if there are any pending interrupts */
             intCode = SPIIntStatusGet(hwAttrs->baseAddr);
 
             /* Check if transmit is completed but data read is pending */
-            if((0U == object->writeCountIdx) && !(intCode & SPI_INT_RX_FULL) && (object->readCountIdx))
+            if((object->writeCountIdx == 0U) && !(intCode & SPI_INT_RX_FULL) && (object->readCountIdx))
             {
                 /* Send a dummy transfer to trigger a receive interrupt to handle delayed RX
                  * interrupt to read the missed data during transmit.
@@ -554,7 +554,7 @@ static void SPI_v0_hwiFxn (void* arg)
         }
     }
 
-    if (INVALID_INTC_MUX_NUM != hwAttrs->intcMuxNum)
+    if (hwAttrs->intcMuxNum != INVALID_INTC_MUX_NUM)
     {
         SPI_osalMuxIntcClearSysInt(hwAttrs->intcMuxNum, hwAttrs->intcMuxInEvent);
         SPI_osalHardwareIntrClear(hwAttrs->eventId,hwAttrs->intNum);
@@ -569,10 +569,10 @@ static void SPI_v0_hwiFxn (void* arg)
 static void SPI_init_v0(SPI_Handle handle)
 {
     /* Input parameter validation */
-    if (NULL != handle)
+    if (handle != NULL)
     {
         /* Mark the object as available */
-        ((SPI_v0_Object *)(handle->object))->isOpen = BFALSE;
+        ((SPI_v0_Object *)(handle->object))->isOpen = (bool)false;
     }
 }
 
@@ -593,7 +593,7 @@ static SPI_Handle SPI_open_v0(SPI_Handle handle, const SPI_Params *params)
     uint8_t                ret_flag = 0U;
 
     /* Input parameter validation */
-    if (NULL != handle)
+    if (handle != NULL)
     {
     /* Get the pointer to the object and hwAttrs */
     object = (SPI_v0_Object*)handle->object;
@@ -602,17 +602,17 @@ static SPI_Handle SPI_open_v0(SPI_Handle handle, const SPI_Params *params)
 
     /* Determine if the device index was already opened */
     key = SPI_osalHardwareIntDisable();
-    if (BTRUE == object->isOpen) {
+    if(object->isOpen == true) {
         SPI_osalHardwareIntRestore(key);
         handle = (NULL);
     }
     else {
         /* Mark the handle as being used */
-        object->isOpen = BTRUE;
+        object->isOpen = (bool)true;
         SPI_osalHardwareIntRestore(key);
 
         /* Store the SPI parameters */
-        if (NULL == params) {
+        if (params == NULL) {
             /* No params passed in, so use the defaults */
             SPI_Params_init(&spiParams);
             params = &spiParams;
@@ -632,12 +632,12 @@ static SPI_Handle SPI_open_v0(SPI_Handle handle, const SPI_Params *params)
         /* Store the current mode. Extract operating mode from hwAttrs and params */
         if(SPI_MODE_BLOCKING == params->transferMode)
         {
-            if(BTRUE == hwAttrs->enableIntr)
+            if(true == hwAttrs->enableIntr)
             {
                 object->operMode = SPI_OPER_MODE_BLOCKING;
             }
 #ifdef SPI_DMA_ENABLE
-            else if (BTRUE == hwAttrs->dmaMode)
+            else if (true == hwAttrs->dmaMode)
             {
                 object->operMode = SPI_OPER_MODE_BLOCKING;
             }
@@ -651,7 +651,7 @@ static SPI_Handle SPI_open_v0(SPI_Handle handle, const SPI_Params *params)
         {
             object->operMode = SPI_OPER_MODE_CALLBACK;
             /* Check to see if a callback function was defined for async mode */
-            if (NULL == params->transferCallbackFxn)
+            if (params->transferCallbackFxn == NULL)
             {
                 handle = NULL;
                 ret_flag = 1U;
@@ -662,13 +662,13 @@ static SPI_Handle SPI_open_v0(SPI_Handle handle, const SPI_Params *params)
         object->spiMode = params->mode;
         object->waitTimeout = params->transferTimeout;
 
-        if(0U == ret_flag)
+        if(ret_flag == 0U)
         {
-            if(SPI_OPER_MODE_POLLING != object->operMode)
+            if(object->operMode != SPI_OPER_MODE_POLLING)
             {
                 /* Initialize with defaults */
                 Osal_RegisterInterrupt_initParams(&interruptRegParams);             
-                if (INVALID_INTC_MUX_NUM != hwAttrs->intcMuxNum)
+                if (hwAttrs->intcMuxNum != INVALID_INTC_MUX_NUM)
                 {
                     /* Setup intc mux */
                     muxInParams.arg         = (uintptr_t)handle;
@@ -693,7 +693,7 @@ static SPI_Handle SPI_open_v0(SPI_Handle handle, const SPI_Params *params)
 #else
                 interruptRegParams.corepacConfig.corepacEventNum = hwAttrs->eventId;
 #endif
-               interruptRegParams.corepacConfig.name = NULL;
+               interruptRegParams.corepacConfig.name=NULL;
 #if defined (__TI_ARM_V5__)
                interruptRegParams.corepacConfig.priority = hwAttrs->intNum;
 #else
@@ -701,14 +701,14 @@ static SPI_Handle SPI_open_v0(SPI_Handle handle, const SPI_Params *params)
 #endif
                interruptRegParams.corepacConfig.intVecNum=hwAttrs->intNum; /* Host Interrupt vector */
                SPI_osalRegisterInterrupt(&interruptRegParams,&(object->hwi));
-                if(NULL == object->hwi) {
+                if(object->hwi == NULL) {
                     SPI_close_v0(handle);
                     ret_flag = 1U;
                     handle = NULL;
                 }
             }
         }
-        if(0U == ret_flag)
+        if(ret_flag == 0U)
         {
             /*
              * Construct thread safe handles for this SPI peripheral
@@ -718,7 +718,7 @@ static SPI_Handle SPI_open_v0(SPI_Handle handle, const SPI_Params *params)
             semParams.mode = SemaphoreP_Mode_BINARY;
             object->mutex = SPI_osalCreateBlockingLock(1U, &semParams);
 
-            if (SPI_OPER_MODE_BLOCKING == object->operMode) {
+            if (object->operMode == SPI_OPER_MODE_BLOCKING) {
                 /*
                  * Construct a semaphore to block task execution for the duration of the
                  * SPI transfer
@@ -729,7 +729,7 @@ static SPI_Handle SPI_open_v0(SPI_Handle handle, const SPI_Params *params)
                 object->transferCallbackFxn = &SPI_transferCallback_v0;
             }
             else {
-                if (SPI_OPER_MODE_CALLBACK == object->operMode)
+                if (object->operMode == SPI_OPER_MODE_CALLBACK)
                 {
                     /* Save the callback function pointer */
                     object->transferCallbackFxn = params->transferCallbackFxn;
@@ -762,7 +762,7 @@ static SPI_Handle SPI_open_v0(SPI_Handle handle, const SPI_Params *params)
             }
 
 #ifdef SPI_DMA_ENABLE
-            if (BTRUE == hwAttrs->dmaMode)
+            if (hwAttrs->dmaMode == true)
             {
                 SPI_dmaConfig(handle);
             }
@@ -836,20 +836,20 @@ static SPI_Handle SPI_open_v0(SPI_Handle handle, const SPI_Params *params)
  */
 static bool SPI_transfer_v0(SPI_Handle handle, SPI_Transaction *transaction)
 {
-    bool         ret = BFALSE;                /* return value */
+    bool         ret = false;                /* return value */
     uint32_t     key;
     SPI_v0_Object    *object = NULL;
     SPI_v0_HWAttrs const    *hwAttrs = NULL;
     SemaphoreP_Status   semStatus = SemaphoreP_OK;
 
     /* Input parameter validation */
-    if ((NULL != handle) && (NULL != transaction))
+    if ((handle != NULL) && (transaction != NULL))
     {
-    if (0 != transaction->count) {
+    if (transaction->count != 0) {
         /* Get the pointer to the object and hwAttrs */
         hwAttrs = (const SPI_v0_HWAttrs *)handle->hwAttrs;
         object = (SPI_v0_Object*)handle->object;
-        if (0 == object->waitTimeout)
+        if (object->waitTimeout == 0)
         {
             /* timeout cannot be NO_WAIT, set it to default value */
             object->waitTimeout = SPI_WAIT_FOREVER;
@@ -860,8 +860,8 @@ static bool SPI_transfer_v0(SPI_Handle handle, SPI_Transaction *transaction)
         if (object->transaction) {
             SPI_osalHardwareIntRestore(key);
             /* Transfer is in progress */
-			transaction->status = SPI_TRANSFER_CANCELED;
-            ret = BFALSE;
+			transaction->status=SPI_TRANSFER_CANCELED;
+            ret = (bool)false;
         }
         else {
             /* Save the pointer to the transaction */
@@ -874,21 +874,21 @@ static bool SPI_transfer_v0(SPI_Handle handle, SPI_Transaction *transaction)
 
             SPI_osalHardwareIntRestore(key);
 
-            if (SPI_OPER_MODE_BLOCKING == object->operMode) {
+            if (object->operMode == SPI_OPER_MODE_BLOCKING) {
                 semStatus = SPI_osalPendLock(object->transferComplete, object->waitTimeout);
             }
 
             /* Release the lock for this particular SPI handle */
             SPI_osalPostLock(object->mutex);
 
-            if (SPI_OPER_MODE_CALLBACK != object->operMode)
+            if (object->operMode != SPI_OPER_MODE_CALLBACK)
             {
                 object->transaction = NULL;
             }
             if (semStatus == SemaphoreP_TIMEOUT)
             {
 #ifdef SPI_DMA_ENABLE
-                if (BTRUE == hwAttrs->dmaMode)
+                if (hwAttrs->dmaMode == TRUE)
                 {
                     SPIIntDisable(hwAttrs->baseAddr, SPI_INT_RX_OVERRUN |
                                 SPI_INT_TX_BITERR);
@@ -907,33 +907,33 @@ static bool SPI_transfer_v0(SPI_Handle handle, SPI_Transaction *transaction)
                 transaction->status = SPI_TRANSFER_TIMEOUT;
                 object->transferErr = SPI_XFER_ERR_TIMEOUT;
 
-                ret = BFALSE;
+                ret = (bool)false;
             }
             else
             {
-                if (SPI_OPER_MODE_POLLING == object->operMode)
+                if (object->operMode == SPI_OPER_MODE_POLLING)
                 {
                     /*
                      * Polling transaction status is set in SPI_primeTransfer_v0
                      */
-                    if (SPI_TRANSFER_COMPLETED == transaction->status)
+                    if (transaction->status == SPI_TRANSFER_COMPLETED)
                     {
-                        ret = BTRUE;
+                        ret = (bool)true;
                     }
                     else
                     {
-                        ret = BFALSE;
+                        ret = (bool)false;
                     }
                 }
                 else
                 {
                     /* Callback transaction or interrupt/dma (no timeout) transaction */
-                    ret = BTRUE;
+                    ret = (bool)true;
                 }
             }
         }        
     } else {
-	    transaction->status = SPI_TRANSFER_CANCELED;
+	    transaction->status=SPI_TRANSFER_CANCELED;
 	}
     }
     return (ret);
@@ -971,15 +971,15 @@ static void SPI_transferCancel_v0(SPI_Handle handle)
     /* Get the pointer to the object and hwAttrs */
     hwAttrs = (const SPI_v0_HWAttrs *)handle->hwAttrs;
     object = (SPI_v0_Object*)handle->object;
-    if (BTRUE == hwAttrs->enableIntr)
+    if(true == hwAttrs->enableIntr)
     {
 
 #ifdef SPI_DMA_ENABLE
-        if (BTRUE == hwAttrs->dmaMode)
+        if (hwAttrs->dmaMode == TRUE)
         {
             SPIIntDisable(hwAttrs->baseAddr, SPI_INT_RX_OVERRUN |
                           SPI_INT_TX_BITERR);
-            SPI_dmaDisableChannel(handle, BTRUE);
+            SPI_dmaDisableChannel(handle, true);
         }
         else
 #endif
@@ -991,14 +991,14 @@ static void SPI_transferCancel_v0(SPI_Handle handle)
                           SPI_INT_RX_OVERRUN | SPI_INT_TX_BITERR);
     }
 
-    object->transaction->status = SPI_TRANSFER_CANCELED;
-    if (SPI_OPER_MODE_BLOCKING == object->operMode)
+    object->transaction->status=SPI_TRANSFER_CANCELED;
+    if (object->operMode == SPI_OPER_MODE_BLOCKING)
     {
         SPI_osalPostLock(object->transferComplete);
     }
-    if (SPI_OPER_MODE_CALLBACK == object->operMode)
+    if (object->operMode == SPI_OPER_MODE_CALLBACK)
     {
-        if (NULL != object->transferCallbackFxn)
+        if (object->transferCallbackFxn != NULL)
         {
             object->transferCallbackFxn(handle, object->transaction);
         }
@@ -1021,7 +1021,7 @@ static int32_t SPI_control_v0(SPI_Handle handle, uint32_t cmd, const void *arg)
     int32_t                retVal = SPI_STATUS_SUCCESS;
 
     /* Input parameter validation */
-    if (NULL != handle)
+    if (handle != NULL)
     {
     /* Get the pointer to the object and hwAttrs */
     hwAttrs = (const SPI_v0_HWAttrs *)handle->hwAttrs;

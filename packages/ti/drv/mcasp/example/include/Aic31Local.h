@@ -50,7 +50,6 @@
 
 #include <ICodec.h>
 #include <Aic31.h>
-#include <ti/csl/tistdtypes.h>
 
 
 #ifdef __cplusplus
@@ -282,16 +281,16 @@ extern "C" {
 #define Aic31_MAX_PGA_GAIN_VALUE  (uint8_t)(0x77)
 
 /* MAX percent of the gain allowed                */
-#define Aic31_MAX_GAIN_PERCENT    (uint8_t)(100U)
+#define Aic31_MAX_GAIN_PERCENT    (uint8_t)(100u)
 
 
-#define Aic31_REG_READ_PASS       UFALSE
+#define Aic31_REG_READ_PASS       (Bool)0
 
-#define Aic31_REG_READ_FAIL       UTRUE
+#define Aic31_REG_READ_FAIL       (Bool)1
 
-#define Aic31_REG_WRITE_PASS      UFALSE
+#define Aic31_REG_WRITE_PASS      (Bool)0
 
-#define Aic31_REG_WRITE_FAIL      UTRUE
+#define Aic31_REG_WRITE_FAIL      (Bool)1
 
 
 /* -------- structs -------- */

@@ -193,7 +193,7 @@ static UART_Handle BoardDiag_linConfig(uint32_t instance, uint32_t baseAddress)
 
     UART_socGetInitCfg(instance, &uartCfg);
     uartCfg.baseAddr        = baseAddress;
-    uartCfg.enableInterrupt = UFALSE;
+    uartCfg.enableInterrupt = FALSE;
     uartCfg.frequency       = 48000000;
     UART_socSetInitCfg(instance, &uartCfg);
 

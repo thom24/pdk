@@ -92,8 +92,8 @@ static uint32_t DmaUtilsAutoInc3d_getTotalBlockCount(uint8_t * trMem, uint32_t n
 static uint32_t DmaUtilsAutoInc3d_getTotalBlockCount(uint8_t * trMem, uint32_t numTr) {
   uint32_t i;
   CSL_UdmapTR * pTr;
-  uint32_t isRingBasedFlowReq = UFALSE;
-  uint32_t numTotBlks = 0U;
+  uint32_t isRingBasedFlowReq = 0;
+  uint32_t numTotBlks = 0;
   uint32_t triggerType;
   uint32_t srcCounts;
   uint32_t dstCounts;
@@ -102,26 +102,26 @@ static uint32_t DmaUtilsAutoInc3d_getTotalBlockCount(uint8_t * trMem, uint32_t n
 
   if (numTr > DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE)
   {
-    isRingBasedFlowReq = UTRUE;
+    isRingBasedFlowReq = 1U;
   }
 
-  if (UTRUE == isRingBasedFlowReq)
+  if (isRingBasedFlowReq == 1U)
   {
     /* Setup TR descriptor */
     pTr = (CSL_UdmapTR * )(trMem + sizeof(CSL_UdmapTR));
   }
 
-  for (i = 0U; i < numTr; i++) {
+  for (i = 0; i < numTr; i++) {
     triggerType = CSL_FEXT(pTr[i].flags, UDMAP_TR_FLAGS_TRIGGER0_TYPE);
-    if (CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ICNT1_DEC == triggerType)
+    if (triggerType == CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ICNT1_DEC)
     {
       srcCounts = (uint32_t) pTr[i].icnt1 * pTr[i].icnt2 * (uint32_t) pTr[i].icnt3;
       dstCounts = (uint32_t) pTr[i].dicnt1 * (uint32_t) pTr[i].dicnt2 * (uint32_t) pTr[i].dicnt3;
-    } else if (CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ICNT2_DEC == triggerType)
+    } else if (triggerType == CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ICNT2_DEC)
     {
       srcCounts = pTr[i].icnt2 * (uint32_t) pTr[i].icnt3;
       dstCounts = (uint32_t) pTr[i].dicnt2 * (uint32_t) pTr[i].dicnt3;
-    } else if (CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ICNT3_DEC == triggerType)
+    } else if (triggerType == CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ICNT3_DEC)
     {
       srcCounts = pTr[i].icnt3;
       dstCounts = pTr[i].dicnt3;
@@ -150,7 +150,7 @@ static inline uintptr_t DmaUtilsAutoInc3d_getPhysicalAddress(const DmaUtilsAutoI
     Udma_DrvHandle udmaDrvHandle = (Udma_DrvHandle) dmautilsContext -> initParams.udmaDrvHandle;
   /* If virtual to physical address conversion function is available then use it for
   conversion else directly program the address as it is */
-  if (NULL != udmaDrvHandle -> initPrms.virtToPhyFxn)
+  if (udmaDrvHandle -> initPrms.virtToPhyFxn != NULL)
   {
     phyAddr = (uintptr_t) udmaDrvHandle -> initPrms.virtToPhyFxn((void * ) virtualAddr,(uint32_t) chNum,NULL);
   }
@@ -196,23 +196,23 @@ static uint32_t DmaUtilsAutoInc3d_getTrFlags(int32_t syncType)
   }
 
   flags = CSL_FMK(UDMAP_TR_FLAGS_TYPE, CSL_UDMAP_TR_FLAGS_TYPE_4D_BLOCK_MOVE_REPACKING) |
-    CSL_FMK(UDMAP_TR_FLAGS_STATIC, UFALSE) |
-    CSL_FMK(UDMAP_TR_FLAGS_EOL, (uint32_t) UFALSE) | /* NA */
+    CSL_FMK(UDMAP_TR_FLAGS_STATIC, FALSE) |
+    CSL_FMK(UDMAP_TR_FLAGS_EOL, (uint32_t) FALSE) | /* NA */
     CSL_FMK(UDMAP_TR_FLAGS_EVENT_SIZE, waitBoundary) |
     CSL_FMK(UDMAP_TR_FLAGS_TRIGGER0, CSL_UDMAP_TR_FLAGS_TRIGGER_GLOBAL0) | /*Set the trigger to local trigger*/
     CSL_FMK(UDMAP_TR_FLAGS_TRIGGER0_TYPE, triggerBoundary) | /* This is to transfer a 2D block for each trigger*/
     CSL_FMK(UDMAP_TR_FLAGS_TRIGGER1, CSL_UDMAP_TR_FLAGS_TRIGGER_NONE) |
     CSL_FMK(UDMAP_TR_FLAGS_TRIGGER1_TYPE, CSL_UDMAP_TR_FLAGS_TRIGGER_TYPE_ALL) |
-    CSL_FMK(UDMAP_TR_FLAGS_CMD_ID, UFALSE) | /* This will come back in TR response */
-    CSL_FMK(UDMAP_TR_FLAGS_SA_INDIRECT, UFALSE) |
-    CSL_FMK(UDMAP_TR_FLAGS_DA_INDIRECT, UFALSE) |
-    CSL_FMK(UDMAP_TR_FLAGS_EOP, (uint32_t) UTRUE);
+    CSL_FMK(UDMAP_TR_FLAGS_CMD_ID, (uint32_t) 0) | /* This will come back in TR response */
+    CSL_FMK(UDMAP_TR_FLAGS_SA_INDIRECT, (uint32_t) 0) |
+    CSL_FMK(UDMAP_TR_FLAGS_DA_INDIRECT, (uint32_t) 0) |
+    CSL_FMK(UDMAP_TR_FLAGS_EOP, (uint32_t) 1);
 
   return flags;
 }
 
 static uint32_t DmaUtilsAutoInc3d_getTrFmtFlags(const DmaUtilsAutoInc3d_TransferCirc * circProp, int32_t dmaDfmt) {
-  uint32_t fmtflags = UFALSE;
+  uint32_t fmtflags = 0;
   uint32_t eltype = CSL_UDMAP_TR_FMTFLAGS_ELYPE_1;
   uint32_t sectrType = CSL_UDMAP_TR_FMTFLAGS_SECTR_NONE;
   int32_t CBK0 = (int32_t) CSL_UDMAP_TR_FMTFLAGS_AMODE_SPECIFIC_CBK_512B;
@@ -220,12 +220,12 @@ static uint32_t DmaUtilsAutoInc3d_getTrFmtFlags(const DmaUtilsAutoInc3d_Transfer
   uint32_t circDir = CSL_UDMAP_TR_FMTFLAGS_DIR_DST_USES_AMODE;
   uint32_t AMODE = CSL_UDMAP_TR_FMTFLAGS_AMODE_LINEAR;
 
-  if ((0U != circProp -> circSize1) ||(0U != circProp -> circSize2))
+  if ((circProp -> circSize1 != 0U) ||(circProp -> circSize2 != 0U))
   {
     uint32_t circSize1 = (uint32_t) circProp -> circSize1;
     uint32_t circSize2 = (uint32_t) circProp -> circSize2;
 
-    if ((uint8_t) DMAUTILSAUTOINC3D_CIRCDIR_SRC == circProp -> circDir)
+    if (circProp -> circDir == (uint8_t) DMAUTILSAUTOINC3D_CIRCDIR_SRC)
     {
       circDir = CSL_UDMAP_TR_FMTFLAGS_DIR_SRC_USES_AMODE;
     }
@@ -266,7 +266,7 @@ static uint32_t DmaUtilsAutoInc3d_SetupCmpSecTr(DmaUtilsAutoInc3d_TransferProp *
 
 static uint32_t DmaUtilsAutoInc3d_SetupCmpSecTr(DmaUtilsAutoInc3d_TransferProp * transferProp)
 {
-  uint32_t cmpFlags = UFALSE;
+  uint32_t cmpFlags = 0;
   CSL_UdmapSecTR * secondaryTR = (CSL_UdmapSecTR * ) transferProp -> ioPointers.strPtr;
 
   if (transferProp -> dmaDfmt == (uint32_t) DMAUTILSAUTOINC3D_DFMT_COMP)
@@ -280,7 +280,7 @@ static uint32_t DmaUtilsAutoInc3d_SetupCmpSecTr(DmaUtilsAutoInc3d_TransferProp *
     secondaryTR -> data[4] = (uint32_t)((uint64_t) transferProp -> ioPointers.cdbPtr - (uint64_t) transferProp -> ioPointers.strPtr); /*offset to CDB table*/
   }
 
-  uint32_t sectrFlags = UTRUE; /*TODO CSL doesn't exist yet for compression secTR type*/
+  uint32_t sectrFlags = 1U; /*TODO CSL doesn't exist yet for compression secTR type*/
 
     secondaryTR -> flags = (sectrFlags & 0xFU) | (transferProp -> cmpProp.sbDim1 & 0xFFFFFFF0U);
     secondaryTR -> data[1] = ((transferProp -> cmpProp.sbIcnt0 & (uint32_t) 0xFFFF))
@@ -642,14 +642,14 @@ int32_t DmaUtilsAutoInc3d_init(void * autoIncrementContext, DmaUtilsAutoInc3d_In
 }
 
 int32_t DmaUtilsAutoInc3d_getTrMemReq(int32_t numTRs) {
-  int32_t isRingBasedFlowReq = IFALSE;
+  int32_t isRingBasedFlowReq = 0;
   int32_t trMemReq = 0;
   uint32_t trMemReqUs = 0;
   if (numTRs > (int32_t) DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE) {
-    isRingBasedFlowReq = ITRUE;
+    isRingBasedFlowReq = 1;
   }
 
-  if (isRingBasedFlowReq == ITRUE) {
+  if (isRingBasedFlowReq == 1) {
     //:TODO: Check how to make sure align required
     /* This indicates ring accelerator mode and hence will need memory for TR descriptor */
     trMemReqUs = (uint32_t)((sizeof(CSL_UdmapCppi5TRPD)) + /* Number of Bytes for TR descriptor */
@@ -669,7 +669,7 @@ int32_t DmaUtilsAutoInc3d_prepareTr(DmaUtilsAutoInc3d_TrPrepareParam * trPrepPar
 {
   int32_t size;
     int32_t     retVal = (int32_t)DMAUTILS_SOK;
-    int32_t isRingBasedFlowReq = IFALSE;
+    int32_t isRingBasedFlowReq = 0;
     CSL_UdmapTR * pTrArray;
     int32_t i;
 
@@ -684,16 +684,16 @@ int32_t DmaUtilsAutoInc3d_prepareTr(DmaUtilsAutoInc3d_TrPrepareParam * trPrepPar
 
       if ( trPrepParam->numTRs > (int32_t)DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE)
       {
-          isRingBasedFlowReq = ITRUE;
+          isRingBasedFlowReq = 1;
       }
 
       pTrArray = (CSL_UdmapTR *)trPrepParam->trMem;
 
-      if ( isRingBasedFlowReq == ITRUE )
+      if ( isRingBasedFlowReq == 1 )
       {
   #ifndef DMA_UTILS_STANDALONE
         /* This needs to be updated with correct value during configure */
-        uint32_t cqRingNum = 0U;
+        uint32_t cqRingNum = 0;
         /* Setup TR descriptor */
 
         CSL_UdmapCppi5TRPD * pTrpd = (CSL_UdmapCppi5TRPD *)trPrepParam->trMem;
@@ -740,7 +740,7 @@ int32_t DmaUtilsAutoInc3d_convertTrVirtToPhyAddr(void * autoIncrementContext,
   const DmaUtilsAutoInc3d_TrPrepareParam * trPrepParam,
   uint32_t convertMask) {
   int32_t retVal = (int32_t) DMAUTILS_SOK;
-  int32_t isRingBasedFlowReq = IFALSE;
+  int32_t isRingBasedFlowReq = 0;
   CSL_UdmapTR * pTrArray;
   int32_t i;
   DmaUtilsAutoInc3d_Context * dmautilsContext;
@@ -776,12 +776,12 @@ int32_t DmaUtilsAutoInc3d_convertTrVirtToPhyAddr(void * autoIncrementContext,
 
         if (trPrepParam -> numTRs > (int32_t) DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE)
         {
-          isRingBasedFlowReq = ITRUE;
+          isRingBasedFlowReq = 1;
         }
 
         pTrArray = (CSL_UdmapTR * ) trPrepParam -> trMem;
 
-        if (isRingBasedFlowReq == ITRUE) {
+        if (isRingBasedFlowReq == 1) {
           CSL_UdmapTR * pTr = (CSL_UdmapTR * )(trPrepParam -> trMem + sizeof(CSL_UdmapTR));
           pTrArray = pTr;
         }
@@ -815,7 +815,7 @@ int32_t DmaUtilsAutoInc3d_configure(void * autoIncrementContext, int32_t channel
   int32_t retVal = (int32_t)DMAUTILS_SOK;
   DmaUtilsAutoInc3d_Context * dmautilsContext;
   DmaUtilsAutoInc3d_ChannelContext * channelContext;
-  uint32_t isRingBasedFlowReq = UFALSE;
+  uint32_t isRingBasedFlowReq = 0;
   Udma_ChHandle channelHandle;
 
   uint32_t i;
@@ -845,10 +845,10 @@ int32_t DmaUtilsAutoInc3d_configure(void * autoIncrementContext, int32_t channel
 
     if (numTr > (int32_t) DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE)
      {
-      isRingBasedFlowReq = UTRUE;
+      isRingBasedFlowReq = 1U;
      }
 
-    if (isRingBasedFlowReq == UFALSE) {
+    if (isRingBasedFlowReq == 0U) {
 
       CSL_UdmapTR * tr;
 
@@ -962,7 +962,7 @@ int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t chann
     DmaUtilsAutoInc3d_ChannelContext * channelContext;
     Udma_ChHandle channelHandle;
   #endif
-    uint32_t isRingBasedFlowReq = UFALSE;
+    uint32_t isRingBasedFlowReq = 0;
 
   if (autoIncrementContext == NULL)
   {
@@ -992,13 +992,13 @@ int32_t DmaUtilsAutoInc3d_deconfigure(void * autoIncrementContext, int32_t chann
       /* disable  The channel */
       if (numTr > (int32_t) DMAUTILS_MAX_NUM_TR_DIRECT_TR_MODE)
       {
-        isRingBasedFlowReq = UTRUE;
+        isRingBasedFlowReq = 1U;
       }
 
-      if (isRingBasedFlowReq == UTRUE)
+      if (isRingBasedFlowReq == 1U)
       {
         #ifndef DMA_UTILS_STANDALONE
-          uint64_t pDesc = 0U;
+          uint64_t pDesc = 0;
           retVal = Udma_ringDequeueRaw(Udma_chGetCqRingHandle(channelHandle), & pDesc);
         if (retVal != (int32_t)DMAUTILS_SOK )
         {

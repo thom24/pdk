@@ -86,7 +86,7 @@ int32_t Udma_proxyAlloc(Udma_DrvHandle drvHandle,
     }
     if(UDMA_SOK == retVal)
     {
-        if(UDMA_INIT_DONE != drvHandle->drvInitDone)
+        if(drvHandle->drvInitDone != UDMA_INIT_DONE)
         {
             retVal = UDMA_EFAIL;
         }
@@ -160,7 +160,7 @@ int32_t Udma_proxyFree(Udma_ProxyHandle proxyHandle)
     }
     if(UDMA_SOK == retVal)
     {
-        if(UDMA_INIT_DONE != proxyHandle->proxyInitDone)
+        if(proxyHandle->proxyInitDone != UDMA_INIT_DONE)
         {
             retVal = UDMA_EFAIL;
         }
@@ -168,7 +168,7 @@ int32_t Udma_proxyFree(Udma_ProxyHandle proxyHandle)
     if(UDMA_SOK == retVal)
     {
         drvHandle = proxyHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }
@@ -180,7 +180,7 @@ int32_t Udma_proxyFree(Udma_ProxyHandle proxyHandle)
         {
 #if (UDMA_SOC_CFG_PROXY_PRESENT == 1)
             /* Free-up resources */
-            Udma_assert(drvHandle, (UDMA_PROXY_INVALID != proxyHandle->proxyNum));
+            Udma_assert(drvHandle, proxyHandle->proxyNum != UDMA_PROXY_INVALID);
             Udma_rmFreeProxy(proxyHandle->proxyNum, drvHandle);
             proxyHandle->drvHandle       = (Udma_DrvHandle) NULL_PTR;
             proxyHandle->proxyNum        = UDMA_PROXY_INVALID;
@@ -212,7 +212,7 @@ int32_t Udma_proxyConfig(Udma_ProxyHandle proxyHandle,
     }
     if(UDMA_SOK == retVal)
     {
-        if(UDMA_INIT_DONE != proxyHandle->proxyInitDone)
+        if(proxyHandle->proxyInitDone != UDMA_INIT_DONE)
         {
             retVal = UDMA_EFAIL;
         }
@@ -220,7 +220,7 @@ int32_t Udma_proxyConfig(Udma_ProxyHandle proxyHandle,
     if(UDMA_SOK == retVal)
     {
         drvHandle = proxyHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }

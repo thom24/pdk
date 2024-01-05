@@ -84,7 +84,7 @@ static NOR_STATUS NOR_qspiCmdRead(SPI_Handle handle, uint8_t *cmdBuf,
     transaction.count = cmdLen + rxLen;
 
     ret = SPI_transfer(handle, &transaction);
-    if (BTRUE == ret)
+    if (ret == true)
     {
         return NOR_PASS;
     }
@@ -102,11 +102,11 @@ static NOR_STATUS Nor_qspiReadId(SPI_Handle handle)
     uint32_t    manfID, devID;
 
     retVal = NOR_qspiCmdRead(handle, &cmd, 1, idCode, NOR_RDID_NUM_BYTES);
-    if (NOR_PASS == retVal)
+    if (retVal == NOR_PASS)
     {
         manfID = (uint32_t)idCode[0];
         devID = ((uint32_t)idCode[1] << 8) | ((uint32_t)idCode[2]);
-        if ((NOR_MANF_ID == manfID) && (NOR_DEVICE_ID == devID))
+        if ((manfID == NOR_MANF_ID) && (devID == NOR_DEVICE_ID))
         {
             Nor_qspiInfo.manufacturerId = manfID;
             Nor_qspiInfo.deviceId = devID;
@@ -142,7 +142,7 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
 
     if (hwHandle)
     {
-        if (NOR_PASS == Nor_qspiReadId(hwHandle))
+        if (Nor_qspiReadId(hwHandle) == NOR_PASS)
         {
             Nor_qspiInfo.hwHandle = (uint32_t)hwHandle;
             norHandle = (NOR_HANDLE)(&Nor_qspiInfo);
@@ -186,7 +186,7 @@ static NOR_STATUS Nor_qspiCmdWrite(SPI_Handle handle, uint8_t *cmdBuf,
     transaction.arg = (void *)dataLen;
 
     ret = SPI_transfer(handle, &transaction);
-    if (BTRUE == ret)
+    if (ret == true)
     {
         return NOR_PASS;
     }
@@ -207,7 +207,7 @@ static NOR_STATUS Nor_qspiWaitReady(SPI_Handle handle, uint32_t timeOut)
         {
             return NOR_FAIL;
         }
-        if (0U == (status & NOR_SR_WIP))
+        if ((status & NOR_SR_WIP) == 0)
         {
             break;
         }
@@ -219,7 +219,7 @@ static NOR_STATUS Nor_qspiWaitReady(SPI_Handle handle, uint32_t timeOut)
 
     } while (1);
 
-    if (0U == (status & NOR_SR_WIP))
+    if ((status & NOR_SR_WIP) == 0)
     {
         return NOR_PASS;
     }
@@ -317,13 +317,13 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
     spiHandle = (SPI_Handle)norQspiInfo->hwHandle;
 
     /* Validate address input */
-    if (NOR_SIZE < (addr + len))
+    if ((addr + len) > NOR_SIZE)
     {
         return NOR_FAIL;
     }
 
     /* To set or unset the QUAD bit in CR1 register */
-    if (QSPI_FLASH_SINGLE_READ != mode)
+    if (mode != QSPI_FLASH_SINGLE_READ)
     {
         if (Nor_qspiQuadModeCtrl(spiHandle, 1))
         {
@@ -374,7 +374,7 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
     transaction.count = len;
 
     ret = SPI_transfer(spiHandle, &transaction);
-    if (BTRUE == ret)
+    if (ret == true)
     {
         return NOR_PASS;
     }
@@ -411,12 +411,12 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     spiHandle = (SPI_Handle)norQspiInfo->hwHandle;
 
     /* Validate address input */
-    if (NOR_SIZE < (addr + len))
+    if ((addr + len) > NOR_SIZE)
     {
         return NOR_FAIL;
     }
 
-    if (QSPI_FLASH_QUAD_PAGE_PROG == mode)
+    if (mode == QSPI_FLASH_QUAD_PAGE_PROG)
     {
         if (Nor_qspiQuadModeCtrl(spiHandle, 1))
         {
@@ -478,7 +478,7 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         transaction.count = chunkLen;
 
         ret = SPI_transfer(spiHandle, &transaction);
-        if (BFALSE == ret)
+        if (ret == false)
         {
             return NOR_FAIL;
         }
@@ -523,7 +523,7 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     spiHandle = (SPI_Handle)norQspiInfo->hwHandle;
 #if defined (iceK2G)
     /* Computes Hybrid Sector Size for S25FL256S flash device */
-    if (BFALSE == blkErase)
+    if (blkErase == false)
     {
         cmd[0] = NOR_CMD_RDCR;
         status = 0;
@@ -532,7 +532,7 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
         {
             return NOR_FAIL;
         }
-        if (1 == (status & NOR_CR_TBPARM))
+        if ((status & NOR_CR_TBPARM) == 1)
         {
             highAddress = 1; /* physical sectors at top */
         }
@@ -541,47 +541,47 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
             highAddress = 0; /* physical sectors at bottom */
         }
         offset = erLoc * NOR_SECTOR_SIZE;
-        if (0U == highAddress)
+        if (highAddress == 0)
         {
-            if ((NOR_NUM_4KSECTORS * NOR_SECTOR_SIZE) <= offset)
+            if (offset >= (NOR_NUM_4KSECTORS * NOR_SECTOR_SIZE))
             {
-                blkErase = BTRUE;
+                blkErase = true;
                 /* Re-calculate the erase location with the updated sector size */
                 erLoc = offset / NOR_HYBRID_SECTOR_SIZE;
             }
             else
             {
-                blkErase = BFALSE;
+                blkErase = false;
             }
         }
         else
         {
-            if ((NOR_HYBRID_SECTOR_SIZE * (NOR_NUM_SECTORS - NOR_NUM_4KSECTORS)) > offset)
+            if (offset < (NOR_HYBRID_SECTOR_SIZE * (NOR_NUM_SECTORS - NOR_NUM_4KSECTORS)))
             {
-                blkErase = BTRUE;
+                blkErase = true;
                 /* Re-calculate the erase location with the updated sector size */
                 erLoc = offset / NOR_HYBRID_SECTOR_SIZE;
             }
             else
             {
-                blkErase = BFALSE;
+                blkErase = false;
             }
         }
     }
 #endif
-    if (NOR_BE_SECTOR_NUM == erLoc)
+    if (erLoc == NOR_BE_SECTOR_NUM)
     {
         cmd[0]  = NOR_CMD_BULK_ERASE;
         cmdLen = 1;
     }
     else
     {
-        if (BTRUE == blkErase)
+        if (blkErase == true)
 		{
-            if (NOR_NUM_BLOCKS <= erLoc)
+            if (erLoc >= NOR_NUM_BLOCKS)
             {
 #if defined (iceK2G)
-                if (1U == highAddress)
+                if (highAddress == 1)
 #endif
                     return NOR_FAIL;
             }
@@ -590,18 +590,18 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
         }
         else
         {
-            if (NOR_NUM_SECTORS <= erLoc)
+            if (erLoc >= NOR_NUM_SECTORS)
             {
                 return NOR_FAIL;
             }
             address   = erLoc * NOR_SECTOR_SIZE;
             cmd[0] = NOR_CMD_SECTOR_ERASE;
         }
-        cmd[1] = (address >> 16) & 0xFF; /* 64MB flash device */
-        cmd[2] = (address >>  8) & 0xFF;
-        cmd[3] = (address >>  0) & 0xFF;
+        cmd[1] = (address >> 16) & 0xff; /* 64MB flash device */
+        cmd[2] = (address >>  8) & 0xff;
+        cmd[3] = (address >>  0) & 0xff;
 
-        cmdLen = 4U;
+        cmdLen = 4;
     }
 
     if (Nor_qspiCmdWrite(spiHandle, &cmdWren, 1, 0))

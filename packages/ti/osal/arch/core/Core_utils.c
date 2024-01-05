@@ -50,42 +50,42 @@
 
 uint32_t Osal_getCoreId(void)
 {
-    uint32_t coreId = OSAL_INVALID_CORE_ID;
+    uint32_t coreId=OSAL_INVALID_CORE_ID;
 #if defined (BUILD_MCU)
 	CSL_ArmR5CPUInfo info = {0};
 
     CSL_armR5GetCpuID(&info);
-    if (CSL_ARM_R5_CLUSTER_GROUP_ID_0 == info.grpId)
+    if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
     {
         /* MAIN SS Pulsar R5 SS0 */
-        coreId = (CSL_ARM_R5_CPU_ID_0 == info.cpuID) ?
+        coreId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
                                     OSAL_MCU1_0:
                                         OSAL_MCU1_1;
     }
-    else if (CSL_ARM_R5_CLUSTER_GROUP_ID_1 == info.grpId)
+    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1)
     {
         /* MAIN SS Pulsar R5 SS0 */
-        coreId = (CSL_ARM_R5_CPU_ID_0 == info.cpuID) ?
+        coreId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
                                     OSAL_MCU2_0:
                                         OSAL_MCU2_1;
     }
-#if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
-    else if (CSL_ARM_R5_CLUSTER_GROUP_ID_2 == info.grpId)
+#if defined (SOC_J721E) || defined(SOC_J721S2) || defined (SOC_J784S4)
+    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)
     {
         /* MAIN SS Pulsar R5 SS1 */
-        coreId = (CSL_ARM_R5_CPU_ID_0 == info.cpuID) ?
+        coreId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
                                     OSAL_MCU3_0:
                                         OSAL_MCU3_1;
     }
 #if defined (SOC_J784S4)
-	else if (CSL_ARM_R5_CLUSTER_GROUP_ID_3 == info.grpId)
+	else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_3)
     {
         /* MAIN SS Pulsar R5 SS1 */
-        coreId = (CSL_ARM_R5_CPU_ID_0 == info.cpuID) ?
+        coreId = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
                                     OSAL_MCU4_0:
                                         OSAL_MCU4_1;
     }
-#endif /* #if defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4) */
+#endif /* #if defined (SOC_J721E) || defined(SOC_J721S2) || defined (SOC_J784S4) */
 #endif /* #if defined (SOC_J784S4) */
 	else
 	{
@@ -97,21 +97,21 @@ uint32_t Osal_getCoreId(void)
 
 	if(CSL_CLEC_RTMAP_CPU_4 == rtmapCpuId)
 	{
-		coreId = OSAL_C7X_1;
+		coreId=OSAL_C7X_1;
 	}
 #if defined (SOC_J721S2) || defined (SOC_J784S4)
 	else if(CSL_CLEC_RTMAP_CPU_5 == rtmapCpuId)
 	{
-		coreId = OSAL_C7X_2;
+		coreId=OSAL_C7X_2;
 	}
 #if defined (SOC_J784S4)
 	else if (CSL_CLEC_RTMAP_CPU_6 == rtmapCpuId)
 	{
-		coreId = OSAL_C7X_3;
+		coreId=OSAL_C7X_3;
 	}
 	else if (CSL_CLEC_RTMAP_CPU_7 == rtmapCpuId)
 	{
-		coreId = OSAL_C7X_4;
+		coreId=OSAL_C7X_4;
 	}
 #endif /* #if defined (SOC_J784S4) */
 #endif /* #if defined (SOC_J721S2) || defined (SOC_J784S4) */

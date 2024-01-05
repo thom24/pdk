@@ -177,7 +177,7 @@ int32_t udmaTestParser(void)
     uint32_t        hrs, mins, secs, durationInSecs;
     UdmaTestObj    *testObj;
     UdmaTestParams *testPrms;
-    uint32_t        isValidInput = UFALSE;
+    uint32_t        isValidInput = FALSE;
 
     testObj = &gUdmaTestUtObj;
     udmaTestSetDefaultCfg(testObj);
@@ -190,13 +190,13 @@ int32_t udmaTestParser(void)
     }
 
     startTime             = AppUtils_getCurTimeInMsec();
-    done                  = BFALSE;
+    done                  = FALSE;
     testObj->skipCount    = 0U;
     testObj->disableCount = 0U;
     while(!done)
     {
         udmaTestMenuMainShow(testObj);
-        if(UTRUE != isValidInput)
+        if(isValidInput != TRUE)
         {
 #if defined (UDMA_UT_ENABLE_MANUAL_ENTRY)
             getCharRetVal = AppUtils_getCharTimeout(&option, UDMA_TEST_UART_TIMEOUT_MSEC);
@@ -215,11 +215,11 @@ int32_t udmaTestParser(void)
                     testObj->traceMask, GT_INFO, " Automating FULL test!!\r\n");
                 option = '4';
                 /* Set done flag to end test */
-                done   = BTRUE;
+                done   = TRUE;
             }
             else
             {
-                isValidInput = UTRUE;
+                isValidInput = TRUE;
             }
         }
         else
@@ -238,7 +238,7 @@ int32_t udmaTestParser(void)
 
             case 'q':
             case 'Q':
-                done = BTRUE;
+                done = TRUE;
                 break;
 
             case '1':
@@ -263,7 +263,7 @@ int32_t udmaTestParser(void)
             case '3':
                 tcType |= UDMA_TCT_REGRESSION;
             case '2':
-                if(BTRUE == done)
+                if(TRUE == done)
                 {
                     /* Auto run, start from 1st test case */
                     tcId = 0U;
@@ -399,7 +399,7 @@ int32_t udmaTestParser(void)
     for(testCnt = 0U; testCnt < UDMA_TEST_NUM_TESTCASES; testCnt++)
     {
         testPrms = &gUdmaTestCases[testCnt];
-        if(BTRUE == testPrms->isRun)
+        if(TRUE == testPrms->isRun)
         {
             if(UDMA_SOK != testPrms->testResult)
             {
@@ -453,13 +453,13 @@ static int32_t udmaTestRunTc(UdmaTestObj *testObj, UdmaTestParams *testPrms)
     /* Start the load calculation */
     Utils_prfLoadCalcStart();
 
-    testPrms->isRun = BTRUE;
+    testPrms->isRun = TRUE;
     startTime = AppUtils_getCurTimeInMsec();
     retVal = udmaTestCreateTestTasks(testObj, testPrms);
     durationInMsecs = AppUtils_getElapsedTimeInMsec(startTime);
 
     Utils_prfLoadCalcStop();
-    Utils_prfLoadPrintAll(UTRUE, testObj->traceMask);
+    Utils_prfLoadPrintAll(TRUE, testObj->traceMask);
     Utils_prfLoadCalcReset();
     retVal += udmaTestDeleteTestTasks(testObj);
 
@@ -472,7 +472,7 @@ static int32_t udmaTestRunTc(UdmaTestObj *testObj, UdmaTestParams *testPrms)
               " |TEST DURATION|:: %d:%0.2d:%0.2d:%0.3d ::\r\n",
               hrs, mins, secs, msecs);
 
-    if((BTRUE == testPrms->prfEnable) && (testPrms->numTasks > 1U))
+    if((TRUE == testPrms->prfEnable) && (testPrms->numTasks > 1U))
     {
         /* Total performance applicable only for multi thread.
          * Incase of multi thread, individual performance doesn't makes sense
@@ -722,7 +722,7 @@ static void udmaTestInitTestObj(UdmaTestObj *testObj, UdmaTestParams *testPrms)
 
     testObj->testPrms  = testPrms;
     testObj->traceMask = (GT_INFO1 | GT_TraceState_Enable);
-    if(BFALSE == testPrms->printEnable)
+    if(FALSE == testPrms->printEnable)
     {
         /* Restrict the number of prints when print is disabled */
         testObj->traceMask = (GT_INFO | GT_TraceState_Enable);
@@ -965,10 +965,10 @@ static bool udmaTestCheckIfTestToBeSkipped(UdmaTestObj    *testObj,
                                            UdmaTestParams *testPrms,
                                            uint32_t        tcType)
 {
-    bool skipTest = BFALSE;
+    bool skipTest = FALSE;
 
     /* Check whether test case is disabled */
-    if(BFALSE == testPrms->enableTest)
+    if(FALSE == testPrms->enableTest)
     {
         GT_assert(testObj->traceMask, (NULL != testPrms->tcName));
         GT_0trace(testObj->traceMask, GT_INFO, " \r\n");
@@ -989,26 +989,26 @@ static bool udmaTestCheckIfTestToBeSkipped(UdmaTestObj    *testObj,
         }
 
         testObj->disableCount++;
-        skipTest = BTRUE;        /* Skip test */
+        skipTest = TRUE;        /* Skip test */
     }
 
     /* Ignore test case depending on test flag and selected option */
-    if((BFALSE == skipTest) && (UDMA_TCT_MISC != testPrms->tcType))
+    if((FALSE == skipTest) && (UDMA_TCT_MISC != testPrms->tcType))
     {
         if(!(tcType & testPrms->tcType))
         {
             testObj->skipCount++;
-            skipTest = BTRUE;    /* Skip test */
+            skipTest = TRUE;    /* Skip test */
         }
     }
 
     /* Ignore test case depending on run flag */
-    if(BFALSE == skipTest)
+    if(FALSE == skipTest)
     {
         if((testObj->runFlag & testPrms->runFlag) != testObj->runFlag)
         {
             testObj->skipCount++;
-            skipTest = BTRUE;    /* Skip test */
+            skipTest = TRUE;    /* Skip test */
         }
     }
 
@@ -1042,9 +1042,9 @@ static int32_t udmaTestDisplayTestInfo(UdmaTestObj *testObj)
         testPrms = &gUdmaTestCases[testCnt];
 
         runStatus = "NRY";
-        if(BFALSE == testPrms->isRun)
+        if(FALSE == testPrms->isRun)
         {
-            if(BFALSE == testPrms->enableTest)
+            if(FALSE == testPrms->enableTest)
             {
                 runStatus = "NRQ";
             }
@@ -1103,9 +1103,9 @@ static int32_t udmaTestGenerateTestReports(UdmaTestObj *testObj)
         testPrms = &gUdmaTestCases[testCnt];
 
         runStatus = "NRY";
-        if(BFALSE == testPrms->isRun)
+        if(FALSE == testPrms->isRun)
         {
-            if(BFALSE == testPrms->enableTest)
+            if(FALSE == testPrms->enableTest)
             {
                 runStatus = "NRQ";
             }
@@ -1187,8 +1187,8 @@ static int32_t udmaTestGenerateTestReports(UdmaTestObj *testObj)
 static void udmaTestMenuSettings(UdmaTestObj *testObj)
 {
     char                option;
-    bool                done = BFALSE;
-    uint32_t            value;
+    bool                done = FALSE;
+    int32_t             value;
     UdmaTestSystemCtrl *sysCtrl = &testObj->sysCtrl;
 
     udmaTestMenuSettingsShow(testObj);
@@ -1206,7 +1206,7 @@ static void udmaTestMenuSettings(UdmaTestObj *testObj)
                           " Queue count: \r\n");
                 value = AppUtils_getNum();
 
-                if(USE_DEF_QDEPTH != value)
+                if(value != USE_DEF_QDEPTH)
                 {
                     sysCtrl->qdepth = value;
                 }
@@ -1224,7 +1224,7 @@ static void udmaTestMenuSettings(UdmaTestObj *testObj)
                           " Loop count: \r\n");
                 value = AppUtils_getNum();
 
-                if(USE_DEF_LP_CNT != value)
+                if(value != USE_DEF_LP_CNT)
                 {
                     sysCtrl->loopCnt = value;
                 }
@@ -1242,16 +1242,16 @@ static void udmaTestMenuSettings(UdmaTestObj *testObj)
                           " Runtime Print Enable [0: Disable, 1: Enable]: \r\n");
                 value = AppUtils_getNum();
 
-                sysCtrl->rtPrintEnable = UFALSE;
-                if(UTRUE == value)
+                sysCtrl->rtPrintEnable = FALSE;
+                if(1 == value)
                 {
-                    sysCtrl->rtPrintEnable = UTRUE;
+                    sysCtrl->rtPrintEnable = TRUE;
                 }
                 break;
 
             case 'q':
             case 'Q':
-                done = BTRUE;
+                done = TRUE;
                 break;
         }
         fflush(stdin);
@@ -1323,7 +1323,7 @@ static void udmaTestSetDefaultCfg(UdmaTestObj *testObj)
     testObj->sysCtrl.loopCnt       = 1U;
     testObj->sysCtrl.qdepth        = 1U;
 #endif
-    testObj->sysCtrl.rtPrintEnable = UFALSE;
+    testObj->sysCtrl.rtPrintEnable = FALSE;
 
     /* Set run flag */
     testObj->runFlag = 0U;
@@ -1338,7 +1338,7 @@ static void udmaTestSetDefaultCfg(UdmaTestObj *testObj)
     for(testCnt = 0U; testCnt < UDMA_TEST_NUM_TESTCASES; testCnt++)
     {
         testPrms             = &gUdmaTestCases[testCnt];
-        testPrms->isRun      = BFALSE;
+        testPrms->isRun      = FALSE;
         testPrms->testResult = UDMA_SOK;
     }
 
@@ -1366,7 +1366,7 @@ static uint32_t udmaTestGetTestId(UdmaTestObj *testObj, uint32_t tcType)
     {
         testPrms = &gUdmaTestCases[testCnt];
 	    /* Prints enabled testcases */
-        if(BFALSE != testPrms->enableTest && (tcType & testPrms->tcType) && ((testObj->runFlag & testPrms->runFlag) == testObj->runFlag))
+        if(FALSE != testPrms->enableTest && (tcType & testPrms->tcType) && ((testObj->runFlag & testPrms->runFlag) == testObj->runFlag))
         {
             GT_assert(testObj->traceMask, (NULL != testPrms->tcName));
             GT_2trace(testObj->traceMask, GT_INFO,
@@ -1378,13 +1378,13 @@ static uint32_t udmaTestGetTestId(UdmaTestObj *testObj, uint32_t tcType)
     GT_0trace(testObj->traceMask, GT_INFO,
               " Enter Test to Run (Use UART1 console for all cores or MCU_UART1 console for MCU) \n");
 
-    while(UTRUE)
+    while(1U)
     {
         testId = AppUtils_getNum();
         GT_1trace(testObj->traceMask, GT_INFO, "%d\n", testId);
         for(testCnt = 0U; testCnt < UDMA_TEST_NUM_TESTCASES; testCnt++)
         {
-            if((tcType & UDMA_TCT_FULL) && (UDMA_TCT_ALL != tcType))
+            if((tcType & UDMA_TCT_FULL) && (tcType != UDMA_TCT_ALL))
             {
                 if(0U == testId)
                 {
@@ -1399,7 +1399,7 @@ static uint32_t udmaTestGetTestId(UdmaTestObj *testObj, uint32_t tcType)
         }
 	
 	    /* Prints Error Message if user entered testcase ID is not equal to gUdmaTestCases[testCnt].tcId */
-        if((UDMA_TEST_NUM_TESTCASES == testCnt) || ((testObj->runFlag & gUdmaTestCases[testCnt].runFlag) != testObj->runFlag))
+        if((testCnt == UDMA_TEST_NUM_TESTCASES) || ((testObj->runFlag & gUdmaTestCases[testCnt].runFlag) != testObj->runFlag))
         {
             GT_0trace(testObj->traceMask, GT_INFO,
                       "Invalid Test ID. Enter Again!!\n");
@@ -1429,7 +1429,7 @@ void udmaTestPrint(const char *str, ...)
 
     UART_printf("%s", str);
 
-    if(UTRUE == Udma_appIsPrintSupported())
+    if(TRUE == Udma_appIsPrintSupported())
     {
         printf("%s", str);
     }

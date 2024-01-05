@@ -142,16 +142,16 @@ bool Board_initI2C(void)
         BOARD_INIT_UART_STDIO;
 #endif
     boardStatus = Board_init(boardCfg);
-    if (BOARD_SOK != boardStatus)
+    if (boardStatus != BOARD_SOK)
     {
-        return (BFALSE);
+        return (false);
     }
 
 #if defined (idkAM571x)
     boardStatus = Board_getIDInfo(&id);
-    if (BOARD_SOK != boardStatus)
+    if (boardStatus != BOARD_SOK)
     {
-        return (BFALSE);
+        return (false);
     }
     memcpy(eepromData, &id.header[I2C_EEPROM_TEST_ADDR],
            BOARD_EEPROM_HEADER_LENGTH - I2C_EEPROM_TEST_ADDR);
@@ -163,7 +163,7 @@ bool Board_initI2C(void)
 #if defined (evmK2G)
     /* Read the SoC info to get the System clock value */
     Board_getSoCInfo(&socInfo);
-    if(BOARD_SYS_CLK_DEFAULT != socInfo.sysClock)
+    if(socInfo.sysClock != BOARD_SYS_CLK_DEFAULT)
     {
         /* Get the default I2C init configurations */
         I2C_socGetInitCfg(I2C_EEPROM_INSTANCE, &i2c_cfg);
@@ -174,7 +174,7 @@ bool Board_initI2C(void)
     }
 #endif
 
-    return (BTRUE);
+    return (true);
 }
 
 /*
@@ -187,12 +187,12 @@ void i2c_test(UArg arg0, UArg arg1)
     I2C_Transaction i2cTransaction;
     char txBuf[I2C_EEPROM_TEST_LENGTH + I2C_EEPROM_ADDR_SIZE] = {0x00, };
     char rxBuf[I2C_EEPROM_TEST_LENGTH] = {0x00, };
-    bool status,test_pass = BFALSE;
+    bool status,test_pass=FALSE;
     int16_t transferStatus;
 
     /* Set the I2C EEPROM write/read address */
-    txBuf[0] = (I2C_EEPROM_TEST_ADDR >> 8) & 0xFF; /* EEPROM memory high address byte */
-    txBuf[1] = I2C_EEPROM_TEST_ADDR & 0xFF;        /* EEPROM memory low address byte */
+    txBuf[0] = (I2C_EEPROM_TEST_ADDR >> 8) & 0xff; /* EEPROM memory high address byte */
+    txBuf[1] = I2C_EEPROM_TEST_ADDR & 0xff;        /* EEPROM memory low address byte */
 
     I2C_init();
 
@@ -212,7 +212,7 @@ void i2c_test(UArg arg0, UArg arg1)
     if(I2C_STS_SUCCESS != transferStatus)
     {
         I2C_log("\n Data Transfer failed with transfer status %d \n",transferStatus);
-        test_pass = BFALSE;
+        test_pass=FALSE;
         goto exit_test;
     }
 
@@ -224,19 +224,19 @@ void i2c_test(UArg arg0, UArg arg1)
     memcpy(eepromData, rxBuf, I2C_EEPROM_TEST_LENGTH);
 #endif
     status = CompareData(&eepromData[0], &rxBuf[0], I2C_EEPROM_TEST_LENGTH);
-    if(BTRUE == status)
+    if(TRUE == status)
     {
         I2C_log("\n EEPROM data matched \n");
-       test_pass = BTRUE;
+       test_pass=TRUE;
     }
     else
     {
-       test_pass = BFALSE;
+       test_pass=FALSE;
     }
 
 exit_test:
 
-   if(BTRUE == test_pass)
+   if(TRUE == test_pass)
    {
        UART_printStatus("\n All tests have passed. \n");
     }
@@ -245,7 +245,7 @@ exit_test:
         UART_printStatus("\n Some tests have failed. \n");
     }
 
-    while (BTRUE) {
+    while (1) {
 
     }
 }
@@ -255,7 +255,7 @@ exit_test:
  */
 int main(void)
 {
-    if (BFALSE == Board_initI2C())
+    if (Board_initI2C() == false)
     {
         return (0);
     }
@@ -267,7 +267,7 @@ int main(void)
     Error_init(&eb);
 
     task = Task_create(i2c_test, NULL, &eb);
-    if (NULL == task) {
+    if (task == NULL) {
         System_printf("Task_create() failed!\n");
         BIOS_exit(0);
     }
@@ -283,18 +283,18 @@ int main(void)
  */
 bool CompareData(char *expData, char *rxData, unsigned int length)
 {
-    uint32_t idx = 0U;
-    uint32_t match = UTRUE;
-    bool retVal = BFALSE;
+    uint32_t idx = 0;
+    uint32_t match = 1;
+    bool retVal = false;
 
-    for(idx = 0U; ((idx < length) && (UFALSE != match)); idx++)
+    for(idx = 0; ((idx < length) && (match != 0)); idx++)
     {
-        if(*expData != *rxData) match = UFALSE;
+        if(*expData != *rxData) match = 0;
         expData++;
         rxData++;
     }
 
-    if(UTRUE == match) retVal = BTRUE;
+    if(match == 1) retVal = true;
 
     return retVal;
 }

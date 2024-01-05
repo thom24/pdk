@@ -60,7 +60,7 @@
 #endif
 
 /* Global variable to check whether EMMC_BOOT0 is defined or not */
-bool gIsEmmcBoot0Enable = BFALSE;
+bool gIsEmmcBoot0Enable = false;
 
 /* eMMC Sector size */
 #define SECTORSIZE                      (512U) //0x200
@@ -268,7 +268,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
     hwAttrsConfig.enableInterrupt = ((uint32_t)(0U));
     hwAttrsConfig.configSocIntrPath=NULL;
 
-    if (gIsEmmcBoot0Enable == BTRUE)
+    if (gIsEmmcBoot0Enable == true)
     {
         hwAttrsConfig.enableDma = 1;
         hwAttrsConfig.supportedBusWidth = MMCSD_BUS_WIDTH_8BIT;
@@ -282,7 +282,7 @@ int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes)
        retVal = E_FAIL;
      }
 
-    if (gIsEmmcBoot0Enable == BTRUE)
+    if (gIsEmmcBoot0Enable == true)
     {
         MMCSD_init();
         retVal = MMCSD_open(FATFS_initCfg[0].drvInst, NULL, &gHandle);
@@ -358,7 +358,7 @@ int32_t SBL_eMMCBootImage(sblEntryPoint_t *pEntry)
     FRESULT  fresult;
 
 
-    if (gIsEmmcBoot0Enable == BTRUE)
+    if (gIsEmmcBoot0Enable == true)
     {
         /* Read the application image into DDR */
         retVal = MMCSD_read(gHandle, sbl_scratch_mem, mmcStartSector, num_blocks_read);
@@ -473,6 +473,6 @@ void SBL_emmcSeek(void *fileptr, uint32_t location)
 
 void SBL_enableEmmcBoot0()
 {
-    gIsEmmcBoot0Enable = BTRUE;
+    gIsEmmcBoot0Enable = true;
 }
 

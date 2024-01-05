@@ -120,7 +120,7 @@ static void DispApp_init(DispApp_Obj *appObj)
     Fvid2InitPrms_init(&initPrms);
     initPrms.printFxn = &App_print;
     retVal = Fvid2_init(&initPrms);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         App_print("Fvid2 Init Failed!!!\r\n");
     }
@@ -159,7 +159,7 @@ static void DispApp_deInit(DispApp_Obj *appObj)
     retVal = Fvid2_delete(appObj->dctrlHandle, NULL);
     retVal += Dss_deInit();
     retVal += Fvid2_deInit(NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
          App_print("DCTRL handle delete failed!!!\r\n");
     }
@@ -182,8 +182,8 @@ static int32_t DispApp_runTest(DispApp_Obj *appObj)
     App_print("Display in progress ... DO NOT HALT !!!\r\n");
 
 #if defined (SIMULATOR)
-    volatile uint32_t loop = 0xFFFFFFU;
-    while (UFALSE != loop--);
+    volatile uint32_t loop = 0xffffffU;
+    while (0U != loop--);
 #else
     Osal_delay(OSAL_DELAY_COUNT);
 #endif
@@ -282,7 +282,7 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
         IOCTL_DSS_DCTRL_SET_VP_PARAMS,
         vpParams,
         NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         App_print("Dctrl Set VP Params IOCTL Failed!!!\r\n");
     }
@@ -293,7 +293,7 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
         IOCTL_DSS_DCTRL_SET_OLDI_PARAMS,
         oldiParams,
         NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         App_print("DCTRL Set OLDI Params IOCTL Failed!!!\r\n");
     }
@@ -313,14 +313,14 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
 #endif
 
     overlayParams->overlayId = TEST_OVERLAY_ID;
-    overlayParams->colorbarEnable = UTRUE;
+    overlayParams->colorbarEnable = TRUE;
 
     retVal = Fvid2_control(
         appObj->dctrlHandle,
         IOCTL_DSS_DCTRL_SET_OVERLAY_PARAMS,
         overlayParams,
         NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         App_print("DCTRL Set Overlay Params IOCTL Failed!!!\r\n");
     }

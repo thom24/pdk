@@ -33,5 +33,5 @@
 #include "board_internal.h"
 
 /* Errno value */
-uint32_t board_errno = 0U;
-uint32_t board_init_return_code = 0U;
+uint32_t board_errno = 0;
+uint32_t board_init_return_code = 0;

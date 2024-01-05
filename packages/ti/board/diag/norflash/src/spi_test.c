@@ -110,7 +110,7 @@ int BoardDiag_SpiReadWriteTest(Board_flashHandle  handle,
     }
 
     /* Verify Data */
-    if (BoardDiag_memCompare(&txBuf[0],&rxBuf[0],TEST_DATA_LEN, &failIndex) == BFALSE)
+    if (BoardDiag_memCompare(&txBuf[0],&rxBuf[0],TEST_DATA_LEN, &failIndex) == false)
     {
         UART_printf("\n Data mismatch at offset = 0x%x\n", failIndex);
         return -1;
@@ -147,14 +147,14 @@ int BoardDiag_SpiFlashTest(void)
     SPI_Params spiParams;                /* SPI params structure */
     SPI_Handle handle;                   /* SPI handle */
     SPI_Transaction transaction;         /* SPI transaction */
-    bool retVal = BFALSE;        				 /* return value */
+    bool retVal = false; 				/* return value */
     uint32_t  xferEnable;	
     uint32_t i;
     uint32_t failIndex;
 
     for (i = 0; i < CSL_SPI_PER_CNT; i++)
     {
-        ((SPI_v1_HWAttrs *)SPI_config[i].hwAttrs)->enableIntr = BFALSE;
+        ((SPI_v1_HWAttrs *)SPI_config[i].hwAttrs)->enableIntr = false;
     }
 
     /* Init SPI driver */
@@ -179,7 +179,7 @@ int BoardDiag_SpiFlashTest(void)
     transaction.txBuf = &txBuf[0];
     transaction.rxBuf = &rxBuf[0];
     retVal = SPI_transfer(handle, &transaction);
-    if(retVal == BFALSE)
+    if(retVal == false)
     {
         UART_printf("Write Enable Failed \n");
         SPI_close(handle);
@@ -194,7 +194,7 @@ int BoardDiag_SpiFlashTest(void)
     transaction.count = 4U;
 
     retVal = SPI_transfer(handle, &transaction);
-    if(retVal == BFALSE)
+    if(retVal == false)
     {
         UART_printf("Sector erase Failed \n");
         SPI_close(handle);
@@ -213,7 +213,7 @@ int BoardDiag_SpiFlashTest(void)
     txBuf[0] = NOR_CMD_WREN;
     transaction.count = 1U;
     retVal = SPI_transfer(handle, &transaction);
-    if(retVal == BFALSE)
+    if(retVal == false)
     {
         UART_printf("Write Enable Failed \n");
         SPI_close(handle);
@@ -228,7 +228,7 @@ int BoardDiag_SpiFlashTest(void)
     transaction.count = MAX_BUFF_SIZE;
 
     retVal = SPI_transfer(handle, &transaction);
-    if(retVal == BTRUE)
+    if(retVal == true)
         UART_printf("SPI Write Successful \n");
     else
     {
@@ -254,7 +254,7 @@ int BoardDiag_SpiFlashTest(void)
     transaction.count  = MAX_BUFF_SIZE;
 
     retVal = SPI_transfer(handle, &transaction);
-    if(retVal == BTRUE)
+    if(retVal == true)
     {
         UART_printf("SPI Read Successful \n");
     }
@@ -265,7 +265,7 @@ int BoardDiag_SpiFlashTest(void)
         return -1;
     }
 
-    if(BoardDiag_memCompare(&txBuf[4], &rxBuf[4], BUFF_SIZE, &failIndex) == BTRUE)
+    if(BoardDiag_memCompare(&txBuf[4], &rxBuf[4], BUFF_SIZE, &failIndex) == true)
     {
         UART_printf("Data Read matches with Data written\n");
         UART_printf("SPI Flash Test Passed!\n");
@@ -281,7 +281,7 @@ int BoardDiag_SpiFlashTest(void)
     txBuf[0] = NOR_CMD_WREN;
     transaction.count = 1U;
     retVal = SPI_transfer(handle, &transaction);
-    if(retVal == BFALSE)
+    if(retVal == false)
     {
         UART_printf("Write Enable Failed \n");
         SPI_close(handle);
@@ -295,7 +295,7 @@ int BoardDiag_SpiFlashTest(void)
     txBuf[3] = 0x0U;
     transaction.count = 4U;
     retVal = SPI_transfer(handle, &transaction);
-    if(retVal == BFALSE)
+    if(retVal == false)
     {
         UART_printf("Sector erase Failed \n");
         SPI_close(handle);
@@ -318,7 +318,7 @@ int BoardDiag_SpiFlashTest(void)
 {
     Board_flashHandle boardHandle;
     Board_FlashInfo *flashInfo;
-    bool testStatus = BTRUE;          /* return value */
+    bool testStatus = true;          /* return value */
 #if (defined(SOC_TPR12) || defined(SOC_AWR294X))
     QSPI_HwAttrs qspiCfg;
 
@@ -327,7 +327,7 @@ int BoardDiag_SpiFlashTest(void)
 
     /* Modify the default SPI configurations if necessary */
     /* Turning off interrupts for baremetal mode. May be re-enabled by app */
-    qspiCfg.intrEnable = BFALSE;
+    qspiCfg.intrEnable = false;
 
     /* Set the default SPI init configurations */
     QSPI_socSetInitCfg(BOARD_QSPI_NOR_INSTANCE, &qspiCfg);
@@ -345,7 +345,7 @@ int BoardDiag_SpiFlashTest(void)
 
     /* Modify the default SPI configurations if necessary */
     /* Turning off interrupts for baremetal mode. May be re-enabled by app */
-    spi_cfg.enableIntr = BFALSE;
+    spi_cfg.enableIntr = false;
 
     /* Set the default SPI init configurations */
     SPI_socSetInitCfg(BOARD_SPI_NOR_INSTANCE, &spi_cfg);
@@ -439,7 +439,7 @@ int BoardDiag_SpiFlashStressTest(void)
 
     /* Modify the default SPI configurations if necessary */
     /* Turning off interrupts for baremetal mode. May be re-enabled by app */
-    qspiCfg.intrEnable = BFALSE;
+    qspiCfg.intrEnable = false;
 
     /* Set the default SPI init configurations */
     QSPI_socSetInitCfg(BOARD_QSPI_NOR_INSTANCE, &qspiCfg);
@@ -455,7 +455,7 @@ int BoardDiag_SpiFlashStressTest(void)
 
     /* Modify the default SPI configurations if necessary */
     /* Turning off interrupts for baremetal mode. May be re-enabled by app */
-    spi_cfg.enableIntr = BFALSE;
+    spi_cfg.enableIntr = false;
 
     /* Set the default SPI init configurations */
     SPI_socSetInitCfg(BOARD_SPI_NOR_INSTANCE, &spi_cfg);

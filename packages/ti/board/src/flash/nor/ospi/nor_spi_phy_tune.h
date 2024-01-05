@@ -63,8 +63,8 @@ typedef struct NOR_PhyConfig_s
 
 #define NOR_SPI_PHY_VTM_TARGET      (700)
 
-#define MIN(A,B)                    ((A<B)?A:B)
-#define MAX(A,B)                    ((A>B)?A:B)
+#define MIN(A,B)                    (A<B?A:B)
+#define MAX(A,B)                    (A>B?A:B)
 /* 
  * Note: All the ranges below are inclusive,
  * users need to be aware of it while adjusting below

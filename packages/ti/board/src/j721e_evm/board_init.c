@@ -60,7 +60,7 @@
 #include <ti/drv/sciclient/sciclient.h>
 #include <ti/drv/sciclient/sciserver.h>
 
-static bool gBoardSysInitDone = BFALSE;
+static bool gBoardSysInitDone = 0;
 
 /**
  * \brief  Board global initializations
@@ -74,19 +74,19 @@ static Board_STATUS Board_sysInit(void)
     int32_t ret;
     Sciclient_ConfigPrms_t config;
 
-    if(BFALSE == gBoardSysInitDone)
+    if(gBoardSysInitDone == 0)
     {
         Sciclient_configPrmsInit(&config);
 
         ret = Sciclient_init(&config);
-        if(CSL_PASS != ret)
+        if(ret != 0)
         {
             status = BOARD_FAIL;
         }
 
-        if(BOARD_SOK == status)
+        if(status == BOARD_SOK)
         {
-            gBoardSysInitDone = BTRUE;
+            gBoardSysInitDone = 1;
         }
     }
 
@@ -104,17 +104,17 @@ static Board_STATUS Board_sysDeinit(void)
     Board_STATUS status = BOARD_SOK;
     int32_t ret;
 
-    if(BTRUE == gBoardSysInitDone)
+    if(gBoardSysInitDone == 1)
     {
         ret = Sciclient_deinit();
-        if(CSL_PASS != ret)
+        if(ret != 0)
         {
             status = BOARD_FAIL;
         }
 
-        if(BOARD_SOK == status)
+        if(status == BOARD_SOK)
         {
-            gBoardSysInitDone = BFALSE;
+            gBoardSysInitDone = 0;
         }
     }
 
@@ -200,117 +200,117 @@ Board_STATUS Board_init(Board_initCfg cfg)
 
     if (cfg & BOARD_INIT_UNLOCK_MMR)
         ret = Board_unlockMMR();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_ENETCTRL_CPSW2G)
         ret = Board_ethConfigCpsw2g();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_ENETCTRL_CPSW9G)
         ret = Board_ethConfigCpsw9g();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_ENETCTRL_ICSS)
         ret = Board_ethConfigIcss();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_MODULE_CLOCK)
     {
         ret = Board_moduleClockInitMcu();
-        if (BOARD_SOK != ret)
+        if (ret != BOARD_SOK)
             return ret;
         ret = Board_moduleClockInitMain();
-        if (BOARD_SOK != ret)
+        if (ret != BOARD_SOK)
             return ret;
     }
 
     if (cfg & BOARD_INIT_MODULE_CLOCK_MCU)
         ret = Board_moduleClockInitMcu();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_MODULE_CLOCK_MAIN)
         ret = Board_moduleClockInitMain();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_PINMUX_CONFIG)
         ret = Board_pinmuxConfig();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_PINMUX_CONFIG_MAIN)
         ret = Board_pinmuxConfigMain();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_PINMUX_CONFIG_MCU)
         ret = Board_pinmuxConfigWkup();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_PLL)
     {
         ret = Board_PLLInitMcu();
-        if (BOARD_SOK != ret)
+        if (ret != BOARD_SOK)
             return ret;
         ret = Board_PLLInitMain();
-        if (BOARD_SOK != ret)
+        if (ret != BOARD_SOK)
             return ret;
     }
 
     if (cfg & BOARD_INIT_PLL_MCU)
         ret = Board_PLLInitMcu();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_PLL_MAIN)
         ret = Board_PLLInitMain();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_DDR)
     {
         if (cfg & BOARD_INIT_DDR_ECC)
         {
-            ret = Board_DDRInit(UTRUE);
+            ret = Board_DDRInit(true);
         }
         else
         {
-            ret = Board_DDRInit(UFALSE);
+            ret = Board_DDRInit(false);
         }
     }
 
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_ETH_PHY)
         ret = Board_cpsw2gEthPhyConfig();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_ICSS_ETH_PHY)
         ret = Board_icssEthPhyConfig();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_CPSW9G_ETH_PHY)
         ret = Board_cpsw9gEthPhyConfig();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_UART_STDIO)
         ret = Board_uartStdioInit();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_INIT_SERDES_PHY)
         ret = Board_serdesCfg();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     return ret;
@@ -345,22 +345,22 @@ Board_STATUS Board_deinit(Board_initCfg cfg)
 
     if (cfg & BOARD_DEINIT_UART_STDIO)
         ret = Board_uartDeInit();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     if (cfg & BOARD_DEINIT_MODULE_CLOCK)
     {
      ret = Board_moduleClockDeinitMcu();
-        if (BOARD_SOK != ret)
+        if (ret != BOARD_SOK)
             return ret;
      ret = Board_moduleClockDeinitMain();
-        if (BOARD_SOK != ret)
+        if (ret != BOARD_SOK)
             return ret;
     }
 
     if (cfg & BOARD_DEINIT_LOCK_MMR)
         ret = Board_lockMMR();
-    if (BOARD_SOK != ret)
+    if (ret != BOARD_SOK)
         return ret;
 
     return ret;

@@ -114,7 +114,7 @@ int32_t BoardDiag_captFrameCompletionCb(Fvid2_Handle handle,
             chIndex = (((uint32_t)pData[0])<<24) | (((uint32_t)pData[1])<<16) | (((uint32_t)pData[2]) << 8) | ((uint32_t)pData[3]);
             if (0 != memcmp(pData, &gTxFrms[chIndex][0], BOARD_DIAG_TX_FRAME_SIZE))
             {
-                gCompareFrame = 0;
+                gCompareFrame=0;
                 UART_printf("Channel->%d, NumTx in Channel->%d, numFrames->%d!!!\r\n", pFrm->chNum, csirxObj->captObj.chFrmCnt[pFrm->chNum], frmList.numFrames);
                 UART_printf("Data does not match!!!\r\n");
             }
@@ -174,9 +174,9 @@ void BoardDiag_initCaptParams(BoardDiag_CsiTxObj *csirxObj)
                                                 BOARD_DIAG_TX_IMAGE_STORAGE_FORMAT;
     }
     /* set module configuration parameters */
-    csirxObj->captObj.createPrms.instCfg.enableCsiv2p0Support = UTRUE;
+    csirxObj->captObj.createPrms.instCfg.enableCsiv2p0Support = (uint32_t)TRUE;
     csirxObj->captObj.createPrms.instCfg.numDataLanes = 4U;
-    csirxObj->captObj.createPrms.instCfg.enableErrbypass = UFALSE;
+    csirxObj->captObj.createPrms.instCfg.enableErrbypass = (uint32_t)FALSE;
     csirxObj->captObj.createPrms.instCfg.enableStrm[CSIRX_CAPT_STREAM_ID] = 1U;
     for (loopCnt = 0U ;
          loopCnt < csirxObj->captObj.createPrms.instCfg.numDataLanes ;
@@ -217,7 +217,7 @@ int32_t BoardDiag_captInit(BoardDiag_CsiTxObj *csirxObj)
 
     /* Csirx init */
     retVal = Csirx_init(&csirxObj->captObj.initPrms);
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
         UART_printf(" Csirx Init Failed!!!\r\n");
     }
@@ -248,13 +248,13 @@ int32_t BoardDiag_captCreate(BoardDiag_CsiTxObj *csirxObj)
         &csirxObj->captObj.createStatus,
         &csirxObj->captObj.cbPrms);
 
-    if ((NULL      == csirxObj->captObj.drvHandle) ||
-        (FVID2_SOK != csirxObj->captObj.createStatus.retVal))
+    if ((NULL == csirxObj->captObj.drvHandle) ||
+        (csirxObj->captObj.createStatus.retVal != FVID2_SOK))
     {
         UART_printf( " Capture Create Failed!!!\r\n");
         retVal = csirxObj->captObj.createStatus.retVal;
     }
-    if (FVID2_SOK == retVal)
+    if (retVal == FVID2_SOK)
     {
         /* Set CSIRX D-PHY configuration parameters */
         Csirx_initDPhyCfg(&dphyCfg);
@@ -274,13 +274,13 @@ int32_t BoardDiag_captCreate(BoardDiag_CsiTxObj *csirxObj)
             UART_printf("Set D-PHY Configuration Successful!!!\r\n");
         }
     }
-    if (FVID2_SOK == retVal)
+    if (retVal == FVID2_SOK)
     {
         /* Allocate instance semaphore */
         SemaphoreP_Params_init(&semParams);
         semParams.mode = SemaphoreP_Mode_BINARY;
         gRxLockSem = SemaphoreP_create(0U, &semParams);
-        if (NULL == gRxLockSem)
+        if (gRxLockSem == NULL)
         {
             UART_printf(
                 "Instance semaphore create failed!!\r\n");
@@ -288,7 +288,7 @@ int32_t BoardDiag_captCreate(BoardDiag_CsiTxObj *csirxObj)
         }
     }
 
-    if (FVID2_SOK == retVal)
+    if (retVal == FVID2_SOK)
     {
         tsParams.timeStampFxn = (Fvid2_TimeStampFxn)&TimerP_getTimeInUsecs;
         /* register time stamping function */
@@ -297,7 +297,7 @@ int32_t BoardDiag_captCreate(BoardDiag_CsiTxObj *csirxObj)
                                &tsParams,
                                NULL);
     }
-    if (FVID2_SOK == retVal)
+    if (retVal == FVID2_SOK)
     {
         UART_printf("CSIRX Capture created\r\n");
     }
@@ -466,7 +466,7 @@ int32_t BoardDiag_captFreeFrames(BoardDiag_CsiTxObj *csirxObj)
                     &frmList,
                     0U,
                     FVID2_TIMEOUT_NONE);
-    if (FVID2_ENO_MORE_BUFFERS == retVal)
+    if (retVal == FVID2_ENO_MORE_BUFFERS)
     {
         /* All buffer might be de-queued during stop,
            in this case no error shall be returned */

@@ -114,7 +114,7 @@ bool spi_read_write(S25FL_Handle flashHandle, uint32_t blockNum, uint32_t transf
     S25FL_Transaction flashTransaction;  /* Flash transaction structure */
     SPI_Handle        handle;            /* SPI handle */
     QSPI_HwAttrs     *hwAttrs;           /* QSPI hardware attributes */
-    bool              retVal = BFALSE;   /* return value */
+    bool              retVal = false;    /* return value */
     uint32_t          addressValue, addrValue;
 
     /* Extract hardware attributes */
@@ -141,7 +141,7 @@ bool spi_read_write(S25FL_Handle flashHandle, uint32_t blockNum, uint32_t transf
 
     /* Write buffer to flash */
     retVal = SF25FL_bufferWrite(flashHandle, &flashTransaction);
-    if (retVal == BFALSE)
+    if (retVal == false)
         goto Err;
 
     if(QSPI_RX_LINES_QUAD == hwAttrs->rxLines)
@@ -156,7 +156,7 @@ bool spi_read_write(S25FL_Handle flashHandle, uint32_t blockNum, uint32_t transf
 
     /* Read data from flash */
     retVal = SF25FL_bufferRead(flashHandle, &flashTransaction);
-    if (retVal == BFALSE)
+    if (retVal == false)
         goto Err;
 
     /* Verify Data */
@@ -174,7 +174,7 @@ void spi_test(UArg arg0, UArg arg1)
 {
     SPI_Params   spiParams;              /* SPI params structure */
     S25FL_Handle flashHandle;            /* Flash handle */
-    bool         retVal = BFALSE;        /* return value */
+    bool         retVal = false;         /* return value */
 
     /* Init SPI driver */
     SPI_init();
@@ -193,7 +193,7 @@ void spi_test(UArg arg0, UArg arg1)
 
     /* read/write test on block 0, address 0 */
     retVal = spi_read_write(flashHandle, 0, transferLength);
-    if (retVal == BTRUE)
+    if (retVal == true)
     {
         /* read/write test on block 256, address 16M */
         retVal = spi_read_write(flashHandle, 256, transferLength);
@@ -201,7 +201,7 @@ void spi_test(UArg arg0, UArg arg1)
 
     SF25FL_close(flashHandle);
 
-    if(BTRUE == retVal)
+    if(true == retVal)
     {
         SPI_log("\n All tests have passed. \n");
     }
@@ -293,18 +293,18 @@ bool VerifyData(unsigned char *expData,
                 unsigned int length)
 {
     unsigned int idx = 0;
-    unsigned int match = UTRUE;
-    bool retVal = BFALSE;
+    unsigned int match = 1;
+    bool retVal = false;
     unsigned int lenInBytes = length * 4;
 
-    for(idx = 0; ((idx < lenInBytes) && (UFALSE != match)); idx++)
+    for(idx = 0; ((idx < lenInBytes) && (match != 0)); idx++)
     {
-        if(*expData != *rxData) match = UFALSE;
+        if(*expData != *rxData) match = 0;
         expData++;
         rxData++;
     }
 
-    if(UTRUE == match) retVal = BTRUE;
+    if(match == 1) retVal = true;
 
     return retVal;
 }

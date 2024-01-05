@@ -87,7 +87,7 @@ static NOR_STATUS NOR_qspiCmdRead(OSPI_Handle handle, uint8_t *cmdBuf,
     transaction.count = cmdLen + rxLen;
 
     ret = OSPI_transfer(handle, &transaction);
-    if (BTRUE == ret)
+    if (ret == true)
     {
         return NOR_PASS;
     }
@@ -105,11 +105,11 @@ static NOR_STATUS Nor_qspiReadId(OSPI_Handle handle)
     uint32_t    manfID, devID;
 
     retVal = NOR_qspiCmdRead(handle, &cmd, 1, idCode, NOR_RDID_NUM_BYTES);
-    if (NOR_PASS == retVal)
+    if (retVal == NOR_PASS)
     {
         manfID = (uint32_t)idCode[0];
         devID = ((uint32_t)idCode[1] << 8) | ((uint32_t)idCode[2]);
-        if ((NOR_MANF_ID == manfID) && (NOR_DEVICE_ID == devID))
+        if ((manfID == NOR_MANF_ID) && (devID == NOR_DEVICE_ID))
         {
             Nor_qspiInfo.manufacturerId = manfID;
             Nor_qspiInfo.deviceId = devID;
@@ -151,10 +151,10 @@ static NOR_STATUS Nor_qspiEnableDDR(OSPI_Handle handle)
     data[0] = NOR_CMD_WRITE_ENVCR;
     data[1] = 0x5F;  /* Enable quad mode and DTR mode */
     retVal = Nor_qspiCmdWrite(handle, data, 1, 1);
-    if (NOR_PASS == retVal)
+    if (retVal == NOR_PASS)
     {
         /* Set opcodes */
-        dummyCycles = NOR_QUAD_READ_DUMMY_CYCLE - 2U;
+        dummyCycles = NOR_QUAD_READ_DUMMY_CYCLE - 2;
         rx_lines    = OSPI_XFER_LINES_QUAD;
         opCode[0]   = NOR_CMD_QUAD_DDR_O_FAST_RD;
         opCode[1]   = NOR_CMD_QUAD_FAST_PROG;
@@ -176,7 +176,7 @@ static NOR_STATUS Nor_qspiEnableDDR(OSPI_Handle handle)
     data[0] = NOR_CMD_WRR;
     data[1] = 0x02;
     retVal = Nor_qspiCmdWrite(handle, data, 1, 1);
-    if (NOR_PASS == retVal)
+    if (retVal == NOR_PASS)
     {
         if (Nor_qspiWaitReady(handle, NOR_WRR_WRITE_TIMEOUT))
         {
@@ -196,7 +196,7 @@ static NOR_STATUS Nor_qspiEnableDDR(OSPI_Handle handle)
         OSPI_control(handle, OSPI_V0_CMD_XFER_OPCODE, (void *)opCode);
     }
 #endif
-    CSL_ospiDtrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), UTRUE);
+    CSL_ospiDtrEnable((const CSL_ospi_flash_cfgRegs *)(hwAttrs->baseAddr), TRUE);
 
     return retVal;
 }
@@ -226,7 +226,7 @@ static NOR_STATUS Nor_qspiEnableSDR(OSPI_Handle handle)
     data[0] = NOR_CMD_WRITE_ENVCR;
     data[1] = 0x7F;  /* Enable quad mode */
     retVal = Nor_qspiCmdWrite(handle, data, 1, 1);
-    if (NOR_PASS == retVal)
+    if (retVal == NOR_PASS)
     {
         dummyCycles = NOR_QUAD_READ_DUMMY_CYCLE;
         rx_lines    = OSPI_XFER_LINES_QUAD;
@@ -249,7 +249,7 @@ static NOR_STATUS Nor_qspiEnableSDR(OSPI_Handle handle)
     data[0] = NOR_CMD_WRR;
     data[1] = 0x02;
     retVal = Nor_qspiCmdWrite(handle, data, 1, 1);
-    if (NOR_PASS == retVal)
+    if (retVal == NOR_PASS)
     {
         rx_lines      = OSPI_XFER_LINES_QUAD;
         opCode[0]     = NOR_CMD_QUAD_READ;
@@ -304,10 +304,10 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
     if (hwHandle)
     {
         retVal = NOR_PASS;
-        if (NOR_PASS == retVal)
+        if (retVal == NOR_PASS)
         {
             OSPI_socGetInitCfg(SPI_OSPI_DOMAIN_MCU, portNum, &ospi_cfg);
-            if (BTRUE == ospi_cfg.dtrEnable)
+            if (ospi_cfg.dtrEnable == true)
             {
                 Nor_qspiEnableDDR(hwHandle);
             }
@@ -316,7 +316,7 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                 Nor_qspiEnableSDR(hwHandle);
             }
 
-            if (BTRUE == ospi_cfg.phyEnable)
+            if (ospi_cfg.phyEnable == true)
             {
                 /* set initial PHY DLL delay */
                 delay = 0U;
@@ -325,16 +325,16 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                 /* calibrate PHY */
                 for (i = 0; i < 128U; i++)
                 {
-                    if (NOR_PASS == Nor_qspiReadId(hwHandle))
+                    if (Nor_qspiReadId(hwHandle) == NOR_PASS)
                     {
                         /* Iterate flash reads, find the start index and successful read ID count */
-                        if (0U == readCnt)
+                        if (readCnt == 0)
                             readStart = i;
                         readCnt++;
                     }
                     else
                     {
-                        if ((0U != readCnt) && (readCnt > readCntPrv))
+                        if ((readCnt != 0) && (readCnt > readCntPrv))
                         {
                             /* save the start index and most successful read ID count */
                             readCntPrv = readCnt;
@@ -354,7 +354,7 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                     readStartPrv = readStart;
                 }
 
-                if (0U != readCntPrv)
+                if (readCntPrv != 0U)
                 {
                     /* Find the delay in the middle working position */
                     delay = readStartPrv + (readCntPrv / 2);
@@ -367,9 +367,9 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                     OSPI_close(hwHandle);
                 }
             }
-            else /* ospi_cfg->phyEnable == BFALSE */
+            else /* ospi_cfg->phyEnable == false */
             {
-                if (NOR_PASS == Nor_qspiReadId(hwHandle))
+                if (Nor_qspiReadId(hwHandle) == NOR_PASS)
                 {
                     Nor_qspiInfo.hwHandle = (uintptr_t)hwHandle;
                     norHandle = (NOR_HANDLE)(&Nor_qspiInfo);
@@ -380,7 +380,7 @@ NOR_HANDLE Nor_qspiOpen(uint32_t norIntf, uint32_t portNum, void *params)
                 }
             }
 
-            if (BTRUE == ospi_cfg.xipEnable)
+            if (ospi_cfg.xipEnable == true)
             {
                 Nor_qspiXipEnable(hwHandle);
             }
@@ -428,7 +428,7 @@ static NOR_STATUS Nor_qspiCmdWrite(OSPI_Handle handle, uint8_t *cmdBuf,
     transaction.arg = (void *)(uintptr_t)dataLen;
 
     ret = OSPI_transfer(handle, &transaction);
-    if (BTRUE == ret)
+    if (ret == true)
     {
         return NOR_PASS;
     }
@@ -449,7 +449,7 @@ static NOR_STATUS Nor_qspiWaitReady(OSPI_Handle handle, uint32_t timeOut)
         {
             return NOR_FAIL;
         }
-        if (0U == (status & NOR_SR_WIP))
+        if ((status & NOR_SR_WIP) == 0)
         {
             break;
         }
@@ -461,7 +461,7 @@ static NOR_STATUS Nor_qspiWaitReady(OSPI_Handle handle, uint32_t timeOut)
 
     } while (1);
 
-    if (0U == (status & NOR_SR_WIP))
+    if ((status & NOR_SR_WIP) == 0)
     {
         return NOR_PASS;
     }
@@ -492,7 +492,7 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
     spiHandle = (OSPI_Handle)norOspiInfo->hwHandle;
 
     /* Validate address input */
-    if (NOR_SIZE < (addr + len))
+    if ((addr + len) > NOR_SIZE)
     {
         return NOR_FAIL;
     }
@@ -506,7 +506,7 @@ NOR_STATUS Nor_qspiRead(NOR_HANDLE handle, uint32_t addr,
     transaction.count = len;
 
     ret = OSPI_transfer(spiHandle, &transaction);
-    if (BTRUE == ret)
+    if (ret == true)
     {
         return NOR_PASS;
     }
@@ -541,7 +541,7 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     }
 
     /* Validate address input */
-    if (NOR_SIZE < (addr + len))
+    if ((addr + len) > NOR_SIZE)
     {
         return NOR_FAIL;
     }
@@ -569,12 +569,12 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
             wrSize = 256U;
         }
     }
-    byteAddr = addr & (wrSize - 1U);
+    byteAddr = addr & (wrSize - 1);
 
-    for (actual = 0U; actual < len; actual += chunkLen)
+    for (actual = 0; actual < len; actual += chunkLen)
     {
         /* Send Page Program command */
-        chunkLen = (((len - actual) < (wrSize - byteAddr)) ?
+        chunkLen = ((len - actual) < (wrSize - byteAddr) ?
                     (len - actual) : (wrSize - byteAddr));
 
         transaction.arg   = (void *)(uintptr_t)addr;
@@ -583,7 +583,7 @@ NOR_STATUS Nor_qspiWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         transaction.count = chunkLen;
 
         ret = OSPI_transfer(spiHandle, &transaction);
-        if (BFALSE == ret)
+        if (ret == false)
         {
             return NOR_FAIL;
         }
@@ -618,16 +618,16 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     spiHandle = (OSPI_Handle)norOspiInfo->hwHandle;
     hwAttrs = (OSPI_v0_HwAttrs const *)spiHandle->hwAttrs;
 
-    if (NOR_BE_SECTOR_NUM == erLoc)
+    if (erLoc == NOR_BE_SECTOR_NUM)
     {
         cmd[0]  = NOR_CMD_BULK_ERASE;
         cmdLen = 1;
     }
     else
     {
-        if (BTRUE == blkErase)
+        if (blkErase == true)
 		{
-            if (NOR_NUM_BLOCKS <= erLoc)
+            if (erLoc >= NOR_NUM_BLOCKS)
             {
                 return NOR_FAIL;
             }
@@ -636,7 +636,7 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
         }
         else
         {
-            if (NOR_NUM_SECTORS <= erLoc)
+            if (erLoc >= NOR_NUM_SECTORS)
             {
                 return NOR_FAIL;
             }
@@ -644,20 +644,20 @@ NOR_STATUS Nor_qspiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
             cmd[0] = NOR_CMD_SECTOR_ERASE;
         }
 
-        if (BTRUE == hwAttrs->dtrEnable)
+        if (hwAttrs->dtrEnable == (bool)true)
         {
-            cmd[1] = (address >> 24) & 0xFF; /* 4 address bytes */
-            cmd[2] = (address >> 16) & 0xFF;
-            cmd[3] = (address >>  8) & 0xFF;
-            cmd[4] = (address >>  0) & 0xFF;
-            cmdLen = 5U;
+            cmd[1] = (address >> 24) & 0xff; /* 4 address bytes */
+            cmd[2] = (address >> 16) & 0xff;
+            cmd[3] = (address >>  8) & 0xff;
+            cmd[4] = (address >>  0) & 0xff;
+            cmdLen = 5;
         }
         else
         {
-            cmd[1] = (address >> 16) & 0xFF;
-            cmd[2] = (address >>  8) & 0xFF;
-            cmd[3] = (address >>  0) & 0xFF;
-            cmdLen = 4U;
+            cmd[1] = (address >> 16) & 0xff;
+            cmd[2] = (address >>  8) & 0xff;
+            cmd[3] = (address >>  0) & 0xff;
+            cmdLen = 4;
         }
     }
 

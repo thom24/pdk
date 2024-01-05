@@ -84,9 +84,9 @@ typedef uint32_t Osal_CacheP_isCoherent;
  */
 typedef uint32_t CacheP_Mar;
     /** Cache MAR register disabled */
-#define CacheP_Mar_DISABLE                             ((uint32_t) 0U)
+#define CacheP_Mar_DISABLE                             (0U)
     /** Cache MAR register is enabled */
-#define CacheP_Mar_ENABLE                              ((uint32_t) 1U)
+#define CacheP_Mar_ENABLE                              (1U)
 /* @} */
 
 /*!

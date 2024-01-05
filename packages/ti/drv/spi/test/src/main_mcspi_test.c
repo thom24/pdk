@@ -227,27 +227,27 @@ static void SPI_initConfig(uint32_t instance, SPI_Tests *test, bool multiChn)
      * Set blocking mode (dma mode or non-dma interrupt mode)
      * or callback mode
      */
-    if (BTRUE == pollMode)
+    if (pollMode == true)
     {
         /* polling mode */
-        spi_cfg.enableIntr = BFALSE;
+        spi_cfg.enableIntr = false;
     }
     else
     {
         /* interrupt enabled */
-        spi_cfg.enableIntr = BTRUE;
+        spi_cfg.enableIntr = true;
 #ifdef SPI_DMA_ENABLE
-        if (BTRUE == dmaMode)
+        if (dmaMode == true)
         {
             /* Set the DMA related init config */
             spi_cfg.edmaHandle = MCSPIApp_edmaInit();
-            spi_cfg.dmaMode    = BTRUE;
+            spi_cfg.dmaMode    = TRUE;
         }
         else
 #endif
         {
             spi_cfg.edmaHandle = NULL;
-            spi_cfg.dmaMode    = BFALSE;
+            spi_cfg.dmaMode    = FALSE;
         }
     }
 
@@ -257,7 +257,7 @@ static void SPI_initConfig(uint32_t instance, SPI_Tests *test, bool multiChn)
     /*
      * Set multi or single channel mode
      */
-    /*if (multiChn == BTRUE)
+    /*if (multiChn == true)
     {
         spi_cfg.chMode = MCSPI_MULTI_CH;
     }
@@ -300,7 +300,7 @@ bool spi_test_transfer(void *spi, bool cbMode, uint32_t timeout, bool dmaMode, b
 #endif
 
 #ifdef MCSPI_MULT_CHANNEL
-    if (BTRUE == multChn)
+    if (multChn == true)
     {
         retVal = MCSPI_transfer((MCSPI_Handle)spi, &transaction);
     }
@@ -311,13 +311,13 @@ bool spi_test_transfer(void *spi, bool cbMode, uint32_t timeout, bool dmaMode, b
     }
 
 #ifdef SPI_DMA_ENABLE
-    if (BTRUE == dmaMode)
+    if (dmaMode == true)
     {
         CacheP_Inv((void *)rxBuf, (int32_t)MCSPI_XFER_LEN);
     }
 #endif
 
-    if(BFALSE == retVal)
+    if(false == retVal)
     {
         SPI_log("\n Error occurred in spi transfer \n");
         goto Err;
@@ -328,9 +328,9 @@ bool spi_test_transfer(void *spi, bool cbMode, uint32_t timeout, bool dmaMode, b
          *  wait for the semaphore is posed in the callback mode to indicate the
          *  transfer completion.
          */
-        if(BTRUE == cbMode)
+        if(cbMode == true)
         {
-            if (BTRUE == multChn)
+            if (multChn == true)
             {
                 sem = cbSem[testChNum];
             }
@@ -363,13 +363,13 @@ bool spi_test_multiple_channel(void *arg)
     MCSPI_Handle      spi[MCSPI_MAX_NUM_CHN];
     MCSPI_CallbackFxn cbFxn[MCSPI_MAX_NUM_CHN] = {MCSPI_callback0, MCSPI_callback1, MCSPI_callback2, MCSPI_callback3};
     uint32_t          instance, chn;
-    bool              retVal = BFALSE;
+    bool              retVal = FALSE;
     SPI_Tests        *test = (SPI_Tests *)arg;
     bool              cbMode = test->cbMode;
     bool              dmaMode = test->dmaMode;
     uint32_t          timeout = test->timeout;
 
-    if (BTRUE == cbMode)
+    if (cbMode == true)
     {
         /* Create call back semaphore */
         SPI_osalSemParamsInit(&cbSemParams);
@@ -377,7 +377,7 @@ bool spi_test_multiple_channel(void *arg)
     }
 
     instance = BOARD_MCSPI_SERIALIZER_INSTANCE;
-    SPI_initConfig(instance, test, BTRUE);
+    SPI_initConfig(instance, test, true);
 
     /* Default SPI configuration parameters */
     MCSPI_Params_init(&mcSpiParams);
@@ -390,13 +390,13 @@ bool spi_test_multiple_channel(void *arg)
 
     /* Open the default channel first */
     chn = testChNum;
-    if (BTRUE == cbMode)
+    if (cbMode == true)
     {
         cbSem[chn] = SPI_osalCreateBlockingLock(0, &cbSemParams);
         mcSpiParams.transferCallbackFxn = cbFxn[chn];
     }
     spi[chn] = MCSPI_open(instance, chn, &mcSpiParams);
-    if (NULL == spi[chn])
+    if (spi[chn] == NULL)
     {
         SPI_log("Error initializing SPI");
         goto Err;
@@ -410,7 +410,7 @@ bool spi_test_multiple_channel(void *arg)
     for (chn = 0; chn < MCSPI_MAX_NUM_CHN; chn++)
     {
         if (chn == testChNum) continue;
-        if (BTRUE == cbMode)
+        if (cbMode == true)
         {
             cbSem[chn] = SPI_osalCreateBlockingLock(0, &cbSemParams);
             mcSpiParams.transferCallbackFxn = cbFxn[chn];;
@@ -418,7 +418,7 @@ bool spi_test_multiple_channel(void *arg)
 
         spi[chn] = MCSPI_open(instance, chn, &mcSpiParams);
 
-        if (NULL == spi[chn])
+        if (spi[chn] == NULL)
         {
             SPI_log("Error initializing SPI");
             goto Err;
@@ -430,7 +430,7 @@ bool spi_test_multiple_channel(void *arg)
         }
     }
 
-    retVal = spi_test_transfer((void *)spi[testChNum], cbMode, timeout, dmaMode, BTRUE);
+    retVal = spi_test_transfer((void *)spi[testChNum], cbMode, timeout, dmaMode, true);
 
 Err:
     for (chn = 0; chn < MCSPI_MAX_NUM_CHN; chn++)
@@ -460,13 +460,13 @@ bool spi_test_single_channel(void *arg)
     SPI_Handle      spi;                 /* SPI handle */
     uint32_t        instance;
     uint32_t        domain;
-    bool            retVal = BFALSE;     /* return value */
+    bool            retVal = false;      /* return value */
     SPI_Tests      *test = (SPI_Tests *)arg;
     bool            cbMode = test->cbMode;
     bool            dmaMode = test->dmaMode;
     uint32_t        timeout = test->timeout;
 
-    if (BTRUE == cbMode)
+    if (cbMode == true)
     {
         /* Create call back semaphore */
         SPI_osalSemParamsInit(&cbSemParams);
@@ -476,7 +476,7 @@ bool spi_test_single_channel(void *arg)
 
     instance = BOARD_MCSPI_SERIALIZER_INSTANCE;
     domain = SPI_MCSPI_DOMAIN_MCU;
-    SPI_initConfig(instance, test, BFALSE);
+    SPI_initConfig(instance, test, false);
 
     /* Default SPI configuration parameters */
     SPI_Params_init(&spiParams);
@@ -491,7 +491,7 @@ bool spi_test_single_channel(void *arg)
     /* Open QSPI driver */
     spi = SPI_open(domain, instance, &spiParams);
 
-    if (NULL == spi)
+    if (spi == NULL)
     {
         SPI_log("Error initializing SPI\n");
         goto Err;
@@ -501,7 +501,7 @@ bool spi_test_single_channel(void *arg)
         SPI_log("SPI initialized\n");
     }
 
-    retVal = spi_test_transfer((void *)spi, cbMode, timeout, dmaMode, BFALSE);
+    retVal = spi_test_transfer((void *)spi, cbMode, timeout, dmaMode, false);
 
 Err:
     if (spi)
@@ -546,20 +546,20 @@ void SPI_test_print_test_desc(SPI_Tests *test)
 
 SPI_Tests spi_tests[SPI_NUM_TESTS] =
 {
-    /* testFunc          testID  pollMode cbMode dmaMode, timeout              testDesc */
+    /* testFunc          testID pollMode cbMode dmaMode, timeout              testDesc */
 #ifdef SPI_DMA_ENABLE
-    {spi_test_single_channel, 0, BFALSE,  BFALSE, BTRUE, SemaphoreP_WAIT_FOREVER, "\r\n SPI single channel test in dma mode"},
+    {spi_test_single_channel, 0, false, false, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI single channel test in dma mode"},
 #endif
-    {spi_test_single_channel, 1, BFALSE,  BFALSE, BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n SPI single channel test in non-dma interrupt mode"},
-    {spi_test_single_channel, 2, BTRUE,   BFALSE, BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n SPI single channel test in polling mode"},
-    {spi_test_single_channel, 3, BFALSE,  BTRUE,  BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n SPI single channel test in callback mode"},
+    {spi_test_single_channel, 1, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI single channel test in non-dma interrupt mode"},
+    {spi_test_single_channel, 2, true, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI single channel test in polling mode"},
+    {spi_test_single_channel, 3, false, true, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI single channel test in callback mode"},
 #ifdef MCSPI_MULT_CHANNEL
 #ifdef SPI_DMA_ENABLE
-    {spi_test_multiple_channel, 4, BFALSE, BFALSE, BTRUE, SemaphoreP_WAIT_FOREVER, "\r\n SPI multiple channel test in dma mode"},
+    {spi_test_multiple_channel, 4, false, false, true, SemaphoreP_WAIT_FOREVER, "\r\n SPI multiple channel test in dma mode"},
 #endif
-    {spi_test_multiple_channel, 5, BFALSE, BFALSE, BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n SPI multiple channel test in non-dma interrupt mode"},
-    {spi_test_multiple_channel, 6, BTRUE,  BFALSE, BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n SPI multiple channel test in polling mode"},
-    {spi_test_multiple_channel, 7, BFALSE, BTRUE,  BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n SPI multiple channel test in callback mode"},
+    {spi_test_multiple_channel, 5, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI multiple channel test in non-dma interrupt mode"},
+    {spi_test_multiple_channel, 6, true, false, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI multiple channel test in polling mode"},
+    {spi_test_multiple_channel, 7, false, true, false, SemaphoreP_WAIT_FOREVER, "\r\n SPI multiple channel test in callback mode"},
 #endif
 };
 
@@ -570,7 +570,7 @@ SPI_Tests spi_tests[SPI_NUM_TESTS] =
 void spi_test(UArg arg0, UArg arg1)
 {
     uint32_t   i;
-    bool       testFail = BFALSE;
+    bool       testFail = false;
     SPI_Tests *test;
 
     /* Init GPIO driver */
@@ -583,19 +583,19 @@ void spi_test(UArg arg0, UArg arg1)
     {
         test = &spi_tests[i];
         SPI_test_print_test_desc(test);
-        if (BTRUE == test->testFunc((void *)test))
+        if (test->testFunc((void *)test) == true)
         {
             SPI_log("\r\n %s have passed\r\n", test->testDesc);
         }
         else
         {
             SPI_log("\r\n %s have failed\r\n", test->testDesc);
-            testFail = BTRUE;
+            testFail = true;
             break;
         }
     }
 
-    if(BTRUE == testFail)
+    if(testFail == true)
     {
         SPI_log("\n Some tests have failed. \n");
     }
@@ -624,7 +624,7 @@ int main(void)
     Error_init(&eb);
 
     task = Task_create(spi_test, NULL, &eb);
-        if (NULL == task) {
+        if (task == NULL) {
             System_printf("Task_create() failed!\n");
             BIOS_exit(0);
         }
@@ -681,17 +681,17 @@ void MCSPICallbackFxn(SPI_Handle handle, SPI_Transaction * transaction)
 bool VerifyData(uint8_t *expData, uint8_t *rxData, uint32_t length)
 {
     uint32_t idx = 0;
-    uint32_t match = UTRUE;
-    bool retVal = BFALSE;
+    uint32_t match = 1;
+    bool retVal = false;
 
-    for(idx = 0; ((idx < length) && (UFALSE != match)); idx++)
+    for(idx = 0; ((idx < length) && (match != 0)); idx++)
     {
-        if(*expData != *rxData) match = UFALSE;
+        if(*expData != *rxData) match = 0;
         expData++;
         rxData++;
     }
 
-    if(UTRUE == match) retVal = BTRUE;
+    if(match == 1) retVal = true;
 
     return retVal;
 }
@@ -708,14 +708,14 @@ static EDMA3_RM_Handle MCSPIApp_edmaInit(void)
     EDMA3_DRV_Result edmaResult = EDMA3_DRV_E_INVALID_PARAM;
     uint32_t         edma3Id;
 
-    if (NULL != gEdmaHandle)
+    if (gEdmaHandle != NULL)
     {
         return (gEdmaHandle);
     }
 
     edma3Id = 0;
     gEdmaHandle = (EDMA3_RM_Handle)edma3init(edma3Id, &edmaResult);
-    if (EDMA3_DRV_SOK != edmaResult)
+    if (edmaResult != EDMA3_DRV_SOK)
     {
         /* Report EDMA Error */
         System_printf("\nEDMA driver initialization FAIL\n");

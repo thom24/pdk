@@ -77,7 +77,7 @@ static Board_STATUS Board_DDRSetPLLClock(uint32_t ddrInstance, uint64_t frequenc
 
     }
 
-    if(BOARD_SOK != status)
+    if(status != BOARD_SOK)
     {
         BOARD_DEBUG_LOG("Failed to Set the DDR PLL Clock Frequency\n");
     }
@@ -95,35 +95,35 @@ static void Board_DDRChangeFreqAck(uint32_t ddrInstance)
     uint32_t reqType;
     uint32_t regVal;
     volatile uint32_t counter;
-    volatile uint32_t temp = 0U;
+    volatile uint32_t temp = 0;
 
     temp = temp;  /* To suppress compiler warning */
     BOARD_DEBUG_LOG("--->>> LPDDR4 Initialization is in progress ... <<<---\n");
 
-    for(counter = 0U; counter < DDRSS_PLL_FHS_CNT; counter++)
+    for(counter = 0; counter < DDRSS_PLL_FHS_CNT; counter++)
     {
         /* wait for freq change request */
-        regVal = HW_RD_REG32((BOARD_DDR_FSP_CLKCHNG_REQ_ADDR + (0x10U * ddrInstance))) & 0x80U;
+        regVal = HW_RD_REG32((BOARD_DDR_FSP_CLKCHNG_REQ_ADDR + (0x10 * ddrInstance))) & 0x80;
         BOARD_DEBUG_LOG("Reg Value: %d \n", regVal);
 
-        while(0x0U == regVal)
+        while(regVal == 0x0)
         {
-            regVal = HW_RD_REG32((BOARD_DDR_FSP_CLKCHNG_REQ_ADDR + (0x10U * ddrInstance))) & 0x80U;
+            regVal = HW_RD_REG32((BOARD_DDR_FSP_CLKCHNG_REQ_ADDR + (0x10 * ddrInstance))) & 0x80;
             BOARD_DEBUG_LOG("Reg Value: %d \n", regVal);
         }
 
-        reqType = HW_RD_REG32((BOARD_DDR_FSP_CLKCHNG_REQ_ADDR + (0x10U * ddrInstance))) & 0x03U;
+        reqType = HW_RD_REG32((BOARD_DDR_FSP_CLKCHNG_REQ_ADDR + (0x10 * ddrInstance))) & 0x03;
         BOARD_DEBUG_LOG("Frequency Change type %d request from Controller \n", reqType);
 
-        if(1U == reqType)
+        if(reqType == 1)
         {
             Board_DDRSetPLLClock(ddrInstance, DDRSS_PLL_FREQUENCY_1);
         }
-        else if(2U == reqType)
+        else if(reqType == 2)
         {
             Board_DDRSetPLLClock(ddrInstance, DDRSS_PLL_FREQUENCY_2);
         }
-        else if(0U == reqType)
+        else if(reqType == 0)
         {
             Board_DDRSetPLLClock(ddrInstance, DDRSS_PLL_FREQUENCY_0);
         }
@@ -135,7 +135,7 @@ static void Board_DDRChangeFreqAck(uint32_t ddrInstance)
         /* Acknowledge frequency change request */
         HW_WR_REG32((BOARD_DDR_FSP_CLKCHNG_ACK_ADDR + (0x10 * ddrInstance)), 0x1);
 
-        while(0x80U == (HW_RD_REG32((BOARD_DDR_FSP_CLKCHNG_REQ_ADDR + (0x10U * ddrInstance))) & 0x80U));
+        while((HW_RD_REG32((BOARD_DDR_FSP_CLKCHNG_REQ_ADDR + (0x10 * ddrInstance))) & 0x80) == 0x80);
 
         /* Clear frequency change request acknowledge */
         HW_WR_REG32((BOARD_DDR_FSP_CLKCHNG_ACK_ADDR + (0x10 * ddrInstance)), 0x0);
@@ -153,7 +153,7 @@ static void Board_DDRInfoHandler(const LPDDR4_PrivateData *pd, LPDDR4_InfoType i
 {
     Board_DdrHandle ddrHandle;
 
-    if (LPDDR4_DRV_SOC_PLL_UPDATE == infotype)
+    if (infotype == LPDDR4_DRV_SOC_PLL_UPDATE)
     {
         ddrHandle = (Board_DdrHandle)pd->ddr_instance;
         Board_DDRChangeFreqAck(ddrHandle->ddrInst);
@@ -172,7 +172,7 @@ static Board_STATUS Board_DDRProbe(Board_DdrHandle ddrHandle)
 
     status = LPDDR4_Probe(&ddrHandle->boardDdrCfg, &configsize);
 
-    if ((0U != status) || (configsize != sizeof(LPDDR4_PrivateData)) ||
+    if ((status != 0) || (configsize != sizeof(LPDDR4_PrivateData)) ||
         (configsize > BOARD_DDR_SRAM_MAX))
     {
         BOARD_DEBUG_LOG("Board_DDRProbe: FAIL\n");
@@ -197,7 +197,7 @@ static Board_STATUS Board_DDRInitDrv(Board_DdrHandle ddrHandle)
     LPDDR4_Config *pBoardDdrCfg;
     LPDDR4_PrivateData *pBoardDdrPd;
 
-    if(NULL == ddrHandle)
+    if(ddrHandle == NULL)
     {
         BOARD_DEBUG_LOG("Board_DDRInitDrv: FAIL\n");
         return BOARD_FAIL;
@@ -207,7 +207,7 @@ static Board_STATUS Board_DDRInitDrv(Board_DdrHandle ddrHandle)
     pBoardDdrPd  = &ddrHandle->boardDdrPd;
 
     if ((sizeof(ddrHandle->boardDdrPd) != sizeof(LPDDR4_PrivateData)) ||
-        (BOARD_DDR_SRAM_MAX < sizeof(ddrHandle->boardDdrPd)))
+        (sizeof(ddrHandle->boardDdrPd) > BOARD_DDR_SRAM_MAX))
     {
         BOARD_DEBUG_LOG("Board_DDRInitDrv: FAIL\n");
         return BOARD_FAIL;
@@ -218,9 +218,9 @@ static Board_STATUS Board_DDRInitDrv(Board_DdrHandle ddrHandle)
 
     status = LPDDR4_Init(pBoardDdrPd, pBoardDdrCfg);
 
-    if ((0U < status) ||
+    if ((status > 0U) ||
         (pBoardDdrPd->ctlBase != (struct LPDDR4_CtlRegs_s *)pBoardDdrCfg->ctlBase) ||
-        (pBoardDdrPd->ctlInterruptHandler != pBoardDdrCfg->ctlInterruptHandler)    ||
+        (pBoardDdrPd->ctlInterruptHandler != pBoardDdrCfg->ctlInterruptHandler) ||
         (pBoardDdrPd->phyIndepInterruptHandler != pBoardDdrCfg->phyIndepInterruptHandler))
     {
         BOARD_DEBUG_LOG("Board_DDRInitDrv: FAIL\n");
@@ -284,7 +284,7 @@ static Board_STATUS Board_DDRStart(Board_DdrHandle ddrHandle)
     uint32_t offset = 0U;
     LPDDR4_PrivateData *pBoardDdrPd;
 
-    if(NULL == ddrHandle)
+    if(ddrHandle == NULL)
     {
         BOARD_DEBUG_LOG("Board_DDRStart: FAIL\n");
         return BOARD_FAIL;
@@ -294,21 +294,21 @@ static Board_STATUS Board_DDRStart(Board_DdrHandle ddrHandle)
     offset      = BOARD_DDR_CTL_REG_OFFSET;
 
     status = LPDDR4_ReadReg(pBoardDdrPd, LPDDR4_CTL_REGS, offset, &regval);
-    if ((0U < status) || (0U != (regval & 0x1U)))
+    if ((status > 0U) || ((regval & 0x1U) != 0U))
     {
         BOARD_DEBUG_LOG("Board_DDRStart: FAIL\n");
         return BOARD_FAIL;
     }
 
     status = LPDDR4_Start(pBoardDdrPd);
-    if (0U < status)
+    if (status > 0U)
     {
         BOARD_DEBUG_LOG("Board_DDRStart: FAIL\n");
         return BOARD_FAIL;
     }
 
     status = LPDDR4_ReadReg(pBoardDdrPd, LPDDR4_CTL_REGS, offset, &regval);
-    if ((0U < status) || (1U != (regval & 0x1U)))
+    if ((status > 0U) || ((regval & 0x1U) != 1U))
     {
         BOARD_DEBUG_LOG("Board_DDRStart: FAIL\n");
         return BOARD_FAIL;
@@ -340,17 +340,17 @@ Board_STATUS emif_ConfigureECC(Board_DdrHandle ddrHandle)
 
     memset(&emifCfg, 0, sizeof(emifCfg));
 
-    emifCfg.bEnableMemoryECC = BTRUE;
-    emifCfg.bReadModifyWriteEnable = BTRUE;
-    emifCfg.bECCCheck = BTRUE;
-    emifCfg.bWriteAlloc = BTRUE;
+    emifCfg.bEnableMemoryECC = true;
+    emifCfg.bReadModifyWriteEnable = true;
+    emifCfg.bECCCheck = true;
+    emifCfg.bWriteAlloc = true;
     emifCfg.ECCThreshold = 1U;
     emifCfg.pMemEccCfg.startAddr[0] = BOARD_DDR_START_ADDR-BOARD_DDR_START_ADDR;
     emifCfg.pMemEccCfg.endAddr[0] = BOARD_DDR_ECC_END_ADDR-BOARD_DDR_START_ADDR;
 
     cslResult = CSL_emifConfig((CSL_emif_sscfgRegs *)ddrHandle->eccAddr,
                                &emifCfg);
-    if ( BOARD_SOK == cslResult )
+    if ( cslResult == BOARD_SOK )
     {
         /* Clears ECC errors */
         CSL_emifClearAllECCErrors((CSL_emif_sscfgRegs *)ddrHandle->eccAddr);
@@ -372,25 +372,25 @@ static Board_STATUS Board_DDRConfig(Board_DdrHandle ddrHandle, Bool eccEnable)
     Board_STATUS status = BOARD_SOK;
 
     status = Board_DDRProbe(ddrHandle);
-    if(BOARD_SOK != status)
+    if(status != BOARD_SOK)
     {
         return status;
     }
 
     status = Board_DDRInitDrv(ddrHandle);
-    if(BOARD_SOK != status)
+    if(status != BOARD_SOK)
     {
         return status;
     }
 
     status = Board_DDRHWRegInit(ddrHandle);
-    if(BOARD_SOK != status)
+    if(status != BOARD_SOK)
     {
         return status;
     }
 
     status = Board_DDRStart(ddrHandle);
-    if(BOARD_SOK != status)
+    if(status != BOARD_SOK)
     {
         return status;
     }
@@ -410,10 +410,10 @@ static Board_DdrHandle Board_DDROpen(uint32_t ddrInstance)
 
     if(ddrInstance < BOARD_DDR_INSTANCE_MAX)
     {
-        if(BFALSE == gBoardDdrObject[ddrInstance].isOpen)
+        if(gBoardDdrObject[ddrInstance].isOpen == FALSE)
         {
             ddrHandle                          = &gBoardDdrObject[ddrInstance];
-            ddrHandle->isOpen                  = BTRUE;
+            ddrHandle->isOpen                  = TRUE;
             ddrHandle->boardDdrPd.ddr_instance = ddrHandle;
             ddrHandle->ddrInst                 = ddrInstance;
 
@@ -464,9 +464,9 @@ static Board_STATUS Board_DDRClose(Board_DdrHandle ddrHandle)
 {
     Board_STATUS status = BOARD_FAIL;
 
-    if(NULL != ddrHandle)
+    if(ddrHandle != NULL)
     {
-        ddrHandle->isOpen = BFALSE;
+        ddrHandle->isOpen = FALSE;
         status = BOARD_SOK;
     }
 
@@ -488,9 +488,9 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
     uint32_t eccConfig = MULTI_DDR_CFG_ECC_ENABLE;
     Board_DdrHandle ddrHandle;
 
-    if(UTRUE == eccEnable)
+    if(eccEnable == TRUE)
     {
-        eccConfig = 1U;
+        eccConfig = 1;
     }
 
     /* Unlock the PLL register access for DDR clock bypass */
@@ -519,7 +519,7 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
     HW_WR_REG32(BOARD_DDR_CFG_LOAD,   BOARD_DDR_CFG_LOAD_VALUE);
 
     /* Wait until DDR config load is complete */
-    while(0x0 == (HW_RD_REG32(BOARD_DDR_CFG_LOAD) & 0x1));
+    while((HW_RD_REG32(BOARD_DDR_CFG_LOAD) & 0x1) == 0x0);
 
     /* Partition5 lockkey0 */
     HW_WR_REG32(BOARD_CTRL_MMR_PART5_LOCK0, KICK0_UNLOCK);
@@ -534,23 +534,23 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
             /* Set to Boot Frequency(F0) while configuring the DDR */
             Board_DDRSetPLLClock(ddrInstance, DDRSS_PLL_FREQUENCY_0);
             ddrHandle = Board_DDROpen(ddrInstance);
-            if(NULL == ddrHandle)
+            if(ddrHandle == NULL)
             {
                 BOARD_DEBUG_LOG("Board_DDROpen: FAIL\n");
                 return BOARD_FAIL;
             }
 
             status = Board_DDRConfig(ddrHandle, 0);
-            if(BOARD_SOK != status)
+            if(status != BOARD_SOK)
             {
                 BOARD_DEBUG_LOG("Board_DDRConfig: FAIL\n");
                 return status;
             }
 
-            if (UTRUE == eccEnable)
+            if (eccEnable == TRUE)
             {
                 status = emif_ConfigureECC(ddrHandle);
-                if ( BOARD_SOK != status )
+                if ( status != BOARD_SOK )
                 {
                     BOARD_DEBUG_LOG("\r\n CSL_emifConfig Failed");
                     return status;
@@ -560,11 +560,11 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
         }
     }
 
-    if (UTRUE == eccEnable)
+    if (eccEnable == TRUE)
     {
 #ifdef BOARD_DDR_ENABLE_DDR_MEM_PRIME
         status = BOARD_udmaPrimeDDR((void *)BOARD_DDR_START_ADDR, BOARD_DDR_ECC_END_ADDR-BOARD_DDR_START_ADDR+1U);
-        if ( BOARD_SOK != status )
+        if ( status != BOARD_SOK )
         {
             BOARD_DEBUG_LOG("\r\n UDMAPrime Failed");
             return status;

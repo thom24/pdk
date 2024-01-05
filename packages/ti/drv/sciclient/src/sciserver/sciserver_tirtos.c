@@ -158,13 +158,13 @@ void Sciserver_tirtosUserMsgHwiFxn(uintptr_t arg)
 {
     Sciserver_hwiData *uhd = (Sciserver_hwiData *) arg;
     int32_t ret = CSL_PASS;
-    bool soft_error = BFALSE;
+    bool soft_error = false;
 
     Osal_DisableInterrupt(0, uhd->irq_num);
 
     ret = Sciserver_interruptHandler(uhd, &soft_error);
 
-    if ((ret != CSL_PASS) && (soft_error == BTRUE))
+    if ((ret != CSL_PASS) && (soft_error == true))
     {
         Osal_EnableInterrupt(0, uhd->irq_num);
     }
@@ -199,7 +199,7 @@ void Sciserver_tirtosDeinit(void)
 {
     uint32_t i = 0U;
 
-    for (i = 0U; i < SCISERVER_SEMAPHORE_MAX_CNT; i++) {
+    for (i = 0U; i < (uint32_t)SCISERVER_SEMAPHORE_MAX_CNT; i++) {
         SemaphoreP_delete(gSciserverUserSemHandles[i]);
     }
     Sciserver_deinit();
@@ -278,7 +278,7 @@ static int32_t Sciserver_tirtosInitSemaphores(void)
     int32_t ret = CSL_PASS;
     uint32_t i = 0U;
 
-    for (i = 0U; i < SCISERVER_SEMAPHORE_MAX_CNT; i++) {
+    for (i = 0U; i < (uint32_t)SCISERVER_SEMAPHORE_MAX_CNT; i++) {
         SemaphoreP_Params_init(&gSciserverUserSemParams[i]);
         gSciserverUserSemHandles[i] = SemaphoreP_create(0U, &gSciserverUserSemParams[i]);
 
@@ -310,7 +310,7 @@ static int32_t Sciserver_tirtosInitHwis(void)
         Osal_RegisterInterrupt_initParams(&intrPrms);
         intrPrms.corepacConfig.arg  = (uintptr_t) &sciserver_hwi_list[i];
         intrPrms.corepacConfig.isrRoutine = &Sciserver_tirtosUserMsgHwiFxn;
-        intrPrms.corepacConfig.enableIntr = UFALSE;
+        intrPrms.corepacConfig.enableIntr = FALSE;
         intrPrms.corepacConfig.corepacEventNum  = 0;
         intrPrms.corepacConfig.intVecNum = 
             sciserver_hwi_list[i].irq_num;

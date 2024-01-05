@@ -139,9 +139,9 @@ static inline uint32_t OSPI_dmaIsCacheCoherent(void)
     uint32_t isCacheCoherent;
 
 #if (!defined (__aarch64__) || defined(SOC_AM64X))
-    isCacheCoherent = UFALSE;
+    isCacheCoherent = FALSE;
 #else
-    isCacheCoherent = UTRUE;
+    isCacheCoherent = TRUE;
 #endif
 
     return (isCacheCoherent);
@@ -211,7 +211,7 @@ static void OSPI_udmaTrpdInit(Udma_ChHandle   chHandle,
     /* Clear TR response memory */
     *pTrResp = 0xFFFFFFFFU;
 
-    if(UTRUE != OSPI_dmaIsCacheCoherent())
+    if(OSPI_dmaIsCacheCoherent() != TRUE)
     {
         CacheP_wbInv((const void *)pTrpd, (int32_t)((sizeof(CSL_UdmapTR15) * 2U) + 4U));
     }
@@ -345,9 +345,9 @@ static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
     uint8_t               *destBuf;
     uintptr_t              dataPtr;
     uint32_t               offset;
-    bool                   callBack = BFALSE;
+    bool                   callBack = (bool)false;
 
-    if(NULL != appData)
+    if(appData != NULL)
     {
         /* Get the pointer to the object and hwAttrs */
         handle   = (OSPI_Handle)appData;
@@ -357,7 +357,7 @@ static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
         chHandle = (Udma_ChHandle)(pDmaInfo->chHandle);
 
         /* Update the transaction status and word count transfered */
-        if (UDMA_EVENT_TYPE_DMA_COMPLETION == eventType)
+        if (eventType == UDMA_EVENT_TYPE_DMA_COMPLETION)
         {
             /*
              * Dequeue the descriptor from the completion queue
@@ -369,7 +369,7 @@ static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
                 /* transfer completed, but dequeue error */
                 object->transaction->status = OSPI_TRANSFER_FAILED;
                 object->transaction->count = 0;
-                callBack = BTRUE;
+                callBack = (bool)true;
             }
             else
             {
@@ -407,7 +407,7 @@ static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
                     }
                 }
 
-                if (0U != remainder)
+                if (remainder != 0U)
                 {
                     /* kick off 2nd transfer with remaining bytes */
                     iCnt[0] = (uint16_t)remainder;
@@ -427,7 +427,7 @@ static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
                 }
                 else
                 {
-                    callBack = BTRUE;
+                    callBack = (bool)true;
                 }
             }
         }
@@ -435,7 +435,7 @@ static void OSPI_dmaIsrHandler(Udma_EventHandle eventHandle,
         {
             object->transaction->status = OSPI_TRANSFER_FAILED;
             object->transaction->count = 0;
-            callBack = BTRUE;
+            callBack = (bool)true;
         }
     }
 

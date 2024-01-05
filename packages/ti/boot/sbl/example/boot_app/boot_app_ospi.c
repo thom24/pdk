@@ -86,11 +86,11 @@ int32_t BootApp_OSPILeaveConfigSPI()
     /* Configure the flash for SPI mode */
     gOspiCfg.xferLines = OSPI_XFER_LINES_SINGLE;
     /* Put controller in DAC mode so flash ID can be read directly */
-    gOspiCfg.dacEnable = BTRUE;
+    gOspiCfg.dacEnable = true;
     /* Disable PHY in legacy SPI mode (1-1-1) */
-    gOspiCfg.phyEnable = BFALSE;
-    gOspiCfg.dtrEnable = BFALSE;
-    gOspiCfg.xipEnable = BFALSE;
+    gOspiCfg.phyEnable = false;
+    gOspiCfg.dtrEnable = false;
+    gOspiCfg.xipEnable = false;
 
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &gOspiCfg);

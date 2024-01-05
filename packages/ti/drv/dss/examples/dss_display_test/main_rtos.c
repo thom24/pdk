@@ -136,12 +136,12 @@ static void taskFxn(void* a0, void* a1)
     Board_init(boardCfg);
 
 #if defined (SOC_AM65XX)
-    lcdParams.outType  = APP_OUTPUT_OLDI;
+    lcdParams.outType  = (uint32_t)APP_OUTPUT_OLDI;
     lcdParams.pixelClk = (uint64_t)497500000;
     App_configureLCD(lcdParams);
 #else
     #if (1U == DISP_APP_TEST_DSI)
-        lcdParams.outType  = APP_OUTPUT_DSI;
+        lcdParams.outType  = (uint32_t)APP_OUTPUT_DSI;
 #if defined (SOC_J721E)
         lcdParams.pixelClk = (uint64_t)74250000ULL;
 #else
@@ -149,19 +149,19 @@ static void taskFxn(void* a0, void* a1)
 #endif
         App_configureLCD(lcdParams);
     #elif (1U == DISP_APP_TEST_EDP)
-        lcdParams.outType  = APP_OUTPUT_EDP;
+        lcdParams.outType  = (uint32_t)APP_OUTPUT_EDP;
         lcdParams.pixelClk = (uint64_t)148500000ULL;
         if(DISP_APP_USE_TEST_PARAMS == DISP_APP_BGR24)
         {
-            lcdParams.pixelClk = (uint64_t)74250000U;
+            lcdParams.pixelClk = (uint64_t)74250000u;
         }
         App_configureLCD(lcdParams);
     #else
-        lcdParams.outType  = APP_OUTPUT_HDMI;
+        lcdParams.outType  = (uint32_t)APP_OUTPUT_HDMI;
         lcdParams.pixelClk = (uint64_t)148500000ULL;
         if(DISP_APP_USE_TEST_PARAMS == DISP_APP_BGR24)
         {
-            lcdParams.pixelClk = (uint64_t)74250000U;
+            lcdParams.pixelClk = (uint64_t)74250000u;
         }
         App_configureLCD(lcdParams);
         #if (1U == DISP_APP_TEST_MULTISYNC)
@@ -254,7 +254,7 @@ static void taskFxn(void* a0, void* a1)
                               &clkFreq);
     App_print("\n TISCI_DEV_DSS0_DSS_INST0_DPI_3_IN_2X_CLK = %lld Hz\n", clkFreq);
 #endif
-    if (CSL_PASS == retVal)
+    if (retVal == CSL_PASS)
     {
         App_print("Before calling Dss_displayTest\n");
         App_printLoad();
@@ -310,11 +310,11 @@ static void App_clkRateSet(uint32_t moduleId,
     uint64_t currClkFreqHz;
 
     status = PMLIBClkRateGet(moduleId, clkId, &currClkFreqHz);
-    if ((CSL_PASS == status) &&
+    if ((status == CSL_PASS) &&
         (currClkFreqHz != clkRateHz))
     {
         status = PMLIBClkRateSet(moduleId, clkId, clkRateHz);
-        if (CSL_PASS == status)
+        if (status == CSL_PASS)
         {
             App_print("\nPMLIBClkRateSet Passed for clock Id = %d\n", clkId);
         }

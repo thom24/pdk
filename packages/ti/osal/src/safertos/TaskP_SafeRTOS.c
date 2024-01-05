@@ -111,7 +111,7 @@ static void TaskP_Function ( void *arg )
     ( *handle->taskfxn )( handle->arg0, handle->arg1 );
 
     /* Task Fxn completed execution. */
-    handle->terminated = BTRUE;
+    handle->terminated = (bool)true;
     /* Put vTaskSuspend in a loop just in case some calls vTaskResume, it will go back to suspend. */
     while ((bool)true == handle->terminated)
     {
@@ -136,7 +136,7 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params )
     DebugP_assert( NULL_PTR != params );
     DebugP_assert( NULL_PTR != params->stack );
     /* Check if the OS_init is done. */
-    DebugP_assert( UTRUE == gSaftRtosInitDone );
+    DebugP_assert( TRUE == gSaftRtosInitDone );
     /* Pick up the internal static memory block */
     taskPool        = ( TaskP_SafeRTOS * ) &gOsalTaskPSafeRTOSPool[0];
     maxTasks        = OSAL_SAFERTOS_CONFIGNUM_TASK;
@@ -148,11 +148,11 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params )
 
     key = HwiP_disable(  );
 
-     for ( i = 0U; i < maxTasks; i++ )
+     for ( i = 0; i < maxTasks; i++ )
      {
-         if ( BFALSE == taskPool[i].used )
+         if ( (bool)false == taskPool[i].used )
          {
-             taskPool[i].used = BTRUE;
+             taskPool[i].used = (bool)true;
              /* Update statistics */
              gOsalTaskAllocCnt++;
              if ( gOsalTaskAllocCnt > gOsalTaskPeak )
@@ -223,9 +223,9 @@ TaskP_Handle TaskP_create(TaskP_Fxn taskfxn, const TaskP_Params *params )
         {
             /* If there was an error reset the task object and return NULL. */
             key = HwiP_disable(  );
-            handle->used = BFALSE;
+            handle->used = (bool)false;
             /* Found the osal task object to delete */
-            if ( 0U < gOsalTaskAllocCnt )
+            if ( gOsalTaskAllocCnt > 0U )
             {
                 gOsalTaskAllocCnt--;
             }
@@ -253,7 +253,7 @@ TaskP_Status TaskP_delete( TaskP_Handle *hTaskPtr )
     portTaskHandleType currentTaskHndl;
     portBaseType xReturn;
 
-    if( ( NULL_PTR != task ) && ( BTRUE == task->used ) )
+    if( ( NULL_PTR != task ) && ( (bool)true == task->used ) )
     {
         currentTaskHndl = xTaskGetCurrentTaskHandle();
         if(currentTaskHndl == task->taskHndl)
@@ -268,7 +268,7 @@ TaskP_Status TaskP_delete( TaskP_Handle *hTaskPtr )
         DebugP_assert( pdPASS == xReturn );
 
         key = HwiP_disable(  );
-        task->used      = BFALSE;
+        task->used      = (bool)false;
         task->taskHndl  = NULL;
         task->taskfxn   = NULL;
         task->arg0      = NULL;
@@ -277,7 +277,7 @@ TaskP_Status TaskP_delete( TaskP_Handle *hTaskPtr )
         (void)memset( ( void *)&task->taskObj, 0, sizeof(task->taskObj));
 
         /* Found the osal task object to delete */
-        if ( 0U < gOsalTaskAllocCnt )
+        if ( gOsalTaskAllocCnt > 0U )
         {
             gOsalTaskAllocCnt--;
         }
@@ -347,9 +347,9 @@ TaskP_Handle TaskP_self( void )
     {
         /* Now get the corresponding TaskP Handle */
         maxTasks        = OSAL_SAFERTOS_CONFIGNUM_TASK;
-        for (i = 0U; i < maxTasks; i++)
+        for (i = 0; i < maxTasks; i++)
         {
-            if ((BTRUE == gOsalTaskPSafeRTOSPool[i].used) &&
+            if (((bool)true == gOsalTaskPSafeRTOSPool[i].used) &&
                 (gOsalTaskPSafeRTOSPool[i].taskHndl == taskHndl))
             {
                 retHandle = (TaskP_Handle) (&gOsalTaskPSafeRTOSPool[i]);
@@ -375,17 +375,17 @@ void TaskP_yield( void ) {
 
 uint32_t TaskP_isTerminated( TaskP_Handle handle )
 {
-    uint32_t isTaskTerminated = UFALSE;
+    uint32_t isTaskTerminated = 0;
     TaskP_SafeRTOS *taskHandle = ( TaskP_SafeRTOS * )handle;
 
     DebugP_assert( NULL_PTR != handle );
     if( NULL == taskHandle->taskHndl )
     {
-        isTaskTerminated = UFALSE;
+        isTaskTerminated = 0;
     }
     else
     {
-        isTaskTerminated = UTRUE;
+        isTaskTerminated = 1;
     }
     return isTaskTerminated;
 }
@@ -394,8 +394,8 @@ portTaskHandleType TaskP_getSafeRTOSHandle( TaskP_Handle handle )
 {
     TaskP_SafeRTOS *taskHandle = ( TaskP_SafeRTOS * )handle;
 
-    DebugP_assert( NULL_PTR != handle );
-    DebugP_assert( BFALSE   != taskHandle->used );
+    DebugP_assert( NULL_PTR    != handle );
+    DebugP_assert( (bool)false != taskHandle->used );
 
     return ( taskHandle->taskHndl );
 }
@@ -403,7 +403,7 @@ portTaskHandleType TaskP_getSafeRTOSHandle( TaskP_Handle handle )
 void OS_start(void)
 {
     /* Check if the OS_init is done. */
-    DebugP_assert( UTRUE == gSaftRtosInitDone );
+    DebugP_assert( TRUE == gSaftRtosInitDone );
 
 #if defined (BUILD_C7X)
     Hwi_switchFromBootStack();

@@ -112,7 +112,7 @@ void CacheP_setMar(void *baseAddr, uint32_t size, uint32_t value)
 
     /* range of MAR's that need to be modified */
     firstMar = ((uint32_t) baseAddr) >> 24U;
-    lastMar  = ((uint32_t) maxAddr)  >> 24U;
+    lastMar = ((uint32_t) maxAddr) >> 24U;
 
     /* write back invalidate all cached entries */
     CACHE_wbInvAllL2(CACHE_WAIT);

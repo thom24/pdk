@@ -98,13 +98,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         NULL,                           /* edmaHandle */
         UART_RXTRIGLVL_8,               /* rxTrigLvl */
         UART_TXTRIGLVL_56,              /* txTrigLvl */
-        UFALSE,                         /* dmaMode */
-        UFALSE,                         /* loopback */
+        FALSE,                          /* dmaMode */
+        FALSE,                          /* loopback */
         1U,                             /* enableInterrupt */
         UART16x_OPER_MODE,              /* operMode */
         NULL,                           /* dmaInfo */
         UART_socConfigIntrPath,         /* configSocIntrPath */
-        UFALSE,                         /* dirEnable, RS-485 External Transceiver Direction */
+        FALSE,                          /* dirEnable, RS-485 External Transceiver Direction */
         UART_MDR3_DIR_POL_0,            /* dirPol, RS-485 External Transceiver Direction Polarity */
     },
     {
@@ -130,13 +130,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
+        FALSE,
         UART_MDR3_DIR_POL_0,
     },
     {
@@ -162,13 +162,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
+        FALSE,
         UART_MDR3_DIR_POL_0,
     },
     {
@@ -194,13 +194,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
+        FALSE,
         UART_MDR3_DIR_POL_0,
     },
     {
@@ -226,13 +226,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
+        FALSE,
         UART_MDR3_DIR_POL_0,
     },
     {
@@ -258,13 +258,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
+        FALSE,
         UART_MDR3_DIR_POL_0,
     },
     {
@@ -290,8 +290,8 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
@@ -320,13 +320,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
+        FALSE,
         UART_MDR3_DIR_POL_0,
     },
     {
@@ -352,13 +352,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
+        FALSE,
         UART_MDR3_DIR_POL_0,
     },
     {
@@ -384,13 +384,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_MAIN_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
+        FALSE,
         UART_MDR3_DIR_POL_0,
     },
 };
@@ -474,7 +474,7 @@ UART_Config UART_config[CSL_UART_MAIN_CNT + 1U] = {
  */
 int32_t UART_socGetInitCfg(uint32_t idx, UART_HwAttrs *cfg)
 {
-    int32_t ret = UART_SUCCESS;
+    int32_t ret = 0;
 
     if (idx < CSL_UART_MAIN_CNT)
     {
@@ -482,7 +482,7 @@ int32_t UART_socGetInitCfg(uint32_t idx, UART_HwAttrs *cfg)
     }
     else
     {
-        ret = UART_ERROR;
+        ret = (int32_t)(-1);
     }
 
     return ret;
@@ -499,7 +499,7 @@ int32_t UART_socGetInitCfg(uint32_t idx, UART_HwAttrs *cfg)
  */
 int32_t UART_socSetInitCfg(uint32_t idx, const UART_HwAttrs *cfg)
 {
-    int32_t ret = UART_SUCCESS;
+    int32_t ret = 0;
 
     if (idx < CSL_UART_MAIN_CNT)
     {
@@ -507,7 +507,7 @@ int32_t UART_socSetInitCfg(uint32_t idx, const UART_HwAttrs *cfg)
     }
     else
     {
-        ret = UART_ERROR;
+        ret = (int32_t)(-1);
     }
 
     return ret;
@@ -532,13 +532,13 @@ void UART_socInit(void);
 void UART_socInit(void)
 {
     uint32_t         i;
-    CSL_ArmR5CPUInfo info = {0U, 0U, 0U};
+    CSL_ArmR5CPUInfo info;
 
     CSL_armR5GetCpuID(&info);
-    if (CSL_ARM_R5_CLUSTER_GROUP_ID_0 != info.grpId)
+    if (info.grpId != (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
     {
         /* Pulsar R5 core is on the Main domain */
-        for (i = 0U; i < CSL_UART_MAIN_CNT; i++)
+        for (i = 0; i < CSL_UART_MAIN_CNT; i++)
         {
             /* Configure the Main SS UART instances for Main SS Pulsar R5 */
             uartInitCfg[i].baseAddr = (uint32_t)CSL_UART0_BASE + (0x10000U * i);

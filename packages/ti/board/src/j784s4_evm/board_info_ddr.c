@@ -77,7 +77,7 @@ static Board_STATUS Board_getIDData(uint8_t *info, uint8_t slaveAddress)
     Board_headerInfo headerInfo;
     uint16_t offsetAddress = BOARD_EEPROM_HEADER_ADDR;
     char txBuf[2] = {0x00, 0x00};
-    int16_t status;
+    bool status;
 
     I2C_transactionInit(&i2cTransaction);
 
@@ -99,7 +99,7 @@ static Board_STATUS Board_getIDData(uint8_t *info, uint8_t slaveAddress)
     i2cTransaction.readCount = BOARD_EEPROM_HEADER_FIELD_SIZE;
 
     status = I2C_transfer(handle, &i2cTransaction);
-    if (I2C_STS_ERR == status)
+    if (status == false)
     {
         ret = BOARD_I2C_TRANSFER_FAIL;
         Board_i2cDeInit();
@@ -115,7 +115,7 @@ static Board_STATUS Board_getIDData(uint8_t *info, uint8_t slaveAddress)
         i2cTransaction.readCount = headerInfo.payloadSize +
                                    BOARD_EEPROM_HEADER_FIELD_SIZE;
         status = I2C_transfer(handle, &i2cTransaction);
-        if (I2C_STS_ERR == status)
+        if (status == false)
         {
             ret = BOARD_I2C_TRANSFER_FAIL;
             Board_i2cDeInit();
@@ -264,7 +264,7 @@ Board_STATUS Board_initBoardIdData(uint8_t *boardIDWrAddr)
 
     i2cCfg.i2cInst    = BOARD_COMMON_EEPROM_I2C_INST;
     i2cCfg.socDomain  = BOARD_SOC_DOMAIN_WKUP;
-    i2cCfg.enableIntr = BFALSE;
+    i2cCfg.enableIntr = false;
     Board_setI2cInitConfig(&i2cCfg);
 
     if(boardIDWrAddr != NULL)
@@ -396,16 +396,16 @@ Board_STATUS Board_setBoardIdDataAddr(uint8_t *boardIDRdAddr)
 /**
  * \brief Function to check the board info DDR dump status
  *
- * \return   BTRUE if board ID dump is DDR is valid, else BFALSE
+ * \return   TRUE if board ID dump is DDR is valid, else false
  *
  */
 bool Board_isBoardDDRIdDataValid(void)
 {
-    bool status = BFALSE; 
+    bool status = FALSE; 
 
     if(gBoardIDDump != NULL)
     {
-        status = BTRUE;
+        status = TRUE;
     }
 
     return status;

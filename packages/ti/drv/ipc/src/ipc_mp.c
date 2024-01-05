@@ -73,10 +73,10 @@ int32_t Ipc_mpSetConfig(uint32_t selfId, uint16_t numProc, uint32_t procArry[IPC
 {
     int32_t        retVal = IPC_SOK;
     Ipc_MpConfig  *pMpCfg = &g_ipcMpConfig;
-    uint32_t       i = 0U;
+    uint32_t       i = 0;
     uint32_t       id;
 
-    if( (IPC_MAX_PROCS <= selfId) || (IPC_MAX_PROCS < numProc) )
+    if( (selfId >= IPC_MAX_PROCS) || (numProc > IPC_MAX_PROCS) )
     {
         retVal = IPC_EINVALID_PARAMS;
     }
@@ -86,7 +86,7 @@ int32_t Ipc_mpSetConfig(uint32_t selfId, uint16_t numProc, uint32_t procArry[IPC
         pMpCfg->numProcessors = numProc;
         strncpy(pMpCfg->name, Ipc_getCoreName(selfId), IPC_MAX_PROC_NAMELEN-1);
         pMpCfg->name[IPC_MAX_PROC_NAMELEN-1] = '\0';
-        for(i = 0U; i < numProc; i++)
+        for(i = 0; i < numProc; i++)
         {
             id = procArry[i];
             pMpCfg->procInfo[i].procId = id;
@@ -107,7 +107,7 @@ uint32_t Ipc_mpGetId(const char* name)
     uint16_t       i      = 0;
     Ipc_MpConfig  *pMpCfg = &g_ipcMpConfig;
 
-    if( (NULL == name) || (0U == IpcUtils_strnlen(name)) )
+    if( (NULL == name) || (IpcUtils_strnlen(name) == 0U) )
     {
         /* Invalid parameter */
 
@@ -116,7 +116,7 @@ uint32_t Ipc_mpGetId(const char* name)
     {
         for(i = 0; i < pMpCfg->numProcessors; i++)
         {
-            if (0U == strncmp(name, pMpCfg->procInfo[i].name, IPC_MAX_PROC_NAMELEN))
+            if ((strncmp(name, pMpCfg->procInfo[i].name, IPC_MAX_PROC_NAMELEN) == 0))
             {
                 procId = pMpCfg->procInfo[i].procId;
             }
@@ -132,7 +132,7 @@ const char* Ipc_mpGetName(uint32_t id)
     Ipc_MpConfig  *pMpCfg = &g_ipcMpConfig;
     uint16_t       i;
 
-    if(IPC_MAX_PROCS <= id)
+    if(id >= IPC_MAX_PROCS)
     {
         /* TBD : add failure log */
     }

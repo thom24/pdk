@@ -54,7 +54,7 @@ Board_DetectCfg_t  gBoardDetCfg[BOARD_ID_MAX_BOARDS] =
   {BOARD_COMMON_EEPROM_I2C_INST, BOARD_SOM_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J721EX-PM2-SOM"},
   {BOARD_COMMON_EEPROM_I2C_INST, BOARD_CP_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7X-BASE-CPB"}};
 
-Board_I2cInitCfg_t gBoardI2cInitCfg = {0, BOARD_SOC_DOMAIN_MAIN, BFALSE};
+Board_I2cInitCfg_t gBoardI2cInitCfg = {0, BOARD_SOC_DOMAIN_MAIN, 0};
 Board_initParams_t gBoardInitParams = {BOARD_UART_INSTANCE, BOARD_UART_SOC_DOMAIN, BOARD_PSC_DEVICE_MODE_NONEXCLUSIVE,
                                        BOARD_MAIN_CLOCK_GROUP_ALL, BOARD_MCU_CLOCK_GROUP_ALL};
 
@@ -87,7 +87,7 @@ static void Board_sdVoltageCtrlGpioCfg(uint8_t gpioValue)
     /* Setting the GPIO value */
     regVal = HW_RD_REG32(CSL_GPIO0_BASE + 0x18);
 
-    if(0U == gpioValue)
+    if(gpioValue == 0)
     {
         regVal &= ~(0x01 << (BOARD_SDIO_1V8_EN_PIN_NUM % 32));
         HW_WR_REG32((CSL_GPIO0_BASE + 0x18), regVal);
@@ -119,7 +119,7 @@ Board_STATUS Board_getBoardData(Board_IDInfo_v2 *info, uint32_t boardID)
 
     i2cCfg.i2cInst    = gBoardDetCfg[boardID].i2cInst;
     i2cCfg.socDomain  = gBoardDetCfg[boardID].socDomain;
-    i2cCfg.enableIntr = BFALSE;
+    i2cCfg.enableIntr = false;
     Board_setI2cInitConfig(&i2cCfg);
 
     if(Board_isBoardDDRIdDataValid())
@@ -163,29 +163,29 @@ Board_STATUS Board_getBoardData(Board_IDInfo_v2 *info, uint32_t boardID)
  * \n                      BOARD_ID_SOM(0x2) - SoM Board
  * \n                      BOARD_ID_CP(0x3) - CP Board
  *
- * \return   BTRUE if the given board is detected else BFALSE.
+ * \return   TRUE if the given board is detected else FALSE.
  *           SoM board will be always connected to the base board.
- *           For SoM boardID return value BTRUE indicates dual PMIC
- *           SoM and BFALSE indicates alternate PMIC SoM
+ *           For SoM boardID return value TRUE indicates dual PMIC
+ *           SoM and FALSE indicates alternate PMIC SoM
  *
  */
 bool Board_detectBoard(uint32_t boardID)
 {
     Board_IDInfo_v2 info;
     Board_STATUS status;
-    bool bDet = BFALSE;
+    bool bDet = FALSE;
 
     memset(&info, 0x0, sizeof(info));
-    if(BOARD_ID_SOM >= boardID)
+    if(boardID <= BOARD_ID_SOM)
     {
         status = Board_getBoardData(&info, boardID);
-        if(BOARD_SOK == status)
+        if(status == 0)
         {
             if(!(strncmp(info.boardInfo.boardName,
                          gBoardDetCfg[boardID].bName,
                          BOARD_BOARD_NAME_LEN)))
             {
-                bDet = BTRUE;
+                bDet = TRUE;
             }
         }
     }
@@ -202,23 +202,23 @@ bool Board_detectBoard(uint32_t boardID)
  * \n                      BOARD_ID_SOM(0x2) - SoM Board
  * \n                      BOARD_ID_CP(0x3) - CP Board
  *
- * \return BTRUE if board revision is E2, BFALSE for all other cases
+ * \return TRUE if board revision is E2, FALSE for all other cases
  */
 bool Board_isAlpha(uint32_t boardID)
 {
     Board_IDInfo_v2 info;
     Board_STATUS status;
-    bool alphaBoard = BFALSE;
+    bool alphaBoard = FALSE;
 
     memset(&info, 0x0, sizeof(info));
     status = Board_getBoardData(&info, boardID);
-    if(BOARD_SOK == status)
+    if(status == 0)
     {
-        if(BOARD_ID_SOM == boardID)
+        if(boardID == BOARD_ID_SOM)
         {
             if(!(strncmp(info.boardInfo.designRev, "E1", BOARD_DESIGN_REV_LEN)))
             {
-                alphaBoard = BTRUE;
+                alphaBoard = TRUE;
             }
         }
         else
@@ -227,7 +227,7 @@ bool Board_isAlpha(uint32_t boardID)
                          "E2",
                          BOARD_DESIGN_REV_LEN)))
             {
-                alphaBoard = BTRUE;
+                alphaBoard = TRUE;
             }
         }
     }

@@ -98,11 +98,11 @@ static Board_STATUS Board_setSomMux(uint8_t mask,
 
     i2cCfg.i2cInst    = BOARD_I2C_IOEXP_SOM_INSTANCE;
     i2cCfg.socDomain  = BOARD_SOC_DOMAIN_MAIN;
-    i2cCfg.enableIntr = BFALSE;
+    i2cCfg.enableIntr = false;
     Board_setI2cInitConfig(&i2cCfg);
 
     status = Board_i2cIoExpInit();
-    if(BOARD_SOK == status)
+    if(status == BOARD_SOK)
     {
         /* Setting the port direction as output */
         status = Board_i2cIoExpSetPortDirection(BOARD_I2C_IOEXP_SOM_ADDR,
@@ -196,14 +196,14 @@ static Board_STATUS Board_enableDSI2EDPBridge(void)
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_SOM_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_SOM_ADDR;
-    ioExpCfg.enableIntr  = BFALSE;
+    ioExpCfg.enableIntr  = false;
     ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = PIN_NUM_5;
     ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
 
     status = Board_setIoExpPinOutput(&ioExpCfg);
-    if(BOARD_SOK != status)
+    if(status != BOARD_SOK)
     {
         return status;
     }

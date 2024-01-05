@@ -83,13 +83,13 @@ void IpcInitMmu(bool isSecure)
 
     Mmu_initMapAttrs(&attrs);
 
-    if(BTRUE == isSecure)
+    if(true == isSecure)
     {
-        attrs.ns = BFALSE;
+        attrs.ns = 0;
     }
     else
     {
-        attrs.ns = BTRUE;
+        attrs.ns = 1;
     }
 
     /* Register region */

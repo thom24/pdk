@@ -92,7 +92,7 @@ static int8_t BoardDiag_csirxFrameCompletionCb(Fvid2_Handle handle,
                            &frmList,
                            0U,
                            FVID2_TIMEOUT_NONE);
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
         return -1;
     }
@@ -104,7 +104,7 @@ static int8_t BoardDiag_csirxFrameCompletionCb(Fvid2_Handle handle,
         pFrm = frmList.frames[frmIdx];
         csirxObj->chFrmCnt[pFrm->chNum]++;
 
-        if (FVID2_FRAME_STATUS_COMPLETED != pFrm->status)
+        if (pFrm->status != FVID2_FRAME_STATUS_COMPLETED)
         {
             idx = (csirxObj->frameErrorCnt % BOARD_DIAG_CSIRX_ERR_FRAME_LOG_MAX);
             csirxObj->errFrmCh[idx] = pFrm->chNum;
@@ -117,7 +117,7 @@ static int8_t BoardDiag_csirxFrameCompletionCb(Fvid2_Handle handle,
     /* Queue back de-queued frames,
        last param i.e. streamId is unused in DRV */
     retVal = Fvid2_queue(csirxObj->drvHandle, &frmList, 0U);
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
         UART_printf("Capture Queue Failed\n");
         return -1;
@@ -150,7 +150,7 @@ static int8_t BoardDiag_csirxDeinit(BoardDiag_CsirxObj *csirxObj)
                            IOCTL_CSIRX_UNREGISTER_EVENT,
                            (void *)CSIRX_EVENT_GROUP_ERROR,
                            NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         UART_printf("Events un-registration Failed\n");
         I2C_close(gI2cHandle);
@@ -158,7 +158,7 @@ static int8_t BoardDiag_csirxDeinit(BoardDiag_CsirxObj *csirxObj)
     }
 
     retVal = Fvid2_delete(csirxObj->drvHandle, NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         UART_printf("FVID2 Delete Failed\n");
         I2C_close(gI2cHandle);
@@ -176,7 +176,7 @@ static int8_t BoardDiag_csirxDeinit(BoardDiag_CsirxObj *csirxObj)
     SemaphoreP_delete(gLockSem);
 
     retVal = Csirx_deInit();
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
         return -1;
     }
@@ -203,9 +203,9 @@ static int8_t BoardDiag_csirxSensorConfig(void)
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != ret)
+    if(ret != 0)
     {
-        return BOARD_INVALID_PARAM;
+        return -1;
     }
 
     regData = 0x01;
@@ -215,9 +215,9 @@ static int8_t BoardDiag_csirxSensorConfig(void)
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != ret)
+    if(ret != 0)
     {
-        return BOARD_INVALID_PARAM;
+        return -1;
     }
 
     regData = 0x01;
@@ -227,9 +227,9 @@ static int8_t BoardDiag_csirxSensorConfig(void)
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != ret)
+    if(ret != 0)
     {
-        return BOARD_INVALID_PARAM;
+        return -1;
     }
 
     regData = 0xF0;
@@ -239,9 +239,9 @@ static int8_t BoardDiag_csirxSensorConfig(void)
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != ret)
+    if(ret != 0)
     {
-        return BOARD_INVALID_PARAM;
+        return -1;
     }
 
     regData = 0x01;
@@ -251,9 +251,9 @@ static int8_t BoardDiag_csirxSensorConfig(void)
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != ret)
+    if(ret != 0)
     {
-        return BOARD_INVALID_PARAM;
+        return -1;
     }
 
     regData = 0x03;
@@ -263,9 +263,9 @@ static int8_t BoardDiag_csirxSensorConfig(void)
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != ret)
+    if(ret != 0)
     {
-        return BOARD_INVALID_PARAM;
+        return -1;
     }
 
     regData = 0x12;
@@ -275,9 +275,9 @@ static int8_t BoardDiag_csirxSensorConfig(void)
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != ret)
+    if(ret != 0)
     {
-        return BOARD_INVALID_PARAM;
+        return -1;
     }
 
     regData = 0x03;
@@ -287,12 +287,12 @@ static int8_t BoardDiag_csirxSensorConfig(void)
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != ret)
+    if(ret != 0)
     {
-        return BOARD_INVALID_PARAM;
+        return -1;
     }
 
-    return BOARD_SOK;
+    return 0;
 }
 
 /**
@@ -317,12 +317,12 @@ static int8_t BoardDiag_csirxCaptFreeFrames(BoardDiag_CsirxObj *csirxObj)
                            &frmList,
                            0U,
                            FVID2_TIMEOUT_NONE);
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
-        return (int8_t)FVID2_EFAIL;
+        return -1;
     }
 
-    return (int8_t)FVID2_SOK;
+    return 0;
 }
 
 /**
@@ -364,7 +364,7 @@ static int8_t BoardDiag_csirxAllocQFrames(BoardDiag_CsirxObj *csirxObj)
     }
 
     retVal = Fvid2_queue(csirxObj->drvHandle, &frmList, 0U);
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
         UART_printf("Capture Queue failed\n");
         return -1;
@@ -390,21 +390,21 @@ static int8_t BoardDiag_csirxCaptureTest(BoardDiag_CsirxObj *csirxObj)
 
     /* Allocate and queue all available frames */
     ret = BoardDiag_csirxAllocQFrames(csirxObj);
-    if (0 != ret)
+    if (ret != 0)
     {
         return -1;
     }
 
     /* Configure sensor here */
     ret = BoardDiag_csirxSensorConfig();
-    if (0 != ret)
+    if (ret != 0)
     {
         UART_printf("Sensor configuration failed\n");
         return -1;
     }
 
     retVal = Fvid2_start(csirxObj->drvHandle, NULL);
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
         UART_printf("Capture Start Failed\n");
         return -1;
@@ -417,7 +417,7 @@ static int8_t BoardDiag_csirxCaptureTest(BoardDiag_CsirxObj *csirxObj)
         {
             /* Pend on semaphore until last frame is received */
             SemaphoreP_pend(gLockSem, SemaphoreP_WAIT_FOREVER);
-            if ((0U == lastFrameNo) && (csirxObj->numFramesRcvd))
+            if ((lastFrameNo == 0U) && (csirxObj->numFramesRcvd))
             {
                 lastFrameNo = csirxObj->numFramesRcvd;
             }
@@ -425,14 +425,14 @@ static int8_t BoardDiag_csirxCaptureTest(BoardDiag_CsirxObj *csirxObj)
     }
 
     retVal = Fvid2_stop(csirxObj->drvHandle, NULL);
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
         UART_printf("Capture Stop Failed\n");
         return -1;
     }
 
     ret = BoardDiag_csirxCaptFreeFrames(csirxObj);
-    if (0 != ret)
+    if (ret != 0)
     {
         return -1;
     }
@@ -443,7 +443,7 @@ static int8_t BoardDiag_csirxCaptureTest(BoardDiag_CsirxObj *csirxObj)
                             IOCTL_CSIRX_GET_INST_STATUS,
                             &csirxObj->captStatus,
                             NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         UART_printf("Get Capture Status Failed\n");
         return -1;
@@ -471,7 +471,7 @@ static int8_t BoardDiag_csirxSetupI2CInst(void)
     for(index = 0; index < I2C_HWIP_MAX_CNT; index++)
     {
         I2C_socGetInitCfg(index, &i2cConfig);
-        i2cConfig.enableIntr = BFALSE;
+        i2cConfig.enableIntr = false;
         I2C_socSetInitCfg(index, &i2cConfig);
     }
 
@@ -486,7 +486,7 @@ static int8_t BoardDiag_csirxSetupI2CInst(void)
 
     /* Configures the I2C instance with the passed parameters*/
     gI2cHandle = I2C_open(i2cInst, &i2cParams);
-    if(NULL == gI2cHandle)
+    if(gI2cHandle == NULL)
     {
         UART_printf("I2C Open failed\n");
         return -1;
@@ -520,8 +520,8 @@ static int8_t BoardDiag_csirxConfig(BoardDiag_CsirxObj *csirxObj)
                                        &csirxObj->createStatus,
                                        &csirxObj->cbPrms);
 
-    if ((NULL      == csirxObj->drvHandle) ||
-        (FVID2_SOK != csirxObj->createStatus.retVal))
+    if ((csirxObj->drvHandle == NULL) ||
+        (csirxObj->createStatus.retVal != FVID2_SOK))
     {
         return -1;
     }
@@ -536,7 +536,7 @@ static int8_t BoardDiag_csirxConfig(BoardDiag_CsirxObj *csirxObj)
                            IOCTL_CSIRX_SET_DPHY_CONFIG,
                            &dphyCfg,
                            NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         UART_printf("D-PHY configuration failed\n");
         return -1;
@@ -548,7 +548,7 @@ static int8_t BoardDiag_csirxConfig(BoardDiag_CsirxObj *csirxObj)
                            IOCTL_CSIRX_REGISTER_EVENT,
                            &eventPrms,
                            NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         UART_printf("Event Registration failed\n");
         return -1;
@@ -558,14 +558,14 @@ static int8_t BoardDiag_csirxConfig(BoardDiag_CsirxObj *csirxObj)
     SemaphoreP_Params_init(&semParams);
     semParams.mode = SemaphoreP_Mode_BINARY;
     gLockSem = SemaphoreP_create(1U, &semParams);
-    if (NULL == gLockSem)
+    if (gLockSem == NULL)
     {
         UART_printf("Instance semaphore create failed\n");
         return -1;
     }
 
     ret = BoardDiag_csirxSetupI2CInst();
-    if (0 != ret)
+    if (ret != 0)
     {
         return -1;
     }
@@ -577,7 +577,7 @@ static int8_t BoardDiag_csirxConfig(BoardDiag_CsirxObj *csirxObj)
                            &tsParams,
                            NULL);
 
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
         return -1;
     }
@@ -609,7 +609,7 @@ static int8_t BoardDiag_csirxInit(BoardDiag_CsirxObj *csirxObj)
     Fvid2InitPrms_init(&initPrms);
 
     retVal = Fvid2_init(&initPrms);
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
         UART_printf("Fvid2 Init Failed\n");
         return -1;
@@ -628,7 +628,7 @@ static int8_t BoardDiag_csirxInit(BoardDiag_CsirxObj *csirxObj)
 
     /* System init */
     retVal = Csirx_init(&csirxObj->initPrms);
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
         UART_printf("CSIRX Init Failed\n");
         return -1;
@@ -678,9 +678,9 @@ static void BoardDiag_csirxObjInit(BoardDiag_CsirxObj *csirxObj)
     }
 
     /* set module configuration parameters */
-    csirxObj->createPrms.instCfg.enableCsiv2p0Support = UTRUE;
+    csirxObj->createPrms.instCfg.enableCsiv2p0Support = (uint32_t)TRUE;
     csirxObj->createPrms.instCfg.numDataLanes = 4U;
-    csirxObj->createPrms.instCfg.enableErrbypass = UFALSE;
+    csirxObj->createPrms.instCfg.enableErrbypass = (uint32_t)FALSE;
 
     for (loopCnt = 0U ;
          loopCnt < csirxObj->createPrms.instCfg.numDataLanes ;
@@ -758,7 +758,7 @@ int8_t BoardDiag_CsirxTest(void)
 
     UART_printf("Initializing CSIRX\n");
     ret = BoardDiag_csirxInit(csirxObj);
-    if (0 != ret)
+    if (ret != 0)
     {
         return -1;
     }
@@ -767,35 +767,35 @@ int8_t BoardDiag_CsirxTest(void)
 
     UART_printf("Configuring CSIRX\n");
     ret = BoardDiag_csirxConfig(csirxObj);
-    if (0 != ret)
+    if (ret != 0)
     {
         return -1;
     }
 
     /* CSI test function */
     ret = BoardDiag_csirxCaptureTest(csirxObj);
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
         UART_printf("CSIRX Capture test failed");
         return -1;
     }
 
     ret = BoardDiag_csirxDispRunTest(&gDispObj);
-    if (0 != ret)
+    if (ret != 0)
     {
         UART_printf("CSIRX Display failed\n");
         return -1;
     }
 
     ret = BoardDiag_csirxDeinit(csirxObj);
-    if (0 != ret)
+    if (ret != 0)
     {
         UART_printf("CSIRX De-Init Failed\n");
         return -1;
     }
 
     ret = BoardDiag_csirxDispDeInit();
-    if (0 != ret)
+    if (ret != 0)
     {
         return -1;
     }
@@ -825,21 +825,21 @@ int main(void)
 #endif
 
     status = Board_init(boardCfg);
-    if(BOARD_SOK != status)
+    if(status != BOARD_SOK)
     {
-        return BOARD_INVALID_PARAM;
+        return -1;
     }
 
     ret = BoardDiag_CsirxTest();
-    if(0 != ret)
+    if(ret != 0)
     {
         UART_printf("\nCSIRX Test Failed\n");
-        return BOARD_INVALID_PARAM;
+        return -1;
     }
     else
     {
         UART_printf("\nCSIRX Test Passed\n");
     }
 
-    return BOARD_SOK;
+    return 0;
 }

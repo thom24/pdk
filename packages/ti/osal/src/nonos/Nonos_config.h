@@ -166,7 +166,7 @@ typedef struct TimerP_dmTimerDefault_s {
  *  non-os use case for default initializations
  */
 typedef struct TimerP_timer64Default_s {
-    const char    *name;    /*< Name of the timer instance. Memory must
+    const char    *name;   /*< Name of the timer instance. Memory must
                              persist for the life of the clock instance.
                              This can be used for debugging purposes, or
                              set to NULL if not needed. */
@@ -184,7 +184,7 @@ typedef struct TimerP_timer64Default_s {
  *  non-os use case for default initializations
  */
 typedef struct TimerP_rtiTimerDefault_s {
-    const char  *name;      /*< Name of the timer instance. Memory must
+    const char  *name;       /*< Name of the timer instance. Memory must
                              persist for the life of the clock instance.
                              This can be used for debugging purposes, or
                              set to NULL if not needed. */
@@ -193,7 +193,7 @@ typedef struct TimerP_rtiTimerDefault_s {
     uint32_t  eventId;      /*< timer event Id (C66x only) */
 } TimerP_rtiTimerDefault;
 
-#if defined (SOC_AM571x) || defined (SOC_AM572x) || defined (SOC_AM574x) || defined (SOC_AM335x) || defined (SOC_AM437x) || defined (SOC_DRA72x) || defined (SOC_DRA75x) || defined (SOC_DRA78x) || defined (SOC_K2H) || defined (SOC_K2K) || defined (SOC_K2E) || defined (SOC_K2L) || defined (SOC_K2G) || defined (SOC_C6678) ||defined (SOC_C6657) || defined (SOC_OMAPL137) || defined (SOC_OMAPL138) || defined (SOC_AM65XX) || defined (SOC_J721E) || defined (SOC_J7200) || defined (SOC_AM64X) || defined (SOC_TPR12) || defined (SOC_AWR294X) || defined (SOC_J721S2) || defined (SOC_J784S4)
+#if defined(SOC_AM571x) || defined(SOC_AM572x) || defined(SOC_AM574x) || defined(SOC_AM335x) || defined(SOC_AM437x) || defined(SOC_DRA72x) || defined(SOC_DRA75x) || defined(SOC_DRA78x) || defined(SOC_K2H) || defined(SOC_K2K) || defined(SOC_K2E) || defined(SOC_K2L) || defined(SOC_K2G) || defined(SOC_C6678) ||defined(SOC_C6657) || defined(SOC_OMAPL137) || defined(SOC_OMAPL138) || defined(SOC_AM65XX) || defined(SOC_J721E) || defined(SOC_J7200) || defined (SOC_AM64X) || defined(SOC_TPR12) || defined (SOC_AWR294X) || defined (SOC_J721S2) || defined(SOC_J784S4)
 
 /* This function returns the lower 32 bits of the
  * internal frequency set for the timer
@@ -288,14 +288,14 @@ uint32_t          osalArch_TimeStampGetFreqKHz(void);
 extern           void osal_TimestampProvider_initCCNT(void);
 extern           uint32_t osal_TimestampProvider_getOverflowCCNT(void);
 
-#if defined (__ARM_ARCH_7A__) || defined (__aarch64__)
-#if !defined (SOC_AM437x) &&  !defined (SOC_AM335x)
+#if defined (__ARM_ARCH_7A__) || defined(__aarch64__)
+#if !defined (SOC_AM437x) &&  !defined(SOC_AM335x)
 /* Check if GIC is enabled or not */
 void OsalArch_gicInit(void);
 #endif
 #endif
 
-#if defined (_TMS320C6X) || defined (BUILD_C7X)
+#if defined (_TMS320C6X) || (BUILD_C7X)
 /* Returns the HwiP_Handle corresponding to an interrupt number */
 HwiP_Handle OsalArch_getHandle(uint32_t interruptNum);
 
@@ -326,7 +326,7 @@ __attribute__((weak)) void vInitMmu( void );
  *
  *  \param None 
  *
- *  \return Returns BTRUE if in abort state, BFALSE otherwise.
+ *  \return Returns true if in abort state, false otherwise.
  */
 bool  Osal_isInAbortContext( void );
 #endif

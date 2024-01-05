@@ -181,7 +181,7 @@ static void Lpm_initGTC(void)
 void Lpm_mcuDCacheClean(void *addr, uint32_t size)
 {
     /* Invalidate by MVA */
-    CSL_armR5CacheWbInv((const void *)addr, uint32_to_int32(size), BTRUE);
+    CSL_armR5CacheWbInv((const void *)addr, uint32_to_int32(size), (bool)TRUE);
 }
 #endif
 
@@ -369,11 +369,11 @@ static int32_t Lpm_ospiLeaveConfigSPI()
     /* Configure the flash for SPI mode */
     ospi_cfg.xferLines = OSPI_XFER_LINES_SINGLE;
     /* Put controller in DAC mode so flash ID can be read directly */
-    ospi_cfg.dacEnable = BTRUE;
+    ospi_cfg.dacEnable = true;
     /* Disable PHY in legacy SPI mode (1-1-1) */
-    ospi_cfg.phyEnable = BFALSE;
-    ospi_cfg.dtrEnable = BFALSE;
-    ospi_cfg.xipEnable = BFALSE;
+    ospi_cfg.phyEnable = false;
+    ospi_cfg.dtrEnable = false;
+    ospi_cfg.xipEnable = false;
 
     /* Set the default SPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_NOR_INSTANCE, &ospi_cfg);
@@ -472,25 +472,25 @@ static void Lpm_mainDomainBootSetup(void)
 
     Sciclient_BoardCfgPrms_t bootAppBoardCfgPrms = {
                                                     .boardConfigLow = (uint32_t)&bootAppBoardCfg,
-                                                    .boardConfigHigh = 0U,
+                                                    .boardConfigHigh = 0,
                                                     .boardConfigSize = sizeof(bootAppBoardCfg),
                                                     .devGrp = DEVGRP_01
                                                    };
     Sciclient_BoardCfgPrms_t bootAppBoardCfgPmPrms = {
                                                       .boardConfigLow = (uint32_t)NULL,
-                                                      .boardConfigHigh = 0U,
+                                                      .boardConfigHigh = 0,
                                                       .boardConfigSize = 0,
                                                       .devGrp = DEVGRP_01
                                                      };
     Sciclient_BoardCfgPrms_t bootAppBoardCfgRmPrms = {
                                                       .boardConfigLow = (uint32_t)&bootAppBoardCfg_rm,
-                                                      .boardConfigHigh = 0U,
+                                                      .boardConfigHigh = 0,
                                                       .boardConfigSize = sizeof(bootAppBoardCfg_rm),
                                                       .devGrp = DEVGRP_01
                                                      };
     Sciclient_BoardCfgPrms_t bootAppBoardCfgSecPrms = {
                                                        .boardConfigLow = (uint32_t)&bootAppBoardCfg_sec,
-                                                       .boardConfigHigh = 0U,
+                                                       .boardConfigHigh = 0,
                                                        .boardConfigSize = sizeof(bootAppBoardCfg_sec),
                                                        .devGrp = DEVGRP_01
                                                       };
@@ -542,7 +542,7 @@ static int32_t Lpm_requestStageCores(uint8_t stageNum)
     int32_t  status = CSL_EFAIL;
     uint8_t  stage  = stageNum;
 
-    for (i = 0U; i < MAX_CORES_PER_STAGE; i++)
+    for (i = 0; i < MAX_CORES_PER_STAGE; i++)
     {
         if (sbl_late_slave_core_stages_info[stage][i].tisci_proc_id != SBL_INVALID_ID)
         {
@@ -783,7 +783,7 @@ int32_t Lpm_bootApp()
             time_boot_stage_finish[j] = get_usec_timestamp();
 #endif
         } /* if (retVal == CSL_PASS) */        
-        if(j == (NUM_BOOT_STAGES-1))
+        if(j == NUM_BOOT_STAGES-1)
         {
             AppUtils_Printf(MSG_NORMAL,
                         "Sleeping for 30 seconds after each stage\n");

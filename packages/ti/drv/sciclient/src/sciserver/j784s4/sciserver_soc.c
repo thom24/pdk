@@ -47,7 +47,7 @@ static void Sciserver_enableAcspcie (void);
 
 static void Sciserver_enableAcspcie (void)
 {
-    mmr_unlock((uint32_t)CSL_CTRL_MMR0_CFG0_BASE, 2U);
+    mmr_unlock(CSL_CTRL_MMR0_CFG0_BASE, 2);
 
     /**
      * Enable the control bit for CTRLMMR_PCIE_REFCLK0
@@ -73,7 +73,7 @@ static void Sciserver_enableAcspcie (void)
     addr=(uint32_t *)(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_PCIE_REFCLK3_CLKSEL);
     CSL_REG32_FINS(addr,MAIN_CTRL_MMR_CFG0_PCIE_REFCLK3_CLKSEL_OUT_CLK_EN,1);
 
-    mmr_lock((uint32_t)CSL_CTRL_MMR0_CFG0_BASE, 2U);
+    mmr_lock(CSL_CTRL_MMR0_CFG0_BASE, 2);
 }
 
 static void Sciserver_powerOnLocalDru (void)

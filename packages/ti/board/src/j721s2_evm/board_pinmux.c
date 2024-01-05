@@ -332,20 +332,20 @@ Board_STATUS Board_pinmuxUpdate (pinmuxBoardCfg_t *pinmuxData,
     Board_pinmuxKickCtrl(domain, 0);
 
     /* MAIN domain pinmux needs RAT configuration for C66x core. */
-    if(BOARD_SOC_DOMAIN_MAIN == domain)
+    if(domain == BOARD_SOC_DOMAIN_MAIN)
     {
         Board_setRATCfg();
     }
 
     baseAddr = Board_pinmuxGetBaseAddr(domain);
-    if(0U != baseAddr)
+    if(baseAddr != 0)
     {
         for(i = 0; PINMUX_END != pinmuxData[i].moduleId; i++)
         {
             pModuleData = pinmuxData[i].modulePinCfg;
             for(j = 0; (PINMUX_END != pModuleData[j].modInstNum); j++)
             {
-                if(ITRUE == pModuleData[j].doPinConfig)
+                if(pModuleData[j].doPinConfig == TRUE)
                 {
                     pInstanceData = pModuleData[j].instPins;
                     for(k = 0; (PINMUX_END != pInstanceData[k].pinOffset); k++)
@@ -365,7 +365,7 @@ Board_STATUS Board_pinmuxUpdate (pinmuxBoardCfg_t *pinmuxData,
         status = BOARD_INVALID_PARAM;
     }
 
-    if(BOARD_SOC_DOMAIN_MAIN == domain)
+    if(domain == BOARD_SOC_DOMAIN_MAIN)
     {
         /* Clear the RAT configuration to allow applications to use the region */
         Board_restoreRATCfg();

@@ -173,7 +173,7 @@ int32_t Dss_displayTest(void)
 
 #if defined(DSS_TESTAPP_TIRTOS)
     Utils_prfLoadCalcStop();
-    Utils_prfLoadPrintAll(UTRUE, 0);
+    Utils_prfLoadPrintAll(TRUE, 0);
     Utils_prfLoadCalcReset();
     Utils_prfLoadUnRegister(TaskP_self());
 #endif
@@ -212,16 +212,16 @@ void DispApp_enableDP2HDMI( void )
 #endif
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = 0x20;
-    ioExpCfg.enableIntr  = BFALSE;
+    ioExpCfg.enableIntr  = false;
     ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = PIN_NUM_0;
     ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
 
     boardStatus = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)(&ioExpCfg));
-    Osal_delay(500U);
+    Osal_delay(500u);
 
-    if (BOARD_SOK == boardStatus)
+    if (boardStatus == BOARD_SOK)
     {
         App_print("Turning on DP0_PWR_SW_EN pin for eDP adapters ... Done!!!\n");
     }
@@ -239,20 +239,20 @@ static void DispApp_init(DispApp_Obj *appObj)
     Fvid2InitPrms_init(&initPrms);
     initPrms.printFxn = &App_print;
     retVal = Fvid2_init(&initPrms);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         App_print("Fvid2 Init Failed!!!\r\n");
     }
 
     Dss_initParamsInit(&appObj->initParams);
 #if(1U == DISP_APP_ENABLE_COMMON1_REGION)
-    appObj->initParams.socParams.irqParams.dssCommonRegionId                    = CSL_DSS_COMM_REG_ID_1;
-    appObj->initParams.socParams.irqParams.numValidIrq                          = DSS_EVT_MGR_INST_ID_MAX;
-    appObj->initParams.socParams.irqParams.irqNum[DSS_EVT_MGR_INST_ID_FUNC]     = 53U;
-    appObj->initParams.socParams.irqParams.irqNum[DSS_EVT_MGR_INST_ID_SAFETY]   = 55U;
+    appObj->initParams.socParams.irqParams.dssCommonRegionId = CSL_DSS_COMM_REG_ID_1;
+    appObj->initParams.socParams.irqParams.numValidIrq = DSS_EVT_MGR_INST_ID_MAX;
+    appObj->initParams.socParams.irqParams.irqNum[DSS_EVT_MGR_INST_ID_FUNC] = 53U;
+    appObj->initParams.socParams.irqParams.irqNum[DSS_EVT_MGR_INST_ID_SAFETY] = 55U;
     appObj->initParams.socParams.irqParams.irqNum[DSS_EVT_MGR_INST_ID_SECURITY] = 57U;
 #endif
-    appObj->initParams.socParams.dpInitParams.isHpdSupported                    = UFALSE;
+    appObj->initParams.socParams.dpInitParams.isHpdSupported = FALSE;
     Dss_init(&appObj->initParams);
 
 #if (1U == ENABLE_DP_TO_HDMI_CONVERTER)
@@ -260,7 +260,7 @@ static void DispApp_init(DispApp_Obj *appObj)
     App_print("Display interface must be DP for using the DP to HDMI converter!!\r\n");
     retVal = FVID2_EBADARGS;
 #endif
-    if(FVID2_SOK == retVal)
+    if(retVal == FVID2_SOK)
     {
         DispApp_enableDP2HDMI();
     }
@@ -296,7 +296,7 @@ static void DispApp_deInit(DispApp_Obj *appObj)
     retVal = Fvid2_delete(appObj->dctrlHandle, NULL);
     retVal += Dss_deInit();
     retVal += Fvid2_deInit(NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
          App_print("DCTRL handle delete failed!!!\r\n");
     }
@@ -323,12 +323,12 @@ static int32_t DispApp_runTest(DispApp_Obj *appObj)
     App_print("Display in progress ... DO NOT HALT !!!\r\n");
 
     /* Start driver */
-    for(instCnt = 0U; instCnt<gDispAppTestParams.numTestPipes; instCnt++)
+    for(instCnt=0U; instCnt<gDispAppTestParams.numTestPipes; instCnt++)
     {
         instObj = &appObj->instObj[instCnt];
 
         retVal = Fvid2_start(instObj->drvHandle, NULL);
-        if(FVID2_SOK != retVal)
+        if(retVal != FVID2_SOK)
         {
             App_print("Display Start Failed!!!\r\n");
             break;
@@ -342,7 +342,7 @@ static int32_t DispApp_runTest(DispApp_Obj *appObj)
 
     while(loopCount++ < DISP_APP_RUN_COUNT)
     {
-        for(instCnt = 0U; instCnt<gDispAppTestParams.numTestPipes; instCnt++)
+        for(instCnt=0U; instCnt<gDispAppTestParams.numTestPipes; instCnt++)
         {
             instObj = &appObj->instObj[instCnt];
             (void) SemaphoreP_pend(instObj->syncSem, SemaphoreP_WAIT_FOREVER);
@@ -373,11 +373,11 @@ static int32_t DispApp_runTest(DispApp_Obj *appObj)
         }
     }
 
-    for(instCnt = 0U; instCnt<gDispAppTestParams.numTestPipes; instCnt++)
+    for(instCnt=0U; instCnt<gDispAppTestParams.numTestPipes; instCnt++)
     {
         instObj = &appObj->instObj[instCnt];
         retVal  = Fvid2_stop(instObj->drvHandle, NULL);
-        if(FVID2_SOK != retVal)
+        if(retVal != FVID2_SOK)
         {
             App_print("Display Stop Failed!!!\r\n");
             break;
@@ -427,8 +427,8 @@ static void DispApp_create(DispApp_Obj *appObj)
     vpParams->lcdOpTimingCfg.mInfo.vSyncLen = 6U;
 #else
     #if(1U == DISP_APP_TEST_MULTISYNC)
-        vpParams->syncOpCfg.enabled      = UTRUE;
-        vpParams->syncOpCfg.isPrimary    = UTRUE;
+        vpParams->syncOpCfg.enabled = TRUE;
+        vpParams->syncOpCfg.isPrimary = TRUE;
         vpParams->syncOpCfg.numSyncVpIds = 1U;
         vpParams->syncOpCfg.syncVpIds[0] = TEST_SYNC_VP_ID;
     #endif
@@ -496,8 +496,8 @@ static void DispApp_create(DispApp_Obj *appObj)
     vpParams->vpId = TEST_SYNC_VP_ID;
     advVpParams->vpId = TEST_SYNC_VP_ID;
 
-    vpParams->syncOpCfg.enabled      = UTRUE;
-    vpParams->syncOpCfg.isPrimary    = UFALSE;
+    vpParams->syncOpCfg.enabled = TRUE;
+    vpParams->syncOpCfg.isPrimary = FALSE;
     vpParams->syncOpCfg.numSyncVpIds = 0U;
 
 #if(DISP_APP_BGR24 == DISP_APP_USE_TEST_PARAMS)
@@ -548,11 +548,11 @@ static void DispApp_create(DispApp_Obj *appObj)
 #endif
 #if (1==DISP_APP_TEST_EDP)
     retVal = Fvid2_control(appObj->dctrlHandle, IOCTL_DSS_DCTRL_IS_DP_CONNECTED, &dpConnectedCmdArg, NULL);
-    if ((FVID2_SOK == retVal) && (ITRUE == dpConnectedCmdArg))
+    if ((FVID2_SOK == retVal) && (TRUE == dpConnectedCmdArg))
     {
 #endif
         DispApp_configDctrl(appObj);
-        for(instCnt = 0U; instCnt<gDispAppTestParams.numTestPipes; instCnt++)
+        for(instCnt=0U; instCnt<gDispAppTestParams.numTestPipes; instCnt++)
         {
             instObj = &appObj->instObj[instCnt];
             SemaphoreP_Params_init(&semParams);
@@ -565,7 +565,7 @@ static void DispApp_create(DispApp_Obj *appObj)
                 &instObj->createStatus,
                 &instObj->cbParams);
             if((NULL == instObj->drvHandle) ||
-            (FVID2_SOK != instObj->createStatus.retVal))
+            (instObj->createStatus.retVal != FVID2_SOK))
             {
                 App_print("Display Create Failed!!!\r\n");
                 retVal = instObj->createStatus.retVal;
@@ -578,7 +578,7 @@ static void DispApp_create(DispApp_Obj *appObj)
                     IOCTL_DSS_DISP_SET_DSS_PARAMS,
                     &instObj->dispParams,
                     NULL);
-                if(FVID2_SOK != retVal)
+                if(retVal != FVID2_SOK)
                 {
                     App_print("DSS Set Params IOCTL Failed!!!\r\n");
                 }
@@ -590,7 +590,7 @@ static void DispApp_create(DispApp_Obj *appObj)
                     IOCTL_DSS_DISP_SET_PIPE_MFLAG_PARAMS,
                     &instObj->mflagParams,
                     NULL);
-                if(FVID2_SOK != retVal)
+                if(retVal != FVID2_SOK)
                 {
                     App_print("DSS Set Mflag Params IOCTL Failed!!!\r\n");
                 }
@@ -599,7 +599,7 @@ static void DispApp_create(DispApp_Obj *appObj)
             if(FVID2_SOK == retVal)
             {
                 retVal = DispApp_allocAndQueueFrames(appObj, instObj);
-                if(FVID2_SOK != retVal)
+                if(retVal != FVID2_SOK)
                 {
                     App_print("Display Alloc and Queue Failed!!!\r\n");
                 }
@@ -646,7 +646,7 @@ static void DispApp_delete(DispApp_Obj *appObj)
     pathInfo = &appObj->dctrlPathInfo;
     pErrorStats = &appObj->errorStats;
 
-    for(instCnt = 0U; instCnt<gDispAppTestParams.numTestPipes; instCnt++)
+    for(instCnt=0U; instCnt<gDispAppTestParams.numTestPipes; instCnt++)
     {
         instObj = &appObj->instObj[instCnt];
 
@@ -672,7 +672,7 @@ static void DispApp_delete(DispApp_Obj *appObj)
         }
 
         /* Dequeue all the request from the driver */
-        while (BTRUE)
+        while (1U)
         {
             retVal = Fvid2_dequeue(
                 instObj->drvHandle,
@@ -765,7 +765,7 @@ static int32_t DispApp_allocAndQueueFrames(const DispApp_Obj *appObj,
 #if(1U == DISP_APP_LOAD_BUFFERS_RUNTIME)
 
 #if (1U == DISP_APP_TEST_DSI)
-    uint32_t height = 800U, width = 1280U;
+    uint32_t height=800U, width=1280U;
     char uartInput = '0';
     App_print("Load Image using loadRaw command and then press '1'\n");
     App_print("Command is:\n");
@@ -785,7 +785,7 @@ static int32_t DispApp_allocAndQueueFrames(const DispApp_Obj *appObj,
         scanf("%c", &uartInput);
     } while ('1' != uartInput);
 #else
-    uint32_t height = 1080U, width = 1920U;
+    uint32_t height=1080U, width=1920U;
     char uartInput = '0';
     App_print("Load Image using loadRaw command and then press '1'\n");
     App_print("Command is:\n");
@@ -802,7 +802,7 @@ static int32_t DispApp_allocAndQueueFrames(const DispApp_Obj *appObj,
     frm = &instObj->frames[0U];
     numFrames = DISP_APP_MAX_FRAMES_PER_HANDLE;
     /* init memory pointer for 'numFrames'  */
-    for(frmId = 0U; frmId<numFrames; frmId++)
+    for(frmId=0U; frmId<numFrames; frmId++)
     {
         /* init Fvid2_Frame to 0's  */
         Fvid2Frame_init(&frm[frmId]);
@@ -825,7 +825,7 @@ static int32_t DispApp_allocAndQueueFrames(const DispApp_Obj *appObj,
             /* For raw image , treat vid buffer as Luma and initialize chroma */
             uint32_t temp_addr = frm[frmId].addr[1U];
             int32_t j;
-            for(j = 0;j < 518400; j++)
+            for(j=0;j<518400;j++)
             {
                 CSL_REG32_WR(temp_addr + 4*j, 0x08000800U);
             }
@@ -901,7 +901,7 @@ static void DispApp_initParams(DispApp_Obj *appObj)
 
     numPipes = gDispAppTestParams.numTestPipes;
 
-    for(instCnt = 0U; instCnt < numPipes; instCnt++)
+    for(instCnt=0U; instCnt<numPipes; instCnt++)
     {
         /* Initialize video pipes */
         instObj = &appObj->instObj[instCnt];
@@ -916,7 +916,7 @@ static void DispApp_initParams(DispApp_Obj *appObj)
         dispParams->pipeCfg.pipeType = gDispAppTestParams.pipeType[instCnt];
         dispParams->pipeCfg.inFmt.width = gDispAppTestParams.inWidth[instCnt];
         dispParams->pipeCfg.inFmt.height = gDispAppTestParams.inHeight[instCnt];
-        for(i = 0U; i < FVID2_MAX_PLANES; i++)
+        for(i=0U; i<FVID2_MAX_PLANES; i++)
         {
             dispParams->pipeCfg.inFmt.pitch[i] =
                                         gDispAppTestParams.pitch[instCnt][i];
@@ -942,7 +942,7 @@ static void DispApp_initParams(DispApp_Obj *appObj)
         dispParams->layerPos.startX = gDispAppTestParams.posx[instCnt];
         dispParams->layerPos.startY = gDispAppTestParams.posy[instCnt];
 #if(1U == DISP_APP_ENBALE_PIPE_CROP)
-        dispParams->cropParams.cropEnable = UTRUE;
+        dispParams->cropParams.cropEnable = TRUE;
         dispParams->cropParams.cropCfg.cropTop = 31;
         dispParams->cropParams.cropCfg.cropBottom = 31;
         dispParams->cropParams.cropCfg.cropLeft = 31;
@@ -955,7 +955,7 @@ static void DispApp_initParams(DispApp_Obj *appObj)
 static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
 {
     int32_t retVal = FVID2_SOK;
-    uint32_t i = 0U, j = 0U;
+    uint32_t i = 0U, j=0U;
     Dss_DctrlVpParams *vpParams;
 #if(1U == DISP_APP_TEST_MULTISYNC)
     Dss_DctrlVpParams *syncVpParams;
@@ -1000,9 +1000,9 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
     pathInfo->edgeInfo[pathInfo->numEdges].startNode = TEST_DCTRL_VP_NODE_ID;
     pathInfo->edgeInfo[pathInfo->numEdges].endNode = TEST_DCTRL_OUT_NODE_ID;
     pathInfo->numEdges++;
-    if(1U < gDispAppTestParams.numTestPipes)
+    if(gDispAppTestParams.numTestPipes > 1U)
     {
-        for(i = 1U; i < gDispAppTestParams.numTestPipes; i++)
+        for(i=1U; i<gDispAppTestParams.numTestPipes; i++)
         {
             pathInfo->edgeInfo[pathInfo->numEdges].startNode =
                                             gDispAppTestParams.pipeNodeId[i];
@@ -1022,7 +1022,7 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
         IOCTL_DSS_DCTRL_SET_PATH,
         pathInfo,
         NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         App_print("Dctrl Set Path IOCTL Failed!!!\r\n");
     }
@@ -1033,7 +1033,7 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
         IOCTL_DSS_DCTRL_SET_VP_PARAMS,
         syncVpParams,
         NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         App_print("Dctrl Set VP Params IOCTL Failed!!!\r\n");
     }
@@ -1043,7 +1043,7 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
         IOCTL_DSS_DCTRL_SET_ADV_VP_PARAMS,
         syncAdvVpParams,
         NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         App_print("DCTRL Set Advance VP Params IOCTL Failed!!!\r\n");
     }
@@ -1064,7 +1064,7 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
             IOCTL_DSS_DCTRL_SET_DSI_PARAMS,
             &dsiPrms,
             NULL);
-        if(FVID2_SOK != retVal)
+        if(retVal != FVID2_SOK)
         {
             App_print("DSS Set DSI Params IOCTL Failed!!!\r\n");
         }
@@ -1076,7 +1076,7 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
         IOCTL_DSS_DCTRL_SET_VP_PARAMS,
         vpParams,
         NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         App_print("Dctrl Set VP Params IOCTL Failed!!!\r\n");
     }
@@ -1086,7 +1086,7 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
         IOCTL_DSS_DCTRL_SET_ADV_VP_PARAMS,
         advVpParams,
         NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         App_print("DCTRL Set Advance VP Params IOCTL Failed!!!\r\n");
     }
@@ -1098,26 +1098,26 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
         IOCTL_DSS_DCTRL_SET_OLDI_PARAMS,
         oldiParams,
         NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         App_print("DCTRL Set OLDI Params IOCTL Failed!!!\r\n");
     }
 #endif
 
     overlayParams->overlayId = TEST_OVERLAY_ID;
-    overlayParams->colorbarEnable = UFALSE;
-    overlayParams->overlayCfg.colorKeyEnable = UTRUE;
+    overlayParams->colorbarEnable = FALSE;
+    overlayParams->overlayCfg.colorKeyEnable = TRUE;
     overlayParams->overlayCfg.colorKeySel = CSL_DSS_OVERLAY_TRANS_COLOR_DEST;
 #if(DISP_APP_YUV420 == DISP_APP_USE_TEST_PARAMS)
     overlayParams->overlayCfg.colorKeySel = CSL_DSS_OVERLAY_TRANS_COLOR_SRC;
 #endif
-    overlayParams->overlayCfg.backGroundColor = 0xC8C800U;
+    overlayParams->overlayCfg.backGroundColor = 0xc8c800U;
     retVal = Fvid2_control(
         appObj->dctrlHandle,
         IOCTL_DSS_DCTRL_SET_OVERLAY_PARAMS,
         overlayParams,
         NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         App_print("DCTRL Set Overlay Params IOCTL Failed!!!\r\n");
     }
@@ -1127,15 +1127,15 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
                                                 CSL_DSS_OVERLAY_LAYER_NUM_0;
     if(gDispAppTestParams.numTestPipes > 1U)
     {
-        for(i = 1U; i<gDispAppTestParams.numTestPipes;i++)
+        for(i=1U; i<gDispAppTestParams.numTestPipes;i++)
         {
             layerParams->pipeLayerNum[gDispAppTestParams.pipeId[i]] = i;
         }
     }
 
-    if(CSL_DSS_VID_PIPE_ID_MAX > gDispAppTestParams.numTestPipes)
+    if(gDispAppTestParams.numTestPipes < CSL_DSS_VID_PIPE_ID_MAX)
     {
-        for(i = gDispAppTestParams.numTestPipes; i < CSL_DSS_VID_PIPE_ID_MAX; i++)
+        for(i=gDispAppTestParams.numTestPipes; i<CSL_DSS_VID_PIPE_ID_MAX; i++)
         {
             layerParams->pipeLayerNum[gDispAppTestParams.invalidPipeId[j++]] =
                                                 CSL_DSS_OVERLAY_LAYER_INVALID;
@@ -1147,7 +1147,7 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
         IOCTL_DSS_DCTRL_SET_LAYER_PARAMS,
         layerParams,
         NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         App_print("DCTRL Set Layer Params IOCTL Failed!!!\r\n");
     }
@@ -1157,7 +1157,7 @@ static int32_t DispApp_configDctrl(DispApp_Obj *appObj)
         IOCTL_DSS_DCTRL_SET_GLOBAL_DSS_PARAMS,
         globalDssParams,
         NULL);
-    if(FVID2_SOK != retVal)
+    if(retVal != FVID2_SOK)
     {
         App_print("DCTRL Set Global DSS Params IOCTL Failed!!!\r\n");
     }

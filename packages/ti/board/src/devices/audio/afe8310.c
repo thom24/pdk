@@ -51,10 +51,10 @@ Board_Afe8310ProgObj Board_Afe8310CfgObj[] =
     {0x0017, 0x0021},   /* dout0 config - I sample and Q sample */
     {0x0018, 0x0000},   /* No data source in e slot of dout0 */
     {0x0019, 0x0043},   /* dout1 config - I sample and Q sample */
-    {0x001A, 0x0000},   /* No data source in e slot of dout1 */
-    {0x004E, 0x4310},   /* FM - no noise blanker config */
+    {0x001a, 0x0000},   /* No data source in e slot of dout1 */
+    {0x004e, 0x4310},   /* FM - no noise blanker config */
     {0x0053, 0x4310},   /* FM - no noise blanker config */
-    {0x005E, 0x4310},   /* FM - no noise blanker config */
+    {0x005e, 0x4310},   /* FM - no noise blanker config */
     {BOARD_DEVICES_CONFIG_END}
 };
 
@@ -75,12 +75,12 @@ Board_STATUS Board_afe8310TunerConfig(void *handle,
     uint8_t index = 0;
     uint16_t regData = 0;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
 
-    while(BOARD_DEVICES_CONFIG_END != Board_Afe8310CfgObj[index].regAddr)
+    while(Board_Afe8310CfgObj[index].regAddr != BOARD_DEVICES_CONFIG_END)
     {
         UART_printf("Writing RegAddr 0x%x RegValue 0x%x \n", Board_Afe8310CfgObj[index].regAddr,
                                                              Board_Afe8310CfgObj[index].regData);
@@ -89,7 +89,7 @@ Board_STATUS Board_afe8310TunerConfig(void *handle,
                                                Board_Afe8310CfgObj[index].regAddr,
                                                Board_Afe8310CfgObj[index].regData,
                                                BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }

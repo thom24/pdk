@@ -77,7 +77,7 @@ typedef struct pmic_data
 }pmic_data_t;
 
 #if defined(SOC_J721E) || defined(SOC_J7200)
-Board_I2cInitCfg_t boardI2cInitCfg = {0, BOARD_SOC_DOMAIN_WKUP, BFALSE};
+Board_I2cInitCfg_t boardI2cInitCfg = {0, BOARD_SOC_DOMAIN_WKUP, false};
 #endif
 int32_t numPmic = 1;
 pmic_data_t *gDualPmicData;
@@ -588,7 +588,7 @@ int32_t edma_open(uint8_t devInstance)
         EDMA3CCInitParams 	initParam;
 
         EDMA3CCInitParams_init(&initParam);
-        initParam.initParamSet = UTRUE;
+        initParam.initParamSet = TRUE;
         if (EDMA_init(cfg.edmaCCId, &initParam) != EDMA_NO_ERROR)
         {
             printf("EDMA_init failed \n");
@@ -655,9 +655,9 @@ void *Board_PmicInit(uint8_t devInstance)
 #if defined(SOC_J721E) || defined(SOC_J7200)
     enableI2C(CSL_WKUP_I2C0_CFG_BASE);
 #endif
-    for (i = 0; I2C_config[i].fxnTablePtr != NULL; i++)
+    for (i=0; I2C_config[i].fxnTablePtr != NULL; i++)
     {
-        ((I2C_HwAttrs *)I2C_config[i].hwAttrs)->enableIntr = BFALSE;
+        ((I2C_HwAttrs *)I2C_config[i].hwAttrs)->enableIntr = false;
     }
 
     I2C_init();

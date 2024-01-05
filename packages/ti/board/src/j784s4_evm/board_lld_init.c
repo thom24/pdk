@@ -196,7 +196,7 @@ Board_STATUS Board_uartStdioInit(void)
         }
     }
 
-    uart_cfg.enableInterrupt = UFALSE;
+    uart_cfg.enableInterrupt = false;
     UART_socSetInitCfg(uartInst, &uart_cfg);
 
     UART_stdioInit(uartInst);
@@ -226,7 +226,7 @@ I2C_Handle Board_getI2CHandle(uint8_t domainType,
 
     i2cCfg.i2cInst    = i2cInst;
     i2cCfg.socDomain  = domainType;
-    i2cCfg.enableIntr = BFALSE;
+    i2cCfg.enableIntr = false;
     Board_setI2cInitConfig(&i2cCfg);
 
     status = Board_i2cInit();

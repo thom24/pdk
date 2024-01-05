@@ -237,9 +237,9 @@ typedef struct
      *   is already checked */
     uint32_t                skipGlobalEventReg;
     /**< Skips the global event registeration for the handle. By default this
-     *   is set to UFALSE and application can use this common handle to set the
+     *   is set to FALSE and application can use this common handle to set the
      *   master event to limit the number of IA/IR registration per core
-     *   This can be set to UTRUE to skip this registration as in the case
+     *   This can be set to TRUE to skip this registration as in the case
      *   of having multiple handles per core in usecases */
     Udma_VirtToPhyFxn       virtToPhyFxn;
     /**< If not NULL, this function will be called to convert virtual address

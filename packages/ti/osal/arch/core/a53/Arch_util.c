@@ -54,8 +54,8 @@ typedef struct HwiP_nonOs_s {
 
 /* Local hwi structures */
 static HwiP_nonOs hwiStructs[OSAL_NONOS_CONFIGNUM_HWI];
-static bool gTimestampFirstTime = BTRUE;
-static bool gHwiInitialized = BFALSE;
+static bool gTimestampFirstTime = (bool)true;
+static bool gHwiInitialized = (bool)false;
 
 /*
  * Dummy function to check size during compile time
@@ -91,7 +91,7 @@ void OsalArch_gicInit(void)
     uint8_t  coreId;
 
     initStatus = Intc_isInitialized();
-    if (0U == initStatus)
+    if (initStatus == 0U)
     {
         cpuId = CSL_a53v8GetCpuId();
         coreId = (uint8_t) cpuId & (uint8_t)0xFFU;
@@ -138,11 +138,11 @@ int32_t OsalArch_postInterrupt(uint32_t intrNum)
     cpuId &= 0xFFU;
     coreId = (uint8_t)cpuId;
 
-    if (32U > intrNum)
+    if (intrNum < 32U)
     {
       (void)CSL_gicSetPendingSgiPpiIntr(gicrRegs, coreId, intrNum);
     }
-    else if (960U > intrNum)
+    else if (intrNum < 960U)
     {
       (void)CSL_gicSetPendingSpiIntr(gicdRegs, intrNum);
     }
@@ -189,7 +189,7 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
     /* Check if user has specified any memory block to be used, which gets
      * the precedence over the internal static memory block
      */
-    if ((uintptr_t)(0U) != gOsal_HwAttrs.extHwiPBlock.base)
+    if (gOsal_HwAttrs.extHwiPBlock.base != 0U)
     {
         /* pick up the external memory block configured */
         hwiPool        = (HwiP_nonOs *) gOsal_HwAttrs.extHwiPBlock.base;
@@ -202,23 +202,23 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
         hwiPool        = (HwiP_nonOs *) &hwiStructs[0];
         maxHwi         = OSAL_NONOS_CONFIGNUM_HWI;
 
-        if(BFALSE == gHwiInitialized)
+        if(gHwiInitialized==(bool)false)
         {
           /* Initializing the first time */
           (void)memset((void *)hwiStructs,0,sizeof(hwiStructs));
-          gHwiInitialized = BTRUE;
+          gHwiInitialized = (bool)true;
         }
     }
 
-    if (NULL_PTR != params)
+    if (params != NULL_PTR)
     {
 
     cpuId = CSL_a53GetCpuId();
     coreId = (uint8_t)(cpuId) & (uint8_t)0xFF;
     key = OsalArch_globalDisableInterrupt();
-    for (i = 0U; i < maxHwi; i++) {
-        if (BFALSE == hwiPool[i].used) {
-            hwiPool[i].used = BTRUE;
+    for (i = 0u; i < maxHwi; i++) {
+        if (hwiPool[i].used == (bool)false) {
+            hwiPool[i].used = (bool)true;
             break;
         }
     }
@@ -235,14 +235,14 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
      }
    }
 
-    if (NULL_PTR != hwi_handle)
+    if (hwi_handle != NULL_PTR)
     {
         /* Registering the Interrupt Service Routine(ISR). */
         Intc_IntRegister((uint16_t)interruptNum, (IntrFuncPtr) hwiFxn, (void *)params->arg);
 
         /* Set the priority to default priority if priority is set un-initialized */
 
-        if (HWIP_USE_DEFAULT_PRIORITY == params->priority)
+        if (params->priority == HWIP_USE_DEFAULT_PRIORITY)
         {
             priority = (uint16_t)HWIP_A53_DEFAULT_PRIORITY;
         } else
@@ -254,16 +254,16 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
         Intc_IntPrioritySet((uint16_t)interruptNum, priority,coreId);
 
         /* Set the trigger type */
-        if ((OSAL_ARM_GIC_TRIG_TYPE_HIGH_LEVEL == params->triggerSensitivity) ||
-            (OSAL_ARM_GIC_TRIG_TYPE_LEVEL      == params->triggerSensitivity) ||
-            (OSAL_ARM_GIC_TRIG_TYPE_LOW_LEVEL  == params->triggerSensitivity))
+        if ((params->triggerSensitivity == (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_HIGH_LEVEL) ||
+            (params->triggerSensitivity == (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_LEVEL) ||
+            (params->triggerSensitivity == (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_LOW_LEVEL))
         {
             (void)Intc_IntAssignLevelIntType((uint16_t)interruptNum);
         }
 
-        if ((OSAL_ARM_GIC_TRIG_TYPE_RISING_EDGE  == params->triggerSensitivity) ||
-            (OSAL_ARM_GIC_TRIG_TYPE_EDGE         == params->triggerSensitivity) ||
-            (OSAL_ARM_GIC_TRIG_TYPE_FALLING_EDGE == params->triggerSensitivity))
+        if ((params->triggerSensitivity == (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_RISING_EDGE) ||
+            (params->triggerSensitivity == (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_EDGE) ||
+            (params->triggerSensitivity == (uint32_t)OSAL_ARM_GIC_TRIG_TYPE_FALLING_EDGE))
         {
             (void)Intc_IntAssignEdgeIntType((uint16_t)interruptNum);
         }
@@ -272,7 +272,7 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
         hwi_handle->intNum = interruptNum;
 
         /* Enabling the interrupt if configured */
-        if (UTRUE == params->enableIntr)
+        if (params->enableIntr == 1U)
         {
             OsalArch_enableInterrupt(interruptNum);
         }
@@ -296,7 +296,7 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
     key = OsalArch_globalDisableInterrupt();
     if (hwi_hnd->used)
     {
-        hwi_hnd->used = BFALSE;
+        hwi_hnd->used = (bool)false;
         Intc_IntUnregister((uint16_t)(hwi_hnd->hwi.intNum));
     }
     else
@@ -310,10 +310,10 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
 /* Initialize the time stamp module */
 void    osalArch_TimestampInit(void)
 {
-    if (BTRUE == gTimestampFirstTime)
+    if (gTimestampFirstTime == (bool)true)
     {
         CSL_initGTC();
-        gTimestampFirstTime = BFALSE;
+        gTimestampFirstTime = (bool)false;
     }
     return;
 }

@@ -83,9 +83,9 @@ static void semaphoreInit( Sem_Struct *semPool, uint32_t maxSemaphores)
 {
   uint32_t i;
   Sem_Struct *semPool_ptr = semPool;
-  for(i = 0U; i < maxSemaphores; i++)
+  for(i=0;i<maxSemaphores;i++)
   {
-    semPool_ptr->used = BFALSE;
+    semPool_ptr->used = (bool)false;
     semPool_ptr->sem =  i;
     semPool_ptr->count = 0;
     semPool_ptr->mode = SemaphoreP_Mode_COUNTING;
@@ -130,11 +130,11 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
        semaphoreInit(semPool,maxSemaphores);
 	}
     
-    for (i = 0U; i < maxSemaphores; i++)
+    for (i = 0; i < maxSemaphores; i++)
     {
-        if (BFALSE == semPool[i].used)
+        if ((bool)false == semPool[i].used)
         {
-            semPool[i].used = BTRUE;
+            semPool[i].used = (bool)true;
 
             /* Update statistics */
             gOsalSemAllocCnt++;
@@ -179,9 +179,9 @@ SemaphoreP_Status SemaphoreP_delete(SemaphoreP_Handle handle)
     if((NULL_PTR != semS) && (semS->used))
     {
       key = HwiP_disable();
-      semS->used = BFALSE;
+      semS->used = (bool)false;
       /* Found the bsp osal semaphore object to delete */
-      if (0U < gOsalSemAllocCnt)
+      if (gOsalSemAllocCnt > 0U)
       {
         gOsalSemAllocCnt--;
       }
@@ -217,13 +217,13 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
     Sem_Struct         *semS        = (Sem_Struct *)handle;
     uint32_t            semTimeout  = timeout;
     SemaphoreP_Status   ret_val     = SemaphoreP_OK;
-    bool iterate = BTRUE;
+    bool iterate = (bool)true;
     
     if(NULL != semS) {
-      while ( (SemaphoreP_OK == ret_val) && (BTRUE == iterate))
+      while ( (SemaphoreP_OK == ret_val) && ((bool)true == iterate))
       {
         key = HwiP_disable();
-        if (0U < semS->count)
+        if (semS->count > 0U)
         {
             if (SemaphoreP_Mode_BINARY == semS->mode)
             {
@@ -234,7 +234,7 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
                 semS->count--;
             }
             HwiP_restore(key);
-            iterate = BFALSE;
+            iterate=(bool)false;
         }
 	  else
         {
@@ -242,7 +242,7 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
             if (SemaphoreP_NO_WAIT == semTimeout)
             {
                 ret_val = (SemaphoreP_TIMEOUT);
-                iterate = BFALSE;
+                iterate=(bool)false;
             }
             else if  (SemaphoreP_WAIT_FOREVER == semTimeout)
             {
@@ -301,7 +301,7 @@ SemaphoreP_Status SemaphoreP_post(SemaphoreP_Handle handle)
 int32_t SemaphoreP_getCount(SemaphoreP_Handle handle)
 
 {
-    int32_t ret = 0;
+    int32_t ret=0;
     OSAL_Assert(NULL_PTR == handle);
     Sem_Struct *semS = (Sem_Struct *)handle;
     if(NULL_PTR != semS) {

@@ -142,10 +142,10 @@ void* IpcUtils_QgetHead(IpcUtils_QHandle *handle)
 
 Bool IpcUtils_QisEmpty(const IpcUtils_QHandle *handle)
 {
-    Bool  rtnVal = UFALSE;
+    Bool  rtnVal = FALSE;
     if (handle->next == handle)
     {
-        rtnVal = UTRUE;
+        rtnVal = TRUE;
     }
     return (rtnVal);
 }
@@ -313,7 +313,7 @@ void *IpcUtils_HeapAlloc(IpcUtils_HeapHandle *pHndl, uint32_t size,
                             uint32_t align)
 {
     void *rtnVal = NULL;
-    if ((NULL != pHndl) && (UTRUE != IpcUtils_QisEmpty(&pHndl->qHandle)))
+    if ((NULL != pHndl) && (TRUE!=IpcUtils_QisEmpty(&pHndl->qHandle)))
     {
         rtnVal = IpcUtils_QgetHead(&pHndl->qHandle);
         pHndl->numFreeBlocks--;
@@ -341,7 +341,7 @@ uintptr_t IpcUtils_getMemoryAddress(uint32_t daAddr, uint32_t size)
 #include <sys/mman.h>
     void* p = mmap_device_memory(NULL, size, PROT_READ|PROT_WRITE|PROT_NOCACHE,
             0, daAddr);
-    if(MAP_FAILED == p)
+    if( p == MAP_FAILED)
     {
         //SystemP_printf("IpcUtils_getMemoryAddress : failed to map..\n");
     }
@@ -392,7 +392,7 @@ void SystemP_printf(const char *format, ...)
 
 uint32_t IpcUtils_strnlen(const char *s)
 {
-  uint32_t i = 0U;
+  uint32_t i=0;
   const char *l = s;
   if (NULL != l)
   {

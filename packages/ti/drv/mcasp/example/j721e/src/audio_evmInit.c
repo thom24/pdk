@@ -91,7 +91,7 @@
 /*                           MACRO DEFINTIONS                                 */
 /* ========================================================================== */
 
-uint32_t vaOffset = 0U;
+uint32_t vaOffset = 0;
 
 #if defined(AUDIO_DC_ANALOG_TEST)
 uint32_t gAudioDCAnlogRxSerIndx[RX_NUM_SERIALIZER] = {Mcasp_SerializerNum_4,
@@ -141,7 +141,7 @@ void configureAudio(void)
     Sciclient_ConfigPrms_t sciClientCfg;
 
 	stat = Board_init(arg);
-	if(BOARD_SOK != stat)
+	if(stat != BOARD_SOK)
     {
 	    MCASP_log("Board init failed!!");
 	}
@@ -165,13 +165,13 @@ void configureAudioDCSer(void)
     uint32_t index;
 
     /* Configure the Rx serializers */
-    for (index = 0U; index < RX_NUM_SERIALIZER; index++)
+    for (index = 0; index < RX_NUM_SERIALIZER; index++)
     {
         mcasp_chanparam[0].indexOfSersRequested[index] = gAudioDCAnlogRxSerIndx[index];
     }
 
     /* Configure the Tx serializers */
-    for (index = 0U; index < TX_NUM_SERIALIZER; index++)
+    for (index = 0; index < TX_NUM_SERIALIZER; index++)
     {
         mcasp_chanparam[1].indexOfSersRequested[index] = gAudioDCAnlogTxSerIndx[index];
     }
@@ -272,7 +272,7 @@ void IoExpanderConfig(void)
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-    ioExpCfg.enableIntr  = BFALSE;
+    ioExpCfg.enableIntr  = false;
     ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_1;
     ioExpCfg.pinNum      = PIN_NUM_2;
@@ -290,7 +290,7 @@ void IoExpanderConfig(void)
     ioExpCfg.slaveAddr   = BOARD_I2C_AUDIO_IOEXP_DEVICE_ADDR;
     ioExpCfg.i2cInst     = BOARD_I2C_AUDIO_IOEXP_DEVICE_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-    ioExpCfg.enableIntr  = BFALSE;
+    ioExpCfg.enableIntr  = false;
     ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = PIN_NUM_0;
@@ -302,7 +302,7 @@ void IoExpanderConfig(void)
     ioExpCfg.slaveAddr   = BOARD_I2C_AUDIO_IOEXP_DEVICE_ADDR;
     ioExpCfg.i2cInst     = BOARD_I2C_AUDIO_IOEXP_DEVICE_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-    ioExpCfg.enableIntr  = BFALSE;
+    ioExpCfg.enableIntr  = false;
     ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_1;
     ioExpCfg.pinNum      = PIN_NUM_0;
@@ -319,7 +319,7 @@ void IoExpanderConfig(void)
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE3_ADDR;
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE3_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-    ioExpCfg.enableIntr  = BFALSE;
+    ioExpCfg.enableIntr  = false;
     ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = PIN_NUM_0;

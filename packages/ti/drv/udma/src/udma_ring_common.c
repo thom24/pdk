@@ -79,7 +79,7 @@ int32_t Udma_ringAlloc(Udma_DrvHandle drvHandle,
 {
     int32_t             retVal = UDMA_SOK;
     uint64_t            physBase;
-    uint32_t            allocDone = UFALSE;
+    uint32_t            allocDone = (uint32_t) FALSE;
     struct tisci_msg_rm_ring_cfg_req    rmRingReq;
     struct tisci_msg_rm_ring_cfg_resp   rmRingResp;
 
@@ -90,7 +90,7 @@ int32_t Udma_ringAlloc(Udma_DrvHandle drvHandle,
     }
     if(UDMA_SOK == retVal)
     {
-        if(UDMA_INIT_DONE != drvHandle->drvInitDone)
+        if(drvHandle->drvInitDone != UDMA_INIT_DONE)
         {
             retVal = UDMA_EFAIL;
         }
@@ -122,7 +122,7 @@ int32_t Udma_ringAlloc(Udma_DrvHandle drvHandle,
             }
             else
             {
-                allocDone = UTRUE;
+                allocDone = (uint32_t) TRUE;
             }
         }
         else
@@ -201,7 +201,7 @@ int32_t Udma_ringAlloc(Udma_DrvHandle drvHandle,
     else
     {
         /* Error. Free-up resource if allocated */
-        if(UTRUE == allocDone)
+        if(((uint32_t) TRUE) == allocDone)
         {
             if(UDMA_MAPPED_GROUP_INVALID == ringPrms->mappedRingGrp)
             {
@@ -231,7 +231,7 @@ int32_t Udma_ringFree(Udma_RingHandle ringHandle)
     }
     if(UDMA_SOK == retVal)
     {
-        if(UDMA_INIT_DONE != ringHandle->ringInitDone)
+        if(ringHandle->ringInitDone != UDMA_INIT_DONE)
         {
             retVal = UDMA_EFAIL;
         }
@@ -239,7 +239,7 @@ int32_t Udma_ringFree(Udma_RingHandle ringHandle)
     if(UDMA_SOK == retVal)
     {
         drvHandle = ringHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }
@@ -248,7 +248,7 @@ int32_t Udma_ringFree(Udma_RingHandle ringHandle)
     if(UDMA_SOK == retVal)
     {
         /* Free-up event resources */
-        Udma_assert(drvHandle, (UDMA_RING_INVALID != ringHandle->ringNum));
+        Udma_assert(drvHandle, ringHandle->ringNum != UDMA_RING_INVALID);
         if(UDMA_MAPPED_GROUP_INVALID == ringHandle->mappedRingGrp)
         {
             Udma_rmFreeFreeRing(ringHandle->ringNum, drvHandle);
@@ -283,7 +283,7 @@ int32_t Udma_ringAttach(Udma_DrvHandle drvHandle,
     }
     if(UDMA_SOK == retVal)
     {
-        if(UDMA_INIT_DONE != drvHandle->drvInitDone)
+        if(drvHandle->drvInitDone != UDMA_INIT_DONE)
         {
             retVal = UDMA_EFAIL;
         }
@@ -321,7 +321,7 @@ int32_t Udma_ringDetach(Udma_RingHandle ringHandle)
     }
     if(UDMA_SOK == retVal)
     {
-        if(UDMA_INIT_DONE != ringHandle->ringInitDone)
+        if(ringHandle->ringInitDone != UDMA_INIT_DONE)
         {
             retVal = UDMA_EFAIL;
         }
@@ -329,7 +329,7 @@ int32_t Udma_ringDetach(Udma_RingHandle ringHandle)
     if(UDMA_SOK == retVal)
     {
         drvHandle = ringHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }
@@ -338,7 +338,7 @@ int32_t Udma_ringDetach(Udma_RingHandle ringHandle)
     if(UDMA_SOK == retVal)
     {
         /* Clear handle object */
-        Udma_assert(drvHandle, (UDMA_RING_INVALID != ringHandle->ringNum));
+        Udma_assert(drvHandle, ringHandle->ringNum != UDMA_RING_INVALID);
         ringHandle->ringInitDone    = UDMA_DEINIT_DONE;
 
         drvHandle->ringHandleClearRegs(ringHandle);
@@ -357,16 +357,16 @@ int32_t Udma_ringQueueRaw(Udma_RingHandle ringHandle, uint64_t phyDescMem)
     Udma_DrvHandle  drvHandle;
 
     /* Error check */
-    if((NULL_PTR          == ringHandle) ||
-       (UDMA_INIT_DONE    != ringHandle->ringInitDone) ||
-       (UDMA_RING_INVALID == ringHandle->ringNum))
+    if((NULL_PTR == ringHandle) ||
+       (ringHandle->ringInitDone != UDMA_INIT_DONE) ||
+       (ringHandle->ringNum == UDMA_RING_INVALID))
     {
         retVal = UDMA_EBADARGS;
     }
     if(UDMA_SOK == retVal)
     {
         drvHandle = ringHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }
@@ -391,16 +391,16 @@ int32_t Udma_ringDequeueRaw(Udma_RingHandle ringHandle, uint64_t *phyDescMem)
     Udma_DrvHandle  drvHandle;
 
     /* Error check */
-    if((NULL_PTR          == ringHandle) ||
-       (UDMA_INIT_DONE    != ringHandle->ringInitDone) ||
-       (UDMA_RING_INVALID == ringHandle->ringNum))
+    if((NULL_PTR == ringHandle) ||
+       (ringHandle->ringInitDone != UDMA_INIT_DONE) ||
+       (ringHandle->ringNum == UDMA_RING_INVALID))
     {
         retVal = UDMA_EBADARGS;
     }
     if(UDMA_SOK == retVal)
     {
         drvHandle = ringHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }
@@ -425,15 +425,15 @@ int32_t Udma_ringFlushRaw(Udma_RingHandle ringHandle, uint64_t *phyDescMem)
 
     /* Error check */
     if((NULL_PTR == ringHandle) ||
-       (UDMA_INIT_DONE != ringHandle->ringInitDone) ||
-       (UDMA_RING_INVALID == ringHandle->ringNum))
+       (ringHandle->ringInitDone != UDMA_INIT_DONE) ||
+       (ringHandle->ringNum == UDMA_RING_INVALID))
     {
         retVal = UDMA_EBADARGS;
     }
     if(UDMA_SOK == retVal)
     {
         drvHandle = ringHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }
@@ -561,7 +561,7 @@ int32_t Udma_ringMonAlloc(Udma_DrvHandle drvHandle,
                           uint16_t ringMonNum)
 {
     int32_t     retVal = UDMA_SOK;
-    uint32_t    allocDone = UFALSE;
+    uint32_t    allocDone = (uint32_t) FALSE;
     uint32_t    instType;
 
     /* Error check */
@@ -571,7 +571,7 @@ int32_t Udma_ringMonAlloc(Udma_DrvHandle drvHandle,
     }
     if(UDMA_SOK == retVal)
     {
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }
@@ -583,7 +583,7 @@ int32_t Udma_ringMonAlloc(Udma_DrvHandle drvHandle,
 
         if(UDMA_INST_TYPE_NORMAL == instType)
         {
-#if (1 == UDMA_SOC_CFG_RING_MON_PRESENT)
+#if (UDMA_SOC_CFG_RING_MON_PRESENT == 1)
             if(UDMA_RING_MON_ANY == ringMonNum)
             {
                 /* Alloc free ring MONITOR */
@@ -594,7 +594,7 @@ int32_t Udma_ringMonAlloc(Udma_DrvHandle drvHandle,
                 }
                 else
                 {
-                    allocDone = UTRUE;
+                    allocDone = (uint32_t) TRUE;
                 }
             }
             else
@@ -613,7 +613,7 @@ int32_t Udma_ringMonAlloc(Udma_DrvHandle drvHandle,
             if(UDMA_SOK == retVal)
             {
                 monHandle->drvHandle = drvHandle;
-                Udma_assert(drvHandle, (NULL_PTR != drvHandle->raRegs.pMonRegs));
+                Udma_assert(drvHandle, drvHandle->raRegs.pMonRegs != NULL_PTR);
                 monHandle->pMonRegs =
                     &drvHandle->raRegs.pMonRegs->MON[monHandle->ringMonNum];
                 monHandle->ringMonInitDone = UDMA_INIT_DONE;
@@ -621,7 +621,7 @@ int32_t Udma_ringMonAlloc(Udma_DrvHandle drvHandle,
             else
             {
                 /* Error. Free-up resource if allocated */
-                if(UTRUE == allocDone)
+                if(((uint32_t) TRUE) == allocDone)
                 {
                     Udma_rmFreeRingMon(monHandle->ringMonNum, drvHandle);
                 }
@@ -644,9 +644,9 @@ int32_t Udma_ringMonFree(Udma_RingMonHandle monHandle)
     Udma_DrvHandle  drvHandle;
 
     /* Error check */
-    if((NULL_PTR           == monHandle) ||
-    (UDMA_INIT_DONE        != monHandle->ringMonInitDone) ||
-    (UDMA_RING_MON_INVALID == monHandle->ringMonNum))
+    if((NULL_PTR == monHandle) ||
+    (monHandle->ringMonInitDone != UDMA_INIT_DONE) ||
+    (monHandle->ringMonNum == UDMA_RING_MON_INVALID))
     {
         retVal = UDMA_EBADARGS;
     }
@@ -655,7 +655,7 @@ int32_t Udma_ringMonFree(Udma_RingMonHandle monHandle)
     {
         drvHandle = monHandle->drvHandle;
 
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }
@@ -670,7 +670,7 @@ int32_t Udma_ringMonFree(Udma_RingMonHandle monHandle)
 
 #if (UDMA_SOC_CFG_RING_MON_PRESENT == 1)
             /* Free-up event resources */
-            Udma_assert(drvHandle, (UDMA_RING_MON_INVALID != monHandle->ringMonNum));
+            Udma_assert(drvHandle, monHandle->ringMonNum != UDMA_RING_MON_INVALID);
             Udma_rmFreeRingMon(monHandle->ringMonNum, drvHandle);
             monHandle->drvHandle        = (Udma_DrvHandle) NULL_PTR;
             monHandle->ringMonNum       = UDMA_RING_MON_INVALID;
@@ -695,9 +695,9 @@ int32_t Udma_ringMonConfig(Udma_RingMonHandle monHandle,
 
     /* Error check */
     if((NULL_PTR == monHandle) ||
-    (NULL_PTR    == monPrms)   ||
-    (UDMA_INIT_DONE        != monHandle->ringMonInitDone) ||
-    (UDMA_RING_MON_INVALID == monHandle->ringMonNum))
+    (NULL_PTR == monPrms) ||
+    (monHandle->ringMonInitDone != UDMA_INIT_DONE) ||
+    (monHandle->ringMonNum == UDMA_RING_MON_INVALID))
     {
         retVal = UDMA_EBADARGS;
     }
@@ -706,7 +706,7 @@ int32_t Udma_ringMonConfig(Udma_RingMonHandle monHandle,
     {
         drvHandle = monHandle->drvHandle;
 
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }
@@ -762,15 +762,15 @@ int32_t Udma_ringMonGetData(Udma_RingMonHandle monHandle,
     /* Error check */
     if((NULL_PTR == monHandle) ||
     (NULL_PTR == monData) ||
-    (UDMA_INIT_DONE        != monHandle->ringMonInitDone) ||
-    (UDMA_RING_MON_INVALID == monHandle->ringMonNum))
+    (monHandle->ringMonInitDone != UDMA_INIT_DONE) ||
+    (monHandle->ringMonNum == UDMA_RING_MON_INVALID))
     {
         retVal = UDMA_EBADARGS;
     }
     if(UDMA_SOK == retVal)
     {
         drvHandle = monHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }
@@ -783,7 +783,7 @@ int32_t Udma_ringMonGetData(Udma_RingMonHandle monHandle,
         if(UDMA_INST_TYPE_NORMAL == instType)
         {
 #if (UDMA_SOC_CFG_RING_MON_PRESENT == 1)
-            Udma_assert(drvHandle, (NULL_PTR != monHandle->pMonRegs));
+            Udma_assert(drvHandle, monHandle->pMonRegs != NULL_PTR);
             monData->data0 = CSL_REG32_RD(&monHandle->pMonRegs->DATA0);
             monData->data1 = CSL_REG32_RD(&monHandle->pMonRegs->DATA1);
 #endif
@@ -957,7 +957,7 @@ int32_t Udma_ringCheckParams(Udma_DrvHandle drvHandle,
     int32_t     retVal = UDMA_SOK;
     uint32_t    ringMemSize;
 
-    Udma_assert(drvHandle, (NULL_PTR != ringPrms));
+    Udma_assert(drvHandle, ringPrms != NULL_PTR);
 
     if(NULL_PTR == ringPrms->ringMem)
     {
@@ -967,7 +967,7 @@ int32_t Udma_ringCheckParams(Udma_DrvHandle drvHandle,
     else
     {
         /* Check 128 byte alignment */
-        if(0U != ((uintptr_t)ringPrms->ringMem & (UDMA_CACHELINE_ALIGNMENT - 1U)))
+        if(((uintptr_t)ringPrms->ringMem & (UDMA_CACHELINE_ALIGNMENT - 1U)) != 0U)
         {
             retVal = UDMA_EINVALID_PARAMS;
             Udma_printf(drvHandle, "[Error] Ring memory not aligned!!!\n");
@@ -1013,7 +1013,7 @@ int32_t Udma_ringCheckParams(Udma_DrvHandle drvHandle,
 
 #if ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) > 0)
     if((UDMA_MAPPED_GROUP_INVALID != ringPrms->mappedRingGrp) &&
-       ((UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP) <= ringPrms->mappedRingGrp))
+       (ringPrms->mappedRingGrp >= (UDMA_NUM_MAPPED_TX_GROUP + UDMA_NUM_MAPPED_RX_GROUP)))
     {
         retVal = UDMA_EINVALID_PARAMS;
         Udma_printf(drvHandle, "[Error] Incorrect Mapped Ring Group!!!\n");
@@ -1057,9 +1057,9 @@ int32_t Udma_ringReset(Udma_DrvHandle drvHandle,
     struct tisci_msg_rm_ring_cfg_req    rmRingReq;
     struct tisci_msg_rm_ring_cfg_resp   rmRingResp;
 
-    Udma_assert(drvHandle, (NULL_PTR != drvHandle->raRegs.pGlbRegs));
-    Udma_assert(drvHandle, (NULL_PTR != ringHandle->pCfgRegs));
-    Udma_assert(drvHandle, (NULL_PTR != ringHandle->pRtRegs));
+    Udma_assert(drvHandle, drvHandle->raRegs.pGlbRegs != NULL_PTR);
+    Udma_assert(drvHandle, ringHandle->pCfgRegs != NULL_PTR);
+    Udma_assert(drvHandle, ringHandle->pRtRegs != NULL_PTR);
 
     /*-------------------------------------------------------------------------
      *  ringacc revision 1.0.19 and earlier has an issue where the UDMAP ring
@@ -1128,7 +1128,7 @@ int32_t Udma_ringReset(Udma_DrvHandle drvHandle,
         {
             ringOcc >>= 1U;
         }
-        if(0U != ringOcc)
+        if(ringOcc != 0U)
         {
             /*---------------------------------------------------------------------
              *  2. Reset the ring by writing to size register
@@ -1161,7 +1161,7 @@ int32_t Udma_ringReset(Udma_DrvHandle drvHandle,
                 dbRingCnt = ((uint32_t)1U << 22) - ringOcc;
                 thisDbRingCnt = UDMA_RING_MAX_DB_RING_CNT;
                 regVal = (uint32_t)CSL_FMK(RINGACC_RT_RINGRT_DB_CNT, thisDbRingCnt);
-                while(0U != dbRingCnt)
+                while(dbRingCnt != 0U)
                 {
                     /*----------------------------------------------------------
                      *  Ring the doorbell with the maximum count each iteration

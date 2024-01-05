@@ -117,11 +117,11 @@ pcieRet_e Pciev1_getMemSpaceReserved
 {
   pcieRet_e retVal = pcie_RET_OK;
 
-  if (0 == pcieLObjIsValid) {
+  if (pcieLObjIsValid == 0) {
     retVal = pcie_RET_NO_INIT;
   }
   else {
-    if (IFALSE == pcie_check_handle_fcn(handle)) {
+    if (pcie_check_handle_fcn(handle) == 0) {
       retVal = pcie_RET_INV_HANDLE;
     }
     else {
@@ -152,11 +152,11 @@ pcieRet_e Pciev1_getMemSpaceRange
 {
   pcieRet_e retVal = pcie_RET_OK;
 
-  if (0 == pcieLObjIsValid) {
+  if (pcieLObjIsValid == 0) {
     retVal = pcie_RET_NO_INIT;
   }
   else {
-    if (IFALSE == pcie_check_handle_fcn(handle)) {
+    if (pcie_check_handle_fcn(handle) == 0) {
       retVal = pcie_RET_INV_HANDLE;
     }
     else {
@@ -203,11 +203,11 @@ pcieRet_e Pciev1_readRegs
   pcieRet_e retVal = pcie_RET_OK;
   int32_t i;
 
-  if (0 == pcieLObjIsValid) {
+  if (pcieLObjIsValid == 0) {
     retVal = pcie_RET_NO_INIT;
   }
   else {
-    if (IFALSE == pcie_check_handle_fcn(handle)) {
+    if (pcie_check_handle_fcn(handle) == 0) {
       retVal = pcie_RET_INV_HANDLE;
     }
     else {
@@ -910,11 +910,11 @@ pcieRet_e Pciev1_writeRegs
   pcieRet_e retVal = pcie_RET_OK;
   int32_t i;
 
-  if (0 == pcieLObjIsValid) {
+  if (pcieLObjIsValid == 0) {
     retVal = pcie_RET_NO_INIT;
   }
   else {
-    if (IFALSE == pcie_check_handle_fcn(handle)) {
+    if (pcie_check_handle_fcn(handle) == 0) {
       retVal = pcie_RET_INV_HANDLE;
     }
     else {
@@ -1594,13 +1594,13 @@ pcieRet_e Pciev1_cfgBar
   pcieType0BarIdx_t  type0BarIdx;  
   pcieType1BarIdx_t  type1BarIdx;  
   pcieRegisters_t    setRegs;
-  uint32_t           barAddrField = 0U;
+  uint32_t           barAddrField = 0;
 
-  if (0 == pcieLObjIsValid) {
+  if (pcieLObjIsValid == 0) {
     retVal = pcie_RET_NO_INIT;
   }
   else {
-    if (IFALSE == pcie_check_handle_fcn(handle)) {
+    if (pcie_check_handle_fcn(handle) == 0) {
       retVal = pcie_RET_INV_HANDLE;
     }
     else { 

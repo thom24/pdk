@@ -118,11 +118,11 @@ SemaphoreP_Handle SemaphoreP_create( uint32_t count,
 
     key = HwiP_disable(  );
 
-     for ( i = 0U; i < maxSemaphores; i++ )
+     for ( i = 0; i < maxSemaphores; i++ )
      {
-         if ( BFALSE == semPool[i].used )
+         if ( (bool)false == semPool[i].used )
          {
-             semPool[i].used = BTRUE;
+             semPool[i].used = (bool)true;
              /* Update statistics */
              gOsalSemAllocCnt++;
              if ( gOsalSemAllocCnt > gOsalSemPeak )
@@ -167,9 +167,9 @@ SemaphoreP_Handle SemaphoreP_create( uint32_t count,
         if ( SemaphoreP_OK != retVal )
         {
             key = HwiP_disable(  );
-            handle->used = BFALSE;
+            handle->used = (bool)false;
             /* Found the osal semaphore object to delete */
-            if ( 0U < gOsalSemAllocCnt )
+            if ( gOsalSemAllocCnt > 0U )
             {
                 gOsalSemAllocCnt--;
             }
@@ -203,7 +203,7 @@ int32_t SemaphoreP_constructBinary( SemaphoreP_safertos *handle, uint32_t initCo
              * So we need to take semaphore to make count 0, if we are creating a binary semaphore with init count of 0.
              */
             isSemTaken = (uint32_t)xSemaphoreTake( handle->semHndl, safertosapiMAX_DELAY);
-            DebugP_assert(UTRUE == isSemTaken);
+            DebugP_assert(TRUE == isSemTaken);
         }
         status = SemaphoreP_OK;
     }
@@ -247,14 +247,14 @@ SemaphoreP_Status SemaphoreP_delete( SemaphoreP_Handle handle )
      * NOTE : there is no delete Semaphore API in safertos.
      * We just memset the memory to zero.
      */
-    if( ( NULL_PTR != semaphore ) && ( BTRUE == semaphore->used ) )
+    if( ( NULL_PTR != semaphore ) && ( (bool)true == semaphore->used ) )
     {
         memset(&semaphore->semObj, 0, sizeof(semaphore->semObj));
         semaphore->semHndl = NULL;
         key = HwiP_disable(  );
-        semaphore->used = BFALSE;
+        semaphore->used = (bool)false;
         /* Found the osal semaphore object to delete */
-        if ( 0U < gOsalSemAllocCnt )
+        if ( gOsalSemAllocCnt > 0U )
         {
             gOsalSemAllocCnt--;
         }
@@ -374,7 +374,7 @@ int32_t SemaphoreP_getCount( SemaphoreP_Handle handle )
     SemaphoreP_safertos *pSemaphore = ( SemaphoreP_safertos * )handle;
 
 	xResult = xSemaphoreGetCountDepth(  pSemaphore->semHndl, &uxCount  );
-	if(  pdPASS != xResult )
+	if(  xResult != pdPASS  )
   {
 		uxCount = 0U;
   }

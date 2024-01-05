@@ -90,7 +90,7 @@
 /*                           MACRO DEFINTIONS                                 */
 /* ========================================================================== */
 
-uint32_t vaOffset = 0U;
+uint32_t vaOffset = 0;
 
 #if !defined (DEVICE_LOOPBACK)
 void IoExpanderConfig(void);
@@ -125,7 +125,7 @@ void configureAudio(void)
 #endif
 
     stat = Board_init(arg);
-    if(BOARD_SOK != stat)
+    if(stat != BOARD_SOK)
     {
             MCASP_log("Board init failed!!");
     }
@@ -178,7 +178,7 @@ void IoExpanderConfig(void)
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-    ioExpCfg.enableIntr  = BFALSE;
+    ioExpCfg.enableIntr  = false;
     ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_1;
     ioExpCfg.pinNum      = PIN_NUM_2;
@@ -198,7 +198,7 @@ void IoExpanderConfig(void)
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE3_ADDR;
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE3_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-    ioExpCfg.enableIntr  = BFALSE;
+    ioExpCfg.enableIntr  = false;
     ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = PIN_NUM_0;

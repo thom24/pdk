@@ -448,7 +448,7 @@ TEST_STATUS spiNorTest(void *testArgs)
         return (TEST_FAIL);
     }
 
-    if(args->autoRun == 0)
+    if(args->autoRun == FALSE)
     {
         /* Read test inputs from user if needed */
     }

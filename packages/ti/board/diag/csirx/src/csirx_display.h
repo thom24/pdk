@@ -253,8 +253,8 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Scaler enable */
     {
-        UTRUE,
-        UFALSE
+        TRUE,
+        FALSE
     },
     /* Global Alpha */
     {
@@ -263,8 +263,8 @@ static const DispApp_TestParams gDispAppTestParams=
     },
     /* Pre-multiply alpha */
     {
-        UFALSE,
-        UFALSE
+        FALSE,
+        FALSE
     },
     /* X Position */
     {

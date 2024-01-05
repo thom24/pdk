@@ -543,7 +543,7 @@ static int32_t Sciclient_queryFwCapsHandler(const uint32_t reqFlags __attribute_
 int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
 {
     int32_t ret = CSL_PASS;
-    bool msg_inval = BFALSE;
+    bool msg_inval = (bool)false;
     uint32_t msgType = ((struct tisci_header *) tx_msg)->type;
     uint32_t flags = ((struct tisci_header *) tx_msg)->flags;
     switch (msgType)
@@ -643,7 +643,7 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
             break;
         default:
             ret = CSL_EFAIL;
-            msg_inval = BTRUE;
+            msg_inval = (bool)true;
         break;
     }
     if ((flags & TISCI_MSG_FLAG_AOP) != 0UL) {
@@ -789,7 +789,7 @@ static int32_t tisci_msg_board_config_rm_handler(uint32_t *msg_recv)
 int32_t Sciclient_ProcessRmMessage(void *tx_msg)
 {
     int32_t r = CSL_PASS;
-    bool msg_inval = BFALSE;
+    bool msg_inval = (bool)false;
     uint32_t msgType = ((struct tisci_header *) tx_msg)->type;
 
     switch (msgType) {
@@ -834,7 +834,7 @@ int32_t Sciclient_ProcessRmMessage(void *tx_msg)
             break;
         default:
             r = CSL_EFAIL;
-            msg_inval = BTRUE;
+            msg_inval = (bool)true;
             break;
     }
 

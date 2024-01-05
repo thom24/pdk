@@ -108,12 +108,12 @@ Utils_PrfTsHndl *Utils_prfTsCreate(const char *name)
     {
         pHndl = &gUtils_prfObj.tsObj[hndlId];
 
-        if(UFALSE == pHndl->isAlloc)
+        if(FALSE == pHndl->isAlloc)
         {
             /* One less for NULL character */
             strncpy(pHndl->name, name, ((uint32_t) sizeof (pHndl->name) - 1U));
             pHndl->name[sizeof (pHndl->name) - 1U] = (uint8_t) '\0';
-            pHndl->isAlloc = UTRUE;
+            pHndl->isAlloc = (uint32_t) TRUE;
             Utils_prfTsReset(pHndl);
             break;
         }
@@ -126,7 +126,7 @@ Utils_PrfTsHndl *Utils_prfTsCreate(const char *name)
 
 int32_t Utils_prfTsDelete(Utils_PrfTsHndl *pHndl)
 {
-    pHndl->isAlloc = UFALSE;
+    pHndl->isAlloc = (uint32_t) FALSE;
     return (0);
 }
 
@@ -238,7 +238,7 @@ int32_t Utils_prfTsPrintAll(uint32_t resetAfterPrint, uint32_t trace)
     {
         pHndl = &gUtils_prfObj.tsObj[hndlId];
 
-        if(UTRUE == pHndl->isAlloc)
+        if(TRUE == pHndl->isAlloc)
         {
             Utils_prfTsPrint(pHndl, resetAfterPrint, trace);
         }
@@ -262,9 +262,9 @@ int32_t Utils_prfLoadRegister(TaskP_Handle pTsk, const char *name)
     {
         pHndl = &gUtils_prfObj.loadObj[hndlId];
 
-        if(UFALSE == pHndl->isAlloc)
+        if(FALSE == pHndl->isAlloc)
         {
-            pHndl->isAlloc = UTRUE;
+            pHndl->isAlloc = (uint32_t) TRUE;
             pHndl->pTsk    = pTsk;
             /* One less for NULL character */
             strncpy(pHndl->name, name, ((uint32_t) sizeof (pHndl->name) - 1U));
@@ -292,9 +292,9 @@ int32_t Utils_prfLoadUnRegister(TaskP_Handle pTsk)
     {
         pHndl = &gUtils_prfObj.loadObj[hndlId];
 
-        if((UTRUE == pHndl->isAlloc) && (pHndl->pTsk == pTsk))
+        if((TRUE == pHndl->isAlloc) && (pHndl->pTsk == pTsk))
         {
-            pHndl->isAlloc = UFALSE;
+            pHndl->isAlloc = (uint32_t) FALSE;
             status         = CSL_SOK;
             break;
         }
@@ -321,13 +321,13 @@ int32_t Utils_prfLoadPrintAll(uint32_t printTskLoad, uint32_t trace)
               AppUtils_getCurTimeInMsec(),
               cpuLoad);
 
-    if(UTRUE == printTskLoad)
+    if(((uint32_t) TRUE) == printTskLoad)
     {
         for (hndlId = 0; hndlId < UTILS_PRF_MAX_HNDL; hndlId++)
         {
             pHndl = &gUtils_prfObj.loadObj[hndlId];
 
-            if(UTRUE == pHndl->isAlloc)
+            if(TRUE == pHndl->isAlloc)
             {
                 status += LoadP_getTaskLoad(pHndl->pTsk, &gLoadStatsTask);
                 tskLoad = gLoadStatsTask.percentLoad;
@@ -369,8 +369,8 @@ void Utils_prfLoadCalcReset(void)
     {
         pHndl = &gUtils_prfObj.loadObj[hndlId];
 
-        if((UTRUE == pHndl->isAlloc) &&
-            (NULL != pHndl->pTsk))
+        if(((uint32_t) TRUE == pHndl->isAlloc) &&
+            (pHndl->pTsk != NULL))
         {
             pHndl->totalTskThreadTime = 0;
         }

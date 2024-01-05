@@ -69,8 +69,8 @@
 /* -------- constants -------- */
 
 const struct Mcasp_Params_s Mcasp_PARAMS = {
-    (uint16_t)UTRUE,   /* enablecache */
-    (uint16_t)UFALSE,  /* isDataBufferPayloadStructure */
+    TRUE,  /* enablecache */
+    FALSE,  /* isDataBufferPayloadStructure */
     {
         {
             (uint32_t)0x0,  /* pfunc   */
@@ -99,12 +99,12 @@ const struct Mcasp_Params_s Mcasp_PARAMS = {
             },  /* serSetup */
         },  /* glb */
         {
-            (uint32_t)0xFFFFFFFFU,  /* mask */
+            (uint32_t)0xffffffffU,  /* mask */
             (uint32_t)0x0,  /* fmt */
             (uint32_t)0x0,  /* frSyncCtl */
             (uint32_t)0x1,  /* tdm */
             (uint32_t)0x0,  /* intCtl */
-            (uint32_t)0x1FF,  /* stat */
+            (uint32_t)0x1ff,  /* stat */
             (uint32_t)0x0,  /* evtCtl */
             {
                 (uint32_t)0x3,  /* clkSetupClk */
@@ -113,12 +113,12 @@ const struct Mcasp_Params_s Mcasp_PARAMS = {
             },  /* clk */
         },  /* rx */
         {
-            (uint32_t)0xFFFFFFFFU,  /* mask */
+            (uint32_t)0xffffffffU,  /* mask */
             (uint32_t)0x0,  /* fmt */
             (uint32_t)0x2,  /* frSyncCtl */
             (uint32_t)0x1,  /* tdm */
             (uint32_t)0x0,  /* intCtl */
-            (uint32_t)0x1FF,  /* stat */
+            (uint32_t)0x1ff,  /* stat */
             (uint32_t)0x0,  /* evtCtl */
             {
                 (uint32_t)0x23,  /* clkSetupClk */
@@ -128,7 +128,7 @@ const struct Mcasp_Params_s Mcasp_PARAMS = {
         },  /* tx */
         (uint32_t)0x1,  /* emu */
     },  /* mcaspHwSetup */
-    (uint16_t)UFALSE           /* pscPwrmEnable  */
+    FALSE                 /* pscPwrmEnable  */
 };
 
 /* ========================================================================== */
@@ -319,8 +319,8 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
     Mcasp_Object   *instHandle = NULL;
     Mcasp_Params   *params     = NULL;
     int32_t           status     = MCASP_COMPLETED;
-    uint32_t          count      = 0U;
-    uint32_t          key        = 0U;
+    uint32_t          count      = 0;
+    uint32_t          key        = 0;
     QueueP_Params  qPrms;
 
     if (NULL == devParams)
@@ -344,7 +344,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
 #endif  /* PSP_DISABLE_INPUT_PARAMETER_CHECK */
         instHandle =  &Mcasp_Instances[devId];
 #ifndef PSP_DISABLE_INPUT_PARAMETER_CHECK
-        if (UTRUE == Mcasp_module.inUse[devId])
+        if (TRUE == Mcasp_module.inUse[devId])
         {
             status = MCASP_EBADARGS;
         }
@@ -357,7 +357,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
         /* critical section starts                                            */
         key = HwiP_disable();
 
-        Mcasp_module.inUse[devId] = UTRUE;
+        Mcasp_module.inUse[devId] = (Bool)TRUE;
         instHandle->devState = Mcasp_DriverState_CREATED;
 
         /* critical section ends                                              */
@@ -369,8 +369,8 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
         instHandle->pscPwrmEnable = (Bool)(params->pscPwrmEnable);
 
         /* stop the state machine of RX and TX                                */
-        instHandle->stopSmFsXmt = UTRUE;
-        instHandle->stopSmFsRcv = UTRUE;
+        instHandle->stopSmFsXmt = (Bool)TRUE;
+        instHandle->stopSmFsRcv = (Bool)TRUE;
 
         instHandle->retryCount = Mcasp_POLLED_RETRYCOUNT;
 
@@ -400,39 +400,39 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
         assert(NULL != instHandle->XmtObj.queueFloatingList);
         instHandle->XmtObj.noOfSerAllocated = 0;
         instHandle->XmtObj.channelOpMode = Mcasp_ChanMode_XMT_DIT;
-        instHandle->XmtObj.isDmaDriven = UTRUE;
+        instHandle->XmtObj.isDmaDriven = (Bool)TRUE;
         instHandle->XmtObj.dataQueuedOnReset = 0;
-        instHandle->XmtObj.intStatus = 0U;
+        instHandle->XmtObj.intStatus = 0;
         instHandle->XmtObj.dataPacket = NULL;
         instHandle->XmtObj.tempPacket = NULL;
-        instHandle->XmtObj.isTempPacketValid = UFALSE;
-        instHandle->XmtObj.userDataBufferSize = 0U;
+        instHandle->XmtObj.isTempPacketValid = (Bool)FALSE;
+        instHandle->XmtObj.userDataBufferSize = 0;
         instHandle->XmtObj.submitCount = -1;
-        instHandle->XmtObj.loopjobUpdatedinParamset = UFALSE;
+        instHandle->XmtObj.loopjobUpdatedinParamset = (Bool)FALSE;
         instHandle->XmtObj.cpuEventNum = 0;
         instHandle->XmtObj.intNum = -1;
-        instHandle->XmtObj.xferinProgressIntmode = UFALSE;
+        instHandle->XmtObj.xferinProgressIntmode = (Bool)FALSE;
         instHandle->XmtObj.loopJobBuffer = NULL;
         instHandle->XmtObj.loopJobLength = 0;
         instHandle->XmtObj.roundedWordWidth = 0;
         instHandle->XmtObj.currentDataSize =0;
-        instHandle->XmtObj.bMuteON = UFALSE;
-        instHandle->XmtObj.paused = UFALSE;
+        instHandle->XmtObj.bMuteON = (Bool)FALSE;
+        instHandle->XmtObj.paused = (Bool)FALSE;
         instHandle->XmtObj.gblErrCbk  = NULL;
-        instHandle->XmtObj.enableHwFifo = UTRUE;
-        instHandle->XmtObj.hwFifoEventDMARatio = 1;
-        instHandle->XmtObj.nextFlag = UFALSE;
+        instHandle->XmtObj.enableHwFifo = (Bool)TRUE;
+        instHandle->XmtObj.hwFifoEventDMARatio=1;
+        instHandle->XmtObj.nextFlag = (Bool)FALSE;
         instHandle->XmtObj.currentPacketErrorStatus = MCASP_COMPLETED;
         instHandle->XmtObj.noOfSlots = 0;
-        instHandle->XmtObj.isDataPacked = UFALSE;
+        instHandle->XmtObj.isDataPacked = (Bool)FALSE;
         instHandle->XmtObj.dataFormat = Mcasp_BufferFormat_1SER_1SLOT;
-        instHandle->XmtObj.userLoopJob = UFALSE;
+        instHandle->XmtObj.userLoopJob = (Bool)FALSE;
         instHandle->XmtObj.userIntValue = 0x00000003;
         instHandle->XmtObj.wordBitsSelect = Mcasp_WordBitsSelect_LSB;
-        instHandle->XmtObj.frSyncCtl = 0U;
-        instHandle->XmtObj.fmt = 0U;        
+        instHandle->XmtObj.frSyncCtl = 0;
+        instHandle->XmtObj.fmt = 0;        
         instHandle->XmtObj.channelMode = Mcasp_OpMode_TDM;
-        instHandle->XmtObj.noOfChannels = 0U;
+        instHandle->XmtObj.noOfChannels = 0;
 
         /* Initialize the Tx DMA parameters */
         Mcasp_initChanDmaObj(&instHandle->XmtObj);
@@ -452,40 +452,40 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
         assert(NULL != instHandle->RcvObj.queueFloatingList);
         instHandle->RcvObj.noOfSerAllocated = 0;
         instHandle->RcvObj.channelOpMode = Mcasp_ChanMode_RCV;
-        instHandle->RcvObj.isDmaDriven = UTRUE;
-        instHandle->RcvObj.dataQueuedOnReset = 0;
-        instHandle->RcvObj.intStatus = 0U;
+        instHandle->RcvObj.isDmaDriven = (Bool)TRUE;
+        instHandle->RcvObj.dataQueuedOnReset =0;
+        instHandle->RcvObj.intStatus = 0;
         instHandle->RcvObj.dataPacket = NULL;
         instHandle->RcvObj.tempPacket = NULL;
-        instHandle->RcvObj.isTempPacketValid = UFALSE;
-        instHandle->RcvObj.userDataBufferSize = 0U;
+        instHandle->RcvObj.isTempPacketValid = (Bool)FALSE;
+        instHandle->RcvObj.userDataBufferSize = 0;
         instHandle->RcvObj.submitCount = -1;
-        instHandle->RcvObj.loopjobUpdatedinParamset = UFALSE;
+        instHandle->RcvObj.loopjobUpdatedinParamset = (Bool)FALSE;
         instHandle->RcvObj.cpuEventNum = 0;
         instHandle->RcvObj.intNum = -1;
-        instHandle->RcvObj.xferinProgressIntmode = UFALSE;
+        instHandle->RcvObj.xferinProgressIntmode = (Bool)FALSE;
         instHandle->RcvObj.loopJobBuffer = NULL;
         instHandle->RcvObj.loopJobLength = 0;
         instHandle->RcvObj.roundedWordWidth = 0;
         instHandle->RcvObj.currentDataSize =0;
-        instHandle->RcvObj.bMuteON = UFALSE;
-        instHandle->RcvObj.paused = UFALSE;
+        instHandle->RcvObj.bMuteON = (Bool)FALSE;
+        instHandle->RcvObj.paused = (Bool)FALSE;
         instHandle->RcvObj.gblErrCbk  = NULL;
-        instHandle->RcvObj.enableHwFifo = UTRUE;
+        instHandle->RcvObj.enableHwFifo = (Bool)TRUE;
         instHandle->RcvObj.hwFifoEventDMARatio=1;
-        instHandle->RcvObj.nextFlag = UFALSE;
+        instHandle->RcvObj.nextFlag = (Bool)FALSE;
         instHandle->RcvObj.noOfSlots = 0;
-        instHandle->RcvObj.isDataPacked = UFALSE;
+        instHandle->RcvObj.isDataPacked = (Bool)FALSE;
         instHandle->RcvObj.dataFormat = Mcasp_BufferFormat_1SER_1SLOT;
         instHandle->RcvObj.currentPacketErrorStatus = MCASP_COMPLETED;
-        instHandle->RcvObj.userLoopJob = UFALSE;
+        instHandle->RcvObj.userLoopJob = (Bool)FALSE;
         instHandle->RcvObj.userLoopJobLength = 0;
         instHandle->RcvObj.userIntValue      = 0x00000003;
         instHandle->RcvObj.wordBitsSelect = Mcasp_WordBitsSelect_LSB;
-        instHandle->RcvObj.frSyncCtl = 0U;
-        instHandle->RcvObj.fmt = 0U;        
+        instHandle->RcvObj.frSyncCtl = 0;
+        instHandle->RcvObj.fmt = 0;        
         instHandle->RcvObj.channelMode = Mcasp_OpMode_TDM;
-        instHandle->RcvObj.noOfChannels = 0U;
+        instHandle->RcvObj.noOfChannels = 0;
 
         /* Initialize the Rx DMA parameters */
         Mcasp_initChanDmaObj(&instHandle->RcvObj);
@@ -493,25 +493,25 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
         for (count = 0; count < Mcasp_NUMSERIALIZERS; count++)
         {
             instHandle->serStatus[count] = Mcasp_SerializerStatus_FREE;
-            instHandle->XmtObj.indexOfSersRequested[count] = 0U;
-            instHandle->RcvObj.indexOfSersRequested[count] = 0U;
+            instHandle->XmtObj.indexOfSersRequested[count] = 0;
+            instHandle->RcvObj.indexOfSersRequested[count] = 0;
         }
 
 #ifdef Mcasp_LOOPJOB_ENABLED
         /* driver is compiled in loop Job mode                                */
-        instHandle->loopJobMode = UTRUE;
+        instHandle->loopJobMode = (Bool) TRUE;
 
-        if (UTRUE == instHandle->pscPwrmEnable)
+        if ((Bool) TRUE == instHandle->pscPwrmEnable)
         {
             /* power management not supported for loop job mode               */
             status = MCASP_EBADMODE;
         }
 #else
-        instHandle->loopJobMode = UFALSE;
+        instHandle->loopJobMode = (Bool)FALSE;
 
 #endif
         if ((MCASP_COMPLETED == status) &&
-            (UFALSE == instHandle->pscPwrmEnable))
+            (FALSE == instHandle->pscPwrmEnable))
         {
 #ifdef BIOS_PWRM_ENABLE
             /* power on using bios PWRM API                                   */
@@ -523,13 +523,13 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
             status = Psc_ModuleClkCtrl(
                          (Psc_DevId)instHandle->hwInfo.pscInstance,
                          (uint32_t)instHandle->hwInfo.pwrmLpscId,
-                         UTRUE);
+                         TRUE);
 #endif
 #endif
         }
 
 #if defined (BIOS_PWRM_ENABLE) && !defined (Mcasp_LOOPJOB_ENABLED)
-        if ((MCASP_COMPLETED == status) && (UTRUE == instHandle->pscPwrmEnable))
+        if ((MCASP_COMPLETED == status) && (TRUE == instHandle->pscPwrmEnable))
         {
             memset(&instHandle->pwrmInfo,0x00,sizeof(Mcasp_pwrmInfo));
 
@@ -590,7 +590,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
         if (MCASP_COMPLETED == status)
         {
 #ifndef Mcasp_LOOPJOB_ENABLED
-            instHandle->loopJobMode = UFALSE;
+            instHandle->loopJobMode = (Bool) FALSE;
 #ifdef BIOS_SWI
             Swi_Params_init(&swiParams);
 
@@ -635,10 +635,10 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
 {
     Mcasp_Object       *instHandle = NULL;
     int32_t               retVal     = MCASP_COMPLETED;
-    uint32_t       key        = 0U;
+    uint32_t       key        = 0;
 #ifdef BIOS_SWI
-    uint32_t        devId       = 0U;
-    Bool          destructSwi = UTRUE;
+    uint32_t        devId       = 0;
+    Bool          destructSwi = (Bool) TRUE;
 #endif
 
 /* Begin parameter checking                                                   */
@@ -667,34 +667,34 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
         /* Close and free mcasp port handle                                   */
         if (NULL != &(instHandle->hwInfo))
         {
-            instHandle->hwInfo.regs    = 0U;
+            instHandle->hwInfo.regs    = 0;
             instHandle->hwInfo.numOfSerializers = 0;
-            instHandle->hwInfo.ditStatus = UFALSE;
+            instHandle->hwInfo.ditStatus = (Bool)FALSE;
         }
 
         /* critical section starts                                            */
         key = HwiP_disable();
         /* Mark driver state as deleted and module as not in use              */
         instHandle->devState = Mcasp_DriverState_DELETED;
-        Mcasp_module.inUse[instHandle->instNum] = UFALSE;
+        Mcasp_module.inUse[instHandle->instNum] = (Bool)FALSE;
 
 #ifdef BIOS_SWI
         /* Check across all instances to see if any interrupts are still
          *registered */
-        for (devId = 0U; devId < MCASP_CNT; devId++)
+        for (devId = (uint32_t) 0; devId < MCASP_CNT; devId++)
         {
-            if ((UFALSE != Mcasp_module.inUse[devId]))
+            if (((Bool) FALSE != Mcasp_module.inUse[devId]))
             {
-                destructSwi = UFALSE;
+                destructSwi = (Bool) FALSE;
                 break;
             }
         }
 
         /* Destruct Swi only if all interrupts are properly unregistered */
-        if (UTRUE == destructSwi)
+        if ((Bool) TRUE == destructSwi)
         {
             Swi_destruct(&(instHandle->isrSwiObject));
-            for (devId = 0U; devId < MCASP_CNT; devId++)
+            for (devId = (uint32_t) 0; devId < MCASP_CNT; devId++)
             {
                  Mcasp_module.isrObject[devId].isrSwiTaskHandle = NULL;
              }
@@ -706,7 +706,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
         /* critical section ends                                              */
         HwiP_restore(key);
 
-        if (UFALSE == instHandle->pscPwrmEnable)
+        if (FALSE == instHandle->pscPwrmEnable)
         {
 #ifdef BIOS_PWRM_ENABLE
             /* power on using bios PWRM API                                   */
@@ -718,13 +718,13 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
             retVal = Psc_ModuleClkCtrl(
                          (Psc_DevId)instHandle->hwInfo.pscInstance,
                          (uint32_t)instHandle->hwInfo.pwrmLpscId,
-                         UFALSE);
+                         FALSE);
 #endif
 #endif
         }
 
 #if defined (BIOS_PWRM_ENABLE) && !defined (Mcasp_LOOPJOB_ENABLED)
-        if ((MCASP_COMPLETED == retVal) && (UTRUE == instHandle->pscPwrmEnable))
+        if ((MCASP_COMPLETED == retVal) && (TRUE == instHandle->pscPwrmEnable))
         {
             /* register the notify function for the PWRM events               */
             retVal = McaspUnregisterNotification(instHandle);
@@ -771,11 +771,11 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
     Mcasp_Object           *instHandle  = NULL;
     Mcasp_ChannelHandle     chanHandle  = NULL;
     Mcasp_ChanParams       *chanparam   = NULL;
-    uint32_t                  key         = 0U;
+    uint32_t                  key         = 0;
     uint8_t                   count       = 0;
-    uint32_t                  mod         = 0U;
-    Bool                    falsewhile  = UTRUE;
-    Bool                    pscPwrOn    = UFALSE;
+    uint32_t                  mod         = 0;
+    Bool                    falsewhile  = (Bool)TRUE;
+    Bool                    pscPwrOn    = (Bool)FALSE;
     int32_t                 retVal      = MCASP_COMPLETED;
     uint16_t                tempRoundedWordWidth = 0;
     int32_t                 status      = MCASP_COMPLETED;
@@ -803,7 +803,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
     {
         instHandle = (Mcasp_Object *)devp;
 #ifndef PSP_DISABLE_INPUT_PARAMETER_CHECK
-        if ((NULL == instHandle->hwInfo.dmaHandle) && (UTRUE == chanparam->isDmaDriven))
+        if ((NULL == instHandle->hwInfo.dmaHandle) && (TRUE == chanparam->isDmaDriven))
         {
             status = MCASP_EBADARGS;
 #ifdef MCASP_EDMA_ENABLED
@@ -823,7 +823,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
         /* check the current mode of operation and assign suitable handle */
         if (MCASP_INPUT == mode)
         {
-            if((NULL == ((Mcasp_ChannelHandle)&instHandle->RcvObj)) ||
+            if((((Mcasp_ChannelHandle)&instHandle->RcvObj) == NULL) ||
                     (Mcasp_DriverState_OPENED == (instHandle->RcvObj).chanState))
             {
                 status = MCASP_EBADARGS;
@@ -831,7 +831,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
         }
         else
         {
-            if((NULL == ((Mcasp_ChannelHandle)&instHandle->XmtObj)) ||
+            if((((Mcasp_ChannelHandle)&instHandle->XmtObj) == NULL) ||
                     (Mcasp_DriverState_OPENED == (instHandle->XmtObj).chanState))
             {
                 status = MCASP_EBADARGS;
@@ -866,20 +866,20 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
         }
 
         if ((Mcasp_OpMode_DIT == chanparam->channelMode)
-            && (UFALSE == instHandle->isDataBufferPayloadStructure))
+            && (FALSE == instHandle->isDataBufferPayloadStructure))
         {
             status = MCASP_EBADARGS;
         }
 
         /* if this instance is not supporting DIT mode then return error  */
         if ((Mcasp_OpMode_DIT == chanparam->channelMode)
-            && (UFALSE == instHandle->hwInfo.ditStatus))
+            && (FALSE == instHandle->hwInfo.ditStatus))
         {
             status = MCASP_EBADARGS;
         }
 
         /* Check requested serializers are free or not                    */
-        if (UFALSE == mcaspIsRequestedSerzsFree(instHandle, chanparam))
+        if (FALSE == mcaspIsRequestedSerzsFree(instHandle, chanparam))
         {
             /* since serializers cannot be allocated, return error        */
             status = MCASP_EBADARGS;
@@ -891,7 +891,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
     {
         do
         {
-            falsewhile = UFALSE;
+            falsewhile = (Bool)FALSE;
 
             /* power on the module                                            */
             status = Mcasp_localLpscOn(instHandle);
@@ -899,7 +899,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
             if (MCASP_COMPLETED == status)
             {
                 /* Able to power ON the module, hence then continue              */
-                pscPwrOn = UTRUE;
+                pscPwrOn = (Bool)TRUE;
 
                 /* initialise buffers required by the mcasp for mute and loop job */
                 mcaspInit((uint32_t)instHandle->instNum);
@@ -946,7 +946,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
 
                 /* check if the cache is to be supported and flush the cache      *
                  * if the cache support is enabled                                */
-                if (UTRUE == instHandle->enablecache)
+                if (TRUE == instHandle->enablecache)
                 {
                     CacheP_wb(Mcasp_muteBuf[instHandle->instNum].scratchBuffer,
                                 (int32_t)Mcasp_CACHE_LENGTH);
@@ -963,10 +963,10 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
                     chanHandle->currentPacketErrorStatus = MCASP_COMPLETED;
 
                     /* Initialize Mute parameter                                      */
-                    chanHandle->bMuteON = UFALSE;
+                    chanHandle->bMuteON = (Bool)FALSE;
 
                     /* Initialize Pause parameter                                     */
-                    chanHandle->paused = UFALSE;
+                    chanHandle->paused = (Bool)FALSE;
                 }
 
                 /* Since we have request serialisers as free, we allocate them to *
@@ -1027,7 +1027,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
 
                 if(chanHandle->enableHwFifo) {
                  /* Check if the throttle has exceeded the max */
-                   if((chanHandle->hwFifoEventDMARatio > 0U) &&
+                   if((chanHandle->hwFifoEventDMARatio > 0) &&
                       ((chanHandle->hwFifoEventDMARatio*chanHandle->roundedWordWidth*chanHandle->noOfSerAllocated) <= Mcasp_MAX_AFIFO_SIZE)) {
                       /* Fifo hwFifoEventDMARatio should be a non-zero value and the resulting depth should not exceeded the maximum allowed Fifo depth */
                       chanHandle->hwFifoEventDMARatio = chanparam->hwFifoEventDMARatio;
@@ -1037,10 +1037,10 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
                    }
                 }
                 /* Approaches part ways.For interrupt and DMA modes               */
-                if (UTRUE == chanparam->isDmaDriven)
+                if (TRUE == chanparam->isDmaDriven)
                 {
                     /* Store this info in the channel handle too                  */
-                    chanHandle->isDmaDriven = UTRUE;
+                    chanHandle->isDmaDriven = (Bool)TRUE;
 
 #ifdef MCASP_EDMA_ENABLED
                     /* Preserving legacy operation: old versions of the EDMA
@@ -1112,7 +1112,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
                              * chanHandle->noOfSerAllocated*chanHandle->hwFifoEventDMARatio);
                     }
                     /* user loopJob is not being used                         */
-                    chanHandle->userLoopJob = UFALSE;
+                    chanHandle->userLoopJob = (Bool) FALSE;
                 }
                 else
                 {
@@ -1123,7 +1123,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
                         chanparam->userLoopJobLength;
 
                     /* user loopJob is being used                             */
-                    chanHandle->userLoopJob = UTRUE;
+                    chanHandle->userLoopJob = (Bool) TRUE;
                     if (chanHandle->roundedWordWidth >
                         chanparam->userLoopJobLength)
                     {
@@ -1145,7 +1145,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
                 {
                     /* Interrupt driven operation */
                     /* Store this info too in the channel handle.                 */
-                    chanHandle->isDmaDriven = UFALSE;
+                    chanHandle->isDmaDriven = (Bool)FALSE;
 
                     if (MCASP_INPUT == chanHandle->mode)
                     {
@@ -1169,7 +1169,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
                      * handled in submitreq function.Keep count of packets to     *
                      * service this.                                              */
                     chanHandle->dataQueuedOnReset = 0;
-                    chanHandle->xferinProgressIntmode = UFALSE;
+                    chanHandle->xferinProgressIntmode = (Bool)FALSE;
                 }
             }
         }while(falsewhile);
@@ -1271,7 +1271,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
            * modes  because in DMA mode also we will get interrupts for     *
            * errors                                                         */
           
-            if ( (MCASP_UNASSIGNED_INTNUM != chanHandle->intNum) && (MCASP_UNASSIGNED_EVENTNUM != chanHandle->cpuEventNum))
+            if ( (chanHandle->intNum!=MCASP_UNASSIGNED_INTNUM) && (chanHandle->cpuEventNum !=MCASP_UNASSIGNED_EVENTNUM))
             {
                mcaspRegisterInt(
                 chanHandle,
@@ -1289,7 +1289,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
 
                 /*Starting DMA after starting clocks and before Serialiser SM FS
                  * */
-                if (UTRUE == chanHandle->isDmaDriven)
+                if ((Bool) TRUE == chanHandle->isDmaDriven)
                 {
                     /* enable the DMA */
                     Mcasp_enableDMA(chanHandle);
@@ -1326,12 +1326,12 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
                  * */
                 /*  update the State m/c stop status
                  */
-                instHandle->stopSmFsXmt = UFALSE;
-                instHandle->stopSmFsRcv = UFALSE;
+                instHandle->stopSmFsXmt = (Bool) FALSE;
+                instHandle->stopSmFsRcv = (Bool) FALSE;
 #endif          /* Mcasp_LOOPJOB_ENABLED */
     }
 
-    if ((UTRUE == pscPwrOn) && (MCASP_COMPLETED == status))
+    if ((TRUE == pscPwrOn) && (MCASP_COMPLETED == status))
     {
         /* power off the module                                           */
         retVal = Mcasp_localLpscOff(instHandle);
@@ -1401,7 +1401,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
         if ((NULL == chanHandle) ||
              (Mcasp_DriverState_OPENED != chanHandle->chanState) ||
              (((MCASP_READ == ioPacket->cmd) || (MCASP_WRITE == ioPacket->cmd)) &&
-            ((0U == ioPacket->size) || (NULL == ioPacket->addr))))
+            ((0 == ioPacket->size) || (NULL == ioPacket->addr))))
         {
             status = MCASP_EBADARGS;
         }
@@ -1466,8 +1466,8 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
     Mcasp_Object        *instHandle  = NULL;
     Mcasp_ChannelHandle  chanHandle  = NULL;
     int32_t                status      = MCASP_COMPLETED;
-    uint32_t               hwiKey      = 0U;
-    Bool                 pscPwrOn    = UFALSE;
+    uint32_t               hwiKey      = 0;
+    Bool                 pscPwrOn    = (Bool)FALSE;
     int32_t                retVal      = MCASP_COMPLETED;
     
 /* Begin parameter checking                                                   */
@@ -1496,7 +1496,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
        if(NULL != instHandle)
        {  
 #if defined (BIOS_PWRM_ENABLE) && !defined (Mcasp_LOOPJOB_ENABLED)
-        if (UTRUE == instHandle->pscPwrmEnable)
+        if (TRUE == instHandle->pscPwrmEnable)
         {
             status = McaspUnregisterConstraints(instHandle);
         }
@@ -1512,7 +1512,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
             McASPRxReset((uint32_t)instHandle->hwInfo.regs);
         }
         /* DMA driven transaction channel                                     */
-        if (UTRUE == chanHandle->isDmaDriven)
+        if (TRUE == chanHandle->isDmaDriven)
         {
             /* Unregister the interrupts registered                           */
             if(chanHandle->userIntValue) {
@@ -1527,7 +1527,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
 
             if (MCASP_COMPLETED == status)
             {
-                pscPwrOn = UTRUE;
+                pscPwrOn = (Bool)TRUE;
             }
 
             if (MCASP_COMPLETED == status)
@@ -1546,7 +1546,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
             }
 
             /* Disable the FIFO */
-            mcaspConfigureFifo(&instHandle->hwInfo, chanHandle, UFALSE);
+            mcaspConfigureFifo(&instHandle->hwInfo, chanHandle, FALSE);
 
             /* Disable the current transfer to make sure that there is        *
              * no running EDMA transfer taking place                          */
@@ -1574,10 +1574,10 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
         mcaspMultiSerGlobalRestore(chanHandle);
 
         /* Set the Muted state to FALSE                                       */
-        chanHandle->bMuteON = UFALSE;
+        chanHandle->bMuteON = (Bool)FALSE;
 
         /* Set the Pause state to FALSE                                       */
-        chanHandle->paused = UFALSE;
+        chanHandle->paused = (Bool)FALSE;
 
         /* start of critical section                                          */
         hwiKey = HwiP_disable();
@@ -1590,7 +1590,7 @@ static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum);
         chanHandle->noOfSerAllocated = 0;
         chanHandle->channelOpMode  = Mcasp_ChanMode_FREE;
 
-        if (UTRUE == pscPwrOn)
+        if (TRUE == pscPwrOn)
         {
             retVal = Mcasp_localLpscOff(instHandle);
 
@@ -1700,7 +1700,7 @@ int32_t Mcasp_localSetupHwInfo(Mcasp_HwHandle        hMcasp,
     Int16   serNum = 0;
     int32_t status = MCASP_COMPLETED;
     
-    if((NULL != hMcasp) && (NULL != myHwSetup) && (0U != hMcasp->regs))
+    if((NULL != hMcasp) && (NULL != myHwSetup) && (0 != hMcasp->regs))
     {
     /* Reset McASP to default values by setting GBLCTL = 0                    */
     McASPGlobalCtlReset(hMcasp->regs);
@@ -1837,7 +1837,7 @@ int32_t Mcasp_localSetupHwInfo(Mcasp_HwHandle        hMcasp,
     McASPPinDirOutputSet(hMcasp->regs, myHwSetup->glb.pdir);
 
     /* Configure DITCTL                                                       */
-    if (UTRUE == hMcasp->ditStatus)
+    if (TRUE == hMcasp->ditStatus)
     {
         McASPDITModeCtlWrite(hMcasp->regs, myHwSetup->glb.ditCtl);
     }
@@ -1881,17 +1881,17 @@ int32_t Mcasp_localAbortReset(Mcasp_ChannelHandle chanHandle)
 {
     Mcasp_Object        *instHandle = NULL;
     MCASP_Packet          *ioPacket   = NULL;
-    uint32_t               hwiKey     = 0U;
-    Bool                 falsewhile = UFALSE;
-    Bool                 firstReq   = UTRUE;
-    uint32_t            dmaPos = 0U;
+    uint32_t               hwiKey     = 0;
+    Bool                 falsewhile = (Bool)FALSE;
+    Bool                 firstReq   = (Bool)TRUE;
+    uint32_t            dmaPos = 0;
     int32_t                status     = MCASP_COMPLETED;
 
     if((NULL != chanHandle) && (NULL != chanHandle->devHandle))
     {
     do
     {
-        falsewhile = UFALSE;
+        falsewhile = (Bool)FALSE;
 
         instHandle = (Mcasp_Object *)chanHandle->devHandle;
 
@@ -1914,7 +1914,7 @@ int32_t Mcasp_localAbortReset(Mcasp_ChannelHandle chanHandle)
         }
 
         /* Disable the FIFO */
-        mcaspConfigureFifo(&instHandle->hwInfo, chanHandle, UFALSE);
+        mcaspConfigureFifo(&instHandle->hwInfo, chanHandle, FALSE);
 
         /* Disable EDMA  transfer                                             */
         Mcasp_disableDMA(chanHandle);
@@ -1944,9 +1944,9 @@ int32_t Mcasp_localAbortReset(Mcasp_ChannelHandle chanHandle)
         /* Get the current value of cCnt for the actual data transfered       */
         Mcasp_getDmaPosition(chanHandle, &dmaPos);
 
-        firstReq = UTRUE;
+        firstReq = (Bool)TRUE;
 
-        if (UTRUE == chanHandle->isDmaDriven)
+        if (((int32_t)TRUE) == chanHandle->isDmaDriven)
         {
             /* Empty the floating queue.                                      */
             while (QueueP_NOTEMPTY == QueueP_isEmpty(chanHandle->queueFloatingList))
@@ -1969,10 +1969,10 @@ int32_t Mcasp_localAbortReset(Mcasp_ChannelHandle chanHandle)
                 /* Actual data transfer will be equal to size provided by     *
                  * application i.e.userDataBufferSize reduced by current      *
                  * DMA position.                                              */
-                if (UTRUE == firstReq)
+                if (TRUE == firstReq )
                 {
                     ioPacket->size = (uint32_t)(ioPacket->size - dmaPos);
-                    firstReq = UFALSE;
+                    firstReq = (Bool)FALSE;
                 }
 
                 if (NULL != ioPacket)
@@ -2013,7 +2013,7 @@ int32_t Mcasp_localAbortReset(Mcasp_ChannelHandle chanHandle)
             {
                 /* set packet status equal to MCASP_ABORTED                     */
                 ioPacket->status = MCASP_ABORTED;
-                ioPacket->size   = 0U;
+                ioPacket->size   = 0;
                 if (NULL !=  chanHandle->cbFxn)
                 {
                     /*  Application callback                                  */
@@ -2031,7 +2031,7 @@ int32_t Mcasp_localAbortReset(Mcasp_ChannelHandle chanHandle)
         /* Configure the EDMA channel and EDMA param tables with intialization*
          * configuration as they are configured at the create time.           */
         /** Todo: where is the right place for this? */
-        chanHandle->loopjobUpdatedinParamset = UTRUE;
+        chanHandle->loopjobUpdatedinParamset = (Bool)TRUE;
 
         Mcasp_setupDmaChan(chanHandle);
 
@@ -2239,16 +2239,16 @@ int32_t Mcasp_localSmReset(Mcasp_ChannelHandle chanHandle)
       }
 
       /* Disable the FIFO */
-      mcaspConfigureFifo(&instHandle->hwInfo, chanHandle, UFALSE);
+      mcaspConfigureFifo(&instHandle->hwInfo, chanHandle, FALSE);
 
-      if (UFALSE == chanHandle->isDmaDriven)
+      if (FALSE == chanHandle->isDmaDriven)
       {
         /* Interrupt driven transactions */
 
         /* When iohandle state m/c is reactivated, it will require two        *
          * requests to service it. Reset count to ensure this.                */
         chanHandle->dataQueuedOnReset = 0;
-        chanHandle->xferinProgressIntmode = UFALSE;
+        chanHandle->xferinProgressIntmode = (Bool)FALSE;
       }
       else
      {
@@ -2286,14 +2286,14 @@ int32_t Mcasp_localSmSet(Mcasp_ChannelHandle chanHandle)
                        chanHandle,
                        chanHandle->enableHwFifo);
 
-    if (UFALSE == chanHandle->isDmaDriven)
+    if (FALSE == chanHandle->isDmaDriven)
     {
         /* Interrupt driven transactions */
 
         /* When channel state m/c is reactivated, it will require two         *
          * requests to service it. Reset count to ensure this.                */
         chanHandle->dataQueuedOnReset = 0;
-        chanHandle->xferinProgressIntmode = UFALSE;
+        chanHandle->xferinProgressIntmode = (Bool)FALSE;
     }
     else
     {
@@ -2336,18 +2336,18 @@ int32_t Mcasp_localConfigXmtSection(Mcasp_Object       *instHandle,
                                   Mcasp_HwSetupData  *const xmtData)
 {
     int32_t   status     = MCASP_COMPLETED;
-    uint8_t   xCnt       = 0x00U;
-    uint32_t  xMin       = 0x00U;
-    uint32_t  xMax       = 0x00U;
-    uint32_t  retryCount = 5U;
-    uint32_t  tempVal    = 0x00U;
-    uint32_t xCntTemp   = 0x00U;
-    uint8_t  xMinTemp   = 0x00U;
-    uint8_t  xMaxTemp   = 0x00U;
+    uint8_t   xCnt       = 0x00;
+    uint32_t  xMin       = 0x00;
+    uint32_t  xMax       = 0x00;
+    uint32_t  retryCount = 5u;
+    uint32_t  tempVal    = 0x00;
+    uint32_t xCntTemp   = 0x00;
+    uint8_t  xMinTemp   = 0x00;
+    uint8_t  xMaxTemp   = 0x00;
 
     if((NULL != instHandle)
            && (NULL != xmtData)
-           && (0U != (instHandle->hwInfo.regs)))
+           && (0 != (instHandle->hwInfo.regs)))
    {
     /* Configure TXMASK register                                              */
     McASPTxFmtMaskSet(instHandle->hwInfo.regs, xmtData->mask);
@@ -2358,7 +2358,7 @@ int32_t Mcasp_localConfigXmtSection(Mcasp_Object       *instHandle,
     /* Set the ROT field based on the word bits order */
     if(instHandle->XmtObj.wordBitsSelect == Mcasp_WordBitsSelect_MSB) {
         /* Shift right 'rot' number of nibbles to make the MSB reach the lower bits from the serializer to the host memory */
-        uint32_t rot = 8U - (instHandle->XmtObj.roundedWordWidth * 2U);
+        uint32_t rot = 8-(instHandle->XmtObj.roundedWordWidth*2);
         xmtData->fmt = (xmtData->fmt & (~MCASP_TXFMT_XROT_MASK)) | (rot << MCASP_TXFMT_XROT_SHIFT);
     }
 
@@ -2454,7 +2454,7 @@ int32_t Mcasp_localConfigXmtSection(Mcasp_Object       *instHandle,
     /* Configure XEVTCTL register                                             */
     if (Mcasp_TX_CLK_FAIL == (Mcasp_TX_CLK_FAIL & xmtData->intCtl))
     {
-        uint32_t tempValue = 0x00U;
+        uint32_t tempValue = 0x00;
         tempValue = McASPTxClkCheckRegRead(instHandle->hwInfo.regs);
         /* now read the counter value and set val +1 as max and val -1 as min */
         xCntTemp = ((tempValue & (uint32_t) MCASP_TXCLKCHK_XCNT_MASK) >>
@@ -2467,12 +2467,12 @@ int32_t Mcasp_localConfigXmtSection(Mcasp_Object       *instHandle,
 
         if (xCnt >= 0xFDU)
         {
-            xMax = 255U;
+            xMax = 255u;
         }
 
-        if (xCnt <= 3U)
+        if (xCnt <= 3u)
         {
-            xMin = 0U;
+            xMin = 0u;
         }
 
         /* now write the value to the register                                */
@@ -2486,7 +2486,7 @@ int32_t Mcasp_localConfigXmtSection(Mcasp_Object       *instHandle,
                               (uint8_t) xMin, (uint8_t) xMax);
 
         /* check if the clock has stablised without any errors                */
-        while (retryCount > 0U)
+        while (retryCount > 0)
         {
             retryCount--;
             /* write to the XCLK FAIL register to clear the failure bit       */
@@ -2495,7 +2495,7 @@ int32_t Mcasp_localConfigXmtSection(Mcasp_Object       *instHandle,
             McASPTxStatusSet(instHandle->hwInfo.regs,
                              (tempVal | (uint32_t) MCASP_TXSTAT_XCKFAIL_MASK));
 
-            Osal_delay(10U);
+            Osal_delay(10);
 
             tempVal = McASPTxStatusGet(instHandle->hwInfo.regs);
             /* verify if the clock failure is detected. if not detected then  *
@@ -2521,7 +2521,7 @@ int32_t Mcasp_localConfigXmtSection(Mcasp_Object       *instHandle,
         McASPAmuteRegWrite(instHandle->hwInfo.regs,tempVal);
 #endif      
     } else {
-           uint32_t tempVal = 0x00U;
+           uint32_t tempVal = 0x00;
 
                     /* write to the XCLK FAIL register to clear the failure bit       */
             tempVal = McASPTxStatusGet(instHandle->hwInfo.regs);
@@ -2529,7 +2529,7 @@ int32_t Mcasp_localConfigXmtSection(Mcasp_Object       *instHandle,
             McASPTxStatusSet(instHandle->hwInfo.regs,
                              (tempVal | (uint32_t) MCASP_TXSTAT_XCKFAIL_MASK));
 
-            Osal_delay(10U);
+            Osal_delay(10);
     }
 
     /* Configure XINTCTL register                                             */
@@ -2575,17 +2575,17 @@ int32_t Mcasp_localConfigRcvSection(Mcasp_Object       *instHandle,
 {
     int32_t   status     = MCASP_COMPLETED;
     uint8_t   rCnt       = 0x00;
-    uint32_t  rMin       = 0x00U;
-    uint32_t  rMax       = 0x00U;
-    uint32_t  retryCount = 5U;
-    uint32_t  tempVal    = 0x00U;
-    uint32_t rCntTemp   = 0x00U;
-    uint8_t  rMinTemp   = 0x00U;
-    uint8_t  rMaxTemp   = 0x00U;
+    uint32_t  rMin       = 0x00;
+    uint32_t  rMax       = 0x00;
+    uint32_t  retryCount = 5u;
+    uint32_t  tempVal    = 0x00;
+    uint32_t rCntTemp   = 0x00;
+    uint8_t  rMinTemp   = 0x00;
+    uint8_t  rMaxTemp   = 0x00;
 
     if((NULL != instHandle)
           && (NULL != rcvData)
-          && (0U != instHandle->hwInfo.regs))
+          && (0 != instHandle->hwInfo.regs))
     {      
           
 
@@ -2598,7 +2598,7 @@ int32_t Mcasp_localConfigRcvSection(Mcasp_Object       *instHandle,
 	/* Set the ROT field based on the word bits order */
 	if(instHandle->RcvObj.wordBitsSelect == Mcasp_WordBitsSelect_MSB) {
 	    /* Shift right 'rot' number of nibbles to make the MSB reach the lower bits in the serializer */
-	    uint32_t rot = 8U - (instHandle->RcvObj.roundedWordWidth * 2U);
+	    uint32_t rot = 8-(instHandle->RcvObj.roundedWordWidth*2);
 	    rcvData->fmt = (rcvData->fmt & (~MCASP_RXFMT_RROT_MASK)) | (rot << MCASP_RXFMT_RROT_SHIFT);
 	}
 
@@ -2685,7 +2685,7 @@ int32_t Mcasp_localConfigRcvSection(Mcasp_Object       *instHandle,
     /* Configure REVTCTL register                                             */
     if (Mcasp_RX_CLK_FAIL == (Mcasp_RX_CLK_FAIL & rcvData->intCtl))
     {
-        uint32_t tempValue = 0x00U;
+        uint32_t tempValue = 0x00;
         tempValue = McASPRxClkCheckRegRead(instHandle->hwInfo.regs);
         /* now read the counter value and set val +1 as max and val -1 as min */
         rCntTemp = ((tempValue & (uint32_t) MCASP_RXCLKCHK_RCNT_MASK) >>
@@ -2697,14 +2697,14 @@ int32_t Mcasp_localConfigRcvSection(Mcasp_Object       *instHandle,
         rMax = (uint32_t) rMaxTemp;
         rMin = (uint32_t) rMinTemp;
 
-        if (0xFDU <= rCnt)
+        if (rCnt >= 0xFDU)
         {
-            rMax = 255U;
+            rMax = 255u;
         }
 
-        if (3U >= rCnt)
+        if (rCnt <= 3u)
         {
-            rMin = 0U;
+            rMin = 0u;
         }
 
         /* now write the value to the register                                */
@@ -2718,7 +2718,7 @@ int32_t Mcasp_localConfigRcvSection(Mcasp_Object       *instHandle,
                               (uint8_t) rMax);
 
         /* check if the clock has stablised without any errors                */
-        while (retryCount > 0U)
+        while (retryCount > 0)
         {
             retryCount--;
             /* write to the RCLK FAIL register to clear the failure bit       */
@@ -2728,7 +2728,7 @@ int32_t Mcasp_localConfigRcvSection(Mcasp_Object       *instHandle,
                              (tempVal | (uint32_t) MCASP_RXSTAT_RCKFAIL_MASK));
 
             /* wait for the reading to be taken                               */
-            Osal_delay(10U);
+            Osal_delay(10);
 
             tempVal = McASPRxStatusGet(instHandle->hwInfo.regs);
             /* verify if the clock failure is detected. if detected then      *
@@ -2761,7 +2761,7 @@ int32_t Mcasp_localConfigRcvSection(Mcasp_Object       *instHandle,
             McASPRxStatusSet(instHandle->hwInfo.regs,
                              (tempVal | (uint32_t) MCASP_RXSTAT_RCKFAIL_MASK));
 
-            Osal_delay(10U);
+            Osal_delay(10);
     }
 
     McASPRxIntEnable(instHandle->hwInfo.regs, rcvData->intCtl);
@@ -2802,7 +2802,7 @@ int32_t Mcasp_localResetXmt(Mcasp_HwHandle  hMcasp)
 {
     int32_t   status = MCASP_COMPLETED;
 
-    if((NULL != hMcasp) && (0U != hMcasp->regs))
+    if((NULL != hMcasp) && (0 != hMcasp->regs))
     {
       McASPTxReset(hMcasp->regs);
     }
@@ -2828,7 +2828,7 @@ int32_t Mcasp_localResetRcv(Mcasp_HwHandle  hMcasp)
 {
     int32_t  status = MCASP_COMPLETED;
 
-    if((NULL != hMcasp) && (0U != hMcasp->regs))
+    if((NULL != hMcasp) && (0 != hMcasp->regs))
     {
       McASPRxReset(hMcasp->regs);
     }  
@@ -2859,19 +2859,19 @@ int32_t Mcasp_localResetRcv(Mcasp_HwHandle  hMcasp)
 void Mcasp_commonDmaCallback(Mcasp_ChannelHandle chanHandle, int32_t status)
 {
     Mcasp_Object           *instHandle = NULL;
-    Bool                    falseWhile = UTRUE;
-    uint32_t                dlbMode    = 0U;
-    int32_t                 retVal     = MCASP_COMPLETED;
-    uint32_t                hwiKey     = 0x00U;
-    uint32_t             	  key        = 0U;
-    uint32_t                ret_flag   = UFALSE;
+    Bool                    falseWhile = TRUE;
+    uint32_t                dlbMode    = 0;
+    int32_t  retVal     = MCASP_COMPLETED;
+    uint32_t                hwiKey     = 0x00;
+    uint32_t             	key        = 0;
+    uint32_t                ret_flag   = 0U;
     /* enter critical section                                         		  */
 	key = HwiP_disable();
     do
     {
-        falseWhile = UFALSE;
+        falseWhile = FALSE;
 
-        if (1U == chanHandle->submitCount)
+        if (1u == chanHandle->submitCount)
         {
             /* This is the last packet available with the driver.Hence we will*
              * stop the EDMA and then proceed to process the packet           */
@@ -2887,7 +2887,7 @@ void Mcasp_commonDmaCallback(Mcasp_ChannelHandle chanHandle, int32_t status)
                 if (MCASP_TX_UNDERRUN ==
                     (MCASP_TX_UNDERRUN & chanHandle->userIntValue))
                 {
-                    uint32_t tempVal = 0x0U;
+                    uint32_t tempVal = 0x0;
                     tempVal  = McASPTxIntrStatusGet(instHandle->hwInfo.regs);
                     tempVal &= (~MCASP_TX_UNDERRUN);
                     McASPTxIntEnable(instHandle->hwInfo.regs,
@@ -2904,7 +2904,7 @@ void Mcasp_commonDmaCallback(Mcasp_ChannelHandle chanHandle, int32_t status)
                 {
                     chanHandle->currentPacketErrorStatus = MCASP_COMPLETED;
                 }
-                ret_flag = UTRUE;
+                ret_flag = 1U;
 #ifdef BIOS_SWI
                Swi_post((Swi_Handle) & instHandle->fifoSwiObject);
 #else
@@ -2918,7 +2918,7 @@ void Mcasp_commonDmaCallback(Mcasp_ChannelHandle chanHandle, int32_t status)
                 if (MCASP_RX_OVERRUN ==
                     (MCASP_RX_OVERRUN & chanHandle->userIntValue))
                 {
-                    uint32_t tempVal = 0x0U;
+                    uint32_t tempVal = 0x0;
                     tempVal  = McASPRxIntrStatusGet(instHandle->hwInfo.regs);
                     tempVal &= (~MCASP_RX_OVERRUN);
                     McASPRxIntEnable(instHandle->hwInfo.regs,
@@ -2954,7 +2954,7 @@ void Mcasp_commonDmaCallback(Mcasp_ChannelHandle chanHandle, int32_t status)
                     /* Disable the FIFO */
                     mcaspConfigureFifo(&instHandle->hwInfo,
                                        chanHandle,
-                                       UFALSE);
+                                       FALSE);
                 }
             }
 
@@ -2974,7 +2974,7 @@ void Mcasp_commonDmaCallback(Mcasp_ChannelHandle chanHandle, int32_t status)
 
             /* update the status of the IOP as error                          */
             chanHandle->currentPacketErrorStatus = MCASP_EABORT;
-            ret_flag = UTRUE;
+            ret_flag = 1U;
         }
         else
         {
@@ -2983,7 +2983,7 @@ void Mcasp_commonDmaCallback(Mcasp_ChannelHandle chanHandle, int32_t status)
             /* reduce the submit count as the packet callback is completed    */
             chanHandle->submitCount--;
         }
-    if(UFALSE == ret_flag)
+    if(ret_flag == 0U)
     {
         /* complete the receive IOP now                                       */
 	    hwiKey = HwiP_disable();
@@ -3001,7 +3001,7 @@ void Mcasp_commonDmaCallback(Mcasp_ChannelHandle chanHandle, int32_t status)
             /* end the critical section                                           */
 		    HwiP_restore(hwiKey);
 
-            if (NULL == chanHandle->tempPacket)
+            if (chanHandle->tempPacket == NULL)
             {
                 break;
             }
@@ -3014,10 +3014,10 @@ void Mcasp_commonDmaCallback(Mcasp_ChannelHandle chanHandle, int32_t status)
              * pause is issued, control will go in else part                      */
 
             if ((((MCASP_INPUT == chanHandle->mode)
-                && (UFALSE == instHandle->stopSmFsRcv))
+                && (FALSE == instHandle->stopSmFsRcv))
                 || ((MCASP_OUTPUT == chanHandle->mode)
-                    && (UFALSE == instHandle->stopSmFsXmt)))
-                && (UFALSE == chanHandle->paused))
+                    && (FALSE == instHandle->stopSmFsXmt)))
+                && (FALSE == chanHandle->paused))
             {
                 /* Now that we have done with the last data packet - we check if  *
                  * next packet is available for transmission. Even if we are not  *
@@ -3045,11 +3045,11 @@ void Mcasp_commonDmaCallback(Mcasp_ChannelHandle chanHandle, int32_t status)
                  * state machine stop command is issued for receive or transmit   *
                  * channel.If the nextFlag is already set indicates that its time *
                  * to reset the state machines and disable the edma transfer      */
-                if (UTRUE == chanHandle->nextFlag)
+                if (TRUE == chanHandle->nextFlag)
                 {
-                    chanHandle->nextFlag = UFALSE;
+                    chanHandle->nextFlag = FALSE;
 
-                    if (UFALSE == chanHandle->paused)
+                    if (FALSE == chanHandle->paused)
                     {
                     dlbMode  = McASPDlbRegRead(instHandle->hwInfo.regs);
                     dlbMode &= MCASP_LBCTL_DLBEN_MASK;
@@ -3105,13 +3105,13 @@ void Mcasp_commonDmaCallback(Mcasp_ChannelHandle chanHandle, int32_t status)
                 }
             }
 
-            chanHandle->isTempPacketValid = UTRUE;
+            chanHandle->isTempPacketValid = TRUE;
             Mcasp_localCompleteCurrentIo(chanHandle);
 
 #if defined (BIOS_PWRM_ENABLE) && !defined (Mcasp_LOOPJOB_ENABLED)
             /* check if the driver is waiting to go to sleep or process DVFS event*
              * (only if the application has requested PWRM support)               */
-            if (UTRUE == instHandle->pscPwrmEnable)
+            if (TRUE == instHandle->pscPwrmEnable)
             {
                 Mcasp_localHandlePwrmEvent(instHandle,chanHandle);
             }
@@ -3146,8 +3146,8 @@ int32_t Mcasp_localDmaProcessPkt(void* chanp, MCASP_Packet *ioPacket)
     Mcasp_Object           *instHandle  = NULL;
     Mcasp_ChannelHandle     chanHandle  = NULL;
     Mcasp_PktAddrPayload   *payLoad     = NULL;
-    int32_t                 status      = MCASP_COMPLETED;
-    Bool                    falsewhile  = UTRUE;
+    int32_t                   status      = MCASP_COMPLETED;
+    Bool                    falsewhile  = (Bool)TRUE;
 
     /* Validate pointers and parameters                                       */
     if((NULL != chanp) && (NULL != ioPacket) && (NULL != ((Mcasp_ChannelHandle)chanp)->devHandle))
@@ -3155,7 +3155,7 @@ int32_t Mcasp_localDmaProcessPkt(void* chanp, MCASP_Packet *ioPacket)
     chanHandle = (Mcasp_ChannelHandle)chanp;
     do
     {
-        falsewhile = UFALSE;
+        falsewhile = (Bool)FALSE;
 
         instHandle = (Mcasp_Object *)chanHandle->devHandle;
 
@@ -3166,7 +3166,7 @@ int32_t Mcasp_localDmaProcessPkt(void* chanp, MCASP_Packet *ioPacket)
            payLoad = (Mcasp_PktAddrPayload *)ioPacket->addr;
            if(NULL != payLoad)
            {   
-            if ((uint16_t)UTRUE == payLoad->writeDitParams)
+            if (TRUE == payLoad->writeDitParams)
             {
                 /* DIT Mode: for DIT mode as of now each packet (IOP)         *
                  * carries/should carry 1 super frame = 192 frames = 384 sub  *
@@ -3232,7 +3232,7 @@ int32_t Mcasp_localDmaProcessPkt(void* chanp, MCASP_Packet *ioPacket)
  *  \return  None
  *
  */
-int32_t inCount = 0,outCount = 0;
+int32_t inCount=0,outCount=0;
 void Mcasp_localCompleteCurrentIo(Mcasp_ChannelHandle chanHandle)
 {
     MCASP_Packet    *ioPacket     = NULL;
@@ -3252,16 +3252,16 @@ void Mcasp_localCompleteCurrentIo(Mcasp_ChannelHandle chanHandle)
 
 #endif
 
-    if (UTRUE == chanHandle->isTempPacketValid)
+    if (TRUE == chanHandle->isTempPacketValid)
     {
         ioPacket = chanHandle->tempPacket;
-        chanHandle->isTempPacketValid = UFALSE;
+        chanHandle->isTempPacketValid = (Bool)FALSE;
     }
     else
     {
         ioPacket = chanHandle->dataPacket;
     }
-    if(MCASP_INPUT == chanHandle->mode)
+    if(chanHandle->mode == MCASP_INPUT)
     {
         inCount++;
     }
@@ -3285,7 +3285,7 @@ void Mcasp_localCompleteCurrentIo(Mcasp_ChannelHandle chanHandle)
         }
     }
     chanHandle->dataPacket = NULL;
-    chanHandle->userDataBufferSize = 0U;
+    chanHandle->userDataBufferSize = 0;
 #ifndef Mcasp_LOOPJOB_ENABLED
    }
 #endif
@@ -3304,7 +3304,7 @@ void Mcasp_localCompleteCurrentIo(Mcasp_ChannelHandle chanHandle)
  */
 int32_t Mcasp_localCancelAndAbortAllIo(Mcasp_ChannelHandle chanHandle)
 {
-    uint32_t               dlbMode    = 0U;
+    uint32_t               dlbMode    = 0u;
     Mcasp_Object        *instHandle = NULL;
     int32_t                status = MCASP_COMPLETED;
 
@@ -3356,7 +3356,7 @@ int32_t Mcasp_localCancelAndAbortAllIo(Mcasp_ChannelHandle chanHandle)
   void mcaspBitSetGblCtl(const Mcasp_Object *instHandle,uint32_t bitMaskVal)
 {
     uint32_t timeout = Mcasp_GBLCTL_TIMEOUT;
-    Bool   isTask  = UFALSE;
+    Bool   isTask  = (Bool)FALSE;
 
     uint32_t tempVal;
     if(NULL != instHandle)
@@ -3379,9 +3379,9 @@ int32_t Mcasp_localCancelAndAbortAllIo(Mcasp_ChannelHandle chanHandle)
             isTask = (Osal_ThreadType_Task==Osal_getThreadType());
 
             /* wait for 1 tick only if called from a task context             */
-            if (UTRUE == isTask)
+            if (TRUE == isTask)
             {
-                Osal_delay(1U);
+                Osal_delay(1);
             }
             tempVal = McASPGlobalCtlGet(instHandle->hwInfo.regs);
         }
@@ -3451,29 +3451,29 @@ int32_t Mcasp_localCancelAndAbortAllIo(Mcasp_ChannelHandle chanHandle)
 {
     Mcasp_Object           *instHandle  = NULL;
     Mcasp_PktAddrPayload   *payLoad     = NULL;
-    int32_t                 status      = MCASP_COMPLETED;
-    uint32_t                hwiKey      = 0U;
-    Bool                    falsewhile  = UTRUE;
-    void*                   pktAddr     = NULL;
+    int32_t                   status      = MCASP_COMPLETED;
+    uint32_t                  hwiKey      = 0;
+    Bool                    falsewhile  = (Bool)TRUE;
+    void*                     pktAddr     = NULL;
 
 #ifdef Mcasp_LOOPJOB_ENABLED
-    Bool   chanStopped = UFALSE;
+    Bool   chanStopped = (Bool) FALSE;
 #endif
 
    if((NULL != chanHandle) && (NULL != chanHandle->devHandle) && (NULL != ioPacket))
    {
 
     /* check for the valid packet size                                        */
-    assert((0U != ioPacket->size)
+    assert((0 != ioPacket->size)
         && (Mcasp_MAX_PACKET_SIZE >= 
             ioPacket->size/chanHandle->noOfSerAllocated));
 
     do
     {
-        falsewhile = UFALSE;
+        falsewhile = (Bool)FALSE;
         instHandle = (Mcasp_Object *)chanHandle->devHandle;
 
-        if (UTRUE == instHandle->isDataBufferPayloadStructure)
+        if (TRUE == instHandle->isDataBufferPayloadStructure)
         {
             payLoad = (Mcasp_PktAddrPayload *)ioPacket->addr;
             if(NULL != payLoad) 
@@ -3498,7 +3498,7 @@ int32_t Mcasp_localCancelAndAbortAllIo(Mcasp_ChannelHandle chanHandle)
         if (MCASP_INPUT == chanHandle->mode)
         {
             /* Cleans and invalidate the D Cache in MVA way                   */
-            if (UTRUE == instHandle->enablecache)
+            if (TRUE == instHandle->enablecache)
             {
                 CacheP_wbInv(pktAddr, ioPacket->size);
             }
@@ -3506,16 +3506,16 @@ int32_t Mcasp_localCancelAndAbortAllIo(Mcasp_ChannelHandle chanHandle)
 #ifdef Mcasp_LOOPJOB_ENABLED
             /* check if the state machine is stopped. if the state machine is *
              * stopped then we will load the packets in to the pending queue  */
-            if (UTRUE == instHandle->stopSmFsRcv)
+            if ((Bool) TRUE == instHandle->stopSmFsRcv)
             {
-                chanStopped = UTRUE;
+                chanStopped = (Bool) TRUE;
             }
 #endif
         }
         else
         {
             /* clean the D Cache in MVA way                                   */
-            if (UTRUE == instHandle->enablecache)
+            if (TRUE == instHandle->enablecache)
             {
                 CacheP_wb(pktAddr, ioPacket->size);
             }
@@ -3523,9 +3523,9 @@ int32_t Mcasp_localCancelAndAbortAllIo(Mcasp_ChannelHandle chanHandle)
 #ifdef Mcasp_LOOPJOB_ENABLED
             /* check if the state machine is stopped. if the state machine is *
              * stopped then we will load the packets in to the pending queue  */
-            if (UTRUE == instHandle->stopSmFsXmt)
+            if ((Bool) TRUE == instHandle->stopSmFsXmt)
             {
-                chanStopped = UTRUE;
+                chanStopped = (Bool) TRUE;
             }
 #endif
         }
@@ -3535,13 +3535,13 @@ int32_t Mcasp_localCancelAndAbortAllIo(Mcasp_ChannelHandle chanHandle)
 
 #ifdef Mcasp_LOOPJOB_ENABLED
         if ((chanHandle->maxActiveSubmit <= chanHandle->submitCount) ||
-            (UTRUE == chanStopped) ||
+            ((Bool) TRUE == chanStopped) ||
 #else
         /* We now have 3 packets loaded in the EDMA                           */
         if (((chanHandle->maxActiveSubmit + 1U) <= chanHandle->submitCount) ||
 
 #endif
-            (UTRUE == chanHandle->paused) ||
+            (TRUE == chanHandle->paused) ||
             (Mcasp_DriverState_PWRM_SUSPEND == instHandle->devState))
         {
             /* Already enough requests are in active queue.Hence load in to   *
@@ -3591,7 +3591,7 @@ int32_t Mcasp_localCancelAndAbortAllIo(Mcasp_ChannelHandle chanHandle)
  */
   void Mcasp_localIsrSwiFxn(void * arg0,void * arg1)
 {
-    uint32_t            count      = 0U;
+    uint32_t            count      = 0;
     Mcasp_Object     *instHandle = NULL;
 
     /* An interrupt has occured and it could be because of any one of the     *
@@ -3601,18 +3601,18 @@ int32_t Mcasp_localCancelAndAbortAllIo(Mcasp_ChannelHandle chanHandle)
      * error conditions only                                                  */
 
     /* we are only checking the instances which are currently active          */
-    for (count = 0U; count < MCASP_CNT; count++)
+    for (count = 0; count < MCASP_CNT; count++)
     {
         /* check if the instance has registered for interrupts                */
-        if ((UTRUE == Mcasp_module.isrObject[count].isIsrRegistered[0])
-            && (UTRUE == Mcasp_module.isrObject[count].isIsrRegistered[1])
+        if (((Bool) TRUE == Mcasp_module.isrObject[count].isIsrRegistered[0])
+            && ((Bool) TRUE == Mcasp_module.isrObject[count].isIsrRegistered[1])
             && (NULL != Mcasp_module.isrObject[count].instHandle))
         {
            instHandle = Mcasp_module.isrObject[count].instHandle;
            if(NULL != instHandle)
            {
             /* check if the RX channel has registered the interrupts          */
-            if (UTRUE == Mcasp_module.isrObject[count].chanEnabled[0])
+            if (TRUE == Mcasp_module.isrObject[count].chanEnabled[0])
             {
                 /* check if atleast one error has occured                     */
                 if (Mcasp_RSTAT_ERROR ==
@@ -3624,7 +3624,7 @@ int32_t Mcasp_localCancelAndAbortAllIo(Mcasp_ChannelHandle chanHandle)
             }
 
             /* check if the TX channel has registered the interrupts          */
-            if (UTRUE == Mcasp_module.isrObject[count].chanEnabled[1])
+            if (TRUE == Mcasp_module.isrObject[count].chanEnabled[1])
             {
                 if (Mcasp_XSTAT_ERROR ==
                     ((uint32_t) Mcasp_XSTAT_ERROR &
@@ -3688,10 +3688,10 @@ int32_t Mcasp_localCollectRcvErrorStats(Mcasp_ChannelHandle chanHandle,Mcasp_err
     instHandle = (Mcasp_Object *)chanHandle->devHandle;
     
     /* Initialize */
-    errStatus->isClkFailErr = BFALSE;
-    errStatus->isDMAErr = BFALSE;
-    errStatus->isRcvOvrRunOrTxUndRunErr = BFALSE;
-    errStatus->isSyncErr = BFALSE;
+    errStatus->isClkFailErr=FALSE;
+    errStatus->isDMAErr=FALSE;
+    errStatus->isRcvOvrRunOrTxUndRunErr=FALSE;
+    errStatus->isSyncErr=FALSE;
     errStatus->retVal=MCASP_COMPLETED;
 
     /* Read interrupt-status register.                                    */
@@ -3707,14 +3707,14 @@ int32_t Mcasp_localCollectRcvErrorStats(Mcasp_ChannelHandle chanHandle,Mcasp_err
     if ((Mcasp_DMAERR == (Mcasp_DMAERR & chanHandle->intStatus)))
     {
        status = MCASP_EBADIO;
-       errStatus->isDMAErr = BTRUE;
+       errStatus->isDMAErr = (Bool) TRUE;
     }
 
     if ((Mcasp_RCV_OVERRUN ==
         (Mcasp_RCV_OVERRUN & chanHandle->intStatus)))
     {
         status = MCASP_EBADIO;
-        errStatus->isRcvOvrRunOrTxUndRunErr = BTRUE;
+        errStatus->isRcvOvrRunOrTxUndRunErr = (Bool) TRUE;
     }
 
     if ((Mcasp_RX_CLK_FAIL ==
@@ -3725,7 +3725,7 @@ int32_t Mcasp_localCollectRcvErrorStats(Mcasp_ChannelHandle chanHandle,Mcasp_err
            (Mcasp_RX_CLK_FAIL & chanHandle->intStatus))
         {
              status = MCASP_EBADIO;
-             errStatus->isClkFailErr = BTRUE;
+             errStatus->isClkFailErr = (Bool) TRUE;
          }
      }
         /* no sync error check for burst mode                             */
@@ -3736,7 +3736,7 @@ int32_t Mcasp_localCollectRcvErrorStats(Mcasp_ChannelHandle chanHandle,Mcasp_err
         if ((Mcasp_SYNCERR ==  (Mcasp_SYNCERR & chanHandle->intStatus)))
         {
           status = MCASP_ETIMEOUT;
-          errStatus->isClkFailErr = BTRUE;
+          errStatus->isClkFailErr = (Bool) TRUE;
         }
      }
      errStatus->retVal = (int32_t) status;
@@ -3762,15 +3762,15 @@ void mcaspIsrInput(void * chanp)
 {
     Mcasp_Object         *instHandle = NULL;
     Mcasp_ChannelHandle   chanHandle = NULL;
-    Bool                  falsewhile = UTRUE;
+    Bool                  falsewhile = (Bool)TRUE;
     int32_t               status     = MCASP_COMPLETED;
-    uint32_t              dlbMode    = 0U;
+    uint32_t                dlbMode    = 0;
     Mcasp_errCbStatus   errStatuts =
-    {BFALSE, BFALSE, BFALSE, BFALSE, MCASP_COMPLETED};
+    {FALSE, FALSE, FALSE, FALSE, MCASP_COMPLETED};
 
     do
     {
-        falsewhile  = UFALSE;
+        falsewhile  = (Bool)FALSE;
         chanHandle = (Mcasp_ChannelHandle)chanp;
         if((NULL != chanHandle) && (NULL != ((Mcasp_ChannelHandle)chanp)->devHandle))
         {
@@ -3780,7 +3780,7 @@ void mcaspIsrInput(void * chanp)
 
         /* The driver is in DMA mode and it is enough if we handle errors     */
 
-        status = Mcasp_localCollectRcvErrorStats(chanHandle ,&errStatuts);
+        status=Mcasp_localCollectRcvErrorStats(chanHandle ,&errStatuts);
 
         if (MCASP_COMPLETED != status)
         {
@@ -3863,10 +3863,10 @@ int32_t Mcasp_localCollectXmtErrorStats(Mcasp_ChannelHandle chanHandle,Mcasp_err
     instHandle = (Mcasp_Object *)chanHandle->devHandle;
 
     /* Initialize */
-    errStatus->isClkFailErr = BFALSE;
-    errStatus->isDMAErr = BFALSE;
-    errStatus->isRcvOvrRunOrTxUndRunErr = BFALSE;
-    errStatus->isSyncErr = BFALSE;
+    errStatus->isClkFailErr=FALSE;
+    errStatus->isDMAErr=FALSE;
+    errStatus->isRcvOvrRunOrTxUndRunErr=FALSE;
+    errStatus->isSyncErr=FALSE;
     errStatus->retVal=MCASP_COMPLETED;
 
     /* Read interrupt-status register.                                    */
@@ -3882,14 +3882,14 @@ int32_t Mcasp_localCollectXmtErrorStats(Mcasp_ChannelHandle chanHandle,Mcasp_err
     if (((Mcasp_DMAERR) == (Mcasp_DMAERR & chanHandle->intStatus)))
      {
          status = MCASP_EBADIO;
-         errStatus->isDMAErr = BTRUE;
+         errStatus->isDMAErr = (Bool) TRUE;
      }
 
      if (((Mcasp_XMT_UNDERRUN) ==
          (Mcasp_XMT_UNDERRUN & chanHandle->intStatus)))
      {
          status = MCASP_EBADIO;
-         errStatus->isRcvOvrRunOrTxUndRunErr = BTRUE;
+         errStatus->isRcvOvrRunOrTxUndRunErr = (Bool) TRUE;
      }
 
      /* check the mcasp clock failure interrupt only if it is enabled  *
@@ -3902,7 +3902,7 @@ int32_t Mcasp_localCollectXmtErrorStats(Mcasp_ChannelHandle chanHandle,Mcasp_err
              (Mcasp_TX_CLK_FAIL & chanHandle->intStatus))
          {
              status = MCASP_EBADIO;
-             errStatus->isClkFailErr = BTRUE;
+             errStatus->isClkFailErr = (Bool) TRUE;
          }
      }
 
@@ -3916,7 +3916,7 @@ int32_t Mcasp_localCollectXmtErrorStats(Mcasp_ChannelHandle chanHandle,Mcasp_err
              (Mcasp_SYNCERR & chanHandle->intStatus)))
          {
              status = MCASP_ETIMEOUT;
-             errStatus->isSyncErr = BTRUE;
+             errStatus->isSyncErr = (Bool) TRUE;
          }
      }
 
@@ -3942,14 +3942,14 @@ void mcaspIsrOutput(void * chanp)
 {
     Mcasp_Object           *instHandle = NULL;
     Mcasp_ChannelHandle     chanHandle = NULL;
-    Bool                    falsewhile = UTRUE;
+    Bool                    falsewhile = (Bool)TRUE;
     int32_t                 status     = MCASP_COMPLETED;
-    uint32_t                  dlbMode    = 0U;
-    Mcasp_errCbStatus   errStatuts = {BFALSE, BFALSE, BFALSE, BFALSE, UFALSE};
+    uint32_t                  dlbMode    = 0;
+    Mcasp_errCbStatus   errStatuts = {FALSE, FALSE, FALSE, FALSE, 0};
 
     do
     {
-        falsewhile = UFALSE;
+        falsewhile = (Bool)FALSE;
 
         chanHandle = (Mcasp_ChannelHandle)chanp;
         if((NULL != chanHandle) && (NULL != chanHandle->devHandle))
@@ -4041,7 +4041,7 @@ void mcaspIsrOutput(void * chanp)
   void mcaspBitSetGblRCtl(const Mcasp_Object *instHandle,uint32_t bitMaskVal)
 {
     uint32_t timeout = Mcasp_GBLCTL_TIMEOUT;
-    Bool   isTask  = UFALSE;
+    Bool   isTask  = (Bool)FALSE;
     uint32_t tempVal1 = 0x00;
     uint32_t tempVal2 = 0x00;
 
@@ -4052,7 +4052,7 @@ void mcaspIsrOutput(void * chanp)
     /* If already this bit is set then don't set again                        */
     if ((tempVal1 & bitMaskVal) != bitMaskVal)
     {
-        if (UFALSE == instHandle->RcvObj.isDmaDriven)
+        if (FALSE == instHandle->RcvObj.isDmaDriven)
         {
            Mcasp_disableInterrupt(instHandle->RcvObj.cpuEventNum,instHandle->RcvObj.intNum); 
         }
@@ -4070,16 +4070,16 @@ void mcaspIsrOutput(void * chanp)
             isTask = (Bool)(Osal_getThreadType()==Osal_ThreadType_Swi);
 
             /* wait for 1 tick only if called from a task context             */
-            if (UTRUE == isTask)
+            if (TRUE == isTask)
             {
-                Osal_delay(1U);
+                Osal_delay(1);
             }
             tempVal1 = McASPGlobalCtlGet(instHandle->hwInfo.regs);
         }
 
         assert(0U != timeout);
 
-        if (UFALSE == instHandle->RcvObj.isDmaDriven)
+        if (FALSE == instHandle->RcvObj.isDmaDriven)
         {
             /* Leave critical section */
            if(instHandle->RcvObj.userIntValue) {
@@ -4103,13 +4103,13 @@ void mcaspIsrOutput(void * chanp)
  */
   void mcaspBitRemoveGblRCtl(const Mcasp_Object *instHandle, uint32_t bitMaskVal)
 {
-    uint32_t   temp_bitMaskVal = 0U;
+    uint32_t   temp_bitMaskVal = 0u;
     uint32_t   timeout         = Mcasp_GBLCTL_TIMEOUT;
-    Bool     isTask          = UFALSE;
+    Bool     isTask          = (Bool)FALSE;
     uint32_t tempVal1        = 0U;
     uint32_t tempVal2        = 0U;
 
-    temp_bitMaskVal = (0xFFFFFFFFU & (uint32_t)bitMaskVal);
+    temp_bitMaskVal = (0xFFFFFFFFu & (uint32_t)bitMaskVal);
 
    if(NULL != instHandle)
    { 
@@ -4133,9 +4133,9 @@ void mcaspIsrOutput(void * chanp)
             isTask = (Bool)(Osal_getThreadType()==Osal_ThreadType_Swi);
 
             /* wait for 1 tick only if called from a task context             */
-            if (UTRUE == isTask)
+            if (TRUE == isTask)
             {
-                Osal_delay(1U);
+                Osal_delay(1);
             }
 
             tempVal1 = McASPGlobalCtlGet(instHandle->hwInfo.regs);
@@ -4159,7 +4159,7 @@ void mcaspIsrOutput(void * chanp)
   void mcaspBitSetGblXCtl(const Mcasp_Object *instHandle, uint32_t bitMaskVal)
 {
     uint32_t timeout = Mcasp_GBLCTL_TIMEOUT;
-    Bool   isTask  = UFALSE;
+    Bool   isTask  = (Bool)FALSE;
     uint32_t tempVal1 = (uint32_t) 0x00U;
     uint32_t tempVal2 = (uint32_t) 0x00U;
 
@@ -4171,7 +4171,7 @@ void mcaspIsrOutput(void * chanp)
     /* If already this bit is set then don't set again                        */
     if ((tempVal1 & bitMaskVal) != bitMaskVal)
     {
-        if (UFALSE == instHandle->XmtObj.isDmaDriven)
+        if (FALSE == instHandle->XmtObj.isDmaDriven)
         {
            Mcasp_disableInterrupt(instHandle->XmtObj.cpuEventNum,instHandle->XmtObj.intNum);
         }
@@ -4182,7 +4182,7 @@ void mcaspIsrOutput(void * chanp)
         tempVal1 = McASPGlobalCtlGet(instHandle->hwInfo.regs);
 
         while (((tempVal1 & bitMaskVal) !=
-            bitMaskVal) && (timeout > 0U))
+            bitMaskVal) && (timeout > 0))
         {
             /* reduce the retry count value                                   */
             timeout--;
@@ -4190,16 +4190,16 @@ void mcaspIsrOutput(void * chanp)
             isTask = (Bool)(Osal_getThreadType()==Osal_ThreadType_Swi);
 
             /* wait for 1 tick only if called from a task context             */
-            if (UTRUE == isTask)
+            if (TRUE == isTask)
             {
-                Osal_delay(1U);
+                Osal_delay(1);
             }
             tempVal1 = McASPGlobalCtlGet(instHandle->hwInfo.regs);
         }
 
         assert(0U != timeout);
 
-        if (UFALSE == instHandle->XmtObj.isDmaDriven)
+        if (FALSE == instHandle->XmtObj.isDmaDriven)
         {
             /* Leave critical section                                         */
            if(instHandle->XmtObj.userIntValue) {
@@ -4222,10 +4222,10 @@ void mcaspIsrOutput(void * chanp)
  */
   void mcaspBitRemoveGblXCtl(const Mcasp_Object *instHandle, uint32_t bitMaskVal)
 {
-    volatile uint32_t temp_bitMaskVal = 0U;
+    volatile uint32_t temp_bitMaskVal = 0u;
     volatile uint32_t temp_bitMaskVal2 = 0U;
     uint32_t          timeout         = Mcasp_GBLCTL_TIMEOUT;
-    Bool            isTask          = UFALSE;
+    Bool            isTask          = (Bool)FALSE;
     uint32_t          tempVal1 = 0U;
     uint32_t          tempVal2 = 0U;
 
@@ -4233,7 +4233,7 @@ void mcaspIsrOutput(void * chanp)
     {
     tempVal1 = McASPGlobalCtlGet(instHandle->hwInfo.regs);
     tempVal2 = McASPTxGlobalCtlGet(instHandle->hwInfo.regs);
-    temp_bitMaskVal = (0xFFFFFFFFU & (uint32_t)bitMaskVal);
+    temp_bitMaskVal = (0xFFFFFFFFu & (uint32_t)bitMaskVal);
 
     /* If already this bit is set then don't set again                        */
     temp_bitMaskVal2 = (uint32_t) 0x0000FFFFU & ~temp_bitMaskVal;
@@ -4246,7 +4246,7 @@ void mcaspIsrOutput(void * chanp)
         tempVal1 = McASPGlobalCtlGet(instHandle->hwInfo.regs);
 
         while (((tempVal1 & ~temp_bitMaskVal) == temp_bitMaskVal2)
-               && (timeout > 0U))
+               && (timeout > 0))
         {
             /* reduce the retry count value                                   */
             timeout--;
@@ -4254,9 +4254,9 @@ void mcaspIsrOutput(void * chanp)
             isTask = (Bool)(Osal_getThreadType()==Osal_ThreadType_Swi);
 
             /* wait for 1 tick only if called from a task context             */
-            if (UTRUE == isTask)
+            if (TRUE == isTask)
             {
-                Osal_delay(1U);
+                Osal_delay(1);
             }
 
             tempVal1 = McASPGlobalCtlGet(instHandle->hwInfo.regs);
@@ -4324,11 +4324,11 @@ void mcaspIsrOutput(void * chanp)
                              Bool           ditFlag)
 {
     int32_t  status = MCASP_COMPLETED;
-    uint32_t tempVal = 0x0U;
+    uint32_t tempVal = 0x0;
 
    if(NULL != hMcasp)
    {
-    if (UTRUE == hMcasp->ditStatus)
+    if (TRUE == hMcasp->ditStatus)
     {
         tempVal = McASPGlobalCtlGet(hMcasp->regs);
         /* Reset XSMRST and XFRST in GBLCTL */
@@ -4401,15 +4401,15 @@ void mcaspIsrOutput(void * chanp)
 
     /* set the variable to indicate that this channel has registered          *
      * interrupts                                                             */
-    Mcasp_module.isrObject[instNum].chanEnabled[chanHandle->mode - 1] = UTRUE;
+    Mcasp_module.isrObject[instNum].chanEnabled[chanHandle->mode - 1] = (Bool)TRUE;
     
     /* update the information of the instance which is registering the ISR    */
-        if (UFALSE ==
+        if ((Bool) FALSE ==
             Mcasp_module.isrObject[instNum].isIsrRegistered[chanHandle->mode -
                                                             1])
         {
             Mcasp_module.isrObject[instNum].isIsrRegistered[chanHandle->mode -
-                                                            1] = UTRUE;
+                                                            1] = (Bool) TRUE;
             Mcasp_module.isrObject[instNum].instHandle = instHandle;
         }
         else
@@ -4423,11 +4423,11 @@ void mcaspIsrOutput(void * chanp)
              /* Initialize with defaults */
         Osal_RegisterInterrupt_initParams(&interruptRegParams);
 
-        if ((MCASP_INVALID_MUX_NUM         != chanHandle->muxNum )      &&
-            (MCASP_INVALID_MUX_EVENTNUM    != chanHandle->muxInEvent)   &&
-            (MCASP_UNASSIGNED_MUX_EVENTNUM != chanHandle->muxInEvent)   && 
-            (MCASP_INVALID_MUX_EVENTNUM    != chanHandle->muxOutEvent)  &&  
-            (MCASP_UNASSIGNED_MUX_EVENTNUM != chanHandle->muxOutEvent)) 
+        if ((chanHandle->muxNum != MCASP_INVALID_MUX_NUM) &&
+            (chanHandle->muxInEvent!=MCASP_INVALID_MUX_EVENTNUM)    &&
+            (chanHandle->muxInEvent!=MCASP_UNASSIGNED_MUX_EVENTNUM) && 
+            (chanHandle->muxOutEvent!=MCASP_INVALID_MUX_EVENTNUM)   &&  
+            (chanHandle->muxOutEvent!=MCASP_UNASSIGNED_MUX_EVENTNUM)) 
         {
            /* Setup the Interrupt Mux  */
           muxInParams.arg         = (uintptr_t)arg;
@@ -4447,43 +4447,43 @@ void mcaspIsrOutput(void * chanp)
         }
         
         /* Populate the interrupt parameters */
-        interruptRegParams.corepacConfig.name = NULL;
+        interruptRegParams.corepacConfig.name=NULL;
         interruptRegParams.corepacConfig.corepacEventNum=evt; /* Event going in to CPU */
         interruptRegParams.corepacConfig.intVecNum=intNum; /* Host Interrupt vector */
 
-        if ( (MCASP_INVALID_EVENTNUM    != evt)       &&
-             (MCASP_UNASSIGNED_EVENTNUM != evt)       && 
-             (MCASP_INVALID_INTNUM      != intNum)    &&  
-             (MCASP_UNASSIGNED_INTNUM   != intNum))  
+        if ( (evt!=MCASP_INVALID_EVENTNUM)    &&
+             (evt!=MCASP_UNASSIGNED_EVENTNUM) && 
+             (intNum!=MCASP_INVALID_INTNUM)   &&  
+             (intNum!=MCASP_UNASSIGNED_INTNUM))  
         {
           for(i = 0; i < MCASP_CNT; i++)
           {
             if(	(intNum == Mcasp_deviceInstInfo[i].txIntNum) &&
-                (NULL  != gHwiHandle[i][MCASP_OUTPUT-1]) )
+              ( gHwiHandle[i][MCASP_OUTPUT-1] !=NULL) )
             {
                 hwiHandle = gHwiHandle[i][MCASP_OUTPUT-1];
                 break;
             }
 
             if((intNum == Mcasp_deviceInstInfo[i].rxIntNum) &&
-               (NULL != gHwiHandle[i][MCASP_INPUT-1]))
+              ( gHwiHandle[i][MCASP_INPUT-1] !=NULL) )
             {
                 hwiHandle = gHwiHandle[i][MCASP_INPUT-1];
                 break;
             }
          }
 
-		  if(NULL == hwiHandle)
+		  if(hwiHandle == NULL)
 		  {
               /* Register interrupts */
-              OsalInterruptRetCode = Osal_RegisterInterrupt(&interruptRegParams,(HwiP_Handle *)&(gHwiHandle[instNum][chanHandle->mode - 1]));
-              if(OSAL_INT_SUCCESS == OsalInterruptRetCode)
+              OsalInterruptRetCode=Osal_RegisterInterrupt(&interruptRegParams,(HwiP_Handle *)&(gHwiHandle[instNum][chanHandle->mode - 1]));
+              if(OsalInterruptRetCode==OSAL_INT_SUCCESS)
               {
-                Osal_EnableInterrupt((uint32_t)evt,(uint32_t)intNum);
+                Osal_EnableInterrupt((int32_t)evt,intNum);
               }
               else
               {
-                gHwiHandle[instNum][chanHandle->mode - 1] = NULL;
+                gHwiHandle[instNum][chanHandle->mode - 1]=NULL;
                 retVal = MCASP_EBADARGS;
               }
           }
@@ -4494,7 +4494,7 @@ void mcaspIsrOutput(void * chanp)
     }
     else
     {   /* interrupts cannot be registered for an invalid mcasp instance */ 
-        assert(BFALSE);
+        assert(FALSE);
     }
   }
   else
@@ -4516,7 +4516,7 @@ void mcaspIsrOutput(void * chanp)
  */
   void mcaspUnRegisterInt(uint16_t devid, int32_t evt,int32_t intNum,int32_t mode)
 {
-    uint32_t        hwiKey        = 0U;
+    uint32_t        hwiKey        = 0;
     int32_t  retVal = MCASP_COMPLETED;
 
     if ((MCASP_INPUT != mode) && (MCASP_OUTPUT != mode))
@@ -4533,28 +4533,28 @@ void mcaspIsrOutput(void * chanp)
     /* disable the interrupts before unregistering the interrupts             */
     hwiKey = HwiP_disable();
     /* indicate that the channel has unregisterd the interrupts               */
-    Mcasp_module.isrObject[devid].chanEnabled[mode-1] = UFALSE;
+    Mcasp_module.isrObject[devid].chanEnabled[mode-1] = (Bool)FALSE;
 
-    Mcasp_module.isrObject[devid].isIsrRegistered[mode - 1] = UFALSE;
+    Mcasp_module.isrObject[devid].isIsrRegistered[mode - 1] = (Bool) FALSE;
     Mcasp_module.isrObject[devid].instHandle = NULL;
 
         /* Disable the event now.
          *                                              */
      
-        if ( (MCASP_INVALID_EVENTNUM    != evt)      &&
-             (MCASP_UNASSIGNED_EVENTNUM != evt)      && 
-             (MCASP_INVALID_INTNUM      != intNum)   &&  
-             (MCASP_UNASSIGNED_INTNUM   != intNum) )   
+        if ( (evt!=MCASP_INVALID_EVENTNUM)    &&
+          (evt!=MCASP_UNASSIGNED_EVENTNUM) && 
+          (intNum!=MCASP_INVALID_INTNUM)   &&  
+          (intNum!=MCASP_UNASSIGNED_INTNUM))   
         {
            Mcasp_disableInterrupt(evt,intNum); 
         } 
 
         /* Unregister the interrupt now
          **/
-     if(NULL != gHwiHandle[devid][mode - 1])
+     if(gHwiHandle[devid][mode - 1] !=NULL)
      {
         Osal_DeleteInterrupt(gHwiHandle[devid][mode - 1],evt);
-        gHwiHandle[devid][mode - 1] = NULL;
+        gHwiHandle[devid][mode - 1]=NULL;
      }
 
     /* Enabling the interrupts                                                */
@@ -4562,7 +4562,7 @@ void mcaspIsrOutput(void * chanp)
 }
     else
     {
-        assert(BFALSE);
+        assert(FALSE);
     }
 }
 
@@ -4676,25 +4676,25 @@ int32_t Mcasp_localDeactivateSmFsForXmt(const Mcasp_Object *instHandle)
                                       void*           params)
 {
     Mcasp_ChanParams  *chanParams = NULL;
-    uint32_t             count      = 0U;
-    Bool               status     = UTRUE;
-    Bool               falsewhile = UTRUE;
+    uint32_t             count      = 0 ;
+    Bool               status     = (Bool)TRUE;
+    Bool               falsewhile = (Bool)TRUE;
 
    if((NULL != instHandle) && (NULL != params))
    {
     do
     {
-        falsewhile  = UFALSE;
+        falsewhile  = (Bool)FALSE;
 
         chanParams = (Mcasp_ChanParams *)params;
 
-        for (count = 0U; count < chanParams->noOfSerRequested; count++)
+        for (count = 0; count < chanParams->noOfSerRequested; count++)
         {
             /* Get serializer number requested by user                        */
             if (Mcasp_SerializerStatus_FREE !=
                (instHandle->serStatus[chanParams->indexOfSersRequested[count]]))
             {
-                status = UFALSE;
+                status = (Bool)FALSE;
                 break;
             }
         }
@@ -4717,15 +4717,15 @@ int32_t Mcasp_localDeactivateSmFsForXmt(const Mcasp_Object *instHandle)
                                            void*           params)
 {
     Mcasp_ChanParams     *chanParams = NULL;
-    uint32_t               count       = 0U;
-    uint32_t               serNum      = 0U;
+    uint32_t               count       = 0;
+    uint32_t               serNum      = 0;
     Mcasp_SerializerNum  serializerToConfigure = (Mcasp_SerializerNum)0;
 
     if((NULL != instHandle) && (NULL != params))
     {
     chanParams = (Mcasp_ChanParams *)params;
 
-    for (count = 0U; count < chanParams->noOfSerRequested; count++)
+    for (count = 0; count < chanParams->noOfSerRequested; count++)
     {
         /* Get serializer number requested by user                            */
         serNum = (uint32_t)chanParams->indexOfSersRequested[count] ;
@@ -4758,15 +4758,15 @@ int32_t Mcasp_localDeactivateSmFsForXmt(const Mcasp_Object *instHandle)
                                            void*           params)
 {
     Mcasp_ChanParams      *chanParams  = NULL;
-    uint32_t                 count       = 0U;
-    uint32_t                 serNum      = 0U;
+    uint32_t                 count       = 0;
+    uint32_t                 serNum      = 0;
     Mcasp_SerializerNum    serializerToConfigure = (Mcasp_SerializerNum)0;
 
    if((NULL != instHandle) && (NULL != params))
    {
     chanParams = (Mcasp_ChanParams *)params;
 
-    for (count = 0U; count < chanParams->noOfSerRequested; count++)
+    for (count = 0; count < chanParams->noOfSerRequested; count++)
     {
         /* Get serializer number requested by user                            */
         serNum = (uint32_t)chanParams->indexOfSersRequested[count] ;
@@ -4799,14 +4799,14 @@ int32_t Mcasp_localDeactivateSmFsForXmt(const Mcasp_Object *instHandle)
 {
    Mcasp_ChannelHandle     chanHandle  = NULL;
    Mcasp_Object           *instHandle  = NULL;
-   uint32_t                  serNum      = 0U;
+   uint32_t                  serNum      = 0;
 
    if ( (NULL != chanp) && (NULL != ((Mcasp_ChannelHandle)chanp)->devHandle))
    {
       chanHandle = (Mcasp_ChannelHandle)chanp;
       instHandle = (Mcasp_Object *)chanHandle->devHandle;
 
-    for (serNum = 0U; serNum < chanHandle->noOfSerAllocated; serNum++)
+    for (serNum=0; serNum < chanHandle->noOfSerAllocated; serNum++)
     {
         instHandle->serStatus[chanHandle->indexOfSersRequested[serNum]] =
             Mcasp_SerializerStatus_FREE;
@@ -4833,13 +4833,13 @@ int32_t Mcasp_localDeactivateSmFsForXmt(const Mcasp_Object *instHandle)
 {
     Mcasp_ChanParams  *chanParams = NULL;
     int32_t            status     = MCASP_COMPLETED;
-    Bool               falsewhile = UTRUE;
+    Bool               falsewhile = (Bool)TRUE;
 
    if((NULL != instHandle) && (NULL != params))
    {
     do
     {
-        falsewhile  = UFALSE;
+        falsewhile  = (Bool)FALSE;
 
         chanParams = (Mcasp_ChanParams *)params;
 
@@ -4858,7 +4858,7 @@ int32_t Mcasp_localDeactivateSmFsForXmt(const Mcasp_Object *instHandle)
             if (Mcasp_OpMode_DIT == chanParams->channelMode)
             {
                 /* check hardware supports dit mode or not                        */
-                if (UTRUE == instHandle->hwInfo.ditStatus)
+                if (TRUE == instHandle->hwInfo.ditStatus)
                 {
                     status = mcaspSetDitMode(
                                 &(instHandle->hwInfo),
@@ -4939,7 +4939,7 @@ int32_t Mcasp_localDeactivateSmFsForXmt(const Mcasp_Object *instHandle)
 {
     int32_t   status = MCASP_COMPLETED;
 
-    if((NULL != hMcasp) && (UTRUE == hMcasp->ditStatus) && (NULL != chanStatRam))
+    if((NULL != hMcasp) && (TRUE == hMcasp->ditStatus) && (NULL != chanStatRam))
     {
         /* Configure the DIT left channel status registers                    */
         McASPDITLeftChanStatusSet(
@@ -5014,7 +5014,7 @@ int32_t Mcasp_localDeactivateSmFsForXmt(const Mcasp_Object *instHandle)
 {
     int32_t   status = MCASP_COMPLETED;
 
-    if((NULL != hMcasp) && (UTRUE == hMcasp->ditStatus) && (NULL != userDataRam))
+    if((NULL != hMcasp) && (TRUE == hMcasp->ditStatus) && (NULL != userDataRam))
     {
         /* Configure the DIT left user data registers                         */
         McASPDITLeftUserDataRamSet(hMcasp->regs, (uint32_t) 0,
@@ -5093,7 +5093,7 @@ int32_t Mcasp_localDeactivateSmFsForXmt(const Mcasp_Object *instHandle)
     if((NULL != hMcasp) && (NULL != hMcasp->fifoRegs) && (NULL != chanHandle))
     {
     /* check if the HW FIFO usage is requested by the user for this channel   */
-    if (UTRUE == enableHwFifo)
+    if (TRUE == enableHwFifo)
     {
         if (MCASP_INPUT == chanHandle->mode)
         {
@@ -5150,16 +5150,16 @@ int32_t Mcasp_localDeactivateSmFsForXmt(const Mcasp_Object *instHandle)
   int32_t  mcaspValidateBufferConfig(Mcasp_ChannelHandle  chanHandle,
                                         Mcasp_ChanParams    *const params)
 {
-    uint32_t    tempVar   = 0x0U;
+    uint32_t    tempVar   = 0x0;
     int32_t   status    = MCASP_COMPLETED;
 
     if((NULL != chanHandle) && (params != NULL))
     {
     /* get the number of slots to be configured                               */
-    tempVar = ((0x0000FF80U) & params->mcaspSetup->frSyncCtl);
+    tempVar = ((0x0000FF80u) & params->mcaspSetup->frSyncCtl);
     tempVar = tempVar >> 7;
 
-    if (0x01U < params->noOfSerRequested)
+    if (0x01 < params->noOfSerRequested)
     {
         /* multi serializer configuration                                     */
         if (0x01U < tempVar)
@@ -5238,7 +5238,7 @@ void Mcasp_localGetNextIndex(Mcasp_ChannelHandle chanHandle)
     /* Todo: will this be needed for UDMA?  Need to refactor */
 #ifdef MCASP_EDMA_ENABLED
     chanHandle->nextLinkParamSetToBeUpdated =
-        ((chanHandle->nextLinkParamSetToBeUpdated + 1U) & 0x01U);
+        ((chanHandle->nextLinkParamSetToBeUpdated + 1u) & 0x01u);
 #endif
 }
 
@@ -5256,18 +5256,18 @@ void Mcasp_localGetNextIndex(Mcasp_ChannelHandle chanHandle)
 int32_t Mcasp_localIsValidPacket(Mcasp_ChannelHandle chanHandle)
 {
     int32_t  status     = MCASP_COMPLETED;
-    Bool   falsewhile   = UTRUE;
+    Bool   falsewhile = TRUE;
 
     do
     {
-        falsewhile = UFALSE;
+        falsewhile = FALSE;
 
         if((NULL != chanHandle) && (NULL != chanHandle->devHandle))
         {
         /* Present request validation for int mode transfer                   */
-        if (((UFALSE == chanHandle->isDmaDriven)
+        if (((FALSE == chanHandle->isDmaDriven)
             && (NULL != chanHandle->dataPacket))
-            && (0U   != chanHandle->currentDataSize))
+            && (0u != chanHandle->currentDataSize))
         {
             /* in interrupt mode - some transaction is going on               */
             status = Mcasp_STATUS_VALID;
@@ -5281,15 +5281,15 @@ int32_t Mcasp_localIsValidPacket(Mcasp_ChannelHandle chanHandle)
                  * giving error                                               */
                 chanHandle->dataPacket = NULL;
 
-                if (UFALSE == chanHandle->isDmaDriven)
+                if (FALSE == chanHandle->isDmaDriven)
                 {
                     /* As interrupt mode there is not loopjob implementation  *
                      * we have to stop the state machine here                 */
                     chanHandle->dataQueuedOnReset = 0;
                     chanHandle->dataPacket = NULL;
                     chanHandle->currentDataSize = 0;
-                    chanHandle->userDataBufferSize = 0U;
-                    chanHandle->xferinProgressIntmode = UFALSE;
+                    chanHandle->userDataBufferSize = 0;
+                    chanHandle->xferinProgressIntmode = FALSE;
 
                     /* Stopping the state machine is taken care outside this  *
                      * function                                               */
@@ -5321,7 +5321,7 @@ int32_t Mcasp_localIsValidPacket(Mcasp_ChannelHandle chanHandle)
                         (uint32_t)(chanHandle->dataPacket->size);
                     status = Mcasp_STATUS_VALID;
 
-                    if (UTRUE == chanHandle->isDmaDriven)
+                    if (TRUE == chanHandle->isDmaDriven)
                     {
                         /* Additional to assigning the important parameters as*
                          * above for DMA mode , we will have max 2 packets    *
@@ -5357,9 +5357,9 @@ void Mcasp_localLoadPktToDma(Mcasp_ChannelObj *chanHandle,MCASP_Packet *ioPacket
 {
     Mcasp_Object           *instHandle  = NULL;
     Mcasp_PktAddrPayload   *payLoad     = NULL;
-    int32_t                 status      = MCASP_COMPLETED;
-    Bool                    falseWhile  = UTRUE;
-    uint32_t                hwiKey      = 0U;
+    int32_t                   status      = MCASP_COMPLETED;
+    Bool                    falseWhile  = (Bool)TRUE;
+    uint32_t                  hwiKey      = 0;
     uint32_t                temp_var    = 0U;
 
 
@@ -5370,9 +5370,9 @@ void Mcasp_localLoadPktToDma(Mcasp_ChannelObj *chanHandle,MCASP_Packet *ioPacket
 
     do
     {
-        falseWhile = UFALSE;
+        falseWhile = (Bool)FALSE;
 
-        if (UTRUE == instHandle->isDataBufferPayloadStructure)
+        if (TRUE == instHandle->isDataBufferPayloadStructure)
         {
             payLoad = (Mcasp_PktAddrPayload *)ioPacket->addr;
         }
@@ -5382,9 +5382,9 @@ void Mcasp_localLoadPktToDma(Mcasp_ChannelObj *chanHandle,MCASP_Packet *ioPacket
         if (Mcasp_ChanMode_RCV != chanHandle->channelOpMode)
         {
             if ((Mcasp_ChanMode_XMT_DIT == chanHandle->channelOpMode)
-                && (UTRUE == instHandle->isDataBufferPayloadStructure)
+                && (TRUE == instHandle->isDataBufferPayloadStructure)
                 && (payLoad != NULL)
-                && ((uint16_t)UTRUE == payLoad->writeDitParams))
+                && (TRUE == payLoad->writeDitParams))
             {
                 /* DIT Mode: Write to the Channel Status RAM and User Data RAM*/
                 temp_var = (uint32_t)mcaspWriteChanStatRam(
@@ -5424,7 +5424,7 @@ void Mcasp_localLoadPktToDma(Mcasp_ChannelObj *chanHandle,MCASP_Packet *ioPacket
 #endif
 
             {
-                chanHandle->loopjobUpdatedinParamset = UFALSE;
+                chanHandle->loopjobUpdatedinParamset = (Bool)FALSE;
 
                 Mcasp_localGetNextIndex(chanHandle);
             }
@@ -5491,8 +5491,8 @@ void Mcasp_localLoadPktToDma(Mcasp_ChannelObj *chanHandle,MCASP_Packet *ioPacket
             Mcasp_enableDMA(chanHandle);
 
             /*  update the State m/c stop status                              */
-            instHandle->stopSmFsXmt = UFALSE;
-            instHandle->stopSmFsRcv = UFALSE;
+            instHandle->stopSmFsXmt = (Bool)FALSE;
+            instHandle->stopSmFsRcv = (Bool)FALSE;
 
             if(chanHandle->userIntValue) {
               Mcasp_enableInterrupt(chanHandle->cpuEventNum,chanHandle->intNum);
@@ -5553,12 +5553,12 @@ void Mcasp_swiTxFifo(void * arg0,void * arg1)
      * did have any more packet to load Hence here we will wait for the       *
      * FIFO to become empty (if FIFO is enabled) else wait for the TX to      *
      * become empty.then we will disable the TX section                       */
-    if (UTRUE == chanHandle->enableHwFifo)
+    if (TRUE == chanHandle->enableHwFifo)
     {
         tempVal = McASPTxFifoStatusGet(instHandle->hwInfo.regs);
 
-        while ((0U != (tempVal & 0xFFU))  /* Checking for 0-7 bits of the reg */
-               && (0U != timeOut))
+        while ((0 != (tempVal & 0xFF))  /* Checking for 0-7 bits of the reg */
+               && (0 != timeOut))
         {
             /* reduce the timeout count and check if the FIFO is empty        */
             timeOut--;
@@ -5594,7 +5594,7 @@ void Mcasp_swiTxFifo(void * arg0,void * arg1)
     }
 
     /* Disable the FIFO */
-    mcaspConfigureFifo(&instHandle->hwInfo, chanHandle, UFALSE);
+    mcaspConfigureFifo(&instHandle->hwInfo, chanHandle, FALSE);
 
     if (MCASP_TX_UNDERRUN ==
         (MCASP_TX_UNDERRUN & chanHandle->userIntValue))
@@ -5614,12 +5614,12 @@ void Mcasp_swiTxFifo(void * arg0,void * arg1)
 
     /* complete the IOP now and call the callback to the stream               */
     chanHandle->tempPacket = (MCASP_Packet *) QueueP_get(chanHandle->queueFloatingList);
-    if(NULL != chanHandle->tempPacket)
+    if(chanHandle->tempPacket != NULL)
     {
         /* Decrement the submit count for the IOpackets                           */
         chanHandle->submitCount--;
 
-        chanHandle->isTempPacketValid = UTRUE;
+        chanHandle->isTempPacketValid = (Bool)TRUE;
         chanHandle->tempPacket->status = chanHandle->currentPacketErrorStatus;
 
         Mcasp_localCompleteCurrentIo(chanHandle);
@@ -5627,7 +5627,7 @@ void Mcasp_swiTxFifo(void * arg0,void * arg1)
     #if defined (BIOS_PWRM_ENABLE) && !defined (Mcasp_LOOPJOB_ENABLED)
         /* check if the driver is waiting to go to sleep or process DVFS event    *
         * (only if the application has requested PWRM support)                   */
-        if (UTRUE == instHandle->pscPwrmEnable)
+        if (TRUE == instHandle->pscPwrmEnable)
         {
             Mcasp_localHandlePwrmEvent(instHandle,chanHandle);
         }
@@ -5660,7 +5660,7 @@ int32_t Mcasp_loadPendedIops(Mcasp_ChannelObj *chanHandle)
     tempSubmitCount = (uint32_t)chanHandle->submitCount;
     chanHandle->submitCount = 0x00;
 
-    for (count = 0U; count < (chanHandle->maxActiveSubmit + 1U); count++)
+    for (count = 0; count < (chanHandle->maxActiveSubmit + 1U); count++)
     {
         /* start the critical section                                         */
         hwiKey = HwiP_disable();
@@ -5730,7 +5730,7 @@ int32_t Mcasp_localLpscOn(const Mcasp_Object *instHandle)
 
     if(NULL != instHandle)
     {
-    if (UTRUE == instHandle->pscPwrmEnable)
+    if (TRUE == instHandle->pscPwrmEnable)
     {
 #ifdef BIOS_PWRM_ENABLE
         /* power on using bios PWRM API                                       */
@@ -5742,7 +5742,7 @@ int32_t Mcasp_localLpscOn(const Mcasp_Object *instHandle)
 status = Psc_ModuleClkCtrl(
                     (Psc_DevId)instHandle->hwInfo.pscInstance,
                     (uint32_t)instHandle->hwInfo.pwrmLpscId,
-                    UTRUE);
+                    TRUE);
 #endif
 #endif
     }
@@ -5770,7 +5770,7 @@ int32_t Mcasp_localLpscOff(const Mcasp_Object *instHandle)
 
     if(NULL != instHandle)
     {
-    if (UTRUE == instHandle->pscPwrmEnable)
+    if (TRUE == instHandle->pscPwrmEnable)
     {
 #ifdef BIOS_PWRM_ENABLE
         /* power off  using PWRM API                                          */
@@ -5782,7 +5782,7 @@ int32_t Mcasp_localLpscOff(const Mcasp_Object *instHandle)
         status = Psc_ModuleClkCtrl(
                     (Psc_DevId)instHandle->hwInfo.pscInstance,
                     (uint32_t)instHandle->hwInfo.pwrmLpscId,
-                    UFALSE);
+                    FALSE);
 #endif
 #endif
     }
@@ -5817,8 +5817,8 @@ void Mcasp_localHandlePwrmEvent(Mcasp_Object     *instHandle,
     if( (NULL != instHandle) && (NULL != chanHandle) )
     {
     /* check if the driver is waiting to go to sleep                          */
-    if ((UTRUE == instHandle->pscPwrmEnable) &&
-        (UTRUE == instHandle->pwrmInfo.ioSuspend))
+    if ((TRUE == instHandle->pscPwrmEnable) &&
+        (TRUE == instHandle->pwrmInfo.ioSuspend))
     {
         /* Set the driver state to PWRM suspend so that no more IO can be     *
          * programmed                                                         */
@@ -5883,7 +5883,7 @@ void Mcasp_localHandlePwrmEvent(Mcasp_Object     *instHandle,
                     /* Disable the FIFO */
                     mcaspConfigureFifo(&instHandle->hwInfo,
                                        chanHandle,
-                                       UFALSE);
+                                       FALSE);
                 }
             }
 
@@ -5895,7 +5895,7 @@ void Mcasp_localHandlePwrmEvent(Mcasp_Object     *instHandle,
             (QueueP_EMPTY == QueueP_isEmpty(instHandle->RcvObj.queueFloatingList)))
         {
             /* if both the channels are inactive then reset the io suspend    */
-            instHandle->pwrmInfo.ioSuspend = UFALSE;
+            instHandle->pwrmInfo.ioSuspend = FALSE;
 
             if ((Power_GOINGTOSLEEP == instHandle->pwrmInfo.pwrmEvent) ||
                  (Power_GOINGTODEEPSLEEP == instHandle->pwrmInfo.pwrmEvent))
@@ -5909,7 +5909,7 @@ void Mcasp_localHandlePwrmEvent(Mcasp_Object     *instHandle,
         
                  if (Power_SOK == retVal)
                  {
-                     while (count > 0U)
+                     while (count > 0)
                      {
                          retVal = (int32_t)Power_releaseDependency(
                              (Power_Resource)instHandle->hwInfo.pwrmLpscId);
@@ -5953,7 +5953,7 @@ void Mcasp_localHandlePwrmEvent(Mcasp_Object     *instHandle,
     if(NULL != instHandle)
     {
     /* register for the events to be notified by the driver                   */
-    for (eventCnt = 0U; eventCnt < Mcasp_MAX_PWRM_EVENTS; eventCnt++)
+    for (eventCnt = 0; eventCnt < Mcasp_MAX_PWRM_EVENTS; eventCnt++)
     {
         /* register the notify function for the PWRM event                    */
         retVal = Power_registerNotify(
@@ -6085,7 +6085,7 @@ void Mcasp_localHandlePwrmEvent(Mcasp_Object     *instHandle,
   Power_NotifyResponse McaspSuspendCurrentIops(Mcasp_Object  *instHandle,
                                                     Power_Event     eventType)
 {
-    uint32_t                hwiKey = 0x00U;
+    uint32_t                hwiKey = 0x00;
     Power_NotifyResponse  status = Power_NOTIFYDONE; 
 
     if(NULL != instHandle)
@@ -6107,7 +6107,7 @@ void Mcasp_localHandlePwrmEvent(Mcasp_Object     *instHandle,
          * of this request in the ISR context(task in case of polled mode)    *
          * by calling the delayed completion function                         */
         status = Power_NOTIFYNOTDONE;
-        instHandle->pwrmInfo.ioSuspend = UTRUE;
+        instHandle->pwrmInfo.ioSuspend = (Bool)TRUE;
         instHandle->pwrmInfo.pwrmEvent = eventType;
     }
    }
@@ -6132,13 +6132,13 @@ void Mcasp_localHandlePwrmEvent(Mcasp_Object     *instHandle,
  */
   int32_t McaspUnregisterNotification(Mcasp_Object *instHandle)
 {
-   uint32_t        eventCnt = 0x00U;
+   uint32_t        eventCnt = 0x00;
    Power_Status  retVal   = Power_SOK;
    int32_t         status   = MCASP_COMPLETED;
 
    if(NULL != instHandle)
    {
-    for (eventCnt = 0U; eventCnt < Mcasp_MAX_PWRM_EVENTS; eventCnt++)
+    for (eventCnt = 0; eventCnt < Mcasp_MAX_PWRM_EVENTS; eventCnt++)
     {
         /* register the notify function for the PWRM event                    */
         if (NULL != (instHandle->pwrmInfo.notifyHandle[eventCnt]))
@@ -6153,7 +6153,7 @@ void Mcasp_localHandlePwrmEvent(Mcasp_Object     *instHandle,
             }
             else
             {
-                instHandle->pwrmInfo.notifyHandle[eventCnt] = 0x00U;
+                instHandle->pwrmInfo.notifyHandle[eventCnt] = 0x00;
             }
         }
     }
@@ -6179,12 +6179,12 @@ int32_t McaspUnregisterConstraints(Mcasp_Object *instHandle)
 {
     int32_t         status = MCASP_COMPLETED;
     Power_Status  retVal = Power_SOK;
-    uint32_t        count  = 0x00U;
+    uint32_t        count  = 0x00;
 
     if(NULL != instHandle)
     {
     
-    for (count = 0U; count < Mcasp_MAX_PWRM_CONSTRAINTS; count++)
+    for (count = 0; count < Mcasp_MAX_PWRM_CONSTRAINTS; count++)
     {
         if (NULL != instHandle->pwrmInfo.constraintHandle[count])
         {
@@ -6198,7 +6198,7 @@ int32_t McaspUnregisterConstraints(Mcasp_Object *instHandle)
             }
             else
             {
-                instHandle->pwrmInfo.constraintHandle[count] = 0x00U;
+                instHandle->pwrmInfo.constraintHandle[count] = 0x00;
             }
         }
     }
@@ -6214,21 +6214,21 @@ int32_t McaspUnregisterConstraints(Mcasp_Object *instHandle)
 static void Mcasp_enableInterrupt(int32_t cpuEventNum, int32_t intNum)
 {
    
-    if ( (MCASP_INVALID_EVENTNUM    != cpuEventNum)    &&
-         (MCASP_UNASSIGNED_EVENTNUM != cpuEventNum)    &&
-         (MCASP_INVALID_INTNUM      != intNum)         &&  
-         (MCASP_UNASSIGNED_INTNUM   != intNum))  {
-      Osal_EnableInterrupt(cpuEventNum,(uint32_t)intNum);
+    if ( (cpuEventNum!=MCASP_INVALID_EVENTNUM)    &&
+         (cpuEventNum!=MCASP_UNASSIGNED_EVENTNUM) &&
+         (intNum!=MCASP_INVALID_INTNUM)   &&  
+         (intNum!=MCASP_UNASSIGNED_INTNUM))  {
+      Osal_EnableInterrupt(cpuEventNum,intNum);
     }
 }
 
 static void Mcasp_disableInterrupt(int32_t cpuEventNum,int32_t intNum)
 {
-    if ( (MCASP_INVALID_EVENTNUM    != cpuEventNum)   &&
-         (MCASP_UNASSIGNED_EVENTNUM != cpuEventNum)   &&
-         (MCASP_INVALID_INTNUM      != intNum)        &&  
-         (MCASP_UNASSIGNED_INTNUM   != intNum))  {
-      Osal_DisableInterrupt(cpuEventNum, (uint32_t)intNum);
+    if ( (cpuEventNum!=MCASP_INVALID_EVENTNUM)    &&
+         (cpuEventNum!=MCASP_UNASSIGNED_EVENTNUM) &&
+         (intNum!=MCASP_INVALID_INTNUM)   &&  
+         (intNum!=MCASP_UNASSIGNED_INTNUM))  {
+      Osal_DisableInterrupt(cpuEventNum,intNum);
     }
 }
 
@@ -6305,7 +6305,7 @@ int32_t Mcasp_localCalcWordWidth(Mcasp_ChannelHandle chanHandle,
     status = MCASP_COMPLETED;
     
     /* Decide/calculate the rounded word width based on parameter wordWidth */
-    if (UTRUE == chanHandle->isDataPacked)
+    if (TRUE == chanHandle->isDataPacked)
     {
         switch (wordWidth)
         {
@@ -6345,9 +6345,9 @@ int32_t Mcasp_localCalcWordWidth(Mcasp_ChannelHandle chanHandle,
 
         if (Mcasp_WordLength_32 > wordWidth)
         {
-            mask = 0x20U;
+            mask = 0x20u;
 
-            for (count = 0U; count < (3U); count++)
+            for (count = 0; count < (3u); count++)
             {
                 if (mask == (mask &  wordWidth))
                 {
@@ -6368,10 +6368,10 @@ int32_t Mcasp_localCalcWordWidth(Mcasp_ChannelHandle chanHandle,
         }
     }
     
-    if (0U == ((0x0000FF80U) & chanHandle->frSyncCtl))
+    if (0U == ((0x0000FF80u) & chanHandle->frSyncCtl))
     {
         /*the driver has been configured for DSP (BURST mode)         */
-        if (0U == chanHandle->noOfChannels)
+        if (0 == chanHandle->noOfChannels)
         {
             status = MCASP_EBADARGS;
         }

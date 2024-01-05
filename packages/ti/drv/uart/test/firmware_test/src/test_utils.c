@@ -279,21 +279,21 @@ uint16_t gTestStressRdData16bP2S1[TEST_STRESS_MAX_RD_DATA_SZ] __attribute__ ((al
 // UART transfer parameters
 // Small number of transfers
 //TestStressUartXferPrms gTestStressUartXferPrms[TEST_STRESS_NUM_UART_LB_PAIR][TEST_STRESS_NUM_SIDE_PER_LB_PAIR] = {
-//    {{12,384,24,192,gTestStressRdData8b,     gTestExtLoopbackWrData8b, BTRUE},           // Pair 0, Side 0
-//     {24,192,12,384,gTestStressRdData16bP0S1,gTestExtLoopbackWrData16b,BFALSE}},         // Pair 0, Side 1
-//    {{ 6,256, 3,512,gTestStressRdData16bP1S0,gTestExtLoopbackWrData16b,BFALSE},          // Pair 1, Side 0
-//     { 3,512, 6,256,gTestStressRdData16bP1S1,gTestExtLoopbackWrData16b,BFALSE}},         // Pair 1, Side 1
-//    {{ 3,128, 1,384,gTestStressRdData16bP2S0,gTestExtLoopbackWrData16b,BFALSE},          // Pair 2, Side 0
-//     { 1,384, 3,128,gTestStressRdData16bP2S1,gTestExtLoopbackWrData16b,BFALSE}}          // Pair 2, Side 1
+//    {{12,384,24,192,gTestStressRdData8b,     gTestExtLoopbackWrData8b, true},           // Pair 0, Side 0
+//     {24,192,12,384,gTestStressRdData16bP0S1,gTestExtLoopbackWrData16b,false}},         // Pair 0, Side 1
+//    {{ 6,256, 3,512,gTestStressRdData16bP1S0,gTestExtLoopbackWrData16b,false},          // Pair 1, Side 0
+//     { 3,512, 6,256,gTestStressRdData16bP1S1,gTestExtLoopbackWrData16b,false}},         // Pair 1, Side 1
+//    {{ 3,128, 1,384,gTestStressRdData16bP2S0,gTestExtLoopbackWrData16b,false},          // Pair 2, Side 0
+//     { 1,384, 3,128,gTestStressRdData16bP2S1,gTestExtLoopbackWrData16b,false}}          // Pair 2, Side 1
 //};
 // Larger number of transfers
 //TestStressUartXferPrms gTestStressUartXferPrms[TEST_STRESS_NUM_UART_LB_PAIR][TEST_STRESS_NUM_SIDE_PER_LB_PAIR] = {
-//    {{1200,384,2400,192,gTestStressRdData8b,     gTestExtLoopbackWrData8b, BTRUE},       // Pair 0, Side 0
-//     {2400,192,1200,384,gTestStressRdData16bP0S1,gTestExtLoopbackWrData16b,BFALSE}},     // Pair 0, Side 1
-//    {{ 600,256, 300,512,gTestStressRdData16bP1S0,gTestExtLoopbackWrData16b,BFALSE},      // Pair 1, Side 0
-//     { 300,512, 600,256,gTestStressRdData16bP1S1,gTestExtLoopbackWrData16b,BFALSE}},     // Pair 1, Side 1
-//    {{ 300,128, 100,384,gTestStressRdData16bP2S0,gTestExtLoopbackWrData16b,BFALSE},      // Pair 2, Side 0
-//     { 100,384, 300,128,gTestStressRdData16bP2S1,gTestExtLoopbackWrData16b,BFALSE}}      // Pair 2, Side 1
+//    {{1200,384,2400,192,gTestStressRdData8b,     gTestExtLoopbackWrData8b, true},       // Pair 0, Side 0
+//     {2400,192,1200,384,gTestStressRdData16bP0S1,gTestExtLoopbackWrData16b,false}},     // Pair 0, Side 1
+//    {{ 600,256, 300,512,gTestStressRdData16bP1S0,gTestExtLoopbackWrData16b,false},      // Pair 1, Side 0
+//     { 300,512, 600,256,gTestStressRdData16bP1S1,gTestExtLoopbackWrData16b,false}},     // Pair 1, Side 1
+//    {{ 300,128, 100,384,gTestStressRdData16bP2S0,gTestExtLoopbackWrData16b,false},      // Pair 2, Side 0
+//     { 100,384, 300,128,gTestStressRdData16bP2S1,gTestExtLoopbackWrData16b,false}}      // Pair 2, Side 1
 //};
 
 // All baud rate 115200
@@ -304,21 +304,21 @@ TestStressUartCfgPrms gTestStressUartCfgPrms[TEST_STRESS_NUM_UART_LB_PAIR] = {
 };
 // Small number of transfers
 //TestStressUartXferPrms gTestStressUartXferPrms[TEST_STRESS_NUM_UART_LB_PAIR][TEST_STRESS_NUM_SIDE_PER_LB_PAIR] = {
-//    {{12,384,24,192,gTestStressRdData8b,     gTestExtLoopbackWrData8b, BTRUE},           // Pair 0, Side 0
-//     {24,192,12,384,gTestStressRdData16bP0S1,gTestExtLoopbackWrData16b,BFALSE}},         // Pair 0, Side 1
-//    {{24,192,12,384,gTestStressRdData16bP1S0,gTestExtLoopbackWrData16b,BFALSE},          // Pair 1, Side 0
-//     {12,384,24,192,gTestStressRdData16bP1S1,gTestExtLoopbackWrData16b,BFALSE}},         // Pair 1, Side 1
-//    {{12,384,24,192,gTestStressRdData16bP2S0,gTestExtLoopbackWrData16b,BFALSE},          // Pair 2, Side 0
-//     {24,192,12,384,gTestStressRdData16bP2S1,gTestExtLoopbackWrData16b,BFALSE}}          // Pair 2, Side 1
+//    {{12,384,24,192,gTestStressRdData8b,     gTestExtLoopbackWrData8b, true},           // Pair 0, Side 0
+//     {24,192,12,384,gTestStressRdData16bP0S1,gTestExtLoopbackWrData16b,false}},         // Pair 0, Side 1
+//    {{24,192,12,384,gTestStressRdData16bP1S0,gTestExtLoopbackWrData16b,false},          // Pair 1, Side 0
+//     {12,384,24,192,gTestStressRdData16bP1S1,gTestExtLoopbackWrData16b,false}},         // Pair 1, Side 1
+//    {{12,384,24,192,gTestStressRdData16bP2S0,gTestExtLoopbackWrData16b,false},          // Pair 2, Side 0
+//     {24,192,12,384,gTestStressRdData16bP2S1,gTestExtLoopbackWrData16b,false}}          // Pair 2, Side 1
 //};
 // Larger number of transfers
 TestStressUartXferPrms gTestStressUartXferPrms[TEST_STRESS_NUM_UART_LB_PAIR][TEST_STRESS_NUM_SIDE_PER_LB_PAIR] = {
-    {{12000,384,24000,192,gTestStressRdData8b,     gTestExtLoopbackWrData8b, BTRUE},     // Pair 0, Side 0
-     {24000,192,12000,384,gTestStressRdData16bP0S1,gTestExtLoopbackWrData16b,BFALSE}},   // Pair 0, Side 1
-    {{24000,192,12000,384,gTestStressRdData16bP1S0,gTestExtLoopbackWrData16b,BFALSE},    // Pair 1, Side 0
-     {12000,384,24000,192,gTestStressRdData16bP1S1,gTestExtLoopbackWrData16b,BFALSE}},   // Pair 1, Side 1
-    {{12000,384,24000,192,gTestStressRdData16bP2S0,gTestExtLoopbackWrData16b,BFALSE},    // Pair 2, Side 0
-     {24000,192,12000,384,gTestStressRdData16bP2S1,gTestExtLoopbackWrData16b,BFALSE}}    // Pair 2, Side 1
+    {{12000,384,24000,192,gTestStressRdData8b,     gTestExtLoopbackWrData8b, true},     // Pair 0, Side 0
+     {24000,192,12000,384,gTestStressRdData16bP0S1,gTestExtLoopbackWrData16b,false}},   // Pair 0, Side 1
+    {{24000,192,12000,384,gTestStressRdData16bP1S0,gTestExtLoopbackWrData16b,false},    // Pair 1, Side 0
+     {12000,384,24000,192,gTestStressRdData16bP1S1,gTestExtLoopbackWrData16b,false}},   // Pair 1, Side 1
+    {{12000,384,24000,192,gTestStressRdData16bP2S0,gTestExtLoopbackWrData16b,false},    // Pair 2, Side 0
+     {24000,192,12000,384,gTestStressRdData16bP2S1,gTestExtLoopbackWrData16b,false}}    // Pair 2, Side 1
 };
 
 // Configures IO Pin Mux
@@ -339,31 +339,31 @@ static bool configIoPinMux(IoPinMuxAttrs *pIoPinMuxAttrs)
                 regVal &= IO_PIN_INPUT_SELECT_MASK;
                 regVal |= IO_PIN_INPUT_ENABLE;
                 regVal |= (uint32_t)pIoPinMuxAttrs->modeVal;
-                ret = BTRUE;
+                ret = true;
             }
             else if (pinDir == IO_PIN_OUTPUT)
             {
                 regVal &= IO_PIN_OUTPUT_SELECT_MASK;
                 regVal |= IO_PIN_OUTPUT_ENABLE;
                 regVal |= (uint32_t)(pIoPinMuxAttrs->modeVal);
-                ret = BTRUE;
+                ret = true;
             }
             else
             {
                 // error, Pin not configured as Input or Output
-                ret = BFALSE;
+                ret = false;
             }
             
             *(volatile uint32_t *)(pIoPinMuxAttrs->confRegAddr) = regVal;
         }
         else
         {
-            ret = BTRUE;
+            ret = true;
         }
     }
     else
     {
-        ret = BFALSE;
+        ret = false;
     }
     
     return ret;
@@ -380,26 +380,26 @@ bool configUartIoPinMux(UartIoPinMuxAttrs *pUartIoPinMuxAttrs)
         ret = configIoPinMux(&pUartIoPinMuxAttrs->txdPinMuxAttrs);
         
         // Configure UART RXD
-        if (BTRUE == ret)
+        if (ret == true)
         {
             ret = configIoPinMux(&pUartIoPinMuxAttrs->rxdPinMuxAttrs);
         }
         
         // Configure UART CTSN
-        if (BTRUE == ret)
+        if (ret == true)
         {
             ret = configIoPinMux(&pUartIoPinMuxAttrs->ctsnPinMuxAttrs);
         }
         
         // Configure UART RTSN
-        if (BTRUE == ret)
+        if (ret == true)
         {
             ret = configIoPinMux(&pUartIoPinMuxAttrs->rtsnPinMuxAttrs);
         }
     }
     else
     {
-        ret = BFALSE;
+        ret = false;
     }
     
     return ret;
@@ -428,11 +428,11 @@ bool sprintTestId(int testId, char testIdStr[], uint8_t testIdStrSize)
             pIn--;
         }
         
-        ret = BTRUE;
+        ret = true;
     }
     else
     {
-        ret = BFALSE;
+        ret = false;
     }
 
     return ret;
@@ -449,7 +449,7 @@ bool compareExtLoopbackRdWrData(
     uint16_t charMask;
     uint16_t data1, data2;
     uint32_t i;
-    bool cmpErr, ret = BTRUE;
+    bool cmpErr, ret = true;
     
     // determine bit mask for compare
     switch (charLen)
@@ -470,19 +470,19 @@ bool compareExtLoopbackRdWrData(
             charMask = UART_CHAR_LEN_9_MASK;
             break;
         default:
-            ret = BFALSE;
+            ret = false;
             break;
     }
 
-    if (BTRUE == ret)
+    if (ret == true)
     {
-        if (BTRUE == cmp8b)
+        if (cmp8b == true)
         {
             // compare 8- and 16-bit data vectors
             // continue until all data compared or mismatch identified
-            cmpErr = BFALSE;
+            cmpErr = false;
             i = 0;
-            while ((BFALSE == cmpErr) && (i < dataLen))
+            while ((cmpErr == false) && (i < dataLen))
             {
                 data1 = (uint16_t)(*((uint8_t *)data + i)) & charMask;
                 data2 = data16b[i] & charMask;
@@ -492,7 +492,7 @@ bool compareExtLoopbackRdWrData(
                 }
                 else
                 {
-                    cmpErr = BTRUE;
+                    cmpErr = true;
                 }
             }
         }
@@ -500,9 +500,9 @@ bool compareExtLoopbackRdWrData(
         {
             // compare 16- and 16-bit data vectors
             // continue until all data compared or mismatch identified
-            cmpErr = BFALSE;
+            cmpErr = false;
             i = 0;
-            while ((BFALSE == cmpErr) && (i < dataLen))
+            while ((cmpErr == false) && (i < dataLen))
             {
                 data1 = *((uint16_t *)data + i) & charMask;
                 data2 = data16b[i] & charMask;
@@ -512,12 +512,12 @@ bool compareExtLoopbackRdWrData(
                 }
                 else
                 {
-                    cmpErr = BTRUE;
+                    cmpErr = true;
                 }
             }
         }
     
-        ret = (BFALSE == cmpErr) ? BTRUE : BFALSE;
+        ret = (cmpErr == false) ? true : false;
     }
 
     return ret;

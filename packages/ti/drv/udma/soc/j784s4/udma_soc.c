@@ -406,7 +406,7 @@ void Udma_initDrvHandle(Udma_DrvHandle drvHandle)
         }
 
         pRaRegs->maxMonitors     = CSL_RINGACC_MAX_MONITORS;
-        pRaRegs->bTraceSupported = BTRUE;
+        pRaRegs->bTraceSupported = (bool)true;
 
         drvHandle->ringDequeueRaw           = &Udma_ringDequeueRawNormal;
         drvHandle->ringQueueRaw             = &Udma_ringQueueRawNormal;
@@ -882,9 +882,9 @@ uint32_t Udma_isCacheCoherent(void)
     uint32_t isCacheCoherent;
 
 #if defined (BUILD_MPU1_0)
-    isCacheCoherent = UTRUE;
+    isCacheCoherent = TRUE;
 #else
-    isCacheCoherent = UFALSE;
+    isCacheCoherent = FALSE;
 #endif
 
     return (isCacheCoherent);

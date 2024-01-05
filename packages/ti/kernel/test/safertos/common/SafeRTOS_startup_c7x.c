@@ -105,11 +105,11 @@ void _system_post_cinit( void )
 
 void vInitMmu( void )
 {
-    prvMmuInit( BFALSE );
-    prvMmuInit( BTRUE );
+    prvMmuInit( false );
+    prvMmuInit( true );
 
     /* Setup CLEC access/configure in non-secure mode */
-    prvCfgClecAccessCtrl( BFALSE );
+    prvCfgClecAccessCtrl( false );
 }
 /*-------------------------------------------------------------------------*/
 
@@ -125,7 +125,7 @@ static void prvMmuInit( Bool isSecure )
     Mmu_initMapAttrs( &attrs );
     attrs.attrIndx = Mmu_AttrIndx_MAIR0;
 
-    if( UTRUE == isSecure )
+    if( TRUE == isSecure )
     {
         attrs.ns = 0;
     }
@@ -166,7 +166,7 @@ static void prvCfgClecAccessCtrl ( Bool onlyInSecure )
     uint32_t            i, maxInputs = 2048U;
 
     cfgClec.secureClaimEnable = onlyInSecure;
-    cfgClec.evtSendEnable     = UFALSE;
+    cfgClec.evtSendEnable     = FALSE;
     cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
     cfgClec.extEvtNum         = 0U;
     cfgClec.c7xEvtNum         = 0U;

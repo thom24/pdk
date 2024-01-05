@@ -119,7 +119,7 @@ static int32_t ospiUdmaInit(OSPI_v0_HwAttrs *cfg)
     Udma_InitPrms   initPrms;
     uint32_t        instId;
 
-    if (NULL == gDrvHandle)
+    if (gDrvHandle == NULL)
     {
         /* UDMA driver init */
 #if defined (__aarch64__)
@@ -135,7 +135,7 @@ static int32_t ospiUdmaInit(OSPI_v0_HwAttrs *cfg)
         }
     }
 
-    if(NULL != gDrvHandle)
+    if(gDrvHandle != NULL)
     {
         gUdmaInfo.drvHandle      = (void *)gDrvHandle;
         gUdmaInfo.chHandle       = (void *)&gUdmaChObj;
@@ -163,7 +163,7 @@ static int32_t ospiUdmaDeinit(void)
 {
     int32_t   retVal = UDMA_SOK;
 
-    if (NULL != gDrvHandle)
+    if (gDrvHandle != NULL)
     {
         retVal = Udma_deinit(gDrvHandle);
         if(UDMA_SOK == retVal)
@@ -305,13 +305,13 @@ static int8_t UFP_ospiNandFlashImage(uint8_t *flashAddr, uint8_t *checkAddr,
 
     int8_t ret;
     ret = UFP_ospiNandFlashWrite(flashAddr, offset, size);
-    if (0 != ret)
+    if (ret != 0)
     {
         return -1;
     }
 
     ret = UFP_ospiNandFlashRead(checkAddr, offset, size);
-    if (0 != ret)
+    if (ret != 0)
     {
         return -1;
     }
@@ -370,19 +370,19 @@ static int8_t UFP_ospiNandFlashErase(uint32_t offset, uint32_t length)
 static int8_t UFP_ospiNandInit(void)
 {
     OSPI_v0_HwAttrs ospi_cfg;
-    uint32_t tuneEnable = UFALSE;
+    uint32_t tuneEnable = FALSE;
 
     /* Get the default ospi init configurations */
     OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);
 
     /* Modify the default ospi configurations if necessary */
     /* Turning off interrupts for baremetal mode. May be re-enabled by app */
-    ospi_cfg.intrEnable = BFALSE;
+    ospi_cfg.intrEnable = false;
 #ifdef SPI_DMA_ENABLE
-    ospi_cfg.dmaEnable  = BTRUE;
+    ospi_cfg.dmaEnable  = true;
     ospiUdmaInit(&ospi_cfg);
 #endif
-    ospi_cfg.phyEnable  = BFALSE;
+    ospi_cfg.phyEnable  = false;
 
     /* Set the default ospi init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_OSPI_INSTANCE, &ospi_cfg);

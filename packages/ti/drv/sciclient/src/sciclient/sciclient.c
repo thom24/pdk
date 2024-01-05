@@ -251,7 +251,7 @@ int32_t Sciclient_configPrmsInit(Sciclient_ConfigPrms_t *pCfgPrms)
         pCfgPrms->pBoardCfgPrms  = NULL;
         pCfgPrms->isSecureMode   = 0U;
         pCfgPrms->c66xRatRegion  = 15U;
-        pCfgPrms->skipLocalBoardCfgProcess = (uint8_t)UFALSE;
+        pCfgPrms->skipLocalBoardCfgProcess = (uint8_t)FALSE;
     }
     else
     {
@@ -515,7 +515,7 @@ int32_t Sciclient_init(const Sciclient_ConfigPrms_t *pCfgPrms)
         if(status == CSL_PASS){
             if (pCfgPrms != NULL)
             {
-                if (pCfgPrms->skipLocalBoardCfgProcess == (uint8_t)UFALSE)
+                if (pCfgPrms->skipLocalBoardCfgProcess == FALSE)
                 {
                     /* Run pm_init */
                     if (status == CSL_PASS)
@@ -1280,7 +1280,7 @@ static int32_t Sciclient_C66xRatMap(uint32_t ratRegion)
 #endif
 
     if (ratRegion < CSL_ratGetMaxRegions(pC66xRatRegs)) {
-        if (CSL_ratIsRegionTranslationEnabled(pC66xRatRegs, ratRegion) == BFALSE) {
+        if (CSL_ratIsRegionTranslationEnabled(pC66xRatRegs, ratRegion) == (bool)false) {
             CSL_ratEnableRegionTranslation(pC66xRatRegs, ratRegion);
             CSL_ratConfigRegionTranslation(pC66xRatRegs, ratRegion, &TranslationCfg);
         }

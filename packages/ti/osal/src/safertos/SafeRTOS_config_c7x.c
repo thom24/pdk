@@ -128,11 +128,11 @@ __attribute__((weak)) void _system_post_cinit( void )
 
 void Osal_initMmuDefault( void )
 {
-    prvMmuInit( BFALSE );
-    prvMmuInit( BTRUE );
+    prvMmuInit( (bool)false );
+    prvMmuInit( (bool)true );
 
     /* Setup CLEC access/configure in non-secure mode */
-    prvCfgClecAccessCtrl( BFALSE );
+    prvCfgClecAccessCtrl( (bool)false );
 }
 
 /*---------------------------------------------------------------------------*/
@@ -174,10 +174,10 @@ static void prvCfgClecAccessCtrl ( bool onlyInSecure )
     CSL_ClecEventConfig cfgClec;
     CSL_CLEC_EVTRegs   *clecBaseAddr = ( CSL_CLEC_EVTRegs* ) CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
     uint32_t            i, maxInputs = 2048U;
-    uint32_t            secureClaim = SECURE_DISABLE;
+    uint32_t            secureClaim = 0U;
 
-    cfgClec.secureClaimEnable = onlyInSecure? UTRUE: UFALSE;
-    cfgClec.evtSendEnable     = UFALSE;
+    cfgClec.secureClaimEnable = onlyInSecure?1U:0U;
+    cfgClec.evtSendEnable     = FALSE;
     cfgClec.rtMap             = CSL_CLEC_RTMAP_DISABLE;
     cfgClec.extEvtNum         = 0U;
     cfgClec.c7xEvtNum         = 0U;
@@ -198,13 +198,13 @@ static void prvMmuInit( bool isSecure )
     Mmu_initMapAttrs( &attrs );
     attrs.attrIndx = Mmu_AttrIndx_MAIR0;
 
-    if( BTRUE == isSecure )
+    if( (bool)true == isSecure )
     {
-        attrs.ns = BFALSE;
+        attrs.ns = (bool)false;
     }
     else
     {
-        attrs.ns = BTRUE;
+        attrs.ns = (bool)true;
     }
 
     /* Register region */
@@ -239,8 +239,8 @@ static void vPortInitTimerCLECCfg( uint32_t timerId, uint32_t timerIntNum )
     uint32_t corepackEvent = timerIntNum;
 
     /* Configure CLEC */
-    cfgClec.secureClaimEnable = UFALSE;
-    cfgClec.evtSendEnable     = UTRUE;
+    cfgClec.secureClaimEnable = FALSE;
+    cfgClec.evtSendEnable     = TRUE;
     cfgClec.rtMap             = CSL_clecGetC7xRtmapCpuId();
     cfgClec.extEvtNum         = 0U;
     cfgClec.c7xEvtNum         = corepackEvent;

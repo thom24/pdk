@@ -394,10 +394,10 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
 
     /* Program ring OES */
 #if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
-    if((TISCI_DEV_NAVSS0_RINGACC_0    == req->src_id) ||
+    if((TISCI_DEV_NAVSS0_RINGACC_0 == req->src_id) ||
        (TISCI_DEV_MCU_NAVSS0_RINGACC0 == req->src_id))
 #else
-    if((TISCI_DEV_NAVSS0_RINGACC0     == req->src_id) ||
+    if((TISCI_DEV_NAVSS0_RINGACC0 == req->src_id) ||
        (TISCI_DEV_MCU_NAVSS0_RINGACC0 == req->src_id))
 #endif
     {
@@ -416,10 +416,10 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
 
     /* Program channel OES */
 #if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
-    if((TISCI_DEV_NAVSS0_UDMAP_0     == req->src_id) ||
+    if((TISCI_DEV_NAVSS0_UDMAP_0 == req->src_id) ||
        (TISCI_DEV_MCU_NAVSS0_UDMAP_0 == req->src_id))
 #else
-    if((TISCI_DEV_NAVSS0_UDMAP0     == req->src_id) ||
+    if((TISCI_DEV_NAVSS0_UDMAP0 == req->src_id) ||
        (TISCI_DEV_MCU_NAVSS0_UDMAP0 == req->src_id))
 #endif
     {
@@ -427,7 +427,7 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
 #if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
         if(TISCI_DEV_MCU_NAVSS0_UDMAP_0 == req->src_id)
 #else
-        if(TISCI_DEV_MCU_NAVSS0_UDMAP0  == req->src_id)
+        if(TISCI_DEV_MCU_NAVSS0_UDMAP0 == req->src_id)
 #endif
         {
             rmObj = &gSciUdmaRmObjMcu;
@@ -464,10 +464,10 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
 
     /* Program IA/VINT */
 #if defined (SOC_J721S2) || defined (SOC_J784S4)
-    if((TISCI_DEV_NAVSS0_UDMASS_INTA_0     == req->ia_id) ||
+    if((TISCI_DEV_NAVSS0_UDMASS_INTA_0 == req->ia_id) ||
        (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == req->ia_id))
 #else
-    if((TISCI_DEV_NAVSS0_UDMASS_INTAGGR_0  == req->ia_id) ||
+    if((TISCI_DEV_NAVSS0_UDMASS_INTAGGR_0 == req->ia_id) ||
        (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == req->ia_id))
 #endif
     {
@@ -488,7 +488,7 @@ int32_t Sciclient_rmIrqSet(const struct tisci_msg_rm_irq_set_req *req,
             retVal += CSL_intaggrMapEventIntr(
                           &rmObj->iaRegs, eventOffset, vintrBitNum);
             retVal += CSL_intaggrClrIntr(&rmObj->iaRegs, vintrBitNum);
-            retVal += CSL_intaggrSetIntrEnable(&rmObj->iaRegs, vintrBitNum, BTRUE);
+            retVal += CSL_intaggrSetIntrEnable(&rmObj->iaRegs, vintrBitNum, TRUE);
         }
     }
 
@@ -691,10 +691,10 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
 
     /* Reset ring OES */
 #if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
-    if((TISCI_DEV_NAVSS0_RINGACC_0    == req->src_id) ||
+    if((TISCI_DEV_NAVSS0_RINGACC_0 == req->src_id) ||
        (TISCI_DEV_MCU_NAVSS0_RINGACC0 == req->src_id))
 #else
-    if((TISCI_DEV_NAVSS0_RINGACC0     == req->src_id) ||
+    if((TISCI_DEV_NAVSS0_RINGACC0 == req->src_id) ||
        (TISCI_DEV_MCU_NAVSS0_RINGACC0 == req->src_id))
 #endif
     {
@@ -713,10 +713,10 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
 
     /* Reset channel OES */
 #if defined (SOC_J7200) || defined (SOC_J721E) || defined (SOC_J721S2) || defined (SOC_J784S4)
-    if((TISCI_DEV_NAVSS0_UDMAP_0     == req->src_id) ||
+    if((TISCI_DEV_NAVSS0_UDMAP_0 == req->src_id) ||
        (TISCI_DEV_MCU_NAVSS0_UDMAP_0 == req->src_id))
 #else
-    if((TISCI_DEV_NAVSS0_UDMAP0     == req->src_id) ||
+    if((TISCI_DEV_NAVSS0_UDMAP0 == req->src_id) ||
        (TISCI_DEV_MCU_NAVSS0_UDMAP0 == req->src_id))
 #endif
     {
@@ -761,10 +761,10 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
 
     /* Disable IA/VINT */
 #if defined (SOC_J721S2) || defined (SOC_J784S4)
-    if((TISCI_DEV_NAVSS0_UDMASS_INTA_0     == req->ia_id) ||
+    if((TISCI_DEV_NAVSS0_UDMASS_INTA_0 == req->ia_id) ||
        (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == req->ia_id))
 #else
-    if((TISCI_DEV_NAVSS0_UDMASS_INTAGGR_0  == req->ia_id) ||
+    if((TISCI_DEV_NAVSS0_UDMASS_INTAGGR_0 == req->ia_id) ||
        (TISCI_DEV_MCU_NAVSS0_UDMASS_INTA_0 == req->ia_id))
 #endif
     {
@@ -783,7 +783,7 @@ int32_t Sciclient_rmIrqRelease(const struct tisci_msg_rm_irq_release_req *req,
             vintrBitNum = req->vint * 64U;
             vintrBitNum += req->vint_status_bit_index;
             retVal += CSL_intaggrMapEventIntr(&rmObj->iaRegs, eventOffset, 0U);
-            retVal += CSL_intaggrSetIntrEnable(&rmObj->iaRegs, vintrBitNum, BFALSE);
+            retVal += CSL_intaggrSetIntrEnable(&rmObj->iaRegs, vintrBitNum, FALSE);
             retVal += CSL_intaggrClrIntr(&rmObj->iaRegs, vintrBitNum);
         }
     }
@@ -1164,7 +1164,7 @@ int32_t Sciclient_rmPsilPair(const struct tisci_msg_rm_psil_pair_req *req,
     /* Pair source thread with destination thread */
     cslRetVal = CSL_psilcfgCreateRoute(
                     rmObj->psilCfgRegs, req->src_thread, req->dst_thread);
-    if(BTRUE != cslRetVal)
+    if(TRUE != cslRetVal)
     {
         retVal = CSL_EFAIL;
     }
@@ -1201,15 +1201,15 @@ int32_t Sciclient_rmPsilUnpair(const struct tisci_msg_rm_psil_unpair_req *req,
     }
 
     cslRetVal = CSL_psilcfgSetThreadRealtimeEnable(
-                    rmObj->psilCfgRegs, req->src_thread, BFALSE);
-    if(BTRUE != cslRetVal)
+                    rmObj->psilCfgRegs, req->src_thread, FALSE);
+    if(TRUE != cslRetVal)
     {
         retVal = CSL_EFAIL;
     }
 
     cslRetVal = CSL_psilcfgSetThreadRealtimeEnable(
-                    rmObj->psilCfgRegs, req->dst_thread, BFALSE);
-    if(BTRUE != cslRetVal)
+                    rmObj->psilCfgRegs, req->dst_thread, FALSE);
+    if(TRUE != cslRetVal)
     {
         retVal = CSL_EFAIL;
     }
@@ -1248,7 +1248,7 @@ int32_t Sciclient_rmPsilRead(const struct tisci_msg_rm_psil_read_req *req,
                     req->thread,
                     req->taddr,
                     &resp->data);
-    if(BTRUE != cslRetVal)
+    if(TRUE != cslRetVal)
     {
         retVal = CSL_EFAIL;
     }
@@ -1274,7 +1274,7 @@ int32_t Sciclient_rmPsilWrite(const struct tisci_msg_rm_psil_write_req *req,
                     req->thread,
                     req->taddr,
                     req->data);
-    if(BTRUE != cslRetVal)
+    if(TRUE != cslRetVal)
     {
         retVal = CSL_EFAIL;
     }

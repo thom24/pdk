@@ -100,7 +100,7 @@ static int8_t BoardDiag_octalNandReadWriteTest(Board_flashHandle handle,
     }
 
     if (BoardDiag_memCompare(&txBuf[0], &rxBuf[0], numOfBytes, &failIndex)
-                                                                    == BFALSE)
+                                                                    == false)
     {
         UART_printf("\nData mismatch at offset = 0x%x\n", failIndex);
         return -1;

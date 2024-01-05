@@ -801,9 +801,9 @@ uint32_t Udma_getCoreId(void);
 uint16_t Udma_getCoreSciDevId(void);
 
 /**
- *  \brief Returns UTRUE if the memory is cache coherent
+ *  \brief Returns TRUE if the memory is cache coherent
  *
- *  \return UTRUE/UFALSE
+ *  \return TRUE/FALSE
  */
 uint32_t Udma_isCacheCoherent(void);
 

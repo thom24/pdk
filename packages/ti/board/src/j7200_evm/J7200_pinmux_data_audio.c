@@ -132,8 +132,8 @@ static pinmuxPerCfg_t gMcasp1PinCfg[] =
 
 static pinmuxModuleCfg_t gMcaspPinCfg[] =
 {
-    {0, 1, gMcasp0PinCfg},
-    {1, 1, gMcasp1PinCfg},
+    {0, TRUE, gMcasp0PinCfg},
+    {1, TRUE, gMcasp1PinCfg},
     {PINMUX_END}
 };
 
@@ -150,7 +150,7 @@ static pinmuxPerCfg_t gSystem0PinCfg[] =
 
 static pinmuxModuleCfg_t gSystemPinCfg[] =
 {
-    {0, 1, gSystem0PinCfg},
+    {0, TRUE, gSystem0PinCfg},
     {PINMUX_END}
 };
 

@@ -153,7 +153,7 @@ void i2c_test(UArg arg0, UArg arg1)
     I2C_Transaction i2cTransaction;
     char txBuf[I2C_EEPROM_TEST_LENGTH + I2C_EEPROM_ADDR_SIZE] = {0x00, };
     char rxBuf[I2C_EEPROM_TEST_LENGTH] = {0x00, };
-    bool status,test_pass = BFALSE;
+    bool status,test_pass=FALSE;
     int16_t transferStatus;
 
 #ifdef BARE_METAL
@@ -199,7 +199,7 @@ void i2c_test(UArg arg0, UArg arg1)
 
         if(transferStatus!=I2C_STS_SUCCESS) {
            I2C_log("\n Data Transfer failed with transfer code %d \n",transferStatus);
-           test_pass = BFALSE;
+           test_pass=FALSE;
            goto end_test;
         } else {
 
@@ -209,20 +209,20 @@ void i2c_test(UArg arg0, UArg arg1)
            memcpy(eepromData, rxBuf, I2C_EEPROM_TEST_LENGTH);
 #endif
         status = CompareData(&eepromData[0], &rxBuf[0], I2C_EEPROM_TEST_LENGTH);
-        if(BTRUE == status)
+        if(TRUE == status)
         {
             I2C_log("\n EEPROM data matched \n");
-            test_pass = BTRUE;
+            test_pass=TRUE;
         }
         else
         {
-            test_pass = BFALSE;
+            test_pass=FALSE;
         }
       }
     }
 end_test:
 
-    if(BTRUE == test_pass)
+    if(TRUE == test_pass)
     {
       I2C_log("\n All tests have passed. \n");
     }
@@ -232,7 +232,7 @@ end_test:
     }
 
     I2C_close(handle);
-    while (BTRUE) {
+    while (1) {
 
     }
 }
@@ -252,7 +252,7 @@ int main(void)
     Error_init(&eb);
 
     task = Task_create(i2c_test, NULL, &eb);
-    if (NULL == task) {
+    if (task == NULL) {
         System_printf("Task_create() failed!\n");
         BIOS_exit(0);
     }
@@ -269,18 +269,18 @@ int main(void)
  */
 bool CompareData(char *expData, char *rxData, unsigned int length)
 {
-    uint32_t idx = 0U;
-    uint32_t match = UTRUE;
-    bool retVal = BFALSE;
+    uint32_t idx = 0;
+    uint32_t match = 1;
+    bool retVal = false;
 
-    for(idx = 0U; ((idx < length) && (UFALSE != match)); idx++)
+    for(idx = 0; ((idx < length) && (match != 0)); idx++)
     {
-        if(*expData != *rxData) match = UFALSE;
+        if(*expData != *rxData) match = 0;
         expData++;
         rxData++;
     }
 
-    if(UTRUE == match) retVal = BTRUE;
+    if(match == 1) retVal = true;
 
     return retVal;
 }

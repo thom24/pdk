@@ -94,8 +94,8 @@ typedef struct Board_I2cObj_s
 #define BOARD_KICK0_UNLOCK_VAL               (0x68EF3490U)
 #define BOARD_KICK1_UNLOCK_VAL               (0xD172BC5AU)
 
-#define BOARD_KICK0_LOCK_VAL                 (0U)
-#define BOARD_KICK1_LOCK_VAL                 (0U)
+#define BOARD_KICK0_LOCK_VAL                 (0)
+#define BOARD_KICK1_LOCK_VAL                 (0)
 
 #define BOARD_MAC_COUNT_SHIFT                 (3U)
 #define BOARD_MAC_COUNT_MASK                  (0x00F8U)
@@ -415,10 +415,10 @@ Board_STATUS Board_getAllPLLConfigurations();
  * \n                      BOARD_ID_ENET(0x6) - Quad ENET expansion
  * \n                      BOARD_ID_DISPLAY(0x7) - Display adapter board 
  *
- * \return   BTRUE if the given board is detected else BFALSE.
+ * \return   TRUE if the given board is detected else 0.
  *           SoM board will be always connected to the base board.
- *           For SoM boardID return value BTRUE indicates dual PMIC
- *           SoM and BFALSE indicates alternate PMIC SoM
+ *           For SoM boardID return value TRUE indicates dual PMIC
+ *           SoM and FALSE indicates alternate PMIC SoM
  *
  */
 bool Board_detectBoard(uint32_t boardID);

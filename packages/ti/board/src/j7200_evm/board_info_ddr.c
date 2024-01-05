@@ -77,13 +77,13 @@ static Board_STATUS Board_getIDData(uint8_t *info, uint8_t slaveAddress)
     Board_headerInfo headerInfo;
     uint16_t offsetAddress = BOARD_EEPROM_HEADER_ADDR;
     char txBuf[2] = {0x00, 0x00};
-    uint16_t status;
+    bool status;
 
     I2C_transactionInit(&i2cTransaction);
 
     handle = Board_getI2CHandle(gBoardI2cInitCfg.socDomain,
                                 gBoardI2cInitCfg.i2cInst);
-    if(NULL == handle)
+    if(handle == NULL)
     {
         ret = BOARD_I2C_OPEN_FAIL;
     }
@@ -99,7 +99,7 @@ static Board_STATUS Board_getIDData(uint8_t *info, uint8_t slaveAddress)
     i2cTransaction.readCount = BOARD_EEPROM_HEADER_FIELD_SIZE;
 
     status = I2C_transfer(handle, &i2cTransaction);
-    if (I2C_STS_ERR == status)
+    if (status == false)
     {
         ret = BOARD_I2C_TRANSFER_FAIL;
         Board_i2cDeInit();
@@ -107,7 +107,7 @@ static Board_STATUS Board_getIDData(uint8_t *info, uint8_t slaveAddress)
     }
 
     /* Checking whether the board contents are flashed or not */
-    if (BOARD_EEPROM_MAGIC_NUMBER == headerInfo.magicNumber)
+    if (headerInfo.magicNumber == BOARD_EEPROM_MAGIC_NUMBER)
     {
         txBuf[0] = (char)(((uint32_t) 0xFF00 & offsetAddress) >> 8);
         txBuf[1] = (char)((uint32_t) 0xFF & offsetAddress);
@@ -115,7 +115,7 @@ static Board_STATUS Board_getIDData(uint8_t *info, uint8_t slaveAddress)
         i2cTransaction.readCount = headerInfo.payloadSize +
                                    BOARD_EEPROM_HEADER_FIELD_SIZE;
         status = I2C_transfer(handle, &i2cTransaction);
-        if (I2C_STS_ERR == status)
+        if (status == false)
         {
             ret = BOARD_I2C_TRANSFER_FAIL;
             Board_i2cDeInit();
@@ -156,7 +156,7 @@ static Board_STATUS Board_copyBoardDataMem(void *srcInfo, Board_IDInfo_v2 *dstIn
     {
         case BOARD_ID_TYPE_BASIC:
             basicInfo = (Board_IDInfoBasic_t *)srcInfo;
-            if(BOARD_EEPROM_MAGIC_NUMBER == basicInfo->headerInfo.magicNumber)
+            if(basicInfo->headerInfo.magicNumber == BOARD_EEPROM_MAGIC_NUMBER)
             {
                 memcpy((void *)&dstInfo->headerInfo, (const void *)&basicInfo->headerInfo, sizeof(Board_headerInfo));
                 memcpy((void *)&dstInfo->boardInfo, (const void *)&basicInfo->boardInfo, sizeof(Board_boardInfo));
@@ -170,7 +170,7 @@ static Board_STATUS Board_copyBoardDataMem(void *srcInfo, Board_IDInfo_v2 *dstIn
 
         case BOARD_ID_TYPE_ETH:
             ethInfo = (Board_IDInfoEth_t *)srcInfo;
-            if(BOARD_EEPROM_MAGIC_NUMBER == ethInfo->headerInfo.magicNumber)
+            if(ethInfo->headerInfo.magicNumber == BOARD_EEPROM_MAGIC_NUMBER)
             {
                 memcpy((void *)&dstInfo->headerInfo, (const void *)&ethInfo->headerInfo, sizeof(Board_headerInfo));
                 memcpy((void *)&dstInfo->boardInfo, (const void *)&ethInfo->boardInfo, sizeof(Board_boardInfo));
@@ -210,7 +210,7 @@ Board_STATUS Board_getBoardIdData(Board_IDInfo_v2 *info, uint32_t boardID)
     switch(boardID)
     {
         case BOARD_ID_CP:
-            if (NULL != gBoardIDShadow.cpBoardID)
+            if (gBoardIDShadow.cpBoardID != NULL)
             {
                 status = Board_copyBoardDataMem(gBoardIDShadow.cpBoardID,
                                                 info,
@@ -218,7 +218,7 @@ Board_STATUS Board_getBoardIdData(Board_IDInfo_v2 *info, uint32_t boardID)
             }
             break;
         case BOARD_ID_ENET:
-            if (NULL != gBoardIDShadow.enetBoardID)
+            if (gBoardIDShadow.enetBoardID != NULL)
             {
                 status = Board_copyBoardDataMem(gBoardIDShadow.enetBoardID,
                                                 info,
@@ -227,7 +227,7 @@ Board_STATUS Board_getBoardIdData(Board_IDInfo_v2 *info, uint32_t boardID)
             break;
 
         case BOARD_ID_GESI:
-            if (NULL != gBoardIDShadow.gesiBoardID)
+            if (gBoardIDShadow.gesiBoardID != NULL)
             {
                 status = Board_copyBoardDataMem(gBoardIDShadow.gesiBoardID,
                                                 info,
@@ -260,27 +260,27 @@ Board_STATUS Board_initBoardIdData(uint8_t *boardIDWrAddr)
 {
     Board_I2cInitCfg_t i2cCfg;
     Board_STATUS status = BOARD_SOK;
-    uint32_t cpIDSize = 0U;
-    uint32_t offset   = 0U;
+    uint32_t cpIDSize = 0;
+    uint32_t offset   = 0;
 
     i2cCfg.i2cInst    = BOARD_COMMON_EEPROM_I2C_INST;
     i2cCfg.socDomain  = BOARD_SOC_DOMAIN_WKUP;
-    i2cCfg.enableIntr = BFALSE;
+    i2cCfg.enableIntr = false;
     Board_setI2cInitConfig(&i2cCfg);
 
-    if(NULL != boardIDWrAddr)
+    if(boardIDWrAddr != NULL)
     {
         gBoardIDDump = boardIDWrAddr;
 
         gBoardIDShadow.cpBoardID = (Board_IDInfoBasic_t *)&gBoardIDDump[offset];
         /* Check if Board ID data is already populated in memory */
-        if(BOARD_EEPROM_MAGIC_NUMBER == gBoardIDShadow.cpBoardID->headerInfo.magicNumber)
+        if(gBoardIDShadow.cpBoardID->headerInfo.magicNumber == BOARD_EEPROM_MAGIC_NUMBER)
         {
             offset   = gBoardIDShadow.cpBoardID->headerInfo.payloadSize + BOARD_EEPROM_HEADER_FIELD_SIZE;
             cpIDSize = offset;
 
             gBoardIDShadow.gesiBoardID = (Board_IDInfoEth_t *)&gBoardIDDump[offset];
-            if(BOARD_EEPROM_MAGIC_NUMBER == gBoardIDShadow.gesiBoardID->headerInfo.magicNumber)
+            if(gBoardIDShadow.gesiBoardID->headerInfo.magicNumber == BOARD_EEPROM_MAGIC_NUMBER)
             {
                 if(strncmp(gBoardIDShadow.gesiBoardID->boardInfo.boardName,
                            gBoardDetCfg[BOARD_ID_GESI].bName,
@@ -292,7 +292,7 @@ Board_STATUS Board_initBoardIdData(uint8_t *boardIDWrAddr)
                 {
                     offset = cpIDSize + gBoardIDShadow.gesiBoardID->headerInfo.payloadSize + BOARD_EEPROM_HEADER_FIELD_SIZE;
                     gBoardIDShadow.enetBoardID = (Board_IDInfoEth_t *)&gBoardIDDump[offset];
-                    if(BOARD_EEPROM_MAGIC_NUMBER != gBoardIDShadow.enetBoardID->headerInfo.magicNumber)
+                    if(gBoardIDShadow.enetBoardID->headerInfo.magicNumber != BOARD_EEPROM_MAGIC_NUMBER)
                     {
                         gBoardIDShadow.enetBoardID = NULL;
                     }
@@ -306,7 +306,7 @@ Board_STATUS Board_initBoardIdData(uint8_t *boardIDWrAddr)
                 status = Board_getIDData(&gBoardIDDump[offset],
                                          gBoardDetCfg[BOARD_ID_GESI].slaveAddr);
                 gBoardIDShadow.gesiBoardID = (Board_IDInfoEth_t *)&gBoardIDDump[offset];
-                if(BOARD_EEPROM_MAGIC_NUMBER == gBoardIDShadow.gesiBoardID->headerInfo.magicNumber)
+                if(gBoardIDShadow.gesiBoardID->headerInfo.magicNumber == BOARD_EEPROM_MAGIC_NUMBER)
                 {
                     if(strncmp(gBoardIDShadow.gesiBoardID->boardInfo.boardName,
                                gBoardDetCfg[BOARD_ID_GESI].bName,
@@ -321,7 +321,7 @@ Board_STATUS Board_initBoardIdData(uint8_t *boardIDWrAddr)
                         /* Read ENET Board EEPROM data */
                         status = Board_getIDData(&gBoardIDDump[offset],
                                                  gBoardDetCfg[BOARD_ID_ENET].slaveAddr);
-                        if(BOARD_SOK == status)
+                        if(status == BOARD_SOK)
                         {
                             gBoardIDShadow.enetBoardID = (Board_IDInfoEth_t *)&gBoardIDDump[offset];
                         }
@@ -339,7 +339,7 @@ Board_STATUS Board_initBoardIdData(uint8_t *boardIDWrAddr)
             status = Board_getIDData(&gBoardIDDump[offset],
                                      gBoardDetCfg[BOARD_ID_CP].slaveAddr);
             gBoardIDShadow.cpBoardID = (Board_IDInfoBasic_t *)&gBoardIDDump[offset];
-            if(BOARD_EEPROM_MAGIC_NUMBER == gBoardIDShadow.cpBoardID->headerInfo.magicNumber)
+            if(gBoardIDShadow.cpBoardID->headerInfo.magicNumber == BOARD_EEPROM_MAGIC_NUMBER)
             {
                 offset   = gBoardIDShadow.cpBoardID->headerInfo.payloadSize + BOARD_EEPROM_HEADER_FIELD_SIZE;
                 cpIDSize = offset;
@@ -348,7 +348,7 @@ Board_STATUS Board_initBoardIdData(uint8_t *boardIDWrAddr)
                 status = Board_getIDData(&gBoardIDDump[offset],
                                          gBoardDetCfg[BOARD_ID_GESI].slaveAddr);
                 gBoardIDShadow.gesiBoardID = (Board_IDInfoEth_t *)&gBoardIDDump[offset];
-                if(BOARD_EEPROM_MAGIC_NUMBER == gBoardIDShadow.gesiBoardID->headerInfo.magicNumber)
+                if(gBoardIDShadow.gesiBoardID->headerInfo.magicNumber == BOARD_EEPROM_MAGIC_NUMBER)
                 {
                     if(strncmp(gBoardIDShadow.gesiBoardID->boardInfo.boardName,
                                gBoardDetCfg[BOARD_ID_GESI].bName,
@@ -366,7 +366,7 @@ Board_STATUS Board_initBoardIdData(uint8_t *boardIDWrAddr)
                         /* Read ENET Board EEPROM data */
                         status = Board_getIDData(&gBoardIDDump[offset],
                                                  gBoardDetCfg[BOARD_ID_ENET].slaveAddr);
-                        if(BOARD_SOK == status)
+                        if(status == BOARD_SOK)
                         {
                             gBoardIDShadow.enetBoardID = (Board_IDInfoEth_t *)&gBoardIDDump[offset];
                         }
@@ -409,21 +409,21 @@ Board_STATUS Board_initBoardIdData(uint8_t *boardIDWrAddr)
 Board_STATUS Board_setBoardIdDataAddr(uint8_t *boardIDRdAddr)
 {
     Board_STATUS status = BOARD_SOK;
-    uint32_t cpIDSize = 0U;
-    uint32_t offset   = 0U;
+    uint32_t cpIDSize = 0;
+    uint32_t offset   = 0;
 
-    if(NULL != boardIDRdAddr)
+    if(boardIDRdAddr != NULL)
     {
         gBoardIDDump = boardIDRdAddr;
 
         gBoardIDShadow.cpBoardID = (Board_IDInfoBasic_t *)&gBoardIDDump[offset];
-        if(BOARD_EEPROM_MAGIC_NUMBER == gBoardIDShadow.cpBoardID->headerInfo.magicNumber)
+        if(gBoardIDShadow.cpBoardID->headerInfo.magicNumber == BOARD_EEPROM_MAGIC_NUMBER)
         {
             offset   = gBoardIDShadow.cpBoardID->headerInfo.payloadSize + BOARD_EEPROM_HEADER_FIELD_SIZE;
             cpIDSize = offset;
 
             gBoardIDShadow.gesiBoardID = (Board_IDInfoEth_t *)&gBoardIDDump[offset];
-            if(BOARD_EEPROM_MAGIC_NUMBER == gBoardIDShadow.gesiBoardID->headerInfo.magicNumber)
+            if(gBoardIDShadow.gesiBoardID->headerInfo.magicNumber == BOARD_EEPROM_MAGIC_NUMBER)
             {
                 if(strncmp(gBoardIDShadow.gesiBoardID->boardInfo.boardName,
                            gBoardDetCfg[BOARD_ID_GESI].bName,
@@ -463,16 +463,16 @@ Board_STATUS Board_setBoardIdDataAddr(uint8_t *boardIDRdAddr)
 /**
  * \brief Function to check the board info DDR dump status
  *
- * \return   BTRUE if board ID dump is DDR is valid, else BFALSE
+ * \return   TRUE if board ID dump is DDR is valid, else false
  *
  */
 bool Board_isBoardDDRIdDataValid(void)
 {
-    bool status = BFALSE; 
+    bool status = FALSE; 
 
-    if(NULL != gBoardIDDump)
+    if(gBoardIDDump != NULL)
     {
-        status = BTRUE;
+        status = TRUE;
     }
 
     return status;

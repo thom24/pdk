@@ -437,7 +437,7 @@ void DIAG_runTest()
 void DIAG_main()
 {
     char cmd[255];
-    bool diag_continue = BTRUE;
+    bool diag_continue = true;
     int index = 0;
     void (*fnPtr) ();
     UART_printf("\nDIAGNOSTIC TEST FRAMEWORK\n");

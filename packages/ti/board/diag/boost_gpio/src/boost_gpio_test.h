@@ -70,8 +70,8 @@
 extern "C" {
 #endif
 
-#define START_OF_PWM_OUT_PINS				           (8U)
-#define END_OF_PWM_OUT_PINS					           (13U)
+#define START_OF_PWM_OUT_PINS				   (8U)
+#define END_OF_PWM_OUT_PINS					   (13U)
 
 /* Maximum number of pad config registers supported */
 #define PADCONFIG_MAX_COUNT                    (23U)
@@ -79,7 +79,7 @@ extern "C" {
 /* pin mux mode */
 #define GPIO_PADCONFIG_MUX_MODE                (7U)
 
-#define DEEP_SLEEP_MASK						             (0xF7DFFFFFU)
+#define DEEP_SLEEP_MASK						   (0xF7DFFFFFU)
 
 #define NUM_PIN_SETS                           (11U)
 #define PIN_NUM_MAX                            (3U)

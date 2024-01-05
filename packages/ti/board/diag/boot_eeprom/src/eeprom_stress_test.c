@@ -315,7 +315,7 @@ static int8_t BoardDiag_EepromStressTest(void)
     for(index = 0; index < I2C_HWIP_MAX_CNT; index++)
     {
         I2C_socGetInitCfg(index, &i2cConfig);
-        i2cConfig.enableIntr = BFALSE;
+        i2cConfig.enableIntr = false;
         I2C_socSetInitCfg(index, &i2cConfig);
     }
 

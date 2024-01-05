@@ -92,17 +92,17 @@ int32_t Mcasp_setupDmaDuringOpen(Mcasp_ChannelHandle chanHandle,
 {
     uint32_t              reqTcc      = EDMA3_DRV_TCC_ANY;
     EDMA3_RM_EventQueue queueNum    = 0;
-    Bool                falsewhile  = UTRUE;
-    uint32_t              linkCnt     = 0U;
-    uint32_t              edmaChanNum = 0U;
-    uint32_t              count       = 0U;
+    Bool                falsewhile  = TRUE;
+    uint32_t              linkCnt     = 0;
+    uint32_t              edmaChanNum = 0;
+    uint32_t              count       = 0;
     int32_t               status      = MCASP_COMPLETED;
 
     do
     {
       if( (NULL != chanHandle) && (NULL != hwInfo) )
       {
-        falsewhile  = UFALSE;
+        falsewhile  = FALSE;
 
         chanHandle->edmaCallback = &Mcasp_localEdmaCallback;
 
@@ -141,7 +141,7 @@ int32_t Mcasp_setupDmaDuringOpen(Mcasp_ChannelHandle chanHandle,
         }
 
         /* Acquire the  PaRAM entries used for EDMA transfers linking         */
-        for (count = 0U; count < chanHandle->maxActiveSubmit; count++)
+        for (count = 0; count < chanHandle->maxActiveSubmit; count++)
         {
             /* For requesting for a PaRam set                                 */
             edmaChanNum = EDMA3_DRV_LINK_CHANNEL;
@@ -173,7 +173,7 @@ int32_t Mcasp_setupDmaDuringOpen(Mcasp_ChannelHandle chanHandle,
                     chanHandle->xferChan);
 
                 /* free the already allocated PaRAM entries                   */
-                for (linkCnt = 0U; linkCnt <count; linkCnt++)
+                for (linkCnt = 0; linkCnt <count; linkCnt++)
                 {
                     EDMA3_DRV_freeChannel(
                         chanHandle->edmaHandle,
@@ -217,8 +217,8 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, Ptr data)
     Mcasp_ChannelHandle   chanHandle = NULL;
     EDMA3_DRV_PaRAMRegs   pramTbl    = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     MCASP_Packet           *ioPacket   = NULL;
-    Bool falsewhile = UTRUE;
-    uint32_t dlbMode  = 0U;
+    Bool falsewhile = (Bool) TRUE;
+    uint32_t dlbMode  = 0;
     int32_t retVal    = MCASP_COMPLETED;
     Mcasp_PktAddrPayload *payLoad = NULL;
     Bool  getQueueTempStatus;
@@ -226,7 +226,7 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, Ptr data)
 
     do
     {
-      falsewhile = UFALSE;
+      falsewhile = (Bool) FALSE;
 
        /* To remove the compiler warning                                     */
        tcc = tcc;
@@ -236,7 +236,7 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, Ptr data)
        if ((NULL != chanHandle) && (NULL != chanHandle->devHandle) ) 
        {
         instHandle = (Mcasp_Object *) chanHandle->devHandle;
-        if (UTRUE ==
+        if ((Bool) TRUE ==
             Osal_Queue_empty(Osal_Queue_handle(&(chanHandle->queueFloatingList))))
         {
             /* This cannot happen, if it happens then it is a sprurios one    */
@@ -304,11 +304,11 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, Ptr data)
             EDMA3_DRV_getPaRAM((EDMA3_DRV_Handle) chanHandle->edmaHandle,
                                chanHandle->xferChan, &pramTbl);
         }
-        if ((MCASP_INPUT == chanHandle->mode) && (MCASP_COMPLETED == retVal))
+        if ((chanHandle->mode == MCASP_INPUT) && (MCASP_COMPLETED == retVal))
         {
             /* Check if destination address falls into the range of 1st req   *
              * in the floating queue.                                         */
-            if (UTRUE == instHandle->isDataBufferPayloadStructure)
+            if ((Bool) TRUE == instHandle->isDataBufferPayloadStructure)
             {
               payLoad = (Mcasp_PktAddrPayload *) chanHandle->tempPacket->addr;
               if(NULL != payLoad)
@@ -319,7 +319,7 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, Ptr data)
                      && (pramTbl.destAddr < ((uint32_t) payLoad->addr
                                              + chanHandle->tempPacket->size)))
                     &&
-                    (UFALSE == getQueueTempStatus))
+                    ((Bool) FALSE == getQueueTempStatus))
                 {
                     /* Since we have already dequeue the 1st request, dequeue *
                      * 2nd io request from floating queue                     */
@@ -360,7 +360,7 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, Ptr data)
                      && (pramTbl.destAddr <
                          ((uint32_t) chanHandle->tempPacket->addr
                           + chanHandle->tempPacket->size))) &&
-                    (UFALSE == getQueueTempStatus))
+                    ((Bool) FALSE == getQueueTempStatus))
                 {
                     /* Since we have already dequeue the 1st request, dequeue *
                      * 2nd io request from floating queue                     */
@@ -382,11 +382,11 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, Ptr data)
                 }
             }
         }
-        else if ((MCASP_OUTPUT == chanHandle->mode) && (MCASP_COMPLETED == retVal))
+        else if ((chanHandle->mode == MCASP_OUTPUT) && (MCASP_COMPLETED == retVal))
         {
             /* Check if destination address falls into the range of1st request*
              * in the floating queue.                                         */
-            if (UTRUE == instHandle->isDataBufferPayloadStructure)
+            if ((Bool) TRUE == instHandle->isDataBufferPayloadStructure)
             {
                 payLoad = (Mcasp_PktAddrPayload *) chanHandle->tempPacket->addr;
                 getQueueTempStatus =
@@ -395,7 +395,7 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, Ptr data)
                      && (pramTbl.srcAddr < ((uint32_t) payLoad->addr
                                             + chanHandle->tempPacket->size)))
                     &&
-                    (UFALSE == getQueueTempStatus))
+                    ((Bool) FALSE == getQueueTempStatus))
                 {
                     /* Since we have already dequeue the 1st request, dequeue *
                      * 2nd io request from floating queue                     */
@@ -424,7 +424,7 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, Ptr data)
                      && (pramTbl.srcAddr <
                          ((uint32_t) chanHandle->tempPacket->addr
                           + chanHandle->tempPacket->size))) &&
-                    (UFALSE == getQueueTempStatus))
+                    ((Bool) FALSE == getQueueTempStatus))
                 {
                     /* Since we have already dequeue the 1st request, dequeue *
                      * io request from floating queue                         */
@@ -462,7 +462,7 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, Ptr data)
                  * actualSize equal to 0 represent that there is an error in the
                  * packet transfer
 				 */
-                chanHandle->tempPacket->size = 0U;
+                chanHandle->tempPacket->size = 0;
 
                 EDMA3_DRV_clearErrorBits(
                     chanHandle->edmaHandle,
@@ -479,7 +479,7 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, Ptr data)
                         (Int) chanHandle->currentPacketErrorStatus;
 
                     chanHandle->currentPacketErrorStatus = MCASP_COMPLETED;
-                    chanHandle->tempPacket->size         = 0U;
+                    chanHandle->tempPacket->size         = 0;
                 }
             }
 
@@ -490,10 +490,10 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, Ptr data)
              * or pause is issued, control will go in else part
 			 */
             if ((((MCASP_INPUT == chanHandle->mode)
-                  && (UFALSE == instHandle->stopSmFsRcv))
+                  && ((Bool) FALSE == instHandle->stopSmFsRcv))
                  || ((MCASP_OUTPUT == chanHandle->mode)
-                     && (UFALSE == instHandle->stopSmFsXmt)))
-                && (UFALSE == chanHandle->paused))
+                     && ((Bool) FALSE == instHandle->stopSmFsXmt)))
+                && ((Bool) FALSE == chanHandle->paused))
             {
                 /* Now that we have done with the last data packet - we check if
                  * next packet is available for transmission. Even if we are not
@@ -529,9 +529,9 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, Ptr data)
                      * one packet scenario the following flag will take care not to
                      * update the loopjob second time)
                      */
-                    if (UFALSE == chanHandle->loopjobUpdatedinParamset)
+                    if ((Bool) FALSE == chanHandle->loopjobUpdatedinParamset)
                     {
-                        chanHandle->loopjobUpdatedinParamset = UTRUE;
+                        chanHandle->loopjobUpdatedinParamset = (Bool) TRUE;
 
                         Mcasp_localGetNextIndex(chanHandle);
 
@@ -546,11 +546,11 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, Ptr data)
                  * channel.If the nextFlag is already set indicates that its
                  * time to reset the state machines and disable the edma transfer
                  */
-                if (UTRUE == chanHandle->nextFlag)
+                if ((Bool) TRUE == chanHandle->nextFlag)
                 {
-                    chanHandle->nextFlag = UFALSE;
+                    chanHandle->nextFlag = (Bool) FALSE;
 
-                    if (UFALSE == chanHandle->paused)
+                    if ((Bool) FALSE == chanHandle->paused)
                     {
                         dlbMode  = McASPDlbRegRead(instHandle->hwInfo.regs);
                         dlbMode &= MCASP_LBCTL_DLBEN_MASK;
@@ -607,11 +607,11 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, Ptr data)
                     /* For the first time when the stop port command is issued
                      * we  will have one more packet linked with the transfer
                      * channel.So we will not stop at this time. We link the packet with
-                     * NULL loopjob buffer and set a nextFlag to UTRUE. We will
+                     * NULL loopjob buffer and set a nextFlag to TRUE. We will
                      * wait for another callback (indicating the io request is
                      * complete) to disable EDMA trasnfer and reset state
                      * machines*/
-                    chanHandle->nextFlag = UTRUE;
+                    chanHandle->nextFlag = (Bool) TRUE;
 
                     Mcasp_localGetNextIndex(chanHandle);
 
@@ -620,7 +620,7 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, Ptr data)
             }
             if (MCASP_COMPLETED == retVal)
             {
-                chanHandle->isTempPacketValid = UTRUE;
+                chanHandle->isTempPacketValid = (Bool) TRUE;
 
                 Mcasp_localCompleteCurrentIo(chanHandle);
             }
@@ -686,16 +686,16 @@ void Mcasp_localEdmaCallback(uint32_t tcc, EDMA3_RM_TccStatus status, void* data
 int32_t Mcasp_setupDmaChan(Mcasp_ChannelHandle chanHandle)
 {
     Mcasp_Object        *instHandle  = NULL;
-    uint32_t               linkCnt     = 0U;
+    uint32_t               linkCnt     = 0;
     int32_t                status      = MCASP_COMPLETED;
-    Bool                 falsewhile  = UTRUE;
+    Bool                 falsewhile  = TRUE;
     EDMA3_DRV_PaRAMRegs  paramSet    = {0,0,0,0,0,0,0,0,0,0,0,0,0};
     EDMA3_DRV_SyncType   tempSyncType;
 
     do
     {
 
-     falsewhile = UFALSE;
+     falsewhile = FALSE;
 
       if((NULL != chanHandle) && (NULL != chanHandle->devHandle))
       {  
@@ -755,7 +755,7 @@ int32_t Mcasp_setupDmaChan(Mcasp_ChannelHandle chanHandle)
                                      &paramSet.bCnt,
                                      &paramSet.cCnt,
                                      &tempSyncType,
-                                     UTRUE))
+                                     TRUE))
             {
                 status = MCASP_EBADARGS;
             }
@@ -781,7 +781,7 @@ int32_t Mcasp_setupDmaChan(Mcasp_ChannelHandle chanHandle)
                                      &paramSet.bCnt,
                                      &paramSet.cCnt,
                                      &tempSyncType,
-                                     UTRUE))
+                                     TRUE))
             {
                 status = MCASP_EBADARGS;
             }
@@ -791,10 +791,10 @@ int32_t Mcasp_setupDmaChan(Mcasp_ChannelHandle chanHandle)
         paramSet.bCntReload = paramSet.bCnt;
 
         /* Src & Dest are in INCR modes                                       */
-        paramSet.opt &= 0xFFFFFFFCU;
+        paramSet.opt &= 0xFFFFFFFCu;
 
         /* FIFO width is 8 bit                                                */
-        paramSet.opt &= 0xFFFFF8FFU;
+        paramSet.opt &= 0xFFFFF8FFu;
 
         /* Set EDMA3_DRV_OPT_FIELD_TCINTEN to FALSE                           */
         paramSet.opt |= (((uint32_t)0U) << Mcasp_OPT_TCINTEN_SHIFT);
@@ -804,15 +804,15 @@ int32_t Mcasp_setupDmaChan(Mcasp_ChannelHandle chanHandle)
                           & Mcasp_OPT_TCC_MASK);
 
         /* EDMA3_DRV_SYNC_AB                                                  */
-        paramSet.opt &= (~((uint32_t)0x00000004U));
+        paramSet.opt &= (~((uint32_t)0x00000004u));
         paramSet.opt |= (tempSyncType << Mcasp_OPT_SYNCDIM_SHIFT);
 
 
-        paramSet.opt &= (~((uint32_t)0x00000800U));
+        paramSet.opt &= (~((uint32_t)0x00000800u));
         paramSet.opt |= (((uint32_t)1U) << Mcasp_OPT_TCCMOD_SHIFT);
         
         /* reset the interrupt generation bit                                 */
-        paramSet.opt &= (~0x00100000U);
+        paramSet.opt &= (~0x00100000u);
 
         if (MCASP_COMPLETED == status)
         {
@@ -826,7 +826,7 @@ int32_t Mcasp_setupDmaChan(Mcasp_ChannelHandle chanHandle)
         /* Configure the link PaRAMs with the appropriate parameters          *
          * Though we configure all the link paramsets, we will be using       *
          * only one of them to link with main xfer channel                    */
-        for (linkCnt = 0U; linkCnt < chanHandle->maxActiveSubmit; linkCnt++)
+        for (linkCnt = 0; linkCnt < chanHandle->maxActiveSubmit; linkCnt++)
         {
             /* Get the PaRAM set for default parameters                       */
             EDMA3_DRV_getPaRAM (chanHandle->edmaHandle,
@@ -854,7 +854,7 @@ int32_t Mcasp_setupDmaChan(Mcasp_ChannelHandle chanHandle)
                                          &paramSet.bCnt,
                                          &paramSet.cCnt,
                                          &tempSyncType,
-                                         UTRUE))
+                                         TRUE))
                 {
                     status = MCASP_EBADARGS;
                 }
@@ -879,7 +879,7 @@ int32_t Mcasp_setupDmaChan(Mcasp_ChannelHandle chanHandle)
                                          &paramSet.bCnt,
                                          &paramSet.cCnt,
                                          &tempSyncType,
-                                         UTRUE))
+                                         TRUE))
                 {
                     status = MCASP_EBADARGS;
                 }
@@ -889,10 +889,10 @@ int32_t Mcasp_setupDmaChan(Mcasp_ChannelHandle chanHandle)
             paramSet.bCntReload = paramSet.bCnt;
 
             /* Src & Dest are in INCR modes                                   */
-            paramSet.opt &= 0xFFFFFFFCU;
+            paramSet.opt &= 0xFFFFFFFCu;
 
             /* FIFO width is 8 bit                                            */
-            paramSet.opt &= 0xFFFFF8FFU;
+            paramSet.opt &= 0xFFFFF8FFu;
 
             /* EDMA3_DRV_SYNC_AB                                              */
             paramSet.opt &= (~((uint32_t)0x00000004u));
@@ -906,11 +906,11 @@ int32_t Mcasp_setupDmaChan(Mcasp_ChannelHandle chanHandle)
                               & Mcasp_OPT_TCC_MASK);
 
             /* early completion interrupt                                     */
-            paramSet.opt &= (~((uint32_t)0x00000800U));
+            paramSet.opt &= (~((uint32_t)0x00000800u));
             paramSet.opt |= (((uint32_t)1U) << Mcasp_OPT_TCCMOD_SHIFT);
 
             /* reset the interrupt generation bit                                 */
-            paramSet.opt &= (~0x00100000U);
+            paramSet.opt &= (~0x00100000u);
 
             if (MCASP_COMPLETED == status)
             {
@@ -958,8 +958,8 @@ int32_t Mcasp_setupDmaChan(Mcasp_ChannelHandle chanHandle)
                 }
                 if (MCASP_COMPLETED == status)
                 {
-                    chanHandle->nextLinkParamSetToBeUpdated = 0U;
-                    chanHandle->loopjobUpdatedinParamset    = UTRUE;
+                    chanHandle->nextLinkParamSetToBeUpdated = 0;
+                    chanHandle->loopjobUpdatedinParamset    = (Bool) TRUE;
                 }
             }
 #endif
@@ -992,7 +992,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle chanHandle,
 {
     Mcasp_Object         *instHandle  = NULL;
     EDMA3_DRV_PaRAMRegs   pramPtr    = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    Bool                  falsewhile  = UTRUE;
+    Bool                  falsewhile  = TRUE;
     Mcasp_PktAddrPayload *payLoad     = NULL;
     int32_t                 status      = MCASP_COMPLETED;
     EDMA3_DRV_SyncType    syncType;
@@ -1005,7 +1005,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle chanHandle,
     {
         do
         {
-         falsewhile = UFALSE;
+         falsewhile = FALSE;
 
           if((NULL != chanHandle) && (NULL != chanHandle->devHandle))
           {  
@@ -1022,7 +1022,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle chanHandle,
             chanHandle->pramTbl[chanHandle->nextLinkParamSetToBeUpdated],
             &pramPtr);
 #else
-            if (1U == chanHandle->submitCount)
+            if (1u == chanHandle->submitCount)
             {
                 status = EDMA3_DRV_getPaRAM(
                              chanHandle->edmaHandle,
@@ -1091,7 +1091,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle chanHandle,
                 pramPtr.srcAddr  = (uint32_t)(instHandle->hwInfo.dataAddr);
 
 #endif
-                if (UTRUE == instHandle->isDataBufferPayloadStructure)
+                if (TRUE == instHandle->isDataBufferPayloadStructure)
                 {
                     payLoad = (Mcasp_PktAddrPayload *)ioPacket->addr;
                     if(NULL != payLoad) 
@@ -1116,7 +1116,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle chanHandle,
                     &(pramPtr.bCnt),
                     &(pramPtr.cCnt),
                     &syncType,
-                    UFALSE);
+                    FALSE);
             }
             else
             {
@@ -1125,7 +1125,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle chanHandle,
                 pramPtr.destAddr  = (uint32_t)(instHandle->hwInfo.dataAddr);
 
 #endif
-                if (UTRUE == chanHandle->bMuteON)
+                if (TRUE == chanHandle->bMuteON)
                 {
                     /* data buffer is changed to local mutebuffer             */
                     pramPtr.srcAddr  =
@@ -1140,11 +1140,11 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle chanHandle,
                         &(pramPtr.bCnt),
                         &(pramPtr.cCnt),
                         &syncType,
-                        UTRUE);
+                        TRUE);
                 }
                 else
                 {
-                    if (UTRUE == instHandle->isDataBufferPayloadStructure)
+                    if (TRUE == instHandle->isDataBufferPayloadStructure)
                     {
                         payLoad = (Mcasp_PktAddrPayload *)ioPacket->addr;
                         pramPtr.srcAddr = (uint32_t)payLoad->addr;
@@ -1162,7 +1162,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle chanHandle,
                         &(pramPtr.bCnt),
                         &(pramPtr.cCnt),
                         &syncType,
-                        UFALSE);
+                        FALSE);
                 }/*for mute on/off*/
             }
 
@@ -1173,7 +1173,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle chanHandle,
              * copied to linked param and will make the consecutive int enable*
              * (set opt field) api useless for our purpose                    */
 
-            pramPtr.opt |= (((uint32_t)0x01U) << 20U);
+            pramPtr.opt |= (((uint32_t)0x01u)<<20u);
 
 
 #ifdef Mcasp_LOOPJOB_ENABLED
@@ -1190,7 +1190,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle chanHandle,
                                 1U) & 0x01U)] & 0x0000FFFFU);
 #else
             /* set the link address as 0xFFFF                                 */
-            pramPtr.linkAddr = 0xFFFFU;
+            pramPtr.linkAddr = 0xFFFFu;
 #endif
         }
 #ifdef Mcasp_LOOPJOB_ENABLED
@@ -1211,7 +1211,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle chanHandle,
                     &(pramPtr.bCnt),
                     &(pramPtr.cCnt),
                     &syncType,
-                    UTRUE);
+                    (Bool) TRUE);
             }
             else
             {
@@ -1224,7 +1224,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle chanHandle,
                     &(pramPtr.bCnt),
                     &(pramPtr.cCnt),
                     &syncType,
-                    UTRUE);
+                    (Bool) TRUE);
             }
 
             /* we are loading loopjob into this param.  That means we have    *
@@ -1263,16 +1263,16 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle chanHandle,
                 &pramPtr);
         }
 #else
-            if (1U == chanHandle->submitCount)
+            if (1u == chanHandle->submitCount)
             {
                 /* Configuring bCntReload                                         */
                 pramPtr.bCntReload = pramPtr.bCnt;
 
                 /* Src & Dest are in INCR modes                                   */
-                pramPtr.opt &= 0xFFFFFFFCU;
+                pramPtr.opt &= 0xFFFFFFFCu;
 
                 /* FIFO width is 8 bit                                            */
-                pramPtr.opt &= 0xFFFFF8FFU;
+                pramPtr.opt &= 0xFFFFF8FFu;
 
                 /* Set EDMA3_DRV_OPT_FIELD_TCINTEN to TRUE                        */
                 pramPtr.opt |= (((uint32_t)1U) << Mcasp_OPT_TCINTEN_SHIFT);
@@ -1282,11 +1282,11 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle chanHandle,
                                   & Mcasp_OPT_TCC_MASK);
 
                 /* EDMA3_DRV_SYNC_AB                                              */
-                pramPtr.opt &= (~((uint32_t)0x00000004U));
+                pramPtr.opt &= (~((uint32_t)0x00000004u));
                 pramPtr.opt |= (syncType << Mcasp_OPT_SYNCDIM_SHIFT);
 
                 /* set the link address as 0xFFFF                                 */
-                pramPtr.linkAddr = 0xFFFFU;
+                pramPtr.linkAddr = 0xFFFFu;
 
                 status = EDMA3_DRV_setPaRAM(
                             chanHandle->edmaHandle,
@@ -1308,7 +1308,7 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle chanHandle,
             }
         }
 
-        if ((2U == chanHandle->submitCount) && (MCASP_COMPLETED == status))
+        if ((2u == chanHandle->submitCount) && (MCASP_COMPLETED == status))
         {
             /* link this paramset with the main channel                       */
             status = EDMA3_DRV_linkChannel(
@@ -1324,12 +1324,12 @@ int32_t Mcasp_submitPktToDma(Mcasp_ChannelHandle chanHandle,
         }
 
         /* link this paramset with the other paramset                         */
-        if ((3U == chanHandle->submitCount) && (MCASP_COMPLETED == status))
+        if ((3u == chanHandle->submitCount) && (MCASP_COMPLETED == status))
         {
             status = EDMA3_DRV_linkChannel(
                         chanHandle->edmaHandle,
                         chanHandle->pramTbl[
-                            (chanHandle->nextLinkParamSetToBeUpdated + 1U) & 0x01U],
+                            (chanHandle->nextLinkParamSetToBeUpdated + 1u) & 0x01u],
                         chanHandle->pramTbl \
                         [chanHandle->nextLinkParamSetToBeUpdated]);
 
@@ -1397,7 +1397,7 @@ int32_t Mcasp_localGetIndicesSyncType(Mcasp_ChannelHandle chanHandle,
                                     EDMA3_DRV_SyncType *syncType,
                                     Bool                forLoopJobBuf)
 {
-    uint32_t  tempSize  = 0x0U;
+    uint32_t  tempSize  = 0x0;
     int32_t   status    = MCASP_COMPLETED;
     Uint16    temp_var  = 0x0U;
     Uint16    aCntByBCnt = 0x0U;
@@ -1415,9 +1415,9 @@ int32_t Mcasp_localGetIndicesSyncType(Mcasp_ChannelHandle chanHandle,
      *         used.                                                          *
      * case 2. user supplied loop job buffer then the user loop job length    *
      *         will be used.                                                  */
-    if ((UTRUE == forLoopJobBuf) && (UFALSE == chanHandle->bMuteON))
+    if (((Bool) TRUE == forLoopJobBuf) && ((Bool) FALSE == chanHandle->bMuteON))
     {
-        if (UTRUE == chanHandle->userLoopJob)
+        if ((Bool) TRUE == chanHandle->userLoopJob)
         {
             /* use the user supplied buffer length for the EDMA params        */
             tempSize = chanHandle->userLoopJobLength;
@@ -1473,7 +1473,7 @@ int32_t Mcasp_localGetIndicesSyncType(Mcasp_ChannelHandle chanHandle,
              * multiple slots hence the result will be always an integer      */
             temp_var = (((uint16_t)(tempSize))/(*bCnt));
             *bIndex = (int16_t)(temp_var);
-            temp_var = ((*aCnt) - (((*bCnt)- ((uint16_t)1U)) * (((uint16_t)(tempSize))/(*bCnt))));
+            temp_var = ((*aCnt) - (((*bCnt)- ((uint16_t)1u)) * (((uint16_t)(tempSize))/(*bCnt))));
             *cIndex = (int16_t)(temp_var);
             *syncType = EDMA3_DRV_SYNC_A;
             break;
@@ -1537,10 +1537,10 @@ int32_t Mcasp_localGetIndicesSyncType(Mcasp_ChannelHandle chanHandle,
 
     /* if the loop job buffer being used is the driver internal loop job      *
      * buffer, dont increment the index for it.Same is the case if mute is ON */
-    if (UTRUE == forLoopJobBuf)
+    if (TRUE == forLoopJobBuf)
     {
-        if ((UTRUE  == chanHandle->bMuteON) ||
-            (UFALSE == chanHandle->userLoopJob))
+        if ((TRUE == chanHandle->bMuteON) ||
+            (FALSE == chanHandle->userLoopJob))
         {
             *bIndex = 0;
             *cIndex = 0;
@@ -1568,13 +1568,13 @@ void Mcasp_initChanDmaObj(Mcasp_ChannelHandle chanHandle)
 
     /* Fixed number of EDMA PaRAM sets allocated for channel linking */
     chanHandle->maxActiveSubmit = Mcasp_MAXLINKCNT;
-    chanHandle->xferChan = 0U;
-    chanHandle->tcc = 0U;
-    chanHandle->pramTbl[0] = 0U;
-    chanHandle->pramTbl[1] = 0U;
-    chanHandle->pramTblAddr[0] = 0U;
-    chanHandle->pramTblAddr[1] = 0U;
-    chanHandle->nextLinkParamSetToBeUpdated = 0U;
+    chanHandle->xferChan = 0;
+    chanHandle->tcc = 0;
+    chanHandle->pramTbl[0] = 0;
+    chanHandle->pramTbl[1] = 0;
+    chanHandle->pramTblAddr[0] = 0;
+    chanHandle->pramTblAddr[1] = 0;
+    chanHandle->nextLinkParamSetToBeUpdated = 0;
     chanHandle->edmaCallback = NULL;
 }
 
@@ -1583,7 +1583,7 @@ int32_t Mcasp_enableDMA(Mcasp_ChannelHandle chanHandle)
     int32_t status;
 
     /* Starting DMA transfer fresh, so resetting the PaRAM set index */
-    chanHandle->nextLinkParamSetToBeUpdated = 0U;
+    chanHandle->nextLinkParamSetToBeUpdated = 0;
 
     /* Enable the EDMA transfer with EVENT triggering */
     status = EDMA3_DRV_enableTransfer(chanHandle->edmaHandle,
@@ -1625,8 +1625,8 @@ int32_t Mcasp_freeDmaChannel(Mcasp_ChannelHandle chanHandle)
 
 void Mcasp_getDmaPosition(Mcasp_ChannelHandle chanHandle, uint32_t *dmaPosition)
 {
-    uint32_t localbCnt = 0U;
-    uint32_t localcCnt = 0U;
+    uint32_t localbCnt = 0;
+    uint32_t localcCnt = 0;
 
     EDMA3_DRV_getPaRAMField(chanHandle->edmaHandle,
                             chanHandle->xferChan,

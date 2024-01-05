@@ -525,7 +525,7 @@ void TimerP_updateDefaultInfoTbl(void)
         {
             gDmTimerPInfoTbl[i].baseAddr = (uintptr_t)(CSL_TIMER0_CFG_BASE) + \
                                            ((0x10000U) * i);
-            if (12U > i)
+            if (i < 12U)
             {
                 /*
                  * The interrupt events of Main domain's DM Timer instance 0 - 11 are routed

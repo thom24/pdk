@@ -969,7 +969,7 @@ pcieRet_e pcieCfgRC(Pcie_Handle handle)
   memset (&accr,             0, sizeof(accr));
 
   /*Disable link training*/
-  if ((retVal = pcieLtssmCtrl(handle, (uint8_t)UFALSE)) != pcie_RET_OK)
+  if ((retVal = pcieLtssmCtrl(handle, FALSE)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Failed to disable Link Training!\n");
     return retVal;
@@ -1136,7 +1136,7 @@ pcieRet_e pcieCfgEP(Pcie_Handle handle)
   memset (&accr,             0, sizeof(accr));
 
   /*Disable link training*/
-  if ((retVal = pcieLtssmCtrl(handle, (uint8_t)UFALSE)) != pcie_RET_OK)
+  if ((retVal = pcieLtssmCtrl(handle, FALSE)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Failed to disable Link Training!\n");
     return retVal;
@@ -2412,7 +2412,7 @@ void pcie (void *arg0, void *arg1)
   PCIE_logPrintf ("Starting link training...\n");
 
   /*Enable link training*/
-  if ((retVal = pcieLtssmCtrl(handle, (uint8_t)UTRUE)) != pcie_RET_OK)
+  if ((retVal = pcieLtssmCtrl(handle, TRUE)) != pcie_RET_OK)
   {
     PCIE_logPrintf ("Failed to Enable Link Training! (%d)\n", (int)retVal);
     exit(1);

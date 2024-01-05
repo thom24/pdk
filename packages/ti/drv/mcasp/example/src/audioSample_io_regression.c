@@ -168,16 +168,16 @@ Ptr  hMcaspDev;
 Mcasp_Params mcaspParams;
 
 /* The mcasp instance/port number */
-uint32_t mcasp_instance_num = MCASP_NUM;
+uint32_t mcasp_instance_num=MCASP_NUM;
 
 /* Channel Handles */
 Ptr hMcaspTxChan;
 Ptr hMcaspRxChan;
 
-volatile int RxFlag = 0,TxFlag = 0;
+volatile int RxFlag=0,TxFlag=0;
 Semaphore_Handle semR,semT;
 Semaphore_Params params;
-int mcaspApiTest = 0;
+int mcaspApiTest = FALSE;
 
 typedef struct McASP_App_Buffer_s {
 	Osal_Queue_Elem  link;
@@ -187,8 +187,8 @@ typedef struct McASP_App_Buffer_s {
 
 /* For TX and RX */
 typedef enum {
- APP_BUFFER_RX = 0,
- APP_BUFFER_TX = 1
+ APP_BUFFER_RX=0,
+ APP_BUFFER_TX=1
 }McASP_App_Buffer_Direction_e;
 
 Osal_Queue_Elem McASP_App_Buffer_FreeList[2];
@@ -198,7 +198,7 @@ McASP_App_BufferInfo_t McASP_App_bufs[2][NUM_APP_BUFS_QUEUE_ENTRIES];
 
 #ifdef MCASP_ENABLE_DEBUG_LOG
 uint8_t mcaspFrames_rx[NUM_TEST_FRAMES+PRIME_COUNT][MCASPFRAMES_RX_SIZE];
-uint8_t mcaspFrame_rx_index = 0;
+uint8_t mcaspFrame_rx_index=0;
 #endif
 
 /* Initialize the queue of buffer info  and push them in to the free queues */
@@ -212,7 +212,7 @@ void McASP_App_BufferInfo_Init()
 	Osal_Queue_construct(&McASP_App_Buffer_TransitList[APP_BUFFER_TX], (void *)NULL);
 
     /* Put buffers in the queue */
-	for(i = 0U; i < test_prime_count; i++) {
+	for(i=0;i<test_prime_count;i++) {
       /* For priming, we would need to put 'prime_count' number of buffers in to the Free List to begin with.
 	   * During priming process, these will be popped and submitted to the McASP */
 	    bufno= i%test_num_bufs;	/* There are only NUM_BUFS buffers allocated from memory. If more buffers are needed for priming, say 4, these
@@ -231,7 +231,7 @@ McASP_App_BufferInfo_t * McASP_App_Buffers_PopFree(McASP_App_Buffer_Direction_e 
 {
   McASP_App_BufferInfo_t *ptr;
   ptr = Osal_Queue_get(&McASP_App_Buffer_FreeList[dir]);
-  if(NULL != ptr) {
+  if(ptr!=NULL) {
     Osal_Queue_put((Osal_Queue_handle(&McASP_App_Buffer_TransitList[dir])),(Osal_Queue_Elem *)ptr);
   }
   return(ptr);
@@ -261,7 +261,7 @@ int mcaspControlChanTest(void * mcaspChan);
 /**************************************************************************************/
 static uint32_t getGlobalAddr (uint32_t addr)
 {
-    if ((0x800000U <= addr) && (0x1000000U > addr))
+    if ((addr >= 0x800000) && (addr < 0x1000000))
     {
 #ifdef _TMS320C6X
         uint32_t coreNum;
@@ -271,11 +271,11 @@ static uint32_t getGlobalAddr (uint32_t addr)
 
 #if defined(SOC_AM572x) || defined(SOC_AM571x)
         /* Compute the global address. */
-        return ((1 << 30) | (coreNum << 24) | (addr & 0x00FFFFFFU));
+        return ((1 << 30) | (coreNum << 24) | (addr & 0x00ffffff));
 
 #else
   /* Compute the global address. */
-        return ((1 << 28) | (coreNum << 24) | (addr & 0x00FFFFFFU));
+        return ((1 << 28) | (coreNum << 24) | (addr & 0x00ffffff));
 #endif
 #else
         return addr;
@@ -308,7 +308,7 @@ void mcaspAppCallback(void* arg, MCASP_Packet *ioBuf)
        uint32_t *buf_ptr;
 #endif
 
-	if(MCASP_READ == ioBuf->cmd)
+	if(ioBuf->cmd == MCASP_READ)
 	{
 		RxFlag++;
 		/* Get the buffer which is supposed to be the next. It should be in the transit queue */
@@ -330,7 +330,7 @@ void mcaspAppCallback(void* arg, MCASP_Packet *ioBuf)
 	    /* post semaphore */
 	    Semaphore_post(semR);
 
-	} else if(MCASP_WRITE == ioBuf->cmd)
+	} else if(ioBuf->cmd == MCASP_WRITE)
 		{
 		 TxFlag++;
 
@@ -369,8 +369,8 @@ void mcaspAppCallback(void* arg, MCASP_Packet *ioBuf)
  * are later used for analyzing the errors seen.
  */
 /* The below variables are used to quit the frame processing loop if an error occurs */
-int gblErrFlagXmt = 0;
-int gblErrFlagRcv = 0;
+int gblErrFlagXmt=0;
+int gblErrFlagRcv=0;
 /* The below variables are used to analyze the errors if an error interrupt happens */
 Mcasp_errCbStatus errCbStatusXmt;
 Mcasp_errCbStatus errCbStatusRcv;
@@ -378,14 +378,14 @@ Mcasp_errCbStatus errCbStatusRcv;
 /* Error handler for Transmit side */
 void GblErrXmt(Mcasp_errCbStatus errCbStat)
 {
-	gblErrFlagXmt = 1;
-	errCbStatusXmt = errCbStat;
+	gblErrFlagXmt=1;
+	errCbStatusXmt=errCbStat;
 }
 /* Error handler for Rcv side */
 void GblErrRcv(Mcasp_errCbStatus errCbStat)
 {
-    gblErrFlagRcv = 1;
-    errCbStatusRcv = errCbStat;
+    gblErrFlagRcv=1;
+    errCbStatusRcv=errCbStat;
 }
 /*********************** APPLICATION DEFINED FUNCTIONS: End ****************************/
 
@@ -444,7 +444,7 @@ static Void createStreams()
 							 &mcasp_chanparam[1],
 							 mcaspAppCallback, NULL);
 
-	if((MCASP_COMPLETED != status) || (NULL == hMcaspTxChan))
+	if((status != MCASP_COMPLETED) || (hMcaspTxChan == NULL))
 	{
 		MCASP_log("mcaspCreateChan for McASP2 Tx Failed\n");
 		BIOS_exit(0);
@@ -459,7 +459,7 @@ static Void createStreams()
 	                         MCASP_INPUT,
 	                         &mcasp_chanparam[0],
 	                         mcaspAppCallback, NULL);
-	if((MCASP_COMPLETED != status) || (NULL == hMcaspRxChan))
+	if((status != MCASP_COMPLETED) || (hMcaspRxChan == NULL))
 	{
 		MCASP_log("mcaspCreateChan for McASP2 Rx Failed\n");
 		BIOS_exit(0);
@@ -484,8 +484,8 @@ static Void prime()
 	Error_Block  eb;
     int32_t        count = 0, status;
 
-    uint32_t tx_bytes_per_sample = (mcasp_chanparam[1].wordWidth / 8U);
-    uint32_t rx_bytes_per_sample = (mcasp_chanparam[0].wordWidth / 8U);
+    uint32_t tx_bytes_per_sample=(mcasp_chanparam[1].wordWidth/8);
+    uint32_t rx_bytes_per_sample=(mcasp_chanparam[0].wordWidth/8);
     /* This represents the actual  number of bytes being transferred by the
      * DMA to/from the Host memory to the McASP peripheral. This include all serializers and timeslots.
      * BUFLEN contains the samples per serializer (inclusive of its timeslots) */
@@ -547,7 +547,7 @@ static Void prime()
       	   mcaspDebugLog(DEBUG_APP_SUBMIT_READ_COMPLETE, (uint32_t)rxFrame[count].addr, rxFrame[count].size, ((uint32_t *)(rxFrame[count].addr))[0],((uint32_t *)(rxFrame[count].addr))[1]);
 #endif
 
-		if(MCASP_PENDING != status)
+		if((status != MCASP_PENDING))
 			MCASP_log ("Debug: Error McASP2 RX : Prime  buffer  #%d submission FAILED\n", count);
 
 
@@ -555,7 +555,7 @@ static Void prime()
     for(count = 0; count < (test_prime_count); count ++)
     {
          /* Pop a free application buffer */
-         appBuf_ptr = McASP_App_Buffers_PopFree(APP_BUFFER_TX);
+         appBuf_ptr=McASP_App_Buffers_PopFree(APP_BUFFER_TX);
 	     memset((uint8_t *)appBuf_ptr->buf, (0xA0+count), tx_frame_size);
    			/* TX frame processing */
 		 txFrame[count].cmd = MCASP_WRITE;
@@ -572,7 +572,7 @@ static Void prime()
 #endif
 
    		status = mcaspSubmitChan(hMcaspTxChan, &(txFrame[count]));
-   		if(MCASP_PENDING != status)
+   		if((status != MCASP_PENDING))
    			MCASP_log ("Debug: Error McASP2 TX : Prime  buffer  #%d submission FAILED\n", count);
 #ifdef MCASP_ENABLE_DEBUG_LOG
 		mcaspDebugLog(DEBUG_APP_SUBMIT_WRITE_COMPLETE, (uint32_t)txFrame[count].addr, txFrame[count].size, ((uint32_t *)(txFrame[count].addr))[0],((uint32_t *)(txFrame[count].addr))[1]);
@@ -598,7 +598,7 @@ EDMA3_DRV_Handle McaspApp_edmaInit(Mcasp_HwInfo *cfg)
 
     hEdma = edma3init(EDMACC_NUM, &edmaResult);
 
-    if (EDMA3_DRV_SOK != edmaResult)
+    if (edmaResult != EDMA3_DRV_SOK)
     {
         /* Report EDMA Error
          */
@@ -660,7 +660,7 @@ Udma_DrvHandle McaspApp_udmaInit(Mcasp_HwInfo *cfg)
     uint32_t        instId;
     int32_t i;
 
-    if (NULL == gDrvHandle)
+    if (gDrvHandle == NULL)
     {
         /* UDMA driver init */
 #if defined (__aarch64__)
@@ -676,7 +676,7 @@ Udma_DrvHandle McaspApp_udmaInit(Mcasp_HwInfo *cfg)
         }
     }
 
-    if(NULL != gDrvHandle)
+    if(gDrvHandle != NULL)
     {
         gDrvHandle = &gUdmaDrvObj;
         cfg->dmaInfo.descType =      CSL_UDMAP_CPPI5_PD_DESCINFO_DTYPE_VAL_TR;
@@ -690,7 +690,7 @@ Udma_DrvHandle McaspApp_udmaInit(Mcasp_HwInfo *cfg)
         cfg->dmaInfo.tdCqRxRingMem  = (void *)&gTdRxCompRingMem[0];
         cfg->dmaInfo.ringCnt  = UDMA_TEST_APP_RING_ENTRIES;
 
-       for(i = 0; i < MCASP_NUM_FREE_DESCS; i++) {
+       for(i=0;i<MCASP_NUM_FREE_DESCS;i++) {
          cfg->dmaInfo.txHpdMem[i]    = (void *)&gUdmaTxHpdMem[i];
          cfg->dmaInfo.rxHpdMem[i]    = (void *)&gUdmaRxHpdMem[i];
        }
@@ -709,7 +709,7 @@ int32_t MCASP_udma_deinit(void)
 {
     int32_t         retVal = UDMA_SOK;
 
-    if (NULL != gDrvHandle)
+    if (gDrvHandle != NULL)
     {
         retVal = Udma_deinit(gDrvHandle);
         if(UDMA_SOK == retVal)
@@ -728,11 +728,11 @@ int32_t MCASP_udma_deinit(void)
  * easily replace the copy function with a signal processing algorithm.
  */
 
-int gtxFrameIndexCount = 0;
-int grxFrameIndexCount = 0;
+int gtxFrameIndexCount=0;
+int grxFrameIndexCount=0;
 int itemp;
 int result, pwr_status, fs_status, bck_status;
-int total_frames_sent = 0;
+int total_frames_sent=0;
 
 
 
@@ -742,59 +742,59 @@ int total_frames_sent = 0;
 Void Audio_echo_Task()
 {
     Mcasp_HwInfo hwInfo;
-    volatile int32_t status = MCASP_COMPLETED;
+    volatile int32_t status = 0;
     uint32_t i32Count;
-    volatile uint32_t loopForever = UTRUE;
+    volatile uint32_t loopForever = 1u;
 	hMcaspDev  = NULL;
-    uint32_t timeout = 0U, maxTimeout = 0U;
+    uint32_t timeout = 0, maxTimeout = 0;
     int32_t txSemStatus, rxSemStatus;
-    uint32_t rx_frames = 0U, tx_frames = 0U;
+    uint32_t rx_frames = 0, tx_frames = 0;
   int32_t testID=MCASP_REGRESSION_TEST_1;
   mcaspTestProfile_t *testProfilePtr;
   uint32_t testprofile;
   /*  Configure the McASP TxConfig/RxConfig */
 
 
-  while(MCASP_REGRESSION_TEST_EXIT != testID)
+  while(testID!=MCASP_REGRESSION_TEST_EXIT)
   {
-      total_frames_sent = 0;
-      gtxFrameIndexCount = 0;
-      grxFrameIndexCount = 0;
+      total_frames_sent=0;
+      gtxFrameIndexCount=0;
+      grxFrameIndexCount=0;
 
-      gblErrFlagXmt = 0;
-      gblErrFlagRcv = 0;
-      RxFlag = UFALSE;
-      TxFlag = UFALSE;
-      rx_frames = 0U;
-      tx_frames = 0U;
+      gblErrFlagXmt=0;
+      gblErrFlagRcv=0;
+      RxFlag = 0;
+      TxFlag = 0;
+      rx_frames = 0;
+      tx_frames = 0;
 
 #ifdef MCASP_ENABLE_DEBUG_LOG
-      mcaspFrame_rx_index = 0;
+      mcaspFrame_rx_index=0;
 #endif
 
       testID = mcasp_regression_seek_testID();
       MCASP_log (" Test ID Entered = %d\n",testID);
 
 
-      if(MCASP_REGRESSION_TEST_EXIT == testID) {
+      if(testID==MCASP_REGRESSION_TEST_EXIT) {
          break;
       }
 
    /* Valid test ID entered. Now search for the test containing the testID in the list of test profiles */
 
 
-   for(testprofile = 0; testprofile<sizeof(mcaspTestProfiles)/sizeof(mcaspTestProfile_t *); testprofile++)
+   for(testprofile=0;testprofile<sizeof(mcaspTestProfiles)/sizeof(mcaspTestProfile_t *);testprofile++)
    {
      testProfilePtr = mcaspTestProfiles[testprofile];
 
-     if(NULL == testProfilePtr) {
+     if(testProfilePtr==NULL) {
 	   MCASP_log("\nEnd of test profiles");
 	   break;
 	 }
 
-     if(MCASP_REGRESSION_ALL_NON_POWERCYCLE_TESTS == testID) {
+     if(testID == MCASP_REGRESSION_ALL_NON_POWERCYCLE_TESTS) {
   	     /* Run all the non powercycle tests */
-		 if(BFALSE != testProfilePtr->powerCycleRequired) {
+		 if(testProfilePtr->powerCycleRequired!= FALSE) {
 		   continue;
 		 }
 	  }
@@ -862,12 +862,12 @@ Void Audio_echo_Task()
 
 	mcaspParams = Mcasp_PARAMS;
    /* Enable MCASP DLB mode */
-	mcaspParams.mcaspHwSetup.glb.dlbMode = (CSL_MCASP_DLBCTL_DLBEN_ENABLE |
+	mcaspParams.mcaspHwSetup.glb.dlbMode=(CSL_MCASP_DLBCTL_DLBEN_ENABLE |
 										 ( CSL_MCASP_DLBCTL_ORD_XMTEVEN << CSL_MCASP_DLBCTL_ORD_SHIFT) |
 										 ( CSL_MCASP_DLBCTL_MODE_XMTCLK << CSL_MCASP_DLBCTL_MODE_SHIFT) );
 
 	status = mcaspBindDev(&hMcaspDev, mcasp_instance_num, &mcaspParams);
-	if((MCASP_COMPLETED != status) || (NULL == hMcaspDev))
+	if((status != MCASP_COMPLETED) || (hMcaspDev == NULL))
 	{
 		MCASP_log("mcaspBindDev for McASP Failed\n");
 		abort();
@@ -884,7 +884,7 @@ Void Audio_echo_Task()
     /* Configure the Device loopback test's paramters such as loopback mask */
     config_deviceloopback(tx_frame_size,rx_frame_size);
 
-    i32Count = 0U;
+    i32Count = 0;
 
     /* Forever loop to continuously receive and transmit audio data           */
     while (loopForever)
@@ -895,19 +895,19 @@ Void Audio_echo_Task()
 
     	dlb_process_events();
         rxSemStatus = Semaphore_pend(semR, 1);
-        if((ITRUE == rxSemStatus) && (NUM_TEST_FRAMES != rx_frames))
+        if(rxSemStatus == TRUE && rx_frames != NUM_TEST_FRAMES)
         {
             /* Reclaim full buffer from the input stream                          */
             appBuf_ptr_rx = McASP_App_Buffers_PopFree(APP_BUFFER_RX);
             grxFrameIndexCount = appBuf_ptr_rx->index;
 
-            Cache_inv((void *)((uint8_t *)appBuf_ptr_rx->buf),rx_frame_size,Cache_Type_ALL, BTRUE);
+            Cache_inv((void *)((uint8_t *)appBuf_ptr_rx->buf),rx_frame_size,Cache_Type_ALL, TRUE);
 
 #ifdef MCASP_ENABLE_DEBUG_LOG
         memcpy(&mcaspFrames_rx[mcaspFrame_rx_index][0],appBuf_ptr_rx->buf,rx_frame_size);
         mcaspFrame_rx_index++;
-        if((NUM_TEST_FRAMES+PRIME_COUNT) == mcaspFrame_rx_index) {
-			mcaspFrame_rx_index = 0;
+        if(mcaspFrame_rx_index == (NUM_TEST_FRAMES+PRIME_COUNT)) {
+			mcaspFrame_rx_index=0;
 		}
 #endif
             deviceloopback_process_samples(appBuf_ptr_rx->buf,rx_frame_size, RX);
@@ -923,7 +923,7 @@ Void Audio_echo_Task()
            mcaspDebugLog(DEBUG_APP_SUBMIT_READ, (uint32_t)rxFrame[grxFrameIndexCount].addr, rxFrame[grxFrameIndexCount].size, ((uint32_t *)(rxFrame[grxFrameIndexCount].addr))[0], ((uint32_t *)(rxFrame[grxFrameIndexCount].addr))[1]);
 #endif
             status = mcaspSubmitChan(hMcaspRxChan, &(rxFrame[grxFrameIndexCount]));
-            if((MCASP_PENDING != status))
+            if((status != MCASP_PENDING))
                 MCASP_log ("Debug: Error McASP RX :  buffer  #%d submission FAILED\n", i32Count);
 #ifdef MCASP_ENABLE_DEBUG_LOG
            mcaspDebugLog(DEBUG_APP_SUBMIT_READ_COMPLETE, (uint32_t)rxFrame[grxFrameIndexCount].addr, rxFrame[grxFrameIndexCount].size, ((uint32_t *)(rxFrame[grxFrameIndexCount].addr))[0], ((uint32_t *)(rxFrame[grxFrameIndexCount].addr))[1]);
@@ -934,17 +934,17 @@ Void Audio_echo_Task()
             if (timeout > maxTimeout)
                 maxTimeout = timeout;
 
-            timeout = 0U;
+            timeout = 0;
         }
 
         txSemStatus = Semaphore_pend(semT, 1);
-        if((ITRUE == txSemStatus) && (NUM_TEST_FRAMES != tx_frames))
+        if(txSemStatus == TRUE && tx_frames != NUM_TEST_FRAMES)
         {
             appBuf_ptr_tx = McASP_App_Buffers_PopFree(APP_BUFFER_TX);
             gtxFrameIndexCount = appBuf_ptr_tx->index;
             deviceloopback_process_samples(appBuf_ptr_tx->buf,tx_frame_size, TX);
 
-            Cache_wbInv((void *)((uint8_t *)appBuf_ptr_tx->buf),tx_frame_size,Cache_Type_ALL, BTRUE);
+            Cache_wbInv((void *)((uint8_t *)appBuf_ptr_tx->buf),tx_frame_size,Cache_Type_ALL, TRUE);
 
             /* Issue full buffer to the output stream                             */
             /* TX frame processing */
@@ -960,7 +960,7 @@ Void Audio_echo_Task()
 #endif
 
             status = mcaspSubmitChan(hMcaspTxChan, &(txFrame[gtxFrameIndexCount]));
-            if(MCASP_PENDING != status)
+            if((status != MCASP_PENDING))
                 MCASP_log ("Debug: Error McASP TX : Prime  buffer  #%d submission FAILED\n", i32Count);
 
             tx_frames++;
@@ -970,7 +970,7 @@ Void Audio_echo_Task()
 #endif
         }
 
-        if (++timeout > 10000U)
+        if (++timeout > 10000)
         {
             MCASP_log("Error waiting for packets!\r\n");
             break;
@@ -983,7 +983,7 @@ Void Audio_echo_Task()
 /* For Device loopback test (ramp) we send a fininte number of frames. For other tests and
    the default case, the number of frames is inifinite and the demo never exits out of
    the for loop */
-        if((NUM_TEST_FRAMES * 2) == total_frames_sent)
+        if(total_frames_sent==NUM_TEST_FRAMES * 2)
         	break;
 
         /******************************* Sample Processing Begins ***************************/
@@ -1028,7 +1028,7 @@ Void Audio_echo_Task()
              * Consequently Tx OverRun is triggered whose call back function is GlbErrXmt.
              * Put a CCS breakpoint at this function and watch it triggered.
              * Please note that the test may not recover from this state. */
-            bool dlbMode = BFALSE; /* Forcefully disable */
+            bool dlbMode=FALSE; /* Forcefully disable */
             Mcasp_localSubmitIoctl(hMcaspTxChan,Mcasp_IOCTL_SET_DLB_MODE,&dlbMode,NULL);
             Task_sleep(1000);
             /* The test should be hung by now after "Total 100 frames sent" */
@@ -1047,7 +1047,7 @@ Void Audio_echo_Task()
 
 
 
-			for(i32Count = 0U; i32Count < (test_num_bufs); i32Count ++)
+			for(i32Count = 0; i32Count < (test_num_bufs); i32Count ++)
 				{
                     if (NULL != rxbuf[i32Count])
                     {
@@ -1069,7 +1069,7 @@ Void Audio_echo_Task()
 /* Application specific report(if any) */
 
 	/* Analyze and print results of the loopback test */
-	if((NUM_TEST_FRAMES * 2) != total_frames_sent) {
+	if(total_frames_sent!=NUM_TEST_FRAMES * 2) {
 	   MCASP_log("\nTEST FAIL: Test quit after sending %d frames "
                  "and receiving %d frames.\n", tx_frames, rx_frames);
 	}
@@ -1105,7 +1105,7 @@ int mcaspControlChanTest(void * mcaspChan)
     /* Testing the reconfiguration of wordWidth: first change it to 16. */
     mcasp_chanparam[0].wordWidth = Mcasp_WordLength_16;
     status = mcaspControlChan(mcaspChan, Mcasp_IOCTL_CHAN_PARAMS_WORD_WIDTH, &mcasp_chanparam[0]);
-    if(MCASP_COMPLETED != status) {
+    if(status != MCASP_COMPLETED) {
         return status;
     }
 

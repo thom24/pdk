@@ -148,7 +148,7 @@ Mcasp_ChanParams mcasp_chanparam[2] = {
         {Mcasp_SerializerNum_1}, /* serialiser index (Input on LINE IN)*/ 
 #endif
         &mcasp0RcvSetup,
-        (uint16_t)BTRUE,
+        TRUE,
         Mcasp_OpMode_TDM,          /* Mode (TDM/DIT)             */
         Mcasp_WordLength_32,
         NULL,
@@ -156,14 +156,14 @@ Mcasp_ChanParams mcasp_chanparam[2] = {
         NULL,
         (Mcasp_GblCallback)&GblErrRcv,
         2, /* number of TDM channels      */
-#if RX_NUM_SERIALIZER == 1U
+#if RX_NUM_SERIALIZER == 1u
 		Mcasp_BufferFormat_1SER_MULTISLOT_INTERLEAVED,
 #else
         Mcasp_BufferFormat_MULTISER_MULTISLOT_SEMI_INTERLEAVED_1,
 #endif
-        (uint16_t)BTRUE,
+        TRUE,
         RX_FIFO_EVENT_DMA_RATIO,
-        (uint16_t)BTRUE,
+        TRUE,
         Mcasp_WordBitsSelect_LSB
     },
     {
@@ -176,7 +176,7 @@ Mcasp_ChanParams mcasp_chanparam[2] = {
         /* Mcasp_SerializerNum_3 can be used : Ouput on J40 Bottom jack */
 #endif
         &mcasp0XmtSetup,
-        (uint16_t)BTRUE,
+        TRUE,
         Mcasp_OpMode_TDM,
         Mcasp_WordLength_32,      /* word width                  */
         NULL,
@@ -184,14 +184,14 @@ Mcasp_ChanParams mcasp_chanparam[2] = {
         NULL,
         (Mcasp_GblCallback)&GblErrXmt,
         2, /* number of TDM channels      */
-#if TX_NUM_SERIALIZER == 1U
+#if TX_NUM_SERIALIZER == 1u
 		Mcasp_BufferFormat_1SER_MULTISLOT_INTERLEAVED,
 #else
         Mcasp_BufferFormat_MULTISER_MULTISLOT_SEMI_INTERLEAVED_2,
 #endif
-        (uint16_t)BTRUE,
+        TRUE,
         TX_FIFO_EVENT_DMA_RATIO,
-        (uint16_t)BTRUE,
+        TRUE,
         Mcasp_WordBitsSelect_LSB
     }
 };

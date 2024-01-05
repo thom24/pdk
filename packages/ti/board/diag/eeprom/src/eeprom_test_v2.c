@@ -59,16 +59,16 @@ boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
 };
 #elif defined(j7200_evm)
 boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
-    {"SoM Board\0",				    BOARD_SOM_EEPROM_SLAVE_ADDR,	BTRUE},
-    {"CP Board\0",				    BOARD_CP_EEPROM_SLAVE_ADDR,		BTRUE},
-    {"GESI Board\0",			    BOARD_GESI_EEPROM_SLAVE_ADDR,	BFALSE},
-    {"Quad ENET expansion\0",	BOARD_ENET_EEPROM_SLAVE_ADDR,	BFALSE}
+    {"SoM Board\0",				BOARD_SOM_EEPROM_SLAVE_ADDR,	true},
+    {"CP Board\0",				BOARD_CP_EEPROM_SLAVE_ADDR,		true},
+    {"GESI Board\0",			BOARD_GESI_EEPROM_SLAVE_ADDR,	false},
+    {"Quad ENET expansion\0",	BOARD_ENET_EEPROM_SLAVE_ADDR,	false}
 };
 Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
-    {0,     BOARD_SOC_DOMAIN_WKUP, BFALSE},
-    {0,     BOARD_SOC_DOMAIN_WKUP, BFALSE},
-    {0,     BOARD_SOC_DOMAIN_WKUP, BFALSE},
-    {0,     BOARD_SOC_DOMAIN_WKUP, BFALSE},
+    {0,     BOARD_SOC_DOMAIN_WKUP, false},
+    {0,     BOARD_SOC_DOMAIN_WKUP, false},
+    {0,     BOARD_SOC_DOMAIN_WKUP, false},
+    {0,     BOARD_SOC_DOMAIN_WKUP, false},
 };
 #elif defined(SOC_TPR12)
 boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
@@ -114,27 +114,27 @@ Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
 };
 #elif defined(j721s2_evm)
 boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
-    {"SoM Board\0",                 SOM_EEPROM_SLAVE_ADDR,          BTRUE},
-    {"CP Board\0",                  CP_EEPROM_SLAVE_ADDR,           BTRUE},
-    {"GESI Board\0",                EXP_CONN_EEPROM_SLAVE_ADDR,     BFALSE}
+    {"SoM Board\0",                 SOM_EEPROM_SLAVE_ADDR,          true},
+    {"CP Board\0",                  CP_EEPROM_SLAVE_ADDR,           true},
+    {"GESI Board\0",                EXP_CONN_EEPROM_SLAVE_ADDR,     false}
 };
 Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
-    {0,     BOARD_SOC_DOMAIN_WKUP, BFALSE},
-    {0,     BOARD_SOC_DOMAIN_WKUP, BFALSE},
-    {0,     BOARD_SOC_DOMAIN_WKUP, BFALSE}
+    {0,     BOARD_SOC_DOMAIN_WKUP, false},
+    {0,     BOARD_SOC_DOMAIN_WKUP, false},
+    {0,     BOARD_SOC_DOMAIN_WKUP, false}
 };
 #elif defined(j784s4_evm)
 boardProgInfo_t boardProgInfo[MAX_NUM_OF_BOARDS] = {
-    {"GESI Board\0",                EXP_CONN_EEPROM_SLAVE_ADDR,     BFALSE},
-    {"CSI2 Board\0",                CSI2_EXP_EEPROM_SLAVE_ADDR,     BFALSE},
-    {"ENET Board\0",                ENET_EXP_EEPROM_SLAVE_ADDR,     BFALSE},
-    {"EVM Board\0",                 EVM_EEPROM_SLAVE_ADDR,          BTRUE},
+    {"GESI Board\0",                EXP_CONN_EEPROM_SLAVE_ADDR,     false},
+    {"CSI2 Board\0",                CSI2_EXP_EEPROM_SLAVE_ADDR,     false},
+    {"ENET Board\0",                ENET_EXP_EEPROM_SLAVE_ADDR,     false},
+    {"EVM Board\0",                 EVM_EEPROM_SLAVE_ADDR,          true},
 };
 Board_I2cInitCfg_t boardI2cInitCfg[MAX_NUM_OF_BOARDS] = {
-    {0,     BOARD_SOC_DOMAIN_WKUP, BFALSE},
-    {0,     BOARD_SOC_DOMAIN_MAIN, BFALSE},
-    {0,     BOARD_SOC_DOMAIN_WKUP, BFALSE},
-    {0,     BOARD_SOC_DOMAIN_WKUP, BFALSE}
+    {0,     BOARD_SOC_DOMAIN_WKUP, false},
+    {0,     BOARD_SOC_DOMAIN_MAIN, false},
+    {0,     BOARD_SOC_DOMAIN_WKUP, false},
+    {0,     BOARD_SOC_DOMAIN_WKUP, false}
 };
 #else
 

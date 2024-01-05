@@ -86,7 +86,7 @@ extern void vPortDumpExceptionState( void );
 
 static void IntDefaultHandler(void *dummy)
 {
-    volatile bool loop = BTRUE;
+    volatile uint32_t loop = 1;
     while(loop)
         ;
 }
@@ -152,7 +152,7 @@ void __attribute__((section(".text.hwi"))) HwiP_irq_handler_c(void)
         IntrFuncPtr isr;
         void *args;
 
-        if((int32_t)CSL_VIM_INTR_TYPE_PULSE == intrType)
+        if(CSL_VIM_INTR_TYPE_PULSE == intrType)
         {
             CSL_vimClrIntrPending(pVimRegs, intNum);
         }
@@ -163,7 +163,7 @@ void __attribute__((section(".text.hwi"))) HwiP_irq_handler_c(void)
         /* allow nesting of interrupts */
         //CSL_armR5IntrEnableIrq(1);  /* Enable IRQ interrupt in R5 */
 
-        if(NULL != isr)
+        if(NULL!=isr)
         {
             isr(args);
         }
@@ -171,7 +171,7 @@ void __attribute__((section(".text.hwi"))) HwiP_irq_handler_c(void)
         /* disallow nesting of interrupts */
         //CSL_armR5IntrEnableIrq(0);  /* Disbale IRQ interrupt in R5 */
 
-        if((int32_t)CSL_VIM_INTR_TYPE_LEVEL == intrType)
+        if(CSL_VIM_INTR_TYPE_LEVEL == intrType)
         {
             CSL_vimClrIntrPending(pVimRegs, intNum);
         }
@@ -208,7 +208,7 @@ void __attribute__((interrupt("FIQ"), section(".text.hwi"))) HwiP_fiq_handler(vo
         IntrFuncPtr isr;
         void *args;
 
-        if((int32_t)CSL_VIM_INTR_TYPE_PULSE == intrType)
+        if(CSL_VIM_INTR_TYPE_PULSE == intrType)
         {
             CSL_vimClrIntrPending(pVimRegs, intNum);
         }
@@ -219,7 +219,7 @@ void __attribute__((interrupt("FIQ"), section(".text.hwi"))) HwiP_fiq_handler(vo
         /* allow nesting of interrupts */
         CSL_armR5IntrEnableFiq(1);  /* Enable FIQ interrupt in R5 */
 
-        if(NULL != isr)
+        if(NULL!=isr)
         {
             isr(args);
         }
@@ -227,7 +227,7 @@ void __attribute__((interrupt("FIQ"), section(".text.hwi"))) HwiP_fiq_handler(vo
         /* disallow nesting of interrupts */
         CSL_armR5IntrEnableFiq(0);  /* Disable FIQ interrupt in R5 */
 
-        if((int32_t)CSL_VIM_INTR_TYPE_LEVEL == intrType)
+        if(CSL_VIM_INTR_TYPE_LEVEL == intrType)
         {
             CSL_vimClrIntrPending(pVimRegs, intNum);
         }
@@ -243,7 +243,7 @@ void __attribute__((interrupt("FIQ"), section(".text.hwi"))) HwiP_fiq_handler(vo
 void __attribute__((interrupt("UNDEF"), section(".text.hwi"))) HwiP_reserved_handler(void)
 {
     /* Go into an infinite loop.*/
-    volatile bool loop = BTRUE;
+    volatile uint32_t loop = 1;
     while(loop)
         ;
 }
@@ -251,7 +251,7 @@ void __attribute__((interrupt("UNDEF"), section(".text.hwi"))) HwiP_reserved_han
 void __attribute__((section(".text.hwi"))) HwiP_undefined_handler_c(void)
 {
     /* Go into an infinite loop.*/
-    volatile bool loop = BTRUE;
+    volatile uint32_t loop = 1;
     while(loop)
         ;
 }
@@ -259,9 +259,9 @@ void __attribute__((section(".text.hwi"))) HwiP_undefined_handler_c(void)
 void __attribute__((section(".text.hwi"))) HwiP_prefetch_abort_handler_c(void)
 {
     /* Go into an infinite loop.*/
-    volatile bool loop = BTRUE;
+    volatile uint32_t loop = 1;
 
-    gCurrentProcessorState = CSL_ARM_R5_ABORT_MODE;
+    gCurrentProcessorState=CSL_ARM_R5_ABORT_MODE;
     vPortDumpExceptionState();
     while(loop)
         ;
@@ -275,16 +275,16 @@ void __attribute__((section(".text.hwi"))) HwiP_prefetch_abort_handler_c(void)
 void __attribute__((section(".text.hwi"))) HwiP_data_abort_handler_c(void)
 {
     /* Call registered call back */
-    gCurrentProcessorState = CSL_ARM_R5_ABORT_MODE;
+    gCurrentProcessorState=CSL_ARM_R5_ABORT_MODE;
     vPortDumpExceptionState();
-    if ((exptnHandlerPtr)NULL != gExptnHandlers.dabtExptnHandler)
+    if (gExptnHandlers.dabtExptnHandler != (exptnHandlerPtr)NULL)
     {
         gExptnHandlers.dabtExptnHandler(gExptnHandlers.dabtExptnHandlerArgs);
     }
     else
     {
         /* Go into an infinite loop.*/
-        volatile bool loop = BTRUE;
+        volatile uint32_t loop = 1;
         while(loop)
             ;
     }

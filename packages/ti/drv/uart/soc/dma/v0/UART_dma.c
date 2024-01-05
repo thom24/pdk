@@ -107,7 +107,7 @@ void UART_disableDmaChannel(UART_Handle handle, bool txChan)
     UART_HwAttrs const *hwAttrs = (UART_HwAttrs*)handle->hwAttrs;
     uint32_t            dmaEvent;
 
-    if (BTRUE == txChan)
+    if (txChan == true)
     {
         dmaEvent = (uint32_t) hwAttrs->txDmaEventNumber;
     }
@@ -150,7 +150,7 @@ void UART_receiveDMA(UART_Handle handle,const void *buffer, size_t size )
     uint32_t            actualThreshold;
     int32_t             result = EDMA3_DRV_SOK;
     EDMA3_DRV_PaRAMRegs paramSet   = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    bool                ret_val = BFALSE;
+    bool                ret_val = false;
 
     hwAttrs = (UART_HwAttrs*)handle->hwAttrs;
     actualThreshold = hwAttrs->rxTrigLvl;
@@ -163,10 +163,10 @@ void UART_receiveDMA(UART_Handle handle,const void *buffer, size_t size )
          * not use dma, use rx timeout intterupt to receive data
          */
         UART_intEnable_v0(hwAttrs->baseAddr, UART_INT_RHR_CTI);
-        ret_val = BTRUE;
+        ret_val = true;
     }
 
-    if ((BFALSE == ret_val) && (EDMA3_DRV_SOK == result))
+    if ((ret_val == false) && (result == EDMA3_DRV_SOK))
     {
         /* Get the PaRAM set for default parameters                               */
         EDMA3_DRV_getPaRAM((EDMA3_DRV_Handle) hwAttrs->edmaHandle,
@@ -197,7 +197,7 @@ void UART_receiveDMA(UART_Handle handle,const void *buffer, size_t size )
          * Maximum number of frames in a block (CCNT) is 65535
          */
 
-        if (UART_EDMA3CC_COUNT_VALUE >= size)
+        if ((size <= UART_EDMA3CC_COUNT_VALUE))
         {
             paramSet.cCnt = (uint16_t) (UART_EDMA3CC_COUNT_VALUE &
                                    (size / actualThreshold));
@@ -207,7 +207,7 @@ void UART_receiveDMA(UART_Handle handle,const void *buffer, size_t size )
             result = (int32_t)(-1);
         }
         /* For AB-synchronized transfers, BCNTRLD is not used. */
-        paramSet.linkAddr   = 0xFFFFU;
+        paramSet.linkAddr   = 0xFFFFu;
         paramSet.bCntReload = (uint16_t) 0;
 
         /* Src is in FIFO mode & Dest is in INCR modes                            */
@@ -232,14 +232,14 @@ void UART_receiveDMA(UART_Handle handle,const void *buffer, size_t size )
 
         result = EDMA3_DRV_setPaRAM(hwAttrs->edmaHandle, hwAttrs->rxDmaEventNumber, &paramSet);
 
-        if (0 == result)
+        if (result == 0)
         {
             result = EDMA3_DRV_disableTransfer(
                                  (EDMA3_DRV_Handle) hwAttrs->edmaHandle,
                                  (uint32_t) hwAttrs->rxDmaEventNumber,
                                  (EDMA3_DRV_TrigMode) EDMA3_DRV_TRIG_MODE_EVENT);
         }
-        if (0 == result)
+        if (result == 0)
         {
             result = EDMA3_DRV_enableTransfer(
                                  (EDMA3_DRV_Handle) hwAttrs->edmaHandle,
@@ -254,14 +254,14 @@ void UART_transmitDMA(UART_Handle handle,const void *buffer, size_t size)
     UART_HwAttrs const *hwAttrs;
     uint32_t            actualThreshold;
     UART_V0_Object     *object ;
-    uint32_t            isTxFifoEmpty = UFALSE;
-    uint32_t            edmaStatus = 0U, isEdmaEventPending = UFALSE;
+    uint32_t            isTxFifoEmpty = FALSE;
+    uint32_t            edmaStatus = 0U, isEdmaEventPending = FALSE;
     int32_t             result = EDMA3_DRV_SOK;
     EDMA3_DRV_PaRAMRegs paramSet = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
     uint32_t            txTrigLvl;
 
     hwAttrs = (UART_HwAttrs*)handle->hwAttrs;
-    if ((0U == hwAttrs->txTrigLvl) || (UART_FIFO_SIZE < hwAttrs->txTrigLvl))
+    if ((hwAttrs->txTrigLvl == 0U) || (hwAttrs->txTrigLvl > UART_FIFO_SIZE))
     {
         txTrigLvl = 1U;
     }
@@ -271,7 +271,7 @@ void UART_transmitDMA(UART_Handle handle,const void *buffer, size_t size)
     }
     actualThreshold = txTrigLvl;
     object = (UART_V0_Object*)handle->object;
-    if (EDMA3_DRV_SOK == result)
+    if (result == EDMA3_DRV_SOK)
     {
         /* Get the PaRAM set for default parameters                               */
         EDMA3_DRV_getPaRAM((EDMA3_DRV_Handle) hwAttrs->edmaHandle,
@@ -310,13 +310,13 @@ void UART_transmitDMA(UART_Handle handle,const void *buffer, size_t size)
          * Maximum number of frames in a block (CCNT) is 65535
          */
 
-        if ((UART_EDMA3CC_COUNT_VALUE >= size) &&
+        if ((size <= UART_EDMA3CC_COUNT_VALUE) &&
             (size > actualThreshold))
         {
             paramSet.cCnt = (uint16_t)(UART_EDMA3CC_COUNT_VALUE &
                                   (size / actualThreshold));
         }
-        else if ((size <= actualThreshold) && (0 < size))
+        else if ((size <= actualThreshold) && (size > 0))
         {
             paramSet.cCnt = 1;
         }
@@ -350,7 +350,7 @@ void UART_transmitDMA(UART_Handle handle,const void *buffer, size_t size)
 
         result = EDMA3_DRV_setPaRAM(hwAttrs->edmaHandle, hwAttrs->txDmaEventNumber, &paramSet);
 
-        if (0 == result)
+        if (result == 0)
         {
             result = EDMA3_DRV_getPaRAM((EDMA3_DRV_Handle) hwAttrs->edmaHandle,
                                         (uint32_t) object->edmaLinkChId,
@@ -383,14 +383,14 @@ void UART_transmitDMA(UART_Handle handle,const void *buffer, size_t size)
                                             (EDMA3_DRV_Handle) hwAttrs->edmaHandle,
                                             (uint32_t) hwAttrs->txDmaEventNumber,
                                             &edmaStatus);
-                if (0 != result)
+                if (result != ((Int32) 0))
                 {
                     result = -1;
                 }
                 if ((uint32_t) EDMA3_DRV_CHANNEL_EVENT_PENDING ==
                                 (edmaStatus & ((uint32_t) EDMA3_DRV_CHANNEL_EVENT_PENDING)))
                 {
-                    isEdmaEventPending = UTRUE;
+                    isEdmaEventPending = (uint32_t) TRUE;
                 }
 
                 /* Note: Getting the FIFO status and EDMA event pend should be
@@ -399,7 +399,7 @@ void UART_transmitDMA(UART_Handle handle,const void *buffer, size_t size)
                                         (EDMA3_DRV_Handle) hwAttrs->edmaHandle,
                                         (uint32_t) hwAttrs->txDmaEventNumber,
                                         (EDMA3_DRV_TrigMode) EDMA3_DRV_TRIG_MODE_EVENT);
-                if (((Int32) EDMA3_DRV_SOK) != result)
+                if (result != ((Int32) EDMA3_DRV_SOK))
                 {
                     result = -1;
                 }
@@ -435,14 +435,14 @@ void UART_transmitDMA(UART_Handle handle,const void *buffer, size_t size)
                  * time and the rest of the transfer is taken care automatically
                  * by further UART events.
                  */
-                if ((UTRUE == isTxFifoEmpty) &&
-                    (UFALSE == isEdmaEventPending))
+                if (((uint32_t) TRUE == isTxFifoEmpty) &&
+                    ((uint32_t) FALSE == isEdmaEventPending))
                 {
                     result = EDMA3_DRV_enableTransfer(
                                             (EDMA3_DRV_Handle) hwAttrs->edmaHandle,
                                             (uint32_t) hwAttrs->txDmaEventNumber,
                                             (EDMA3_DRV_TrigMode) EDMA3_DRV_TRIG_MODE_MANUAL);
-                    if (((Int32) EDMA3_DRV_SOK) != result)
+                    if (result != ((Int32) EDMA3_DRV_SOK))
                     {
                         result = (int32_t)(-1);
                     }
@@ -457,7 +457,7 @@ int32_t UART_configDMA(UART_Handle handle )
     UART_HwAttrs const           *hwAttrs =(UART_HwAttrs*)handle->hwAttrs;
     uint32_t      rxDmaEventNumber;
     uint32_t      txDmaEventNumber;
-    uint32_t tcc = 0U;
+    uint32_t tcc = 0;
     UART_V0_Object        *object  = (UART_V0_Object*)handle->object;
 
     Int32 status = EDMA3_DRV_SOK;
@@ -475,7 +475,7 @@ int32_t UART_configDMA(UART_Handle handle )
                         (EDMA3_RM_EventQueue) hwAttrs->edmaRxTC,
                         &UART_rxIsrHandler,
                         (void *) handle);
-    if(EDMA3_DRV_SOK == status)
+    if(status == EDMA3_DRV_SOK )
     {
         object->txTcc = EDMA3_DRV_TCC_ANY;
         status = (Int32) EDMA3_DRV_requestChannel(
@@ -485,7 +485,7 @@ int32_t UART_configDMA(UART_Handle handle )
                                         (EDMA3_RM_EventQueue) 0,
                                         &UART_txIsrHandler,
                                         (void *) handle);
-        if(EDMA3_DRV_SOK == status)
+        if(status == EDMA3_DRV_SOK)
         {
              tcc = EDMA3_DRV_TCC_ANY;
              object->edmaLinkChId = EDMA3_DRV_LINK_CHANNEL;
@@ -519,9 +519,9 @@ static void UART_rxIsrHandler(uint32_t tcc, EDMA3_RM_TccStatus status, void* app
     UART_HwAttrs const *hwAttrs;
     UART_V0_Object     *object ;
     EDMA3_DRV_PaRAMRegs paramSet = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-    uint32_t            bytesRemain = 0U;
+    uint32_t            bytesRemain = 0;
     uint32_t            bytesReceived;
-    if(NULL != appData)
+    if(appData != NULL)
     {
         handle = (UART_Handle)appData;
         hwAttrs = (UART_HwAttrs*)handle->hwAttrs;
@@ -538,7 +538,7 @@ static void UART_rxIsrHandler(uint32_t tcc, EDMA3_RM_TccStatus status, void* app
         }
 
         /* Disable DMA RX channel */
-        UART_disableDmaChannel(handle, BFALSE);
+        UART_disableDmaChannel(handle, false);
 
         if (EDMA3_RM_XFER_COMPLETE != status)
         {
@@ -553,8 +553,8 @@ static void UART_rxIsrHandler(uint32_t tcc, EDMA3_RM_TccStatus status, void* app
                                               &paramSet);
 
             /* calculate the amount of bytes remaining                        */
-            object->readSize = 0U;
-            if (NULL != object->readTrans)
+            object->readSize = 0;
+            if (object->readTrans != NULL)
             {
                 object->readTrans->count =
                     bytesReceived - (paramSet.aCnt * paramSet.bCnt * paramSet.cCnt);
@@ -566,12 +566,12 @@ static void UART_rxIsrHandler(uint32_t tcc, EDMA3_RM_TccStatus status, void* app
                     bytesReceived - (paramSet.aCnt * paramSet.bCnt * paramSet.cCnt);
             }
             UART_intDisable_v0(hwAttrs->baseAddr, UART_INT_LINE_STAT);
-            UART_v0_callback(handle, BTRUE);
+            UART_v0_callback(handle, true);
         }
         else
         {
             object->readCount = bytesReceived;
-            if ((object->readSize >= hwAttrs->rxTrigLvl) && (0U != bytesRemain))
+            if ((object->readSize >= hwAttrs->rxTrigLvl) && (bytesRemain != 0))
             {
                 /*
                  * read size is not multiple of RX threshold
@@ -587,14 +587,14 @@ static void UART_rxIsrHandler(uint32_t tcc, EDMA3_RM_TccStatus status, void* app
                 /*
                  * all the data received
                  */
-                if (NULL != object->readTrans)
+                if (object->readTrans != NULL)
                 {
                     object->readTrans->count = object->readCount;
                     object->readTrans->status = UART_TRANSFER_STATUS_SUCCESS;
                 }
-                object->readSize = 0U;
+                object->readSize = 0;
                 UART_intDisable_v0(hwAttrs->baseAddr, UART_INT_LINE_STAT);
-                UART_v0_callback(handle, BTRUE);
+                UART_v0_callback(handle, true);
             }
         }
     }
@@ -610,13 +610,13 @@ static void UART_txIsrHandler(uint32_t tcc, EDMA3_RM_TccStatus status, void* app
     uint32_t            bytesSent;
     uint32_t            txTrigLvl;
 
-    if(NULL != appData)
+    if(appData != NULL)
     {
         handle = (UART_Handle)appData;
         hwAttrs = (UART_HwAttrs*)handle->hwAttrs;
         object = (UART_V0_Object*)handle->object;
 
-        if ((0U == hwAttrs->txTrigLvl) || (UART_FIFO_SIZE < hwAttrs->txTrigLvl))
+        if ((hwAttrs->txTrigLvl == 0U) || (hwAttrs->txTrigLvl > UART_FIFO_SIZE))
         {
             txTrigLvl = 1U;
         }
@@ -635,7 +635,7 @@ static void UART_txIsrHandler(uint32_t tcc, EDMA3_RM_TccStatus status, void* app
             bytesSent = bytesRemain;
         }
         /* Disable DMA TX channel */
-        UART_disableDmaChannel(handle, BTRUE);
+        UART_disableDmaChannel(handle, true);
 
         if (EDMA3_RM_XFER_COMPLETE != status)
         {
@@ -647,7 +647,7 @@ static void UART_txIsrHandler(uint32_t tcc, EDMA3_RM_TccStatus status, void* app
                                                hwAttrs->txDmaEventNumber,
                                                &paramSet);
 
-            if (NULL != object->writeTrans)
+            if (object->writeTrans != NULL)
             {
                 object->writeTrans->count =
                     bytesSent - (paramSet.aCnt * paramSet.bCnt * paramSet.cCnt);
@@ -658,12 +658,12 @@ static void UART_txIsrHandler(uint32_t tcc, EDMA3_RM_TccStatus status, void* app
                 object->writeCount =
                     bytesSent - (paramSet.aCnt * paramSet.bCnt * paramSet.cCnt);
             }
-            object->writeSize = 0U;
-            UART_v0_callback(handle, BFALSE);
+            object->writeSize = 0;
+            UART_v0_callback(handle, false);
         }
         else
         {
-            if ((object->writeSize >= txTrigLvl) && (0U != bytesRemain))
+            if ((object->writeSize >= txTrigLvl) && (bytesRemain != 0))
             {
                 /*
                  * write size is not multiple of TX threshold
@@ -680,13 +680,13 @@ static void UART_txIsrHandler(uint32_t tcc, EDMA3_RM_TccStatus status, void* app
                  * all the data sent
                  */
                 object->writeCount += bytesSent;
-                if (NULL != object->writeTrans)
+                if (object->writeTrans != NULL)
                 {
                     object->writeTrans->count = object->writeCount;
                     object->writeTrans->status = UART_TRANSFER_STATUS_SUCCESS;
                 }
-                object->writeSize = 0U;
-                object->txDataSent = UTRUE;
+                object->writeSize = 0;
+                object->txDataSent = TRUE;
                 UART_intEnable_v0(hwAttrs->baseAddr, UART_INT_THR);
             }
         }

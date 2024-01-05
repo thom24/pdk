@@ -144,7 +144,7 @@ Board_STATUS Board_uartStdioInit(void)
     CSL_ArmR5CPUInfo info = {0U, 0U, 0U};
 
     CSL_armR5GetCpuID(&info);
-    if (CSL_ARM_R5_CLUSTER_GROUP_ID_0 != info.grpId)
+    if (info.grpId != (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
     {
         /* Main R5 cores will use main domain UART instances */
         socDomainUART = BOARD_SOC_DOMAIN_MAIN;
@@ -153,7 +153,7 @@ Board_STATUS Board_uartStdioInit(void)
     else
     {
         socDomainUART = gBoardInitParams.uartSocDomain;
-        if(BOARD_SOC_DOMAIN_MCU == socDomainUART)
+        if(socDomainUART == BOARD_SOC_DOMAIN_MCU)
         {
             uartInst = BOARD_MCU_UART_INSTANCE;
         }
@@ -175,7 +175,7 @@ Board_STATUS Board_uartStdioInit(void)
     if(socDomainUART != socDomainCore)
     {
         uartBaseAddr = Board_getUartBaseAddr(uartInst, socDomainUART);
-        if(0U != uartBaseAddr)
+        if(uartBaseAddr != 0)
         {
             gUARTBaseAddr = uart_cfg.baseAddr;
             uart_cfg.baseAddr = uartBaseAddr;
@@ -186,7 +186,7 @@ Board_STATUS Board_uartStdioInit(void)
         }
 
         gUARTClkFreq = uart_cfg.frequency;
-        if(BOARD_SOC_DOMAIN_MAIN == socDomainUART)
+        if(socDomainUART == BOARD_SOC_DOMAIN_MAIN)
         {
             uart_cfg.frequency = BOARD_UART_CLK_MAIN;
         }
@@ -196,7 +196,7 @@ Board_STATUS Board_uartStdioInit(void)
         }
     }
 
-    uart_cfg.enableInterrupt = UFALSE;
+    uart_cfg.enableInterrupt = false;
     UART_socSetInitCfg(uartInst, &uart_cfg);
 
     UART_stdioInit(uartInst);
@@ -226,11 +226,11 @@ I2C_Handle Board_getI2CHandle(uint8_t domainType,
 
     i2cCfg.i2cInst    = i2cInst;
     i2cCfg.socDomain  = domainType;
-    i2cCfg.enableIntr = BFALSE;
+    i2cCfg.enableIntr = false;
     Board_setI2cInitConfig(&i2cCfg);
 
     status = Board_i2cInit();
-    if(BOARD_SOK != status)
+    if(status != BOARD_SOK)
     {
         return NULL;
     }

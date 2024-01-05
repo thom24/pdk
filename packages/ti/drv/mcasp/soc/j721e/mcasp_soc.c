@@ -82,19 +82,19 @@ void McaspDevice_init(void)
     for (i = 0; i < (int32_t)MCASP_CNT; i++)
     {
         /* have to initialize  ally */
-        Mcasp_module.inUse[i] = UFALSE;
+        Mcasp_module.inUse[i] = (Bool)0; /* FALSE; */
         memset((void *)&Mcasp_Instances[i], 0x0, sizeof(Mcasp_Object));
 
-        Mcasp_module.isrObject[i].isIsrRegistered[0] = UFALSE;
-        Mcasp_module.isrObject[i].isIsrRegistered[1] = UFALSE;
-        Mcasp_module.isrObject[i].chanEnabled[0]     = UFALSE;
-        Mcasp_module.isrObject[i].chanEnabled[1]     = UFALSE;
+        Mcasp_module.isrObject[i].isIsrRegistered[0] = (Bool)0; /* FALSE; */
+        Mcasp_module.isrObject[i].isIsrRegistered[1] = (Bool)0; /* FALSE; */
+        Mcasp_module.isrObject[i].chanEnabled[0]     = (Bool)0; /* FALSE; */
+        Mcasp_module.isrObject[i].chanEnabled[1]     = (Bool)0; /* FALSE; */
         Mcasp_module.isrObject[i].instHandle         = 0;       /* NULL; */
         Mcasp_module.isrObject[i].isrSwiTaskHandle   = 0;       /* NULL; */
 
-        if (0 == i)
+        if (i == 0)
         {
-            Mcasp_deviceInstInfo[i].ditSupport  = UTRUE;
+            Mcasp_deviceInstInfo[i].ditSupport  = (Bool)1; /* TRUE; */
             Mcasp_deviceInstInfo[i].baseAddress =
                 (CSL_McaspRegs *)CSL_MCASP0_CFG_BASE;
             Mcasp_deviceInstInfo[i].fifoAddress =
@@ -122,9 +122,9 @@ void McaspDevice_init(void)
                 (uint32_t)CSL_PDMA_CH_MAIN_MCASP0_CH0_TX;
         }
 
-        else if (1 == i)
+        else if (i == 1)
         {
-            Mcasp_deviceInstInfo[i].ditSupport  = UTRUE;
+            Mcasp_deviceInstInfo[i].ditSupport  = (Bool)1; /* TRUE; */
             Mcasp_deviceInstInfo[i].baseAddress =
                 (CSL_McaspRegs *)CSL_MCASP1_CFG_BASE;
             Mcasp_deviceInstInfo[i].fifoAddress =
@@ -151,9 +151,9 @@ void McaspDevice_init(void)
                 (uint32_t)CSL_PDMA_CH_MAIN_MCASP1_CH0_TX;
         }
 
-        else if (2 == i)
+        else if (i == 2)
         {
-            Mcasp_deviceInstInfo[i].ditSupport  = UTRUE;
+            Mcasp_deviceInstInfo[i].ditSupport  = (Bool)1; /* TRUE; */
             Mcasp_deviceInstInfo[i].baseAddress =
                 (CSL_McaspRegs *)CSL_MCASP2_CFG_BASE;
             Mcasp_deviceInstInfo[i].fifoAddress =
@@ -180,9 +180,9 @@ void McaspDevice_init(void)
                 (uint32_t)CSL_PDMA_CH_MAIN_MCASP2_CH0_TX;
         }
 
-        else if (3 == i)
+        else if (i == 3)
         {
-            Mcasp_deviceInstInfo[i].ditSupport  = UTRUE;
+            Mcasp_deviceInstInfo[i].ditSupport  = (Bool)1; /* TRUE; */
             Mcasp_deviceInstInfo[i].baseAddress =
                 (CSL_McaspRegs *)CSL_MCASP3_CFG_BASE;
             Mcasp_deviceInstInfo[i].fifoAddress =
@@ -209,9 +209,9 @@ void McaspDevice_init(void)
                 (uint32_t)CSL_PDMA_CH_MAIN_MCASP3_CH0_TX;
         }
 
-        else if (4 == i)
+        else if (i == 4)
         {
-            Mcasp_deviceInstInfo[i].ditSupport  = UTRUE;
+            Mcasp_deviceInstInfo[i].ditSupport  = (Bool)1; /* TRUE; */
             Mcasp_deviceInstInfo[i].baseAddress =
                 (CSL_McaspRegs *)CSL_MCASP4_CFG_BASE;
             Mcasp_deviceInstInfo[i].fifoAddress =
@@ -238,9 +238,9 @@ void McaspDevice_init(void)
                 (uint32_t)CSL_PDMA_CH_MAIN_MCASP4_CH0_TX;
         }
 
-        else if (5 == i)
+        else if (i == 5)
         {
-            Mcasp_deviceInstInfo[i].ditSupport  = UTRUE;
+            Mcasp_deviceInstInfo[i].ditSupport  = (Bool)1; /* TRUE; */
             Mcasp_deviceInstInfo[i].baseAddress =
                 (CSL_McaspRegs *)CSL_MCASP5_CFG_BASE;
             Mcasp_deviceInstInfo[i].fifoAddress =
@@ -267,9 +267,9 @@ void McaspDevice_init(void)
                 (uint32_t)CSL_PDMA_CH_MAIN_MCASP5_CH0_TX;
         }
 
-        else if (6 == i)
+        else if (i == 6)
         {
-            Mcasp_deviceInstInfo[i].ditSupport  = UTRUE;
+            Mcasp_deviceInstInfo[i].ditSupport  = (Bool)1; /* TRUE; */
             Mcasp_deviceInstInfo[i].baseAddress =
                 (CSL_McaspRegs *)CSL_MCASP6_CFG_BASE;
             Mcasp_deviceInstInfo[i].fifoAddress =
@@ -296,9 +296,9 @@ void McaspDevice_init(void)
                 (uint32_t)CSL_PDMA_CH_MAIN_MCASP6_CH0_TX;
         }
 
-        else if (7 == i)
+        else if (i == 7)
         {
-            Mcasp_deviceInstInfo[i].ditSupport  = UTRUE;
+            Mcasp_deviceInstInfo[i].ditSupport  = (Bool)1; /* TRUE; */
             Mcasp_deviceInstInfo[i].baseAddress =
                 (CSL_McaspRegs *)CSL_MCASP7_CFG_BASE;
             Mcasp_deviceInstInfo[i].fifoAddress =
@@ -325,9 +325,9 @@ void McaspDevice_init(void)
                 (uint32_t)CSL_PDMA_CH_MAIN_MCASP7_CH0_TX;
         }
 
-        else if (8 == i)
+        else if (i == 8)
         {
-            Mcasp_deviceInstInfo[i].ditSupport  = UTRUE;
+            Mcasp_deviceInstInfo[i].ditSupport  = (Bool)1; /* TRUE; */
             Mcasp_deviceInstInfo[i].baseAddress =
                 (CSL_McaspRegs *)CSL_MCASP8_CFG_BASE;
             Mcasp_deviceInstInfo[i].fifoAddress =
@@ -354,9 +354,9 @@ void McaspDevice_init(void)
                 (uint32_t)CSL_PDMA_CH_MAIN_MCASP8_CH0_TX;
         }
 
-        else if (9 == i)
+        else if (i == 9)
         {
-            Mcasp_deviceInstInfo[i].ditSupport  = UTRUE;
+            Mcasp_deviceInstInfo[i].ditSupport  = (Bool)1; /* TRUE; */
             Mcasp_deviceInstInfo[i].baseAddress =
                 (CSL_McaspRegs *)CSL_MCASP9_CFG_BASE;
             Mcasp_deviceInstInfo[i].fifoAddress =
@@ -383,9 +383,9 @@ void McaspDevice_init(void)
                 (uint32_t)CSL_PDMA_CH_MAIN_MCASP9_CH0_TX;
         }
 
-        else if (10 == i)
+        else if (i == 10)
         {
-            Mcasp_deviceInstInfo[i].ditSupport  = UTRUE;
+            Mcasp_deviceInstInfo[i].ditSupport  = (Bool)1; /* TRUE; */
             Mcasp_deviceInstInfo[i].baseAddress =
                 (CSL_McaspRegs *)CSL_MCASP10_CFG_BASE;
             Mcasp_deviceInstInfo[i].fifoAddress =
@@ -412,9 +412,9 @@ void McaspDevice_init(void)
                 (uint32_t)CSL_PDMA_CH_MAIN_MCASP10_CH0_TX;
         }
 
-        else if (11 == i)
+        else if (i == 11)
         {
-            Mcasp_deviceInstInfo[i].ditSupport  = UTRUE;
+            Mcasp_deviceInstInfo[i].ditSupport  = (Bool)1; /* TRUE; */
             Mcasp_deviceInstInfo[i].baseAddress =
                 (CSL_McaspRegs *)CSL_MCASP11_CFG_BASE;
             Mcasp_deviceInstInfo[i].fifoAddress =
@@ -439,10 +439,6 @@ void McaspDevice_init(void)
                 (uint32_t)CSL_PDMA_CH_MAIN_MCASP11_CH0_RX;
             Mcasp_deviceInstInfo[i].txDmaEventNumber =
                 (uint32_t)CSL_PDMA_CH_MAIN_MCASP11_CH0_TX;
-        }
-        else
-        {
-            /* Do Nothing */
         }
 
         /* UDMA parameters */

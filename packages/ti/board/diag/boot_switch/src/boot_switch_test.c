@@ -462,7 +462,7 @@ void Board_enableMAINUART0(void)
 
     UART_socGetInitCfg(0, &uartCfg);
     uartCfg.baseAddr = CSL_UART0_BASE;
-    uartCfg.enableInterrupt = UFALSE;
+    uartCfg.enableInterrupt = FALSE;
     uartCfg.frequency = 48000000;
 
     UART_socSetInitCfg(0, &uartCfg);

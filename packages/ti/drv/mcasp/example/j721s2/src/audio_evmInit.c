@@ -92,7 +92,7 @@
 /*                           MACRO DEFINTIONS                                 */
 /* ========================================================================== */
 
-uint32_t vaOffset = 0U;
+uint32_t vaOffset = 0;
 
 #if !defined (DEVICE_LOOPBACK)
 void IoExpanderConfig(void);
@@ -161,7 +161,7 @@ void configureAudio(void)
     Sciclient_ConfigPrms_t sciClientCfg;
 
 	stat = Board_init(arg);
-	if(BOARD_SOK != stat)
+	if(stat != BOARD_SOK)
     {
 	    MCASP_log("Board init failed!!");
 	}
@@ -222,14 +222,14 @@ void IoExpanderConfig(void)
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-    ioExpCfg.enableIntr  = BFALSE;
+    ioExpCfg.enableIntr  = false;
     ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_1;
     ioExpCfg.pinNum      = PIN_NUM_2;
     ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
 
     status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)&ioExpCfg);
-    if(BOARD_SOK != status)
+    if(status != BOARD_SOK)
     {
         MCASP_log("\n Board setting data to 3 port IO expander failed\n");
     }
@@ -237,13 +237,13 @@ void IoExpanderConfig(void)
     ioExpCfg.pinNum      = PIN_NUM_1;
     ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_LOW;
     status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)&ioExpCfg);
-    if(BOARD_SOK != status)
+    if(status != BOARD_SOK)
     {
         MCASP_log("\n Board setting data to 3 port IO expander failed\n");
     }
 
     status = Board_control(BOARD_CTRL_CMD_SET_SOM_MUX_PORTB1, NULL);
-    if(BOARD_SOK != status)
+    if(status != BOARD_SOK)
     {
         MCASP_log("\n Board setting data to 3 port IO expander failed\n");
     }
@@ -255,14 +255,14 @@ void IoExpanderConfig(void)
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE3_ADDR;
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE3_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
-    ioExpCfg.enableIntr  = BFALSE;
+    ioExpCfg.enableIntr  = false;
     ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = PIN_NUM_0;
     ioExpCfg.signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
 
     status = Board_control(BOARD_CTRL_CMD_SET_IO_EXP_PIN_OUT, (void *)&ioExpCfg);
-    if(BOARD_SOK != status)
+    if(status != BOARD_SOK)
     {
         MCASP_log("\n Board setting data to one port IO expander failed\n");
     }

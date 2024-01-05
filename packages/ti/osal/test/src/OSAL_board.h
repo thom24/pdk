@@ -53,7 +53,7 @@ extern "C" {
 
 /* AM65XX Core CPU frequency */
 #if defined (SOC_AM65XX)
-#if defined (BUILD_MCU1_0) || defined (BUILD_MCU1_1)
+#if defined (BUILD_MCU1_0) || defined(BUILD_MCU1_1)
   #define OSAL_TEST_CPU_FREQ_KHZ   (400000U)
 #else
   #define OSAL_TEST_CPU_FREQ_KHZ   (800000U)
@@ -62,7 +62,7 @@ extern "C" {
 
 /* AM572x Core CPU frequency */
 #if defined (SOC_AM572x)
-#if defined (BUILD_A15_0) || defined (BUILD_IPU1_0)
+#if defined (BUILD_A15_0) || defined(BUILD_IPU1_0)
   #define OSAL_TEST_CPU_FREQ_KHZ   (960000U)
 #endif
 #if defined (_TMS320C6X)

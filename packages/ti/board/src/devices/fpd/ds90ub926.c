@@ -72,7 +72,7 @@ Board_STATUS Board_fpdUb926SetI2SChBEnableModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -85,7 +85,7 @@ Board_STATUS Board_fpdUb926SetI2SChBEnableModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -126,7 +126,7 @@ Board_STATUS Board_fpdUb926SetI2SChBOverrideModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -139,7 +139,7 @@ Board_STATUS Board_fpdUb926SetI2SChBOverrideModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -180,7 +180,7 @@ Board_STATUS Board_fpdUb926SetI2STransportSelModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -193,7 +193,7 @@ Board_STATUS Board_fpdUb926SetI2STransportSelModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -233,7 +233,7 @@ Board_STATUS Board_fpdUb926SetI2SGenModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -246,7 +246,7 @@ Board_STATUS Board_fpdUb926SetI2SGenModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -286,7 +286,7 @@ Board_STATUS Board_fpdUb926SetPassRGBModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -299,7 +299,7 @@ Board_STATUS Board_fpdUb926SetPassRGBModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -341,7 +341,7 @@ Board_STATUS Board_fpdUb926SetOverrideFCConfigModeCtrl(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -355,7 +355,7 @@ Board_STATUS Board_fpdUb926SetOverrideFCConfigModeCtrl(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -397,7 +397,7 @@ Board_STATUS Board_fpdUb926SetRGB18bitModeCtrl(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -411,7 +411,7 @@ Board_STATUS Board_fpdUb926SetRGB18bitModeCtrl(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -453,18 +453,18 @@ Board_STATUS Board_fpdUb926GetPLLLockStatus(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
 
     if(regData & BOARD_FPD_UB926_I2S_PLL_LOCK_STATUS_BIT_MASK)
     {
-        *pllLockStatus = BTRUE;
+        *pllLockStatus = 1;
     }
     else
     {
-        *pllLockStatus = BFALSE;
+        *pllLockStatus = 0;
     }
     BOARD_DEVICES_STS_LOG("FPD Deserializer Lock status : 0x%x\n", regData);
     
@@ -511,7 +511,7 @@ Board_STATUS Board_fpdUb926RmtSerSlvDevAliasIdCfg(void *handle,
                                  1U,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
 
-        if(ret != BOARD_SOK)
+        if(ret != 0)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -524,7 +524,7 @@ Board_STATUS Board_fpdUb926RmtSerSlvDevAliasIdCfg(void *handle,
                                  1U,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
 
-        if(ret != BOARD_SOK)
+        if(ret != 0)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -533,7 +533,7 @@ Board_STATUS Board_fpdUb926RmtSerSlvDevAliasIdCfg(void *handle,
         index++;
     }
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -575,7 +575,7 @@ Board_STATUS Board_fpdUb926SetI2CPassThrAllModeCtrl(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -591,7 +591,7 @@ Board_STATUS Board_fpdUb926SetI2CPassThrAllModeCtrl(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -633,7 +633,7 @@ Board_STATUS Board_fpdUb926SetI2CPassThrModeCtrl(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -648,7 +648,7 @@ Board_STATUS Board_fpdUb926SetI2CPassThrModeCtrl(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -694,7 +694,7 @@ Board_STATUS Board_fpdUb926SetI2CBusFreq(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -708,7 +708,7 @@ Board_STATUS Board_fpdUb926SetI2CBusFreq(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -749,7 +749,7 @@ Board_STATUS Board_fpdUb926SetBackChModeCtrl(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -765,7 +765,7 @@ Board_STATUS Board_fpdUb926SetBackChModeCtrl(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -806,7 +806,7 @@ Board_STATUS Board_fpdUb926SetDigitalRst1ModeCtrl(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -822,7 +822,7 @@ Board_STATUS Board_fpdUb926SetDigitalRst1ModeCtrl(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -863,7 +863,7 @@ Board_STATUS Board_fpdUb926SetRmtAutoPwrDwnModeCtrl(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         BOARD_DEVICES_ERR_LOG("Auto power down read failed\n\r");
         return BOARD_I2C_TRANSFER_FAIL;
@@ -880,7 +880,7 @@ Board_STATUS Board_fpdUb926SetRmtAutoPwrDwnModeCtrl(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         BOARD_DEVICES_ERR_LOG("Auto power down write failed\n\r");
         return BOARD_I2C_TRANSFER_FAIL;

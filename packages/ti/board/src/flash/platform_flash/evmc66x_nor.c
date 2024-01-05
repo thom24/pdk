@@ -62,20 +62,20 @@ nor_wait_ready
     {
 
         /* Send Read Status command */
-        ret = spi_xfer(NOR_SPI_PORT,1, &cmd, NULL, UFALSE);
+        ret = spi_xfer(NOR_SPI_PORT,1, &cmd, NULL, FALSE);
         if (ret)
         {
             return ret;
         }
         
         /* Read status value */
-        ret = spi_xfer(NOR_SPI_PORT,1, NULL, &status, UTRUE);
+        ret = spi_xfer(NOR_SPI_PORT,1, NULL, &status, TRUE);
         if (ret)
         {
             return ret;
         }
         
-        if (0U == (status & SPI_NOR_SR_WIP))
+        if ((status & SPI_NOR_SR_WIP) == 0)
         {
             break;
         }
@@ -86,9 +86,9 @@ nor_wait_ready
             break;
         }
         
-    } while (BTRUE);
+    } while (TRUE);
     
-    if (0U == (status & SPI_NOR_SR_WIP))
+    if ((status & SPI_NOR_SR_WIP) == 0)
         return NOR_EOK;
     
     /* Timed out */

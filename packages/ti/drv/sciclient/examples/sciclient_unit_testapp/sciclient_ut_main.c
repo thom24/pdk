@@ -1317,7 +1317,7 @@ static int32_t App_sciclientPmMessageTest(void)
         NULL,
         1U,
         0U,
-        1U
+        TRUE
     };
 
     while (gSciclientHandle.initCount != 0)

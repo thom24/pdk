@@ -122,7 +122,7 @@ uint32_t UdmaUtils_getTrSizeEncoded(uint32_t trType)
 {
     uint32_t i, trSizeEncoded = CSL_UDMAP_CPPI5_TRPD_PKTINFO_RECSIZE_VAL_64B;
 
-    for(i = 0U; i < UDMA_UTILS_NUM_TR_TYPE; i++)
+    for(i=0; i<UDMA_UTILS_NUM_TR_TYPE; i++)
     {
         if(gUdmaUtilsTrSizeTable[i].trType == trType)
         {
@@ -138,7 +138,7 @@ uint32_t UdmaUtils_getTrSizeBytes(uint32_t trType)
 {
     uint32_t i, trSize = 64U;
 
-    for(i = 0U; i < UDMA_UTILS_NUM_TR_TYPE; i++)
+    for(i=0; i<UDMA_UTILS_NUM_TR_TYPE; i++)
     {
         if(gUdmaUtilsTrSizeTable[i].trType == trType)
         {
@@ -208,7 +208,7 @@ void Udma_printf(Udma_DrvHandle drvHandle, const char *format, ...)
     va_list     vaArgPtr;
     char       *buf;
 
-    if((NULL_PTR != drvHandle) && ((Udma_PrintFxn) NULL_PTR != drvHandle->initPrms.printFxn))
+    if((drvHandle != NULL_PTR) && (drvHandle->initPrms.printFxn != (Udma_PrintFxn) NULL_PTR))
     {
         if((Udma_OsalMutexLockFxn) NULL_PTR != drvHandle->initPrms.osalPrms.lockMutex)
         {

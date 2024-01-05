@@ -353,7 +353,7 @@ typedef struct I2C_Transaction_s {
 
     bool                masterMode;         /**< I2C master or slave mode */
     bool                expandSA;           /**< Expand slave address:
-                                                 BTRUE: 10-bit address mode, BFALSE: 7-bit address mode */
+                                                 true: 10-bit address mode, false: 7-bit address mode */
 } I2C_Transaction;
 
 /*!
@@ -653,7 +653,7 @@ extern int16_t I2C_transfer(I2C_Handle i2cHnd, I2C_Transaction *transaction);
  *  timeout = I2C_WAIT_FOREVER;
  *  rsWrToMstBuf = NULL;
  *  rsWrToMstCnt = 0;
- *  masterMode = BTRUE;
+ *  masterMode = true;
  *
  *  @return   transaction parameter structure to initialize
  */

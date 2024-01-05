@@ -86,8 +86,8 @@ typedef struct Board_I2cObj_s
 #define BOARD_KICK0_UNLOCK_VAL               (0x68EF3490U)
 #define BOARD_KICK1_UNLOCK_VAL               (0xD172BC5AU)
 
-#define BOARD_KICK0_LOCK_VAL                 (0U)
-#define BOARD_KICK1_LOCK_VAL                 (0U)
+#define BOARD_KICK0_LOCK_VAL                 (0)
+#define BOARD_KICK1_LOCK_VAL                 (0)
 
 #define BOARD_MMR_PARTITION_MAX              (8U)
 #define BOARD_MMR_PARTITION_SIZE             (0x4000U)

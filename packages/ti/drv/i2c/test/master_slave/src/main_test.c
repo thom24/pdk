@@ -265,17 +265,17 @@ static void I2C_initConfig(uint32_t instance, I2C_Tests *test)
      * Set blocking mode (dma mode or non-dma interrupt mode)
      * or callback mode
      */
-    if (BTRUE == pollMode)
+    if (pollMode == true)
     {
         /* polling mode */
-        i2c_cfg.enableIntr = BFALSE;
+        i2c_cfg.enableIntr = false;
     }
     else
     {
         /* interrupt enabled */
-        i2c_cfg.enableIntr = BTRUE;
+        i2c_cfg.enableIntr = true;
 #ifdef I2C_DMA_ENABLE
-        if (BTRUE == dmaMode)
+        if (dmaMode == true)
         {
             /* Set the DMA related init config */
         }
@@ -284,7 +284,7 @@ static void I2C_initConfig(uint32_t instance, I2C_Tests *test)
 
     if (master)
     {
-        if (I2C_TEST_ID_XA == test->testId)
+        if (test->testId == I2C_TEST_ID_XA)
         {
             ownSlaveAddr = I2C_TEST_MASTER_OSA_10B;
         }
@@ -295,7 +295,7 @@ static void I2C_initConfig(uint32_t instance, I2C_Tests *test)
     }
     else
     {
-        if (I2C_TEST_ID_XA == test->testId)
+        if (test->testId == I2C_TEST_ID_XA)
         {
             ownSlaveAddr = I2C_TEST_SLAVE_OSA_10B;
         }
@@ -318,13 +318,13 @@ static void I2C_initConfig(uint32_t instance, I2C_Tests *test)
 bool I2C_verify_data(unsigned char *data1, unsigned char *data2, uint32_t length)
 {
 	uint32_t i;
-	bool     ret = BTRUE;
+	bool     ret = true;
 
-    for (i = 0U; i < length; i++)
+    for (i = 0; i < length; i++)
     {
         if (data1[i] != data2[i])
         {
-            ret = BFALSE;
+            ret = false;
             break;
         }
     }
@@ -369,7 +369,7 @@ static bool I2C_test_mst_slv_xfer(I2C_Handle i2c, I2C_Tests *test, uint32_t wrLe
 {
     bool            transferOK;
     uint32_t        addrMasterRxBuf, addrSlaveRxBuf;
-    bool            ret = BFALSE;
+    bool            ret = false;
     bool            master = test->master;
     bool            cbMode = test->cbMode;
     bool            dmaMode = test->dmaMode;
@@ -400,32 +400,32 @@ static bool I2C_test_mst_slv_xfer(I2C_Handle i2c, I2C_Tests *test, uint32_t wrLe
     transaction.writeCount = wrLen;
     transaction.readCount  = rdLen;
     transaction.timeout    = timeout;
-    if (I2C_TEST_ID_XA == test->testId)
+    if (test->testId == I2C_TEST_ID_XA)
     {
         /* 10-bit slave address */
         slaveAddr = I2C_TEST_MASTER_SA_10B;
-        transaction.expandSA = BTRUE;
+        transaction.expandSA = true;
     }
     else
     {
         /* 7-bit slave address */
         slaveAddr = I2C_TEST_MASTER_SA_7B;
-        transaction.expandSA = BFALSE;
+        transaction.expandSA = false;
     }
-    if (BTRUE == master)
+    if (master == true)
     {
-        transaction.masterMode   = BTRUE;
+        transaction.masterMode   = true;
         transaction.slaveAddress = slaveAddr;
         transaction.writeBuf     = (Ptr)masterTxBuffer;
         transaction.readBuf      = (Ptr)addrMasterRxBuf;
     }
     else
     {
-        transaction.masterMode   = BFALSE;
+        transaction.masterMode   = false;
         transaction.slaveAddress = 0;
         transaction.writeBuf     = (Ptr)slaveTxBuffer;
         transaction.readBuf      = (Ptr)addrSlaveRxBuf;
-        if (0U != rdLen)
+        if (rdLen != 0)
         {
             /* for restart transfer, slave sends the data in callback mode */
             transaction.writeCount = 0;
@@ -445,10 +445,10 @@ static bool I2C_test_mst_slv_xfer(I2C_Handle i2c, I2C_Tests *test, uint32_t wrLe
             }
         }
 
-        if (BTRUE == master)
+        if (master == true)
         {
             /* master mode, verify master recieved data match with slave sent data */
-            if (BFALSE == I2C_verify_data(masterRxBuffer, slaveTxBuffer, rdLen))
+            if (I2C_verify_data(masterRxBuffer, slaveTxBuffer, rdLen) == false)
             {
                 goto Err;
             }
@@ -459,7 +459,7 @@ static bool I2C_test_mst_slv_xfer(I2C_Handle i2c, I2C_Tests *test, uint32_t wrLe
         else
         {
             /* slave mode, verify slave recieved data match with master sent data */
-            if (BFALSE == I2C_verify_data(slaveRxBuffer, masterTxBuffer, rdLen))
+            if (I2C_verify_data(slaveRxBuffer, masterTxBuffer, rdLen) == false)
             {
                 goto Err;
             }
@@ -473,7 +473,7 @@ static bool I2C_test_mst_slv_xfer(I2C_Handle i2c, I2C_Tests *test, uint32_t wrLe
         goto Err;
     }
 
-    ret = BTRUE;
+    ret = true;
 
 Err:
     return (ret);
@@ -487,12 +487,12 @@ static bool I2C_test_master_slave(void *arg)
     uint32_t          instance, i;
     I2C_XferLen      *xferLen;
     uint32_t          testNum;
-    bool              ret = BFALSE;
+    bool              ret = false;
     I2C_Tests        *test = (I2C_Tests *)arg;
     bool              master = test->master;
     bool              cbMode = test->cbMode;
 
-    if (BTRUE == cbMode)
+    if (cbMode == true)
     {
         /* Create call back semaphore */
         I2C_osalSemParamsInit(&cbSemParams);
@@ -504,7 +504,7 @@ static bool I2C_test_master_slave(void *arg)
      * instances start with 1, to address proper Configuration
      * structure index, I2C Instance should be substracted with 1
      */
-    if (BTRUE == master)
+    if (master == true)
     {
         instance = BOARD_I2C_MASTER_INSTANCE;
     }
@@ -518,10 +518,10 @@ static bool I2C_test_master_slave(void *arg)
     /* Initialize I2C handle */
     I2C_Params_init(&i2cParams);
 
-    if (BTRUE == cbMode)
+    if (cbMode == true)
     {
         i2cParams.transferMode = I2C_MODE_CALLBACK;
-        if (BTRUE == master)
+        if (master == true)
         {
             i2cParams.transferCallbackFxn = I2C_callbackMaster;
         }
@@ -547,7 +547,7 @@ static bool I2C_test_master_slave(void *arg)
     }
 
 #if !defined(SIM_BUILD)
-    if (BTRUE == cbMode)
+    if (cbMode == true)
     {
         testNum = I2C_NUM_XFERS;
     }
@@ -563,7 +563,7 @@ static bool I2C_test_master_slave(void *arg)
 
     for (i = 0; i < testNum; i++)
     {
-        if (BTRUE == master)
+        if (master == true)
         {
             xferLen = &masterXferLen[i];
         }
@@ -571,13 +571,13 @@ static bool I2C_test_master_slave(void *arg)
         {
             xferLen = &slaveXferLen[i];
         }
-        if (BFALSE == I2C_test_mst_slv_xfer(i2c, test, xferLen->wrLen,
-                                  xferLen->rdLen))
+        if (I2C_test_mst_slv_xfer(i2c, test, xferLen->wrLen,
+                                  xferLen->rdLen) == false)
         {
             goto Err;
         }
 
-        if (BTRUE == master)
+        if (master == true)
         {
             /*
              * master sleep for 1 second after each transfer
@@ -591,7 +591,7 @@ static bool I2C_test_master_slave(void *arg)
         }
     }
 
-    ret = BTRUE;
+    ret = true;
 
 Err:
     if (i2c)
@@ -629,23 +629,23 @@ I2C_Tests I2c_tests_master[I2C_NUM_TESTS] =
 {
     /* testFunc             testID         master pollMode cbMode dmaMode timeout              testDesc */
 #ifdef I2C_DMA_ENABLE
-    {I2C_test_master_slave, I2C_TEST_ID_DMA, BTRUE, BFALSE, BFALSE, BTRUE, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test master in dma mode"},
+    {I2C_test_master_slave, I2C_TEST_ID_DMA, true, false, false, true, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test master in dma mode"},
 #endif
-    {I2C_test_master_slave, I2C_TEST_ID_INT,  BTRUE, BFALSE, BFALSE, BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test master in non-dma interrupt mode"},
-    {I2C_test_master_slave, I2C_TEST_ID_CB,   BTRUE, BFALSE, BTRUE,  BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test master in callback mode"},
-    {I2C_test_master_slave, I2C_TEST_ID_XA,   BTRUE, BFALSE, BFALSE, BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test master 10-bit address mode"},
-    {I2C_test_master_slave, I2C_TEST_ID_POLL, BTRUE, BTRUE,  BFALSE, BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test master in polling mode"},
+    {I2C_test_master_slave, I2C_TEST_ID_INT, true, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test master in non-dma interrupt mode"},
+    {I2C_test_master_slave, I2C_TEST_ID_CB, true, false, true, false, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test master in callback mode"},
+    {I2C_test_master_slave, I2C_TEST_ID_XA, true, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test master 10-bit address mode"},
+    {I2C_test_master_slave, I2C_TEST_ID_POLL, true, true, false, false, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test master in polling mode"},
 };
 
 I2C_Tests I2c_tests_slave[I2C_NUM_TESTS] =
 {
 #ifdef I2C_DMA_ENABLE
-    {I2C_test_master_slave, I2C_TEST_ID_DMA, BFALSE, BFALSE, BFALSE, BTRUE, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test slave in dma mode"},
+    {I2C_test_master_slave, I2C_TEST_ID_DMA, false, false, false, true, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test slave in dma mode"},
 #endif
-    {I2C_test_master_slave, I2C_TEST_ID_INT,  BFALSE, BFALSE, BFALSE, BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test slave in non-dma interrupt mode"},
-    {I2C_test_master_slave, I2C_TEST_ID_CB,   BFALSE, BFALSE, BTRUE,  BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test slave in callback mode"},
-    {I2C_test_master_slave, I2C_TEST_ID_XA,   BFALSE, BFALSE, BFALSE, BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test slave 10-bit address mode"},
-    {I2C_test_master_slave, I2C_TEST_ID_POLL, BFALSE, BTRUE,  BFALSE, BFALSE, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test slave in polling mode"},
+    {I2C_test_master_slave, I2C_TEST_ID_INT, false, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test slave in non-dma interrupt mode"},
+    {I2C_test_master_slave, I2C_TEST_ID_CB, false, false, true, false, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test slave in callback mode"},
+    {I2C_test_master_slave, I2C_TEST_ID_XA, false, false, false, false, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test slave 10-bit address mode"},
+    {I2C_test_master_slave, I2C_TEST_ID_POLL, false, true, false, false, SemaphoreP_WAIT_FOREVER, "\r\n I2C master slave test slave in polling mode"},
 };
 
 /*
@@ -658,28 +658,28 @@ I2C_Tests I2c_tests_slave[I2C_NUM_TESTS] =
 Void slaveTaskFxn (UArg arg0, UArg arg1)
 {
     uint32_t  i;
-    bool      testFail = BFALSE;
+    bool      testFail = false;
     I2C_Tests *test;
 
     I2C_init();
 
-    for (i = 0U; i < I2C_NUM_TESTS; i++)
+    for (i = 0; i < I2C_NUM_TESTS; i++)
     {
         test = &I2c_tests_slave[i];
         I2C_test_print_test_desc(test);
-        if (BTRUE == test->testFunc((void *)test))
+        if (test->testFunc((void *)test) == true)
         {
             I2C_log("\r\n %s have passed\r\n", test->testDesc);
         }
         else
         {
             I2C_log("\r\n %s have failed\r\n", test->testDesc);
-            testFail = BTRUE;
+            testFail = true;
             break;
         }
     }
 
-    if (BTRUE == testFail)
+    if(testFail == true)
     {
 #if !defined(SIM_BUILD)
         UART_printStatus("\n Some tests have failed. \n");
@@ -711,7 +711,7 @@ Void slaveTaskFxn (UArg arg0, UArg arg1)
 Void masterTaskFxn (UArg arg0, UArg arg1)
 {
     uint32_t  i;
-    bool      testFail = BFALSE;
+    bool      testFail = false;
     I2C_Tests *test;
 
     I2C_init();
@@ -720,19 +720,19 @@ Void masterTaskFxn (UArg arg0, UArg arg1)
     {
         test = &I2c_tests_master[i];
         I2C_test_print_test_desc(test);
-        if (BTRUE == test->testFunc((void *)test))
+        if (test->testFunc((void *)test) == true)
         {
             I2C_log("\r\n %s have passed\r\n", test->testDesc);
         }
         else
         {
             I2C_log("\r\n %s have failed\r\n", test->testDesc);
-            testFail = BTRUE;
+            testFail = true;
             break;
         }
     }
 
-    if(BTRUE == testFail)
+    if(testFail == true)
     {
 #if !defined(SIM_BUILD)
         UART_printStatus("\n Some tests have failed. \n");

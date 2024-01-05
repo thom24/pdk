@@ -85,31 +85,31 @@ extern "C"
 
 /* -------- constants -------- */
 
-#define Mcasp_NUMSERIALIZERS      (16U)
+#define Mcasp_NUMSERIALIZERS      (16u)
 /**<  This variable sets a limit on the maximum number of serializers that are*
  * possible in a given Mcasp instance.                                        */
 
 #define Mcasp_MAX_NUM_CHANS       (0x02)
 /**<  Maximum number of channels supported by the Mcasp instance              */
 
-#define Mcasp_MAX_PACKET_SIZE     (32768U)
+#define Mcasp_MAX_PACKET_SIZE     (32768u)
 /**<  Maximum packet size in bytes                                            */
 
-#define Mcasp_MAXLINKCNT          (2U)
+#define Mcasp_MAXLINKCNT          (2u)
 /**<  Maximum number of EDMA jobs linked at a time (Must be 2).               */
 
-#define Mcasp_TXEVENTQUE          (0U)
+#define Mcasp_TXEVENTQUE          (0u)
 /**<  Transmit EDMA channel event queue number                                */
 
-#define Mcasp_RXEVENTQUE          (1U)
+#define Mcasp_RXEVENTQUE          (1u)
 /**<  Receive EDMA channel event queue number                                 */
 
 #define MAX_FIFO_ALLOWED          (20U)
 /*! The maximum FIFO depth that can be used                                   */
-#define Mcasp_SM_RESET            (0U)
+#define Mcasp_SM_RESET            (0u)
 /**<  Reset value of xmt/rcv state m/c and frame sync                         */
 
-#define Mcasp_TWO_PKTS_QUEUED     (2U)
+#define Mcasp_TWO_PKTS_QUEUED     (2u)
 /**<  When xmt is taken out of reset, it needs two words to                   *
  *  service it. This is used to keep tally of this requirement.               */
 
@@ -122,49 +122,49 @@ extern "C"
 #define Mcasp_STATUS_VALID        (0x1)
 /**<  Generic validate status                                                 */
 
-#define Mcasp_DATA_RDY            (0x20U)
+#define Mcasp_DATA_RDY            (0x20u)
 /**<  Interrupt due to: Data Ready                                            */
 
-#define Mcasp_DMAERR              (0x80U)
+#define Mcasp_DMAERR              (0x80u)
 /**<  Interrupt due to: DMA channel error                                     */
 
-#define Mcasp_XMT_UNDERRUN        (0x1U)
+#define Mcasp_XMT_UNDERRUN        (0x1u)
 /**<  Interrupt due to: Transmit Buffer Underrun                              */
 
-#define Mcasp_RCV_OVERRUN         (0x1U)
+#define Mcasp_RCV_OVERRUN         (0x1u)
 /**<  Interrupt due to: Receive Buffer Overrun                                */
 
-#define Mcasp_RSTAT_ERROR         (0x100U)
+#define Mcasp_RSTAT_ERROR         (0x100u)
 /**< Bit field to indicate if any receive error has occured                   */
 
-#define Mcasp_XSTAT_ERROR         (0x100U)
+#define Mcasp_XSTAT_ERROR         (0x100u)
 /**< Bit field to indicate if any transmit error has occured                  */
 
-#define Mcasp_TX_CLK_FAIL         (0x04U)
+#define Mcasp_TX_CLK_FAIL         (0x04u)
 /**< Interrupt due to transmit clock failure                                  */
 
-#define Mcasp_RX_CLK_FAIL         (0x04U)
+#define Mcasp_RX_CLK_FAIL         (0x04u)
 /**< Interrupt due to receive clock failure                                   */
 
-#define Mcasp_SYNCERR             (0x2U)
+#define Mcasp_SYNCERR             (0x2u)
 /**<  Interrupt due to: Transmit/Receive Sync Error                           */
 
-#define Mcasp_OPT_TCINTEN_SHIFT   (0x00000014U)
+#define Mcasp_OPT_TCINTEN_SHIFT   (0x00000014u)
 /**<  Interrupt enable bit in OPT register for edma                           */
 
-#define Mcasp_OPT_SYNCDIM_SHIFT   (0x00000002U)
+#define Mcasp_OPT_SYNCDIM_SHIFT   (0x00000002u)
 /**<  Sync Type AB set bit of OPT register for edma                           */
 
-#define Mcasp_OPT_TCC_SHIFT       (0x0000000CU)
+#define Mcasp_OPT_TCC_SHIFT       (0x0000000Cu)
 /**<  TCC set bit in OPT register for edma                                    */
 
-#define Mcasp_OPT_TCC_MASK        (0x0003F000U)
+#define Mcasp_OPT_TCC_MASK        (0x0003F000u)
 /**<  Tcc mask in OPT register for edma                                       */
 
-#define Mcasp_OPT_TCCMOD_SHIFT    (0x0000000BU)
+#define Mcasp_OPT_TCCMOD_SHIFT    (0x0000000Bu)
 /**< Transfer completion selection bit                                        */
 
-#define Mcasp_CNT_MAX_VAL         (0xFFFFU)
+#define Mcasp_CNT_MAX_VAL         (0xFFFFu)
 /**<  Max possible value of aCnt, bCnt and cCnt                               */
 
 #define Mcasp_SWI_PRIORITY         0x01
@@ -184,7 +184,7 @@ extern "C"
  * \note   This default value used by the driver can be changed by an IOCTL
  *         "Mcasp_Ioctl_SET_TIMEOUT".
  */
-#define Mcasp_POLLED_RETRYCOUNT   (0xFFFFU)
+#define Mcasp_POLLED_RETRYCOUNT   (0xFFFFu)
 
 /* -------- enums -------- */
 
@@ -194,9 +194,9 @@ extern "C"
 typedef enum Mcasp_ChanMode_e
 {
     Mcasp_ChanMode_FREE    = 0,       /**<  Channel not allocated             */
-    Mcasp_ChanMode_XMT_DIT = 1U,      /**<  Transmit channel: DIT mode        */
-    Mcasp_ChanMode_XMT_TDM = 2U,      /**<  Transmit channel: TDM mode        */
-    Mcasp_ChanMode_RCV     = 3U       /**<  Receive channel                   */
+    Mcasp_ChanMode_XMT_DIT = 1u,      /**<  Transmit channel: DIT mode        */
+    Mcasp_ChanMode_XMT_TDM = 2u,      /**<  Transmit channel: TDM mode        */
+    Mcasp_ChanMode_RCV     = 3u       /**<  Receive channel                   */
 }Mcasp_ChanMode;
 
 /**
@@ -581,10 +581,10 @@ typedef struct Mcasp_ChannelObj_s
     uint32_t                 tcc;
     /**<  EDMA  tcc                                                           */
 
-    uint32_t                 pramTbl[2U];
+    uint32_t                 pramTbl[2u];
     /**<  Logical channel numbers of EDMA, which are used for linking         */
 
-    uint32_t                 pramTblAddr[2U];
+    uint32_t                 pramTblAddr[2u];
     /**<  Physical address of logical channel numbers of EDMA, which          *
          * are used for linking                                               */
 
@@ -863,7 +863,7 @@ typedef struct Mcasp_SerQuery_s {
  */
 typedef struct Mcasp_TempBuffer_s
 {
-    uint8_t   scratchBuf[(4U) + Mcasp_CACHE_LENGTH];
+    uint8_t   scratchBuf[(4u) + Mcasp_CACHE_LENGTH];
     /* This buffer will be aligned and also the same buffer will be used      *
      * for all serializers and also only 4 bytes are required because the     *
      * max wordwidth is 4 and the cache length is used for alignment          */

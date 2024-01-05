@@ -183,7 +183,7 @@ void _system_post_cinit( void )
 {
     osalArch_Config_t cfg;
 
-    cfg.disableIrqOnInit = BTRUE;
+    cfg.disableIrqOnInit = (bool)true;
     osalArch_Init( &cfg );
     extended_system_post_cinit();
 }
@@ -213,7 +213,7 @@ void vApplicationInterruptHandlerHook( portUInt32Type ulInterruptVectorNum )
 
     if( uxDispatchIndex >= uxIntDispatchTableSize )
     {
-       DebugP_assert(BFALSE);
+       DebugP_assert((bool)false);
     }
     axIntDispatchTable[ uxDispatchIndex ].pxIntHandlerCoreFn();
 }

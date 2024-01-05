@@ -54,11 +54,11 @@ const char PCIELLDVersionStr[] = pcie_LLD_VERSION_STR ":" __DATE__  ":" __TIME__
 int32_t pcie_check_handle_fcn (Pcie_Handle handle)
 {
   int32_t i;
-  int32_t ret_val = IFALSE;
+  int32_t ret_val = 0;
   if (handle) {
     for (i = 0; i < pcie_MAX_PERIPHS; i++) {
       if (handle == &pcieLObj.insts[i]) {
-        ret_val = ITRUE;
+        ret_val = 1;
         break;
       }
     }
@@ -93,21 +93,21 @@ pcieRet_e Pcie_setInterfaceMode
   pcieMode_e  mode        /**< [in] PCIE Mode */
 )
 {
-  Pcie_IntHandle Pcie_handle = (Pcie_IntHandle)handle;
+  Pcie_IntHandle h = (Pcie_IntHandle)handle;
   pcieRet_e ret_val;
-  if (0 == Pcie_handle)
+  if (h == 0)
   {
     ret_val = pcie_RET_INV_HANDLE;
   }
   else
   {
-    if (0 == (Pcie_handle->fxnTable.setInterfaceMode))
+    if ((h->fxnTable.setInterfaceMode) == 0)
     {
       ret_val = pcie_RET_INV_FXNPTR;
     }
     else
     {
-      ret_val = Pcie_handle->fxnTable.setInterfaceMode (handle, mode);
+      ret_val = h->fxnTable.setInterfaceMode (handle, mode);
     }
   }
   return ret_val;
@@ -126,21 +126,21 @@ pcieRet_e Pcie_getMemSpaceReserved
   uint32_t    *resSize     /**< [out] Reserved space */
 )
 {
-  Pcie_IntHandle IntHandle = (Pcie_IntHandle)handle;
+  Pcie_IntHandle h = (Pcie_IntHandle)handle;
   pcieRet_e ret_val;
-  if (0 == IntHandle)
+  if (h == 0)
   {
     ret_val = pcie_RET_INV_HANDLE;
   }
   else
   {
-    if (0 == (IntHandle->fxnTable.getMemSpaceReserved))
+    if ((h->fxnTable.getMemSpaceReserved) == 0)
     {
       ret_val = pcie_RET_INV_FXNPTR;
     }
     else
     {
-      ret_val = IntHandle->fxnTable.getMemSpaceReserved (handle, resSize);
+      ret_val = h->fxnTable.getMemSpaceReserved (handle, resSize);
     }
   }
   return ret_val;
@@ -158,21 +158,21 @@ pcieRet_e Pcie_getMemSpaceRange
   uint32_t      *size      /**< [out] Memory Space total size */
 )
 {
-  Pcie_IntHandle IntHandle = (Pcie_IntHandle)handle;
+  Pcie_IntHandle h = (Pcie_IntHandle)handle;
   pcieRet_e ret_val;
-  if (0 == IntHandle)
+  if (h == 0)
   {
     ret_val = pcie_RET_INV_HANDLE;
   }
   else
   {
-    if (0 == (IntHandle->fxnTable.getMemSpaceRange))
+    if ((h->fxnTable.getMemSpaceRange) == 0)
     {
       ret_val = pcie_RET_INV_FXNPTR;
     }
     else
     {
-      ret_val = IntHandle->fxnTable.getMemSpaceRange (handle, base, size);
+      ret_val = h->fxnTable.getMemSpaceRange (handle, base, size);
     }
   }
   return ret_val;
@@ -188,21 +188,21 @@ pcieRet_e Pcie_readRegs
   pcieRegisters_t *readRegs  /**< [in/out] List of registers to read */
 )
 {
-  Pcie_IntHandle IntHandle = (Pcie_IntHandle)handle;
+  Pcie_IntHandle h = (Pcie_IntHandle)handle;
   pcieRet_e ret_val;
-  if (0 == IntHandle)
+  if (h == 0)
   {
     ret_val = pcie_RET_INV_HANDLE;
   }
   else
   {
-    if (0 == (IntHandle->fxnTable.readRegs))
+    if ((h->fxnTable.readRegs) == 0)
     {
       ret_val = pcie_RET_INV_FXNPTR;
     }
     else
     {
-      ret_val = IntHandle->fxnTable.readRegs (handle, location, readRegs);
+      ret_val = h->fxnTable.readRegs (handle, location, readRegs);
     }
   }
   return ret_val;
@@ -219,21 +219,21 @@ pcieRet_e Pcie_writeRegs
   pcieRegisters_t *writeRegs /**< [in] List of registers to write */
 )
 {
-  Pcie_IntHandle IntHandle = (Pcie_IntHandle)handle;
+  Pcie_IntHandle h = (Pcie_IntHandle)handle;
   pcieRet_e ret_val;
-  if (0 == IntHandle)
+  if (h == 0)
   {
     ret_val = pcie_RET_INV_HANDLE;
   }
   else
   {
-    if (0 == (IntHandle->fxnTable.writeRegs))
+    if ((h->fxnTable.writeRegs) == 0)
     {
       ret_val = pcie_RET_INV_FXNPTR;
     }
     else
     {
-      ret_val = IntHandle->fxnTable.writeRegs (handle, location, writeRegs);
+      ret_val = h->fxnTable.writeRegs (handle, location, writeRegs);
     }
   }
   return ret_val;
@@ -252,21 +252,21 @@ pcieRet_e Pcie_cfgObOffset
   uint8_t          region    /**< [in] Identifies the Outbound region (0-31) */
 )
 {
-  Pcie_IntHandle IntHandle = (Pcie_IntHandle)handle;
+  Pcie_IntHandle h = (Pcie_IntHandle)handle;
   pcieRet_e ret_val;
-  if (0 == IntHandle)
+  if (h == 0)
   {
     ret_val = pcie_RET_INV_HANDLE;
   }
   else
   {
-    if (0 == (IntHandle->fxnTable.cfgObOffset))
+    if ((h->fxnTable.cfgObOffset) == 0)
     {
       ret_val = pcie_RET_INV_FXNPTR;
     }
     else
     {
-      ret_val = IntHandle->fxnTable.cfgObOffset (handle, obAddrLo, obAddrHi, region);
+      ret_val = h->fxnTable.cfgObOffset (handle, obAddrLo, obAddrHi, region);
     }
   }
   return ret_val;
@@ -282,21 +282,21 @@ pcieRet_e Pcie_cfgIbTrans
   const pcieIbTransCfg_t *ibCfg    /**< [in] Inbound Translation Configuration parameters */
 )
 {
-  Pcie_IntHandle IntHandle = (Pcie_IntHandle)handle;
+  Pcie_IntHandle h = (Pcie_IntHandle)handle;
   pcieRet_e ret_val;
-  if (0 == IntHandle)
+  if (h == 0)
   {
     ret_val = pcie_RET_INV_HANDLE;
   }
   else
   {
-    if (0 == (IntHandle->fxnTable.cfgIbTrans))
+    if ((h->fxnTable.cfgIbTrans) == 0)
     {
       ret_val = pcie_RET_INV_FXNPTR;
     }
     else
     {
-      ret_val = IntHandle->fxnTable.cfgIbTrans (handle, ibCfg);
+      ret_val = h->fxnTable.cfgIbTrans (handle, ibCfg);
     }
   }
   return ret_val;
@@ -312,21 +312,21 @@ pcieRet_e Pcie_cfgBar
   const pcieBarCfg_t    *barCfg    /**< [in] BAR configuration parameters */
 )
 {
-  Pcie_IntHandle IntHandle = (Pcie_IntHandle)handle;
+  Pcie_IntHandle h = (Pcie_IntHandle)handle;
   pcieRet_e ret_val;
-  if (0 == IntHandle)
+  if (h == 0)
   {
     ret_val = pcie_RET_INV_HANDLE;
   }
   else
   {
-    if (0 == (IntHandle->fxnTable.cfgBar))
+    if ((h->fxnTable.cfgBar) == 0)
     {
       ret_val = pcie_RET_INV_FXNPTR;
     }
     else
     {
-      ret_val = IntHandle->fxnTable.cfgBar (handle, barCfg);
+      ret_val = h->fxnTable.cfgBar (handle, barCfg);
     }
   }
   return ret_val;
@@ -344,21 +344,21 @@ pcieRet_e Pcie_atuRegionConfig
   const            pcieAtuRegionParams_t *atuRegionParams /* [in] config structure */
 )
 {
-  Pcie_IntHandle IntHandle = (Pcie_IntHandle)handle;
+  Pcie_IntHandle h = (Pcie_IntHandle)handle;
   pcieRet_e ret_val;
-  if (0 == IntHandle)
+  if (h == 0)
   {
     ret_val = pcie_RET_INV_HANDLE;
   }
   else
   {
-    if (0 == (IntHandle->fxnTable.cfgAtu))
+    if ((h->fxnTable.cfgAtu) == 0)
     {
       ret_val = pcie_RET_INV_FXNPTR;
     }
     else
     {
-      ret_val = IntHandle->fxnTable.cfgAtu (handle, location, atuRegionIndex, atuRegionParams);
+      ret_val = h->fxnTable.cfgAtu (handle, location, atuRegionIndex, atuRegionParams);
     }
   }
   return ret_val;
@@ -376,21 +376,21 @@ pcieRet_e Pcie_getPendingFuncInts
   void            *msiBits /**< [out] rev-specific msi pending bits to check */
 )
 {
-  Pcie_IntHandle IntHandle = (Pcie_IntHandle)handle;
+  Pcie_IntHandle h = (Pcie_IntHandle)handle;
   pcieRet_e ret_val;
-  if (0 == IntHandle)
+  if (h == 0)
   {
     ret_val = pcie_RET_INV_HANDLE;
   }
   else
   {
-    if (0 == (IntHandle->fxnTable.getPendingFuncInts))
+    if ((h->fxnTable.getPendingFuncInts) == 0)
     {
       ret_val = pcie_RET_INV_FXNPTR;
     }
     else
     {
-      ret_val = IntHandle->fxnTable.getPendingFuncInts (handle, pendingBits, 
+      ret_val = h->fxnTable.getPendingFuncInts (handle, pendingBits, 
                                                 sizeMsiBits, msiBits);
     }
   }
@@ -409,21 +409,21 @@ pcieRet_e Pcie_clrPendingFuncInts
   void            *msiBits /**< [in] rev-specific msi pending bits to ack */
 )
 {
-  Pcie_IntHandle IntHandle = (Pcie_IntHandle)handle;
+  Pcie_IntHandle h = (Pcie_IntHandle)handle;
   pcieRet_e ret_val;
-  if (0 == IntHandle)
+  if (h == 0)
   {
     ret_val = pcie_RET_INV_HANDLE;
   }
   else
   {
-    if (0 == (IntHandle->fxnTable.clrPendingFuncInts))
+    if ((h->fxnTable.clrPendingFuncInts) == 0)
     {
       ret_val = pcie_RET_INV_FXNPTR;
     }
     else
     {
-      ret_val = IntHandle->fxnTable.clrPendingFuncInts (handle, pendingBits, 
+      ret_val = h->fxnTable.clrPendingFuncInts (handle, pendingBits, 
                                                 sizeMsiBits, msiBits);
     }
   }

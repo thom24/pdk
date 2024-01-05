@@ -59,7 +59,7 @@ Board_DetectCfg_t  gBoardDetCfg[BOARD_ID_MAX_BOARDS] =
   {BOARD_COMMON_EEPROM_I2C_INST, BOARD_SOM_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J721EX-PM2-SOM"},
   {BOARD_COMMON_EEPROM_I2C_INST, BOARD_CP_EEPROM_SLAVE_ADDR, BOARD_SOC_DOMAIN_WKUP, "J7X-BASE-CPB"}};
 
-Board_I2cInitCfg_t gBoardI2cInitCfg = {0U, BOARD_SOC_DOMAIN_MAIN, BFALSE};
+Board_I2cInitCfg_t gBoardI2cInitCfg = {0, BOARD_SOC_DOMAIN_MAIN, 0};
 Board_initParams_t gBoardInitParams = {BOARD_UART_INSTANCE, BOARD_UART_SOC_DOMAIN, BOARD_PSC_DEVICE_MODE_NONEXCLUSIVE,
                                        BOARD_MAIN_CLOCK_GROUP_ALL, BOARD_MCU_CLOCK_GROUP_ALL};
 
@@ -95,17 +95,17 @@ Board_STATUS Board_getBoardData(Board_IDInfo_v2 *info, uint32_t boardID)
 
     i2cCfg.i2cInst    = gBoardDetCfg[boardID].i2cInst;
     i2cCfg.socDomain  = gBoardDetCfg[boardID].socDomain;
-    i2cCfg.enableIntr = BFALSE;
+    i2cCfg.enableIntr = false;
     Board_setI2cInitConfig(&i2cCfg);
 
     if(Board_isBoardDDRIdDataValid())
     {
-        if((BOARD_ID_GESI == boardID)   ||
-           (BOARD_ID_CP   == boardID)   ||
-           (BOARD_ID_ENET == boardID))
+        if((boardID == BOARD_ID_GESI) ||
+           (boardID == BOARD_ID_CP)   ||
+           (boardID == BOARD_ID_ENET))
         {
             status = Board_getBoardIdData(info, boardID);
-            if(BOARD_SOK != status)
+            if(status != BOARD_SOK)
             {
 #if defined(BOARD_ID_MEMORY_DUMP_ERR_FALLBACK)
                 status = Board_getIDInfo_v2(info, gBoardDetCfg[boardID].slaveAddr);
@@ -144,30 +144,30 @@ Board_STATUS Board_getBoardData(Board_IDInfo_v2 *info, uint32_t boardID)
  * \n                      BOARD_ID_DISPLAY(0x6) - Display adapter board
  * \n                      BOARD_ID_SOM(0x7) - Dual PMIC SoM Board
  *
- * \return   BTRUE if the given board is detected else BFALSE.
+ * \return   TRUE if the given board is detected else FALSE.
  *           SoM board will be always connected to the base board.
- *           For SoM boardID return value BTRUE indicates dual PMIC
- *           SoM and BFALSE indicates alternate PMIC SoM
+ *           For SoM boardID return value TRUE indicates dual PMIC
+ *           SoM and FALSE indicates alternate PMIC SoM
  *
  */
 bool Board_detectBoard(uint32_t boardID)
 {
     Board_IDInfo_v2 info;
     Board_STATUS status;
-    bool bDet = BFALSE;
+    bool bDet = FALSE;
 
     memset(&info, 0, sizeof(info));
 
-    if(BOARD_ID_SOM >= boardID)
+    if(boardID <= BOARD_ID_SOM)
     {
         status = Board_getBoardData(&info, boardID);
-        if(BOARD_SOK == status)
+        if(status == 0)
         {
             if(!(strncmp(info.boardInfo.boardName,
                          gBoardDetCfg[boardID].bName,
                          BOARD_BOARD_NAME_LEN)))
             {
-                bDet = BTRUE;
+                bDet = TRUE;
             }
         }
     }
@@ -189,24 +189,24 @@ bool Board_detectBoard(uint32_t boardID)
  * \n                      BOARD_ID_SOM(0x7) - Dual PMIC SoM Board
  * \n                      BOARD_ID_CP(0x8) - CP Board
  *
- * \return BTRUE if board revision is E2, BFALSE for all other cases
+ * \return TRUE if board revision is E2, FALSE for all other cases
  */
 bool Board_isAlpha(uint32_t boardID)
 {
     Board_IDInfo_v2 info;
     Board_STATUS status;
-    bool alphaBoard = BFALSE;
+    bool alphaBoard = FALSE;
 
     memset(&info, 0, sizeof(info));
 
     status = Board_getBoardData(&info, boardID);
-    if(BOARD_SOK == status)
+    if(status == 0)
     {
         if(!(strncmp(info.boardInfo.designRev,
                      "E2",
                      BOARD_DESIGN_REV_LEN)))
         {
-            alphaBoard = BTRUE;
+            alphaBoard = TRUE;
         }
     }
 
@@ -230,18 +230,18 @@ int32_t Board_detectEnetCard(void)
 {
     Board_IDInfo_v2 info;
     Board_STATUS status;
-    int32_t ret = BOARD_ENET_NONE;
+    int8_t ret = 0;
 
     memset(&info, 0, sizeof(info));
 
     status = Board_getBoardData(&info, BOARD_ID_ENET);
-    if(BOARD_SOK == status)
+    if(status == 0)
     {
-        if(0 == (strcmp(info.boardInfo.boardName, "J7X-VSC8514-ETH")))
+        if((strcmp(info.boardInfo.boardName, "J7X-VSC8514-ETH")) == 0)
         {
             ret = BOARD_ENET_QSGMII;
         }
-        else if(0 == (strcmp(info.boardInfo.boardName, "J7X-DP83869-ETH")))
+        else if((strcmp(info.boardInfo.boardName, "J7X-DP83869-ETH")) == 0)
         {
             ret = BOARD_ENET_SGMII;
         }
@@ -308,10 +308,10 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
 
     memset(&info, 0, sizeof(info));
 
-    if((BOARD_ID_SOM >= boardID) && (NULL != macAddrBuf))
+    if((boardID <= BOARD_ID_SOM) && (macAddrBuf != NULL))
     {
         status = Board_getBoardData(&info, boardID);
-        if(BOARD_SOK == status)
+        if(status == 0)
         {
             macCount = ((info.macInfo.macControl & BOARD_MAC_COUNT_MASK)
                           >> BOARD_MAC_COUNT_SHIFT) + 1;
@@ -329,7 +329,7 @@ Board_STATUS Board_readMacAddr(uint32_t boardID,
         status = BOARD_INVALID_PARAM;
     }
 
-    if(NULL != macAddrCnt)
+    if(macAddrCnt != NULL)
     {
         *macAddrCnt = macCount;
     }
@@ -370,10 +370,10 @@ Board_STATUS Board_readMacAddrCount(uint32_t boardID,
 
     memset(&info, 0, sizeof(info));
 
-    if((BOARD_ID_SOM >= boardID) && (NULL != macAddrCnt))
+    if((boardID <= BOARD_ID_SOM) && (macAddrCnt != NULL))
     {
         status = Board_getBoardData(&info, boardID);
-        if(BOARD_SOK == status)
+        if(status == 0)
         {
             *macAddrCnt = ((info.macInfo.macControl & BOARD_MAC_COUNT_MASK)
                            >> BOARD_MAC_COUNT_SHIFT) + 1;
@@ -403,7 +403,7 @@ Board_STATUS Board_readMacAddrCount(uint32_t boardID,
  */
 Board_STATUS Board_setI2cInitConfig(Board_I2cInitCfg_t *i2cCfg)
 {
-    if(NULL == i2cCfg)
+    if(i2cCfg == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
@@ -435,16 +435,16 @@ MMCSD_Error Board_mmc_voltageSwitchFxn(uint32_t instance,
     int32_t ret = BOARD_FAIL;
 	MMCSD_Error mmcRetVal = MMCSD_ERR;
 
-    if(MMCSD_BUS_VOLTAGE_1_8V == switchVoltage)
+    if(switchVoltage == MMCSD_BUS_VOLTAGE_1_8V)
     {
        ret = Board_pmSdVoltageCtrl(0);
     }
-    else if(MMCSD_BUS_VOLTAGE_3_3V == switchVoltage)
+    else if(switchVoltage == MMCSD_BUS_VOLTAGE_3_3V)
     {
        ret = Board_pmSdVoltageCtrl(1);
 	}
 
-    if(BOARD_SOK == ret)
+    if(ret == BOARD_SOK)
     {
 	   mmcRetVal = MMCSD_OK;
 	}
@@ -504,7 +504,7 @@ void Board_lvcmosDrvStrengthCfg(void)
  */
 Board_STATUS Board_getInitParams(Board_initParams_t *initParams)
 {
-    if(NULL == initParams)
+    if(initParams == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
@@ -536,7 +536,7 @@ Board_STATUS Board_getInitParams(Board_initParams_t *initParams)
  */
 Board_STATUS Board_setInitParams(Board_initParams_t *initParams)
 {
-    if(NULL == initParams)
+    if(initParams == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
@@ -563,7 +563,7 @@ uint32_t Board_getSocDomain(void)
     CSL_ArmR5CPUInfo info = {0};
 
     CSL_armR5GetCpuID(&info);
-    if (CSL_ARM_R5_CLUSTER_GROUP_ID_0 == info.grpId)
+    if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
     {
         socDomain = BOARD_SOC_DOMAIN_MCU;
     }

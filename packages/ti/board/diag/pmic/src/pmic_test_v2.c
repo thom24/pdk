@@ -43,7 +43,7 @@
 #include "pmic_test_v2.h"
 
 static int32_t gNumPmic = 1;
-Board_I2cInitCfg_t boardI2cInitCfg = {0, BOARD_SOC_DOMAIN_WKUP, BFALSE};
+Board_I2cInitCfg_t boardI2cInitCfg = {0, BOARD_SOC_DOMAIN_WKUP, false};
 BoardDiag_PmicData_t *gDualPmicData;
 
 extern I2C_config_list I2C_config;

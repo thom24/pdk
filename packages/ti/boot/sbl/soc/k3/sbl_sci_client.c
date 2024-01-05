@@ -49,7 +49,7 @@ extern int32_t SBL_ReadSysfwImage(void **pBuffer, uint32_t num_bytes);
 uint32_t __attribute__((section(".firmware"))) gSciclient_firmware[1];
 
 /* Global variable to check whether combined ROM boot image format is used or not */
-uint8_t combinedBootmode = 0;
+uint8_t combinedBootmode = FALSE;
 
 #if SCICLIENT_FIRMWARE_SIZE_IN_BYTES > SBL_SYSFW_MAX_SIZE
 #error "SYSFW too large...update SBL_SYSFW_MAX_SIZE"
@@ -161,7 +161,7 @@ uint16_t gCertLength = 0;
 #endif
 static uint16_t boardcfgRmFindCertSize(uint32_t *msg_recv)
 {
-    uint16_t cert_len = 0U;
+    uint16_t cert_len = 0;
     uint8_t *cert_len_ptr = (uint8_t *)&cert_len;
     uint8_t *x509_cert_ptr;
 
@@ -179,33 +179,33 @@ static uint16_t boardcfgRmFindCertSize(uint32_t *msg_recv)
     /* If you need more than 2 bytes to store the cert length  */
     /* it means that the cert length is greater than 64 Kbytes */
     /* and we do not support it                                */
-    if ((cert_len > 0x80U) &&
-        (cert_len != 0x82U))
+    if ((cert_len > 0x80) &&
+        (cert_len != 0x82))
     {
         return 0;
     }
 
-    if (cert_len == 0x82U)
+    if (cert_len == 0x82)
     {
         *cert_len_ptr = *(x509_cert_ptr + 3);
         *(cert_len_ptr + 1) = *(x509_cert_ptr + 2);
 
         /* add current offset from start of x509 cert */
-        cert_len += 3U;
+        cert_len += 3;
     }
     else
     {
         /* add current offset from start of x509 cert  */
         /* if cert len was obtained from 2nd byte i.e. */
         /* cert size is 127 bytes or less              */
-        cert_len += 1U;
+        cert_len += 1;
     }
 
     /* cert_len now contains the offset of the last byte */
     /* of the cert from the ccert_start. To get the size */
     /* of certificate, add 1                             */
 
-    return cert_len + 1U;
+    return cert_len + 1;
 }
 
 
@@ -381,7 +381,7 @@ void SBL_SciClientInit(uint32_t devGroup)
     config.pBoardCfgPrms            =   NULL;
     config.isSecureMode             =   0; /* default board cfg is for non-secure mode */
     config.c66xRatRegion            =   0;
-    config.skipLocalBoardCfgProcess =   1;
+    config.skipLocalBoardCfgProcess =   TRUE;
 #endif
 
     SBL_ADD_PROFILE_POINT;
@@ -482,7 +482,7 @@ void SBL_SciClientInit(uint32_t devGroup)
 void SBL_SciClientCombinedBootInit(uint32_t devGroup)
 {
     int32_t status = CSL_EFAIL;
-    combinedBootmode = 1;
+    combinedBootmode = TRUE;
 
 #ifndef SBL_SKIP_SYSFW_INIT
     /* SYSFW board configurations */
@@ -493,7 +493,7 @@ void SBL_SciClientCombinedBootInit(uint32_t devGroup)
     config.pBoardCfgPrms            =   NULL;
     config.isSecureMode             =   0; /* default board cfg is for non-secure mode */
     config.c66xRatRegion            =   0;
-    config.skipLocalBoardCfgProcess =   1;
+    config.skipLocalBoardCfgProcess =   TRUE;
 #endif
 
 #ifndef SBL_SKIP_SYSFW_INIT

@@ -140,7 +140,7 @@ void Udma_ringaccMemOps(void *pVirtAddr, uint32_t size, uint32_t opsType)
 {
     uint32_t    isCacheCoherent = Udma_isCacheCoherent();
 
-    if(UTRUE != isCacheCoherent)
+    if(isCacheCoherent != TRUE)
     {
         if(CSL_RINGACC_MEM_OPS_TYPE_WR == opsType)
         {
@@ -156,12 +156,12 @@ void Udma_ringaccMemOps(void *pVirtAddr, uint32_t size, uint32_t opsType)
     return;
 }
 #endif
-#if (1 == UDMA_SOC_CFG_RA_LCDMA_PRESENT)
+#if (UDMA_SOC_CFG_RA_LCDMA_PRESENT == 1)
 void Udma_lcdmaRingaccMemOps(void *pVirtAddr, uint32_t size, uint32_t opsType)
 {
     uint32_t    isCacheCoherent = Udma_isCacheCoherent();
 
-    if(UTRUE != isCacheCoherent)
+    if(isCacheCoherent != TRUE)
     {
         if(CSL_LCDMA_RINGACC_MEM_OPS_TYPE_WR == opsType)
         {

@@ -44,7 +44,6 @@ extern "C" {
 #include <stdint.h>
 #include <stdlib.h>
 #include "pciever.h"
-#include <ti/csl/tistdtypes.h>
 
 /* ============================================================== */
 /**

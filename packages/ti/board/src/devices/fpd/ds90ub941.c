@@ -72,7 +72,7 @@ Board_STATUS Board_fpdUb941SetResetModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -86,7 +86,7 @@ Board_STATUS Board_fpdUb941SetResetModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -126,7 +126,7 @@ Board_STATUS Board_fpdUb941SetDigtialRst1ModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -140,7 +140,7 @@ Board_STATUS Board_fpdUb941SetDigtialRst1ModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -180,7 +180,7 @@ Board_STATUS Board_fpdUb941SetDigtialRst0ModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -194,7 +194,7 @@ Board_STATUS Board_fpdUb941SetDigtialRst0ModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -239,7 +239,7 @@ Board_STATUS Board_fpdUb941SetDsi1ClkPinOrd(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -253,7 +253,7 @@ Board_STATUS Board_fpdUb941SetDsi1ClkPinOrd(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -298,7 +298,7 @@ Board_STATUS Board_fpdUb941SelDsi1DataPinOrd(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -312,7 +312,7 @@ Board_STATUS Board_fpdUb941SelDsi1DataPinOrd(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -357,7 +357,7 @@ Board_STATUS Board_fpdUb941SelDsi0ClkPinOrd(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -371,7 +371,7 @@ Board_STATUS Board_fpdUb941SelDsi0ClkPinOrd(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -416,7 +416,7 @@ Board_STATUS Board_fpdUb941SelDsi0DataPinOrd(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -430,7 +430,7 @@ Board_STATUS Board_fpdUb941SelDsi0DataPinOrd(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -473,7 +473,7 @@ Board_STATUS Board_fpdUb941DevIdCfg(void *handle,
                              &serSlvAddr,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -512,7 +512,7 @@ Board_STATUS Board_fpdUb941GetDsiGenSts(void *handle,
                              &rdData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -554,7 +554,7 @@ Board_STATUS Board_fpdUb941SetI2CPassAllModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -568,7 +568,7 @@ Board_STATUS Board_fpdUb941SetI2CPassAllModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -612,7 +612,7 @@ Board_STATUS Board_fpdUb941SelI2CAccessPort(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -627,7 +627,7 @@ Board_STATUS Board_fpdUb941SelI2CAccessPort(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -684,7 +684,7 @@ Board_STATUS Board_fpdUb941IndirRegAccBlkSel(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -698,7 +698,7 @@ Board_STATUS Board_fpdUb941IndirRegAccBlkSel(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -739,7 +739,7 @@ Board_STATUS Board_fpdUb941InDirRegAccModeSel(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -753,7 +753,7 @@ Board_STATUS Board_fpdUb941InDirRegAccModeSel(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -792,7 +792,7 @@ Board_STATUS Board_fpdUb941SetRxCRCCheckerEn(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -806,7 +806,7 @@ Board_STATUS Board_fpdUb941SetRxCRCCheckerEn(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -845,7 +845,7 @@ Board_STATUS Board_fpdUb941SetFilterEn(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -859,7 +859,7 @@ Board_STATUS Board_fpdUb941SetFilterEn(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -898,7 +898,7 @@ Board_STATUS Board_fpdUb941SetI2CPassThrModeCfg(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -912,7 +912,7 @@ Board_STATUS Board_fpdUb941SetI2CPassThrModeCfg(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -951,7 +951,7 @@ Board_STATUS Board_fpdUb941SetPCLKAutoEnModeCfg(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -965,7 +965,7 @@ Board_STATUS Board_fpdUb941SetPCLKAutoEnModeCfg(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1029,7 +1029,7 @@ Board_STATUS Board_fpdUb941DsiIndirRegWr(void *handle,
                              &cfgRegAddr,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1040,7 +1040,7 @@ Board_STATUS Board_fpdUb941DsiIndirRegWr(void *handle,
                              &cfgRegData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1079,7 +1079,7 @@ Board_STATUS Board_fpdUb941SetPixelBytes(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1093,7 +1093,7 @@ Board_STATUS Board_fpdUb941SetPixelBytes(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1137,7 +1137,7 @@ Board_STATUS Board_fpdUb941SetFreqStblThr(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1151,7 +1151,7 @@ Board_STATUS Board_fpdUb941SetFreqStblThr(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1192,12 +1192,12 @@ Board_STATUS Board_fpdUb941GetFpd3LinkRdySts(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
 
-    *stsFlag = (1U == ((regData & BOARD_FPD_UB941_FPD3_LINK_RDY_BIT_MASK) >> BOARD_FPD_UB941_FPD3_LINK_RDY_SHIFT_CNT)) ?  BTRUE : BFALSE;
+    *stsFlag = (((regData & BOARD_FPD_UB941_FPD3_LINK_RDY_BIT_MASK) >> BOARD_FPD_UB941_FPD3_LINK_RDY_SHIFT_CNT) == 1) ?  true : false;
     BOARD_DEVICES_STS_LOG("stsFlag = %d\n\r",stsFlag);
 
     return BOARD_SOK;
@@ -1225,7 +1225,7 @@ Board_STATUS Board_fpdUb941GetFpd3LinkTxSts(void *handle,
     Board_STATUS ret = BOARD_SOK;
     uint8_t regData = 0;
 
-    if(NULL == handle)
+    if(handle == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
@@ -1236,12 +1236,12 @@ Board_STATUS Board_fpdUb941GetFpd3LinkTxSts(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != ret)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
 
-    *stsFlag = (1U == ((regData & BOARD_FPD_UB941_FPD3_TX_STS_BIT_MASK) >> BOARD_FPD_UB941_FPD3_TX_STS_SHIFT_CNT)) ?  BTRUE : BFALSE;
+    *stsFlag = (((regData & BOARD_FPD_UB941_FPD3_TX_STS_BIT_MASK) >> BOARD_FPD_UB941_FPD3_TX_STS_SHIFT_CNT) == 1) ?  true : false;
     BOARD_DEVICES_STS_LOG("stsFlag = %d\n\r",stsFlag);
 
     return BOARD_SOK;
@@ -1269,7 +1269,7 @@ Board_STATUS Board_fpdUb941GetDsiClkDetSts(void *handle,
     Board_STATUS ret = BOARD_SOK;
     uint8_t regData = 0;
 
-    if(NULL == handle)
+    if(handle == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
@@ -1280,12 +1280,12 @@ Board_STATUS Board_fpdUb941GetDsiClkDetSts(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != ret)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
 
-    *stsFlag = (1U == ((regData & BOARD_FPD_UB941_DSI_CLK_DET_BIT_MASK) >> BOARD_FPD_UB941_DSI_CLK_DET_SHIFT_CNT)) ?  BTRUE : BFALSE;
+    *stsFlag = (((regData & BOARD_FPD_UB941_DSI_CLK_DET_BIT_MASK) >> BOARD_FPD_UB941_DSI_CLK_DET_SHIFT_CNT) == 1) ?  true : false;
     BOARD_DEVICES_STS_LOG("stsFlag = %d\n\r",stsFlag);
 
     return BOARD_SOK;
@@ -1314,7 +1314,7 @@ Board_STATUS Board_fpdUb941GetSelPortDsiClkDetSts(void *handle,
     Board_STATUS ret = BOARD_SOK;
     uint8_t regData = 0;
 
-    if(NULL == handle)
+    if(handle == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
@@ -1325,12 +1325,12 @@ Board_STATUS Board_fpdUb941GetSelPortDsiClkDetSts(void *handle,
                             &regData,
                             1U,
                             BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != ret)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
 
-    *stsFlag = (1U == ((regData & BOARD_FPD_UB941_NO_DSI_CLK_BIT_MASK) >> BOARD_FPD_UB941_NO_DSI_CLK_SHIFT_CNT)) ?  BTRUE : BFALSE;
+    *stsFlag = (((regData & BOARD_FPD_UB941_NO_DSI_CLK_BIT_MASK) >> BOARD_FPD_UB941_NO_DSI_CLK_SHIFT_CNT) == 1) ?  true : false;
     BOARD_DEVICES_STS_LOG("stsFlag = %d\n\r",stsFlag);
 
     return BOARD_SOK;
@@ -1358,7 +1358,7 @@ Board_STATUS Board_fpdUb941GetFreqStabilitySts(void *handle,
     Board_STATUS ret = BOARD_SOK;
     uint8_t regData = 0;
 
-    if(NULL == handle)
+    if(handle == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
@@ -1369,12 +1369,12 @@ Board_STATUS Board_fpdUb941GetFreqStabilitySts(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != ret)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
 
-    *stsFlag = (1U == ((regData & BOARD_FPD_UB941_FREQ_STABLE_BIT_MASK) >> BOARD_FPD_UB941_FREQ_STABLE_SHIFT_CNT)) ?  BTRUE : BFALSE;
+    *stsFlag = (((regData & BOARD_FPD_UB941_FREQ_STABLE_BIT_MASK) >> BOARD_FPD_UB941_FREQ_STABLE_SHIFT_CNT) == 1) ?  true : false;
     BOARD_DEVICES_STS_LOG("stsFlag = %d\n\r",stsFlag);
 
     return BOARD_SOK;
@@ -1411,7 +1411,7 @@ Board_STATUS Board_fpdUb941SetIndirRegRdEn(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1425,7 +1425,7 @@ Board_STATUS Board_fpdUb941SetIndirRegRdEn(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1468,7 +1468,7 @@ Board_STATUS Board_fpdUb941Tx_Mode(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1482,7 +1482,7 @@ Board_STATUS Board_fpdUb941Tx_Mode(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1521,7 +1521,7 @@ Board_STATUS Board_fpdUb941SetSerClkModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1535,7 +1535,7 @@ Board_STATUS Board_fpdUb941SetSerClkModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1573,7 +1573,7 @@ Board_STATUS Board_fpdUb941SetDsiLaneModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1587,7 +1587,7 @@ Board_STATUS Board_fpdUb941SetDsiLaneModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1625,7 +1625,7 @@ Board_STATUS Board_fpdUb941SetDigitalRst1ModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1639,7 +1639,7 @@ Board_STATUS Board_fpdUb941SetDigitalRst1ModeCtrl(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1685,7 +1685,7 @@ Board_STATUS Board_fpdUb941SetI2CBusFreq(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1699,7 +1699,7 @@ Board_STATUS Board_fpdUb941SetI2CBusFreq(void *handle,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
 
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1757,7 +1757,7 @@ Board_STATUS Board_fpdUb941RmtDesAliasCfg(void *handle,
                                  1U,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
 
-        if(ret != BOARD_SOK)
+        if(ret != 0)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -1770,7 +1770,7 @@ Board_STATUS Board_fpdUb941RmtDesAliasCfg(void *handle,
                                  1U,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
 
-        if(ret != BOARD_SOK)
+        if(ret != 0)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -1809,7 +1809,7 @@ Board_STATUS Board_fpdUb941SetInvtdClrPattEn(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1823,7 +1823,7 @@ Board_STATUS Board_fpdUb941SetInvtdClrPattEn(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1861,7 +1861,7 @@ Board_STATUS Board_fpdUb941SetAutoScrollPattEn(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1875,7 +1875,7 @@ Board_STATUS Board_fpdUb941SetAutoScrollPattEn(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1928,7 +1928,7 @@ Board_STATUS Board_fpdUb941SelPatt(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1942,7 +1942,7 @@ Board_STATUS Board_fpdUb941SelPatt(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1951,10 +1951,10 @@ Board_STATUS Board_fpdUb941SelPatt(void *handle,
     ret = Board_fpdUb941ColorBarEn(handle,
                                    fpdModParams,
                                    BOARD_FPD_MODE_ENABLE);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         BOARD_DEVICES_ERR_LOG("Enabling Color Bars failed\n");
-        return BOARD_INVALID_PARAM;
+        return -1;
     } 
 
     return BOARD_SOK;
@@ -1990,7 +1990,7 @@ Board_STATUS Board_fpdUb941PattGenEn(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2004,7 +2004,7 @@ Board_STATUS Board_fpdUb941PattGenEn(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2041,7 +2041,7 @@ Board_STATUS Board_fpdUb941ColorBarEn(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2055,7 +2055,7 @@ Board_STATUS Board_fpdUb941ColorBarEn(void *handle,
                              &regData,
                              1U,
                              BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(ret != BOARD_SOK)
+    if(ret != 0)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }

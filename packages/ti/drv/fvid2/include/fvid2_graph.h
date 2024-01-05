@@ -275,7 +275,7 @@ Fvid2_GraphNodeInfo *Fvid2_graphGetNodeInfo(const Fvid2_GraphNodeList *nodeList,
  *                      Refer #Fvid2_GraphNodeList for details
  *  \param nodeId       Node Id
  *
- *  \return UTRUE if available else UFALSE.
+ *  \return TRUE if available else FALSE.
  */
 uint32_t Fvid2_graphIsNodeInputAvailable(const Fvid2_GraphNodeList *nodeList,
                                          uint32_t nodeId);
@@ -287,7 +287,7 @@ uint32_t Fvid2_graphIsNodeInputAvailable(const Fvid2_GraphNodeList *nodeList,
  *                      Refer #Fvid2_GraphNodeList for details
  *  \param nodeId       Node Id
  *
- *  \return UTRUE if available else UFALSE.
+ *  \return TRUE if available else FALSE.
  */
 uint32_t Fvid2_graphIsNodeOutputAvailable(const Fvid2_GraphNodeList *nodeList,
                                           uint32_t nodeId);

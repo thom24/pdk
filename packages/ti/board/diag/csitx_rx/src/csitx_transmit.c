@@ -293,7 +293,7 @@ int32_t BoardDiag_init(BoardDiag_CsiTxObj *csitxObj)
     /* Fvid2 init */
     Fvid2InitPrms_init(&initPrms);
     retVal = Fvid2_init(&initPrms);
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
         UART_printf( " Fvid2 Init Failed!!!\r\n");
     }
@@ -316,17 +316,17 @@ int32_t BoardDiag_init(BoardDiag_CsiTxObj *csitxObj)
 
     /* System init */
     retVal = Csitx_init(&csitxObj->initPrms);
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
         UART_printf(" System Init Failed!!!\r\n");
     }
 
 #if (BOARD_DIAG_ENABLE_LOOPBACK == 1U)
     /* CSIRX initialization */
-    if (FVID2_SOK == retVal)
+    if (retVal == FVID2_SOK)
     {
         retVal = BoardDiag_captInit(csitxObj);
-        if (FVID2_SOK != retVal)
+        if (retVal != FVID2_SOK)
         {
             UART_printf( " CSIRX System Init Failed!!!\r\n");
         }
@@ -353,13 +353,13 @@ int32_t BoardDiag_create(BoardDiag_CsiTxObj *csitxObj)
 #if (BOARD_DIAG_ENABLE_LOOPBACK == 1U)
     /* CSIRX DRV Create */
     retVal = BoardDiag_captCreate(csitxObj);
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
         UART_printf("CSIRX DRV create FAILED!!!\r\n");
     }
 #endif
 
-    if (FVID2_SOK == retVal)
+    if (retVal == FVID2_SOK)
     {
         /* Fvid2_create() */
         csitxObj->drvHandle = Fvid2_create(
@@ -369,27 +369,27 @@ int32_t BoardDiag_create(BoardDiag_CsiTxObj *csitxObj)
             &csitxObj->createStatus,
             &csitxObj->cbPrms);
 
-        if ((NULL      == csitxObj->drvHandle) ||
-            (FVID2_SOK != csitxObj->createStatus.retVal))
+        if ((NULL == csitxObj->drvHandle) ||
+            (csitxObj->createStatus.retVal != FVID2_SOK))
         {
             UART_printf("Tx Create Failed!!!\r\n");
             retVal = csitxObj->createStatus.retVal;
         }
     }
-    if (FVID2_SOK == retVal)
+    if (retVal == FVID2_SOK)
     {
         /* Allocate instance semaphore */
         SemaphoreP_Params_init(&semParams);
         semParams.mode = SemaphoreP_Mode_BINARY;
         gLockSem = SemaphoreP_create(0U, &semParams);
-        if (NULL == gLockSem)
+        if (gLockSem == NULL)
         {
             UART_printf("Instance semaphore create failed!!\r\n");
             retVal = FVID2_EALLOC;
         }
     }
 
-    if (FVID2_SOK == retVal)
+    if (retVal == FVID2_SOK)
     {
         tsParams.timeStampFxn = (Fvid2_TimeStampFxn)&TimerP_getTimeInUsecs;
         /* register time stamping function */
@@ -398,7 +398,7 @@ int32_t BoardDiag_create(BoardDiag_CsiTxObj *csitxObj)
                                &tsParams,
                                NULL);
     }
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
         UART_printf("CSITX DRV create failed\r\n");
     }
@@ -426,7 +426,7 @@ int32_t BoardDiag_csitxTest(BoardDiag_CsiTxObj *csitxObj)
     retVal += BoardDiag_captAllocAndQFrames(csitxObj);
 
     /* start CSIRX first as it is consumer here */
-    if (FVID2_SOK == retVal)
+    if (retVal == FVID2_SOK)
     {
         retVal += Fvid2_start(csitxObj->captObj.drvHandle, NULL);
         if (FVID2_SOK != retVal)
@@ -437,7 +437,7 @@ int32_t BoardDiag_csitxTest(BoardDiag_CsiTxObj *csitxObj)
 #endif
 
     /* start CSITX later as it is source/producer here */
-    if (FVID2_SOK == retVal)
+    if (retVal == FVID2_SOK)
     {
         retVal += Fvid2_start(csitxObj->drvHandle, NULL);
         if (FVID2_SOK != retVal)
@@ -483,7 +483,7 @@ int32_t BoardDiag_csitxTest(BoardDiag_CsiTxObj *csitxObj)
 #if (BOARD_DIAG_ENABLE_LOOPBACK == 1U)
     retVal += BoardDiag_captFreeFrames(csitxObj);
 #endif
-    if (FVID2_SOK != retVal)
+    if (retVal != FVID2_SOK)
     {
         UART_printf("Tx/Capture free frames FAILED!!!\r\n");
     }
@@ -549,10 +549,10 @@ int32_t BoardDiag_delete(BoardDiag_CsiTxObj *csitxObj)
 
 #if (BOARD_DIAG_ENABLE_LOOPBACK == 1U)
     /* BoardDiag CSI delete function */
-    if (FVID2_SOK == retVal)
+    if (retVal == FVID2_SOK)
     {
         retVal = BoardDiag_captDelete(csitxObj);
-        if (FVID2_SOK != retVal)
+        if (retVal != FVID2_SOK)
         {
             UART_printf("BoardDiag_captDelete() FAILED!!!\r\n");
         }
@@ -578,10 +578,10 @@ int32_t BoardDiag_deinit(BoardDiag_CsiTxObj *csitxObj)
     /* System de-init */
     retVal = Csitx_deInit();
 #if (BOARD_DIAG_ENABLE_LOOPBACK == 1U)
-    if (FVID2_SOK == retVal)
+    if (retVal == FVID2_SOK)
     {
         retVal = BoardDiag_captDeinit(csitxObj);
-        if (FVID2_SOK != retVal)
+        if (retVal != FVID2_SOK)
         {
             UART_printf("BoardDiag_captDeinit() FAILED!!!\r\n");
         }
@@ -756,7 +756,7 @@ int32_t BoardDiag_txFreeFrames(BoardDiag_CsiTxObj *csitxObj)
                     &frmList,
                     0U,
                     FVID2_TIMEOUT_NONE);
-    if (FVID2_ENO_MORE_BUFFERS == retVal)
+    if (retVal == FVID2_ENO_MORE_BUFFERS)
     {
         /* All buffer might be de-queued during stop,
            in this case no error shall be returned */

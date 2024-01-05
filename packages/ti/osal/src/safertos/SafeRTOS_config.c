@@ -166,7 +166,7 @@ const xPORT_INIT_PARAMETERS gSafertosPortInit =
 #endif
 };
 
-uint32_t gSaftRtosInitDone = UFALSE;
+uint32_t gSaftRtosInitDone = (uint32_t) FALSE;
 
 /* ========================================================================== */
 /*                          Function Defintions                               */
@@ -188,7 +188,7 @@ void OS_init( void )
     /* Assert that xInitSchedResult is successful */
     DebugP_assert(pdPASS == xInitSchedResult);
 
-    gSaftRtosInitDone = UTRUE;
+    gSaftRtosInitDone = TRUE;
 
     return;
 }
@@ -204,7 +204,7 @@ void vApplicationErrorHook( portTaskHandleType xHandleOfTaskWithError,
     ( void ) xErrorCode;
 
     /* Will only get here if an internal kernel error occurs. */
-    DebugP_assert(BFALSE);
+    DebugP_assert((bool)false);
 }
 
 /*---------------------------------------------------------------------------*/
@@ -240,7 +240,7 @@ void vApplicationSetupTickInterruptHook( portUInt32Type ulTimerClockHz,
     if( ( NULL == pxTickTimerHandle ) ||
         ( TimerP_OK != TimerP_start( pxTickTimerHandle ) ) )
     {
-            DebugP_assert(BFALSE);
+            DebugP_assert((bool)false);
     }
 }
 

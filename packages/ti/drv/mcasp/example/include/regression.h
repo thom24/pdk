@@ -101,7 +101,7 @@ typedef struct {
 	Mcasp_BufferFormat bufferformat; /* INTERLEAVED */
 	Mcasp_OpMode channelMode; /* TDM/DIT */
 	Mcasp_WordLength wordLength; /* 8/16/24/32 */
-	bool enableFifo; /* BTRUE/BFALSE */
+	bool enableFifo; /* TRUE/FALSE */
 	uint32_t hwFifoEventDMARatio;
 } mcaspTestProfile_t;
 

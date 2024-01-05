@@ -440,7 +440,7 @@ uint32_t GPIO_PinBankUsageCount[GPIO_NUM_PORTS][GPIO_NUM_BANKS] = {{0U}};
  * \param  portNum     The GPIO port number to configure the interrupt path.
  * \param  pinNum      The GPIO pin number to configure the interrupt path.
  * \param  hwAttrs     The GPIO_v0_HwAttrs for this SOC
- *  \param  setIntrPath BTRUE - set the interrupt path, BFALSE - clear the interrupt path
+ *  \param  setIntrPath TRUE - set the interrupt path, FALSE - clear the interrupt path
  * \return CSL_PASS if successful, CSL_FAIL if failed
  *
  */
@@ -613,8 +613,8 @@ int32_t GPIO_socConfigIntrPath(uint32_t portNum, uint32_t pinNum,void *hwAttrs,b
         CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs *)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
 
         /* Configure CLEC for GPIO */
-        cfgClec.secureClaimEnable = UFALSE;
-        cfgClec.evtSendEnable     = UTRUE;
+        cfgClec.secureClaimEnable = FALSE;
+        cfgClec.evtSendEnable     = TRUE;
     #if defined(BUILD_C7X_1)
         cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_4;
     #elif defined(BUILD_C7X_2)

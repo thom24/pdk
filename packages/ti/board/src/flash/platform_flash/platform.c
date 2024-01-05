@@ -202,7 +202,7 @@ static inline uint32_t platform_get_frequency(void)
 
 	status = CorePllcGetHwSetup (&hwSetupRead);
 
-	if (CSL_SOK != status) {
+	if (status != CSL_SOK) {
 		IFPRINT(platform_write("platform_get_frequency: Hardware setup parameters reading... Failed.\n"));
 		IFPRINT(platform_write("\tReason: Error setting in hardware validation."\
 				" [status = 0x%x].\n", status));
@@ -221,16 +221,16 @@ static inline uint32_t platform_get_frequency(void)
 Bool serial_num_isvalid(char    c)
 {
 	if (
-			(('0' <= c) && ('9' >= c))    ||
-			(('a' <= c) && ('z' >= c))    ||
-			(('A' <= c) && ('Z' >= c))
+			((c >= '0') && (c <= '9'))    ||
+			((c >= 'a') && (c <= 'z'))    ||
+			((c >= 'A') && (c <= 'Z'))
 	)
 	{
-		return UTRUE;
+		return TRUE;
 	}
 	else
 	{
-		return UFALSE;
+		return FALSE;
 	}
 }
 
@@ -243,7 +243,7 @@ void getSerialNumber(char *buf)
 	buf[0] = 0;
 
 	p_device = platform_device_open(PLATFORM_DEVID_EEPROM50, 0);
-	if (NULL != p_device)
+	if (p_device != NULL)
 	{
 		/* Serial number stored in the last 128 bytes of the EEPROM 0x50 */
 		if (platform_device_read(p_device->handle, gDeviceEeprom0.page_size-MAX_SN_STORE_SIZE, (uint8_t *)buf, 16) == Platform_EOK)
@@ -279,7 +279,7 @@ void platform_get_info(platform_info * p_info)
 	volatile uint32_t 	*megm_rev   = (uint32_t *) (MEGM_REV_ID_REGISTER);
 	uint32_t 			i;
 
-	if (0 == p_info) {
+	if (p_info == 0) {
 		IFPRINT(platform_write("p_info argument is NULL\n"));
 		platform_errno = PLATFORM_ERRNO_INVALID_ARGUMENT;
 		return;
@@ -307,7 +307,7 @@ void platform_get_info(platform_info * p_info)
 	p_info->emac.port_count = PLATFORM_MAX_EMAC_PORT_NUM;
 
 	p_info->frequency 			= platform_get_frequency();
-	platform_mcb.frequency  = p_info->frequency;
+	platform_mcb.frequency 		= p_info->frequency;
 	p_info->board_rev 			= getBoardVersion();
 	platform_mcb.board_version 	= p_info->board_rev;
 	getSerialNumber(p_info->serial_nbr);
@@ -352,7 +352,7 @@ static int MSMC_enableEDC ()
 	status = *(unsigned int *)(SMEDCC);
 
 
-	if (0x1 == (status >> 30))
+	if ((status>>30)==0x1)
 		/* Enabled */
 		return 1;
 
@@ -371,7 +371,7 @@ static int enableL1PEDC ()
 	/* Check the status */
 	status = *(unsigned int *)(L1PEDSTAT);
 
-	if (0x10000000 == (status << 28))
+	if ((status<<28) == 0x10000000)
 		/* Enabled */
 		return 1;
 
@@ -390,7 +390,7 @@ static int enableL2EDC ()
 	/* Check the status */
 	status = *(unsigned int *)(L2EDSTAT);
 
-	if (0x10000000 == (status << 28))
+	if ((status<<28) == 0x10000000)
 		/* Enabled */
 		return 1;
 
@@ -460,7 +460,7 @@ Platform_STATUS platform_init(platform_init_flags  * p_flags,
 	 * Do not try and write debug statements from here.
 	 ***********************************************************************/
 
-	if ((0 == p_flags) || (0 == p_config)){
+	if ((p_flags == 0) || (p_config == 0)){
 		platform_errno = PLATFORM_ERRNO_INVALID_ARGUMENT;
 		return ( (Platform_STATUS) Platform_EFAIL);
 	}
@@ -508,21 +508,21 @@ Platform_STATUS platform_init(platform_init_flags  * p_flags,
 			ddr_pll_data.pll_d	=	1;
 			ddr_pll_data.pll_od	=	2;
 		}
-		else if(1066 == ddrClock)
+		else if(ddrClock == 1066)
 		{
 			ddr_pll_data.pll		=	0;
 			ddr_pll_data.pll_m	=	16;
 			ddr_pll_data.pll_d	=	1;
 			ddr_pll_data.pll_od	=	6;
 		}
-		else if(1333 == ddrClock)
+		else if(ddrClock == 1333)
 		{
 			ddr_pll_data.pll		=	0;
 			ddr_pll_data.pll_m	=	20;
 			ddr_pll_data.pll_d	=	1;
 			ddr_pll_data.pll_od	=	6;
 		}
-		else if(1600 == ddrClock)
+		else if(ddrClock == 1600)
 		{
 			ddr_pll_data.pll		=	0;
 			ddr_pll_data.pll_m	=	8;
@@ -577,7 +577,7 @@ Platform_STATUS platform_init(platform_init_flags  * p_flags,
 			/* set Pll */
 			status = CorePllcHwSetup (&pllc_hwSetup);
 
-			if (CSL_SOK != status) {
+			if (status != CSL_SOK) {
 				platform_errno = PLATFORM_ERRNO_PLL_SETUP;
 				return ( (Platform_STATUS) Platform_EFAIL);
 			}
@@ -585,7 +585,7 @@ Platform_STATUS platform_init(platform_init_flags  * p_flags,
 			/* Read back */
 			status = CorePllcGetHwSetup (&pllc_hwSetupRead);
 
-			if (CSL_SOK != status) {
+			if (status != CSL_SOK) {
 				platform_errno = PLATFORM_ERRNO_PLL_SETUP;
 				return ( (Platform_STATUS) Platform_EFAIL);
 			}
@@ -600,7 +600,7 @@ Platform_STATUS platform_init(platform_init_flags  * p_flags,
 
 			/* Set the NSS PLL */
 			status = SetNssPllConfig(&pll_data);
-			if (CSL_SOK != status) {
+			if (status != CSL_SOK) {
 				platform_errno = PLATFORM_ERRNO_PLL_SETUP;
 				return ( (Platform_STATUS) Platform_EFAIL);
 			}
@@ -611,7 +611,7 @@ Platform_STATUS platform_init(platform_init_flags  * p_flags,
 #endif
 			/* Set the DDR3 PLL */
 			status = SetDDR3PllConfig(&ddr_pll_data);
-			if (CSL_SOK != status)
+			if (status != CSL_SOK)
 			{
 				platform_errno = PLATFORM_ERRNO_PLL_SETUP;
 				return ( (Platform_STATUS) Platform_EFAIL);
@@ -628,7 +628,7 @@ Platform_STATUS platform_init(platform_init_flags  * p_flags,
 
 			/* Set the DSS PLL */
 			status = SetDssPllConfig(&pll_data);
-			if (CSL_SOK != status) {
+			if (status != CSL_SOK) {
 				platform_errno = PLATFORM_ERRNO_PLL_SETUP;
 				return ( (Platform_STATUS) Platform_EFAIL);
 			}
@@ -644,7 +644,7 @@ Platform_STATUS platform_init(platform_init_flags  * p_flags,
 
 			/* Set the ICSS PLL */
 			status = SetIcssPllConfig(&pll_data);
-			if (CSL_SOK != status) {
+			if (status != CSL_SOK) {
 				platform_errno = PLATFORM_ERRNO_PLL_SETUP;
 				return ( (Platform_STATUS) Platform_EFAIL);
 			}
@@ -660,7 +660,7 @@ Platform_STATUS platform_init(platform_init_flags  * p_flags,
 
 			/* Set the UART PLL */
 			status = SetUartPllConfig(&pll_data);
-			if (CSL_SOK != status) {
+			if (status != CSL_SOK) {
 				platform_errno = PLATFORM_ERRNO_PLL_SETUP;
 				return ( (Platform_STATUS) Platform_EFAIL);
 			}
@@ -677,7 +677,7 @@ Platform_STATUS platform_init(platform_init_flags  * p_flags,
 			xmc_setup();
 
 			/* Delay 10msec */
-			for (i = 0; i < 1000; i++)
+			for (i=0; i<1000; i++)
 				platform_delay (10);
 #if defined(SODIMM_CONFIG)
 			status = init_ddr3param(buf);
@@ -686,7 +686,7 @@ Platform_STATUS platform_init(platform_init_flags  * p_flags,
 			status = DDR3Init();
 #endif
 
-			if (CSL_SOK != status) {
+			if (status != CSL_SOK) {
 				platform_errno = PLATFORM_ERRNO_GENERIC;
 				return ( (Platform_STATUS) Platform_EFAIL);
 			}
@@ -705,7 +705,7 @@ Platform_STATUS platform_init(platform_init_flags  * p_flags,
 	}
 	platform_init_return_code = loop_count;
 
-	if (10 == loop_count) {
+	if (loop_count == 10) {
 		platform_errno = PLATFORM_ERRNO_GENERIC;
 		return ( (Platform_STATUS) Platform_EFAIL);
 	}

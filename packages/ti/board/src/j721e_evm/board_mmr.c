@@ -73,7 +73,7 @@ static uint32_t Board_mmrGetBaseAddr(uint8_t domain)
             baseAddr = (CSL_WKUP_CTRL_MMR0_CFG0_BASE + CSL_WKUP_CTRL_MMR_CFG0_LOCK0_KICK0);
         break;
         default:
-            baseAddr = 0U;
+            baseAddr = 0;
         break;
     }
 

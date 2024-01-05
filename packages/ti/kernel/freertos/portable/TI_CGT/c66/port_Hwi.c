@@ -65,11 +65,11 @@ void ti_sysbios_family_c64p_Hwi_dispatchC__I(int32_t intNum)
     ti_sysbios_family_c64p_Hwi_switchAndDispatch__I(intNum);
 
     ulPortInterruptNesting--;
-    if (UFALSE == ulPortInterruptNesting)
+    if (ulPortInterruptNesting == 0)
     {
-        if (UFALSE != ulPortYieldRequired)
+        if (ulPortYieldRequired != pdFALSE)
         {
-            ulPortYieldRequired = UFALSE;
+            ulPortYieldRequired = pdFALSE;
             vPortYieldAsyncFromISR();
         }
     
@@ -124,7 +124,7 @@ void ti_sysbios_family_c64p_Hwi_dispatchCore__I(int32_t intNum)
     dispatchAddress = (uintptr_t)(cpuIntrTable + (1 + intNum));
     CSL_intcCpuIntrTable.currentVectId = dispatchAddress;
     intDispatch = * ((CslIntDispatchFxn_t ** ) dispatchAddress);
-    for (i = 0U; i < sizeof(intDispatchTable)/sizeof(intDispatchTable[0]); i++)
+    for (i = 0; i < sizeof(intDispatchTable)/sizeof(intDispatchTable[0]); i++)
     {
         if (intDispatchTable[i].intHandler == intDispatch)
         {
@@ -188,14 +188,15 @@ void Hwi_switchFromBootStack(void)
 
 bool Hwi_isInIsr()
 {
-    if (((Char *)0  != ti_sysbios_family_c64p_Hwi_Module__state__V.taskSP) &&
-        ((Char *)-1 != ti_sysbios_family_c64p_Hwi_Module__state__V.taskSP))
+    if ((ti_sysbios_family_c64p_Hwi_Module__state__V.taskSP != (Char *)0)
+        &&
+        (ti_sysbios_family_c64p_Hwi_Module__state__V.taskSP != (Char *)-1))
     {
-        return BTRUE;
+        return true;
     }
     else
     {
-        return BFALSE;
+        return false;
     }
 }
 

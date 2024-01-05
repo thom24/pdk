@@ -50,15 +50,15 @@ uint8_t pcmConfigs[31][2] =
 	{ BOARD_PCM3168_DAC_MUTE_REG_ADDR,               0x00 },
 	{ BOARD_PCM3168_DAC_ZERO_REG_ADDR,               0x00 },
 	{ BOARD_PCM3168_DAC_ATT_DEMP_ZF_REG_ADDR,        0x10 },
-	{ BOARD_PCM3168_DAC_VOL_MASTER_REG_ADDR,         0xFF },
-	{ BOARD_PCM3168_DAC_VOL_CHAN_START_REG_ADDR,     0xFF },
-	{ BOARD_PCM3168_DAC_VOL_CHAN_START_REG_ADDR + 1, 0xFF },
-	{ BOARD_PCM3168_DAC_VOL_CHAN_START_REG_ADDR + 2, 0xFF },
-	{ BOARD_PCM3168_DAC_VOL_CHAN_START_REG_ADDR + 3, 0xFF },
-	{ BOARD_PCM3168_DAC_VOL_CHAN_START_REG_ADDR + 4, 0xFF },
-	{ BOARD_PCM3168_DAC_VOL_CHAN_START_REG_ADDR + 5, 0xFF },
-	{ BOARD_PCM3168_DAC_VOL_CHAN_START_REG_ADDR + 6, 0xFF },
-	{ BOARD_PCM3168_DAC_VOL_CHAN_START_REG_ADDR + 7, 0xFF },
+	{ BOARD_PCM3168_DAC_VOL_MASTER_REG_ADDR,         0xff },
+	{ BOARD_PCM3168_DAC_VOL_CHAN_START_REG_ADDR,     0xff },
+	{ BOARD_PCM3168_DAC_VOL_CHAN_START_REG_ADDR + 1, 0xff },
+	{ BOARD_PCM3168_DAC_VOL_CHAN_START_REG_ADDR + 2, 0xff },
+	{ BOARD_PCM3168_DAC_VOL_CHAN_START_REG_ADDR + 3, 0xff },
+	{ BOARD_PCM3168_DAC_VOL_CHAN_START_REG_ADDR + 4, 0xff },
+	{ BOARD_PCM3168_DAC_VOL_CHAN_START_REG_ADDR + 5, 0xff },
+	{ BOARD_PCM3168_DAC_VOL_CHAN_START_REG_ADDR + 6, 0xff },
+	{ BOARD_PCM3168_DAC_VOL_CHAN_START_REG_ADDR + 7, 0xff },
 	{ BOARD_PCM3168_ADC_SMODE_REG_ADDR,              0x00 },
 	{ BOARD_PCM3168_ADC_MST_FMT_REG_ADDR,            0x00 },
 	{ BOARD_PCM3168_ADC_PWR_HPFB_REG_ADDR,           0x00 },
@@ -67,13 +67,13 @@ uint8_t pcmConfigs[31][2] =
 	{ BOARD_PCM3168_ADC_MUTE_REG_ADDR,               0x00 },
 	{ BOARD_PCM3168_ADC_OV_REG_ADDR,                 0x00 },
 	{ BOARD_PCM3168_ADC_ATT_OVF_REG_ADDR,            0x00 },
-	{ BOARD_PCM3168_ADC_VOL_MASTER_REG_ADDR,         0xD7 },
-	{ BOARD_PCM3168_ADC_VOL_CHAN_START_REG_ADDR,     0xD7 },
-	{ BOARD_PCM3168_ADC_VOL_CHAN_START_REG_ADDR + 1, 0xD7 },
-	{ BOARD_PCM3168_ADC_VOL_CHAN_START_REG_ADDR + 2, 0xD7 },
-	{ BOARD_PCM3168_ADC_VOL_CHAN_START_REG_ADDR + 3, 0xD7 },
-	{ BOARD_PCM3168_ADC_VOL_CHAN_START_REG_ADDR + 4, 0xD7 },
-	{ BOARD_PCM3168_ADC_VOL_CHAN_START_REG_ADDR + 5, 0xD7 }
+	{ BOARD_PCM3168_ADC_VOL_MASTER_REG_ADDR,         0xd7 },
+	{ BOARD_PCM3168_ADC_VOL_CHAN_START_REG_ADDR,     0xd7 },
+	{ BOARD_PCM3168_ADC_VOL_CHAN_START_REG_ADDR + 1, 0xd7 },
+	{ BOARD_PCM3168_ADC_VOL_CHAN_START_REG_ADDR + 2, 0xd7 },
+	{ BOARD_PCM3168_ADC_VOL_CHAN_START_REG_ADDR + 3, 0xd7 },
+	{ BOARD_PCM3168_ADC_VOL_CHAN_START_REG_ADDR + 4, 0xd7 },
+	{ BOARD_PCM3168_ADC_VOL_CHAN_START_REG_ADDR + 5, 0xd7 }
 };
 
 /**
@@ -92,18 +92,18 @@ Board_STATUS Board_pcm3168Config(void *handle, uint8_t slaveAddr)
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regCount = 0;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
 
-    for(regCount = 0; regCount < 31; regCount++)
+    for(regCount=0; regCount<31; regCount++)
     {
         boardStatus = Board_pcm3168RegWrite(handle,
                                             slaveAddr,
                                             pcmConfigs[regCount][0],
                                             &(pcmConfigs[regCount][1]));
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;
         }
@@ -134,7 +134,7 @@ static Board_STATUS Board_pcm3168DACSamplingModeSel(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -148,7 +148,7 @@ static Board_STATUS Board_pcm3168DACSamplingModeSel(void *handle,
                                        slaveAddr,
 									   BOARD_PCM3168_MODECTRL_REG_ADDR,
                                        &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -159,7 +159,7 @@ static Board_STATUS Board_pcm3168DACSamplingModeSel(void *handle,
 									    slaveAddr,
 									    BOARD_PCM3168_MODECTRL_REG_ADDR,
 									    &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -190,7 +190,7 @@ static Board_STATUS Board_pcm3168ADCSamplingModeSel(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -204,7 +204,7 @@ static Board_STATUS Board_pcm3168ADCSamplingModeSel(void *handle,
                                        slaveAddr,
 									   BOARD_PCM3168_ADC_SMODE_REG_ADDR,
                                        &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -215,7 +215,7 @@ static Board_STATUS Board_pcm3168ADCSamplingModeSel(void *handle,
 									    slaveAddr,
 									    BOARD_PCM3168_ADC_SMODE_REG_ADDR,
 									    &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -251,7 +251,7 @@ static Board_STATUS Board_pcm3168DACMasterSlaveModeSel(void    *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -265,7 +265,7 @@ static Board_STATUS Board_pcm3168DACMasterSlaveModeSel(void    *handle,
                                        slaveAddr,
 									   BOARD_PCM3168_DAC_PWR_MST_FMT_REG_ADDR,
                                        &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -276,7 +276,7 @@ static Board_STATUS Board_pcm3168DACMasterSlaveModeSel(void    *handle,
 									    slaveAddr,
 									    BOARD_PCM3168_DAC_PWR_MST_FMT_REG_ADDR,
 									    &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -309,7 +309,7 @@ static Board_STATUS Board_pcm3168ADCMasterSlaveModeSel(void    *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -323,7 +323,7 @@ static Board_STATUS Board_pcm3168ADCMasterSlaveModeSel(void    *handle,
                                        slaveAddr,
 									   BOARD_PCM3168_ADC_MST_FMT_REG_ADDR,
                                        &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -334,7 +334,7 @@ static Board_STATUS Board_pcm3168ADCMasterSlaveModeSel(void    *handle,
 									    slaveAddr,
 									    BOARD_PCM3168_ADC_MST_FMT_REG_ADDR,
 									    &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -368,7 +368,7 @@ static Board_STATUS Board_pcm3168ADCAudioFmtSel(void    *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -382,7 +382,7 @@ static Board_STATUS Board_pcm3168ADCAudioFmtSel(void    *handle,
                                        slaveAddr,
 									   BOARD_PCM3168_ADC_MST_FMT_REG_ADDR,
                                        &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -393,7 +393,7 @@ static Board_STATUS Board_pcm3168ADCAudioFmtSel(void    *handle,
 									    slaveAddr,
 									    BOARD_PCM3168_ADC_MST_FMT_REG_ADDR,
 									    &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -429,7 +429,7 @@ static Board_STATUS Board_pcm3168DACAudioFmtSel(void    *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -443,7 +443,7 @@ static Board_STATUS Board_pcm3168DACAudioFmtSel(void    *handle,
                                        slaveAddr,
 									   BOARD_PCM3168_DAC_PWR_MST_FMT_REG_ADDR,
                                        &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -454,7 +454,7 @@ static Board_STATUS Board_pcm3168DACAudioFmtSel(void    *handle,
 									    slaveAddr,
 									    BOARD_PCM3168_DAC_PWR_MST_FMT_REG_ADDR,
 									    &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -486,7 +486,7 @@ static Board_STATUS Board_pcm3168DACSoftMuteCtrl(void    *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -496,9 +496,9 @@ static Board_STATUS Board_pcm3168DACSoftMuteCtrl(void    *handle,
         return BOARD_INVALID_PARAM;
     }
     
-    if(BOARD_PCM3168_CHANNEL_0 == chanNum)
+    if(chanNum == BOARD_PCM3168_CHANNEL_0)
     {
-        if(BOARD_PCM3168_MUTE_ENABLE == muteCtrl)
+        if(muteCtrl == BOARD_PCM3168_MUTE_ENABLE)
         {
             regData = 0xFF;
         }
@@ -506,7 +506,7 @@ static Board_STATUS Board_pcm3168DACSoftMuteCtrl(void    *handle,
                                             slaveAddr,
                                             BOARD_PCM3168_DAC_MUTE_REG_ADDR,
                                             &regData);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;
         }
@@ -517,12 +517,12 @@ static Board_STATUS Board_pcm3168DACSoftMuteCtrl(void    *handle,
                                            slaveAddr,
                                            BOARD_PCM3168_DAC_MUTE_REG_ADDR,
                                            &regData);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;
         }
 
-        if(BOARD_PCM3168_MUTE_DISABLE == muteCtrl)
+        if(muteCtrl == BOARD_PCM3168_MUTE_DISABLE)
         {
            regData &= ~(1 <<(chanNum-1));
         }
@@ -534,7 +534,7 @@ static Board_STATUS Board_pcm3168DACSoftMuteCtrl(void    *handle,
                                             slaveAddr,
                                             BOARD_PCM3168_DAC_MUTE_REG_ADDR,
                                             &regData);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;
         }
@@ -567,7 +567,7 @@ static Board_STATUS Board_pcm3168ADCSoftMuteCtrl(void    *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -577,17 +577,17 @@ static Board_STATUS Board_pcm3168ADCSoftMuteCtrl(void    *handle,
         return BOARD_INVALID_PARAM;
     }
 
-    if(BOARD_PCM3168_CHANNEL_0 == chanNum)
+    if(chanNum == BOARD_PCM3168_CHANNEL_0)
     {
-        if(BOARD_PCM3168_MUTE_ENABLE == muteCtrl)
+        if(muteCtrl == BOARD_PCM3168_MUTE_ENABLE)
         {
-            regData = 0x3FU;
+            regData = 0x3F;
         }
         boardStatus = Board_pcm3168RegWrite(handle,
                                             slaveAddr,
                                             BOARD_PCM3168_ADC_MUTE_REG_ADDR,
                                             &regData);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;
         }
@@ -598,11 +598,11 @@ static Board_STATUS Board_pcm3168ADCSoftMuteCtrl(void    *handle,
                                            slaveAddr,
                                            BOARD_PCM3168_ADC_MUTE_REG_ADDR,
                                            &regData);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;
         }
-        if(BOARD_PCM3168_MUTE_DISABLE == muteCtrl)
+        if(muteCtrl == BOARD_PCM3168_MUTE_DISABLE)
         {
            regData &= ~(1 << (chanNum-1));
         }
@@ -614,7 +614,7 @@ static Board_STATUS Board_pcm3168ADCSoftMuteCtrl(void    *handle,
                                             slaveAddr,
                                             BOARD_PCM3168_ADC_MUTE_REG_ADDR,
                                             &regData);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;
         }
@@ -644,7 +644,7 @@ static Board_STATUS Board_pcm3168DACAttnLevelSet(void    *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = attLevel;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -658,7 +658,7 @@ static Board_STATUS Board_pcm3168DACAttnLevelSet(void    *handle,
 									    slaveAddr,
 									    BOARD_PCM3168_DAC_VOL_MASTER_REG_ADDR + chanNum,
 									    &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -688,7 +688,7 @@ static Board_STATUS Board_pcm3168ADCAttnLevelSet(void    *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = attLevel;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -702,7 +702,7 @@ static Board_STATUS Board_pcm3168ADCAttnLevelSet(void    *handle,
 									    slaveAddr,
 									    BOARD_PCM3168_ADC_VOL_MASTER_REG_ADDR + chanNum,
 									    &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -727,7 +727,7 @@ Board_STATUS Board_pcm3168RegRead(void *handle,
 {
     Board_STATUS boardStatus = BOARD_SOK;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -759,7 +759,7 @@ Board_STATUS Board_pcm3168RegWrite(void *handle,
 {
     Board_STATUS boardStatus = BOARD_SOK;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -796,7 +796,7 @@ Board_STATUS Board_pcm3168ModeCtrl(void   *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -805,7 +805,7 @@ Board_STATUS Board_pcm3168ModeCtrl(void   *handle,
                                        slaveAddr,
 									   BOARD_PCM3168_MODECTRL_REG_ADDR,
                                        &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -816,7 +816,7 @@ Board_STATUS Board_pcm3168ModeCtrl(void   *handle,
 									    slaveAddr,
 									    BOARD_PCM3168_MODECTRL_REG_ADDR,
 									    &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -846,7 +846,7 @@ Board_STATUS Board_pcm3168Reset(void    *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -855,7 +855,7 @@ Board_STATUS Board_pcm3168Reset(void    *handle,
                                        slaveAddr,
 									   BOARD_PCM3168_MODECTRL_REG_ADDR,
                                        &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -866,7 +866,7 @@ Board_STATUS Board_pcm3168Reset(void    *handle,
 									    slaveAddr,
 									    BOARD_PCM3168_MODECTRL_REG_ADDR,
 									    &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -900,7 +900,7 @@ Board_STATUS Board_pcm3168SamplingModeSel(void    *handle,
 {
     Board_STATUS boardStatus = BOARD_SOK;
 
-    if(NULL == handle)
+    if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -910,23 +910,23 @@ Board_STATUS Board_pcm3168SamplingModeSel(void    *handle,
         return BOARD_INVALID_PARAM;
     }
 
-    if((BOARD_PCM3168_CFG_DAC == cfgMode) || (BOARD_PCM3168_CFG_ALL == cfgMode))
+    if((cfgMode == BOARD_PCM3168_CFG_DAC) || (cfgMode == BOARD_PCM3168_CFG_ALL))
     {
         boardStatus = Board_pcm3168DACSamplingModeSel(handle,
                                                       slaveAddr,
                                                       samplingMode);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;         
         }
     }
 
-    if((BOARD_PCM3168_CFG_ADC == cfgMode) || (BOARD_PCM3168_CFG_ALL == cfgMode))
+    if((cfgMode == BOARD_PCM3168_CFG_ADC) || (cfgMode == BOARD_PCM3168_CFG_ALL))
     {
         boardStatus = Board_pcm3168ADCSamplingModeSel(handle,
                                                       slaveAddr,
                                                       samplingMode);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;         
         }        
@@ -957,7 +957,7 @@ Board_STATUS Board_pcm3168DACPwrSaveModeSel(void    *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -966,7 +966,7 @@ Board_STATUS Board_pcm3168DACPwrSaveModeSel(void    *handle,
                                        slaveAddr,
 									   BOARD_PCM3168_DAC_PWR_MST_FMT_REG_ADDR,
                                        &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -977,7 +977,7 @@ Board_STATUS Board_pcm3168DACPwrSaveModeSel(void    *handle,
 									    slaveAddr,
 									    BOARD_PCM3168_DAC_PWR_MST_FMT_REG_ADDR,
 									    &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1008,7 +1008,7 @@ Board_STATUS Board_pcm3168ADCPwrSaveModeSel(void    *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -1017,19 +1017,19 @@ Board_STATUS Board_pcm3168ADCPwrSaveModeSel(void    *handle,
                                        slaveAddr,
 									   BOARD_PCM3168_ADC_PWR_HPFB_REG_ADDR,
                                        &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
     regData &= ~(BOARD_PCM3168_PSVAD_BIT_MASK);
-    regData |= (((1U == pwrSaveMode) ?  0x7 : 0x00) << BOARD_PCM3168_PSVAD_SHIFT_CNT);
+    regData |= (((pwrSaveMode == 1) ?  0x7 : 0x00) << BOARD_PCM3168_PSVAD_SHIFT_CNT);
 
     boardStatus = Board_pcm3168RegWrite(handle,
 									    slaveAddr,
 									    BOARD_PCM3168_ADC_PWR_HPFB_REG_ADDR,
 									    &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1067,7 +1067,7 @@ Board_STATUS Board_pcm3168MasterSlaveModeSel(void    *handle,
 {
      Board_STATUS boardStatus = BOARD_SOK;
 
-    if(NULL == handle)
+    if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -1077,23 +1077,23 @@ Board_STATUS Board_pcm3168MasterSlaveModeSel(void    *handle,
         return BOARD_INVALID_PARAM;
     }
 
-    if((BOARD_PCM3168_CFG_DAC == cfgMode) || (BOARD_PCM3168_CFG_ALL == cfgMode))
+    if((cfgMode == BOARD_PCM3168_CFG_DAC) || (cfgMode == BOARD_PCM3168_CFG_ALL))
     {
         boardStatus = Board_pcm3168DACMasterSlaveModeSel(handle,
                                                          slaveAddr,
                                                          mscfgMode);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;
         }
     }
 
-    if((BOARD_PCM3168_CFG_ADC == cfgMode) || (BOARD_PCM3168_CFG_ALL == cfgMode))
+    if((cfgMode == BOARD_PCM3168_CFG_ADC) || (cfgMode == BOARD_PCM3168_CFG_ALL))
     {
         boardStatus = Board_pcm3168ADCMasterSlaveModeSel(handle,
                                                          slaveAddr,
                                                          mscfgMode);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;
         }   
@@ -1133,7 +1133,7 @@ Board_STATUS Board_pcm3168AudioFmtSel(void    *handle,
 {
      Board_STATUS boardStatus = BOARD_SOK;
 
-    if(NULL == handle)
+    if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -1143,23 +1143,23 @@ Board_STATUS Board_pcm3168AudioFmtSel(void    *handle,
         return BOARD_INVALID_PARAM;
     }
 
-    if((BOARD_PCM3168_CFG_DAC == cfgMode) || (BOARD_PCM3168_CFG_ALL == cfgMode))
+    if((cfgMode == BOARD_PCM3168_CFG_DAC) || (cfgMode == BOARD_PCM3168_CFG_ALL))
     {
         boardStatus = Board_pcm3168DACAudioFmtSel(handle,
                                                   slaveAddr,
                                                   fmt);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;
         }
     }
 
-    if((BOARD_PCM3168_CFG_ADC == cfgMode) || (BOARD_PCM3168_CFG_ALL == cfgMode))
+    if((cfgMode == BOARD_PCM3168_CFG_ADC) || (cfgMode == BOARD_PCM3168_CFG_ALL))
     {
         boardStatus = Board_pcm3168ADCAudioFmtSel(handle,
                                                   slaveAddr,
                                                   fmt);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;
         }
@@ -1196,7 +1196,7 @@ Board_STATUS Board_pcm3168DACOperationalCtrl(void    *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-	if(NULL == handle)
+	if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -1205,17 +1205,17 @@ Board_STATUS Board_pcm3168DACOperationalCtrl(void    *handle,
                                        slaveAddr,
 									   BOARD_PCM3168_DAC_OP_FLT_REG_ADDR,
                                        &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    regData |= (((1U == opMode) ? 0x0F : 0) << BOARD_PCM3168_OPED_SHIFT_CNT);
+    regData |= (((opMode == 1) ? 0x0F : 0) << BOARD_PCM3168_OPED_SHIFT_CNT);
     boardStatus = Board_pcm3168RegWrite(handle,
 									    slaveAddr,
 									    BOARD_PCM3168_DAC_OP_FLT_REG_ADDR,
 									    &regData);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -1249,7 +1249,7 @@ Board_STATUS Board_pcm3168SoftMuteCtrl(void    *handle,
 {
      Board_STATUS boardStatus = BOARD_SOK;
 
-    if(NULL == handle)
+    if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -1259,26 +1259,26 @@ Board_STATUS Board_pcm3168SoftMuteCtrl(void    *handle,
         return BOARD_INVALID_PARAM;
     }
 
-    if((BOARD_PCM3168_CFG_DAC == cfgMode) || (BOARD_PCM3168_CFG_ALL == cfgMode))
+    if((cfgMode == BOARD_PCM3168_CFG_DAC) || (cfgMode == BOARD_PCM3168_CFG_ALL))
     {
         
         boardStatus = Board_pcm3168DACSoftMuteCtrl(handle,
                                                    slaveAddr,
                                                    chanNum,
                                                    muteCtrl);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;
         }
     }
 
-    if((BOARD_PCM3168_CFG_ADC == cfgMode) || (BOARD_PCM3168_CFG_ALL == cfgMode))
+    if((cfgMode == BOARD_PCM3168_CFG_ADC) || (cfgMode == BOARD_PCM3168_CFG_ALL))
     {
         boardStatus = Board_pcm3168ADCSoftMuteCtrl(handle,
                                                    slaveAddr,
                                                    chanNum,
                                                    muteCtrl);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;
         }
@@ -1311,7 +1311,7 @@ Board_STATUS Board_pcm3168AttnLevelSet(void    *handle,
 {
      Board_STATUS boardStatus = BOARD_SOK;
 
-    if(NULL == handle)
+    if(handle == NULL)
 	{
 		return BOARD_INVALID_PARAM;
 	}
@@ -1321,25 +1321,25 @@ Board_STATUS Board_pcm3168AttnLevelSet(void    *handle,
         return BOARD_INVALID_PARAM;
     }
 
-    if((BOARD_PCM3168_CFG_DAC == cfgMode) || (BOARD_PCM3168_CFG_ALL == cfgMode))
+    if((cfgMode == BOARD_PCM3168_CFG_DAC) || (cfgMode == BOARD_PCM3168_CFG_ALL))
     {
         boardStatus = Board_pcm3168DACAttnLevelSet(handle,
                                                    slaveAddr,
                                                    chanNum,
                                                    attLevel);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;
         }
     }
 
-    if((BOARD_PCM3168_CFG_ADC == cfgMode) || (BOARD_PCM3168_CFG_ALL == cfgMode))
+    if((cfgMode == BOARD_PCM3168_CFG_ADC) || (cfgMode == BOARD_PCM3168_CFG_ALL))
     {
         boardStatus = Board_pcm3168ADCAttnLevelSet(handle,
                                                    slaveAddr,
                                                    chanNum,
                                                    attLevel);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return boardStatus;
         }

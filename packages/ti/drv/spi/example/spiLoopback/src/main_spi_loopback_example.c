@@ -169,7 +169,7 @@ void spi_test(UArg arg0, UArg arg1)
 #endif
 {
     SPI_Params      spiParams; /* SPI params structure */
-    bool            testPassed = BTRUE;
+    bool            testPassed = true;
     SPI_Handle      hwHandle;  /* SPI handle */
     SPI_Transaction transaction;     /* SPI transaction structure */
     uint32_t        xferEnable,len,loop = 1;
@@ -192,12 +192,12 @@ void spi_test(UArg arg0, UArg arg1)
     /* Get the default UART init configurations */
     SPI_socGetInitCfg(SPI_INSTANCE, &spi_cfg);
 
-    spi_cfg.enableIntr = BFALSE;
+    spi_cfg.enableIntr = false;
 #ifdef SPI_DMA_ENABLE
     /* Set the DMA related init config */
     spi_cfg.edmaHandle = SPIApp_edmaInit();
-    spi_cfg.dmaMode    = BTRUE;
-    spi_cfg.enableIntr = BFALSE;
+    spi_cfg.dmaMode    = TRUE;
+    spi_cfg.enableIntr = false;
 #endif
 
     SPI_socSetInitCfg(SPI_INSTANCE, &spi_cfg);
@@ -217,7 +217,7 @@ void spi_test(UArg arg0, UArg arg1)
 
     if (!hwHandle)
     {
-    	testPassed = BFALSE;
+    	testPassed = false;
     	goto err;
 	}
 
@@ -250,9 +250,9 @@ void spi_test(UArg arg0, UArg arg1)
 
     retVal = SPI_transfer(hwHandle, &transaction);
 
-    if (retVal == BFALSE)
+    if (retVal == false)
     {
-    	testPassed = BFALSE;
+    	testPassed = false;
     	goto err;
     }
 
@@ -262,11 +262,11 @@ void spi_test(UArg arg0, UArg arg1)
     {
         if (txBuf[count] != rxBuf[count])
         {
-            testPassed = BFALSE;
+            testPassed = false;
             break;
         }
     }
-    if(BFALSE != testPassed)
+    if(false != testPassed)
     {
         SPI_log("\n Rx and Tx data matched. \n");
     }
@@ -277,7 +277,7 @@ void spi_test(UArg arg0, UArg arg1)
 #else
     SPI_log("\n Received Data : %x. \n",rxBuf);
     if (txBuf != rxBuf)
-    	testPassed = BFALSE;
+    	testPassed = false;
 #endif
 	
 	SPI_close(hwHandle);
@@ -285,7 +285,7 @@ void spi_test(UArg arg0, UArg arg1)
 
 
 err:
-    if(BTRUE == testPassed)
+    if(true == testPassed)
     {
         SPI_log("\n All tests have passed. \n");
     }

@@ -66,7 +66,7 @@ static void OTP_SciClientInit(void)
         NULL,
         1,
         0,
-        1
+        TRUE
     };
 
     /* Use snapshot of sciclient boardconfigs */
@@ -199,7 +199,7 @@ int main()
 
     UART_socGetInitCfg(KEYWRITER_BOARD_UART_INSTANCE, &uart_cfg);
     uart_cfg.frequency       = SBL_ROM_UART_MODULE_INPUT_CLK;
-    uart_cfg.enableInterrupt = UFALSE;
+    uart_cfg.enableInterrupt = FALSE;
     UART_socSetInitCfg(KEYWRITER_BOARD_UART_INSTANCE, &uart_cfg);
     UART_stdioInit(KEYWRITER_BOARD_UART_INSTANCE);
 

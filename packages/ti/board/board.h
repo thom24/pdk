@@ -95,7 +95,6 @@ extern "C" {
 #include <stdint.h>
 
 #include <ti/csl/hw_types.h>
-#include <ti/csl/tistdtypes.h>
 
 /**
   * @brief  The following definitions are for handling cache alignment on the board.
@@ -312,25 +311,25 @@ typedef enum {
 
 typedef uint32_t Board_initCfg;
 #define BOARD_INIT_ALL                  (0xFFFFFFFFU)
-#define BOARD_INIT_UNLOCK_MMR           (1U << 1U)
-#define BOARD_INIT_PLL                  (1U << 2U)
-#define BOARD_INIT_PLL_MCU              (1U << 3U)
-#define BOARD_INIT_PLL_MAIN             (1U << 4U)
-#define BOARD_INIT_MODULE_CLOCK         (1U << 5U)
-#define BOARD_INIT_MODULE_CLOCK_MCU     (1U << 6U)
-#define BOARD_INIT_MODULE_CLOCK_MAIN    (1U << 7U)
-#define BOARD_INIT_DDR                  (1U << 8U)
-#define BOARD_INIT_WATCHDOG_DISABLE     (1U << 9U)
-#define BOARD_INIT_PINMUX_CONFIG        (1U << 10U)
-#define BOARD_INIT_PINMUX_CONFIG_MAIN   (1U << 11U)
-#define BOARD_INIT_PINMUX_CONFIG_MCU    (1U << 12U)
-#define BOARD_INIT_UART_STDIO           (1U << 13U)
-#define BOARD_INIT_ICSS_PINMUX          (1U << 14U)
-#define BOARD_INIT_ETH_PHY              (1U << 15U)
-#define BOARD_INIT_ECC                  (1U << 16U)
-#define BOARD_INIT_PLL_OPP_HIGH         (1U << 17U)
-#define BOARD_INIT_PLL_OPP_OD           (1U << 18U)
-#define BOARD_INIT_PLL_OPP_NOM          (1U << 19U)
+#define BOARD_INIT_UNLOCK_MMR           (1 << 1U)
+#define BOARD_INIT_PLL                  (1 << 2U)
+#define BOARD_INIT_PLL_MCU              (1 << 3U)
+#define BOARD_INIT_PLL_MAIN             (1 << 4U)
+#define BOARD_INIT_MODULE_CLOCK         (1 << 5U)
+#define BOARD_INIT_MODULE_CLOCK_MCU     (1 << 6U)
+#define BOARD_INIT_MODULE_CLOCK_MAIN    (1 << 7U)
+#define BOARD_INIT_DDR                  (1 << 8U)
+#define BOARD_INIT_WATCHDOG_DISABLE     (1 << 9U)
+#define BOARD_INIT_PINMUX_CONFIG        (1 << 10U)
+#define BOARD_INIT_PINMUX_CONFIG_MAIN   (1 << 11U)
+#define BOARD_INIT_PINMUX_CONFIG_MCU    (1 << 12U)
+#define BOARD_INIT_UART_STDIO           (1 << 13U)
+#define BOARD_INIT_ICSS_PINMUX          (1 << 14U)
+#define BOARD_INIT_ETH_PHY              (1 << 15U)
+#define BOARD_INIT_ECC                  (1 << 16U)
+#define BOARD_INIT_PLL_OPP_HIGH         (1 << 17U)
+#define BOARD_INIT_PLL_OPP_OD           (1 << 18U)
+#define BOARD_INIT_PLL_OPP_NOM          (1 << 19U)
 /* iceK2G requires board specific Ethernet configurations for
    proper operation of Ethernet interfaces. Applications
    using NSS(Gigabit) or ICSS(10/100mbps) Ethernet inteface

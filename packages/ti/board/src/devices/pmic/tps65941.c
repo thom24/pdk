@@ -100,13 +100,13 @@ Board_STATUS Board_tps65941GpioRead(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-    if((NULL == handle) || (pinNum > BOARD_TPS65941_GPIO_PIN_MAX) ||
-       (NULL == pinValue))
+    if((handle == NULL) || (pinNum > BOARD_TPS65941_GPIO_PIN_MAX) ||
+       (pinValue == NULL))
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if(BOARD_TPS65941_NPWRON_PIN != pinNum)
+    if(pinNum != BOARD_TPS65941_NPWRON_PIN)
     {
         /* Setting the GPIO direction to input and GPIO mode */
         boardStatus = Board_i2c8BitRegRd(handle,
@@ -115,7 +115,7 @@ Board_STATUS Board_tps65941GpioRead(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -131,7 +131,7 @@ Board_STATUS Board_tps65941GpioRead(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -143,7 +143,7 @@ Board_STATUS Board_tps65941GpioRead(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -183,14 +183,14 @@ Board_STATUS Board_tps65941GpioWrite(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-    if((NULL == handle) || (pinNum > BOARD_TPS65941_GPIO_PIN_MAX) ||
-       (BOARD_TPS65941_NPWRON_PIN == pinNum))
+    if((handle == NULL) || (pinNum > BOARD_TPS65941_GPIO_PIN_MAX) ||
+       (pinNum == BOARD_TPS65941_NPWRON_PIN))
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if((BOARD_TPS65941_GPIO_LOW  != pinValue) && 
-       (BOARD_TPS65941_GPIO_HIGH != pinValue))
+    if((pinValue != BOARD_TPS65941_GPIO_LOW) && 
+       (pinValue != BOARD_TPS65941_GPIO_HIGH))
     {
         return BOARD_INVALID_PARAM;
     }
@@ -202,7 +202,7 @@ Board_STATUS Board_tps65941GpioWrite(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -218,7 +218,7 @@ Board_STATUS Board_tps65941GpioWrite(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -230,7 +230,7 @@ Board_STATUS Board_tps65941GpioWrite(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -244,7 +244,7 @@ Board_STATUS Board_tps65941GpioWrite(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -281,31 +281,31 @@ Board_STATUS Board_tps65941ConvertVolt(uint8_t voutCode,
     uint16_t baseMillivolt, millivoltStep;
     uint8_t baseVoutCode;
 
-    if((BOARD_TPS65941_LDO4_RESOURCE < powerResource) || (NULL == millivolt))
+    if((powerResource > BOARD_TPS65941_LDO4_RESOURCE) || (millivolt == NULL))
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if(0xFFU < voutCode)
+    if(voutCode > 0xFF)
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if(BOARD_TPS65941_BUCK5_RESOURCE >= powerResource)
+    if(powerResource <= BOARD_TPS65941_BUCK5_RESOURCE)
     {
-        if(0x0EU >= voutCode)
+        if(voutCode <= 0x0E)
         {
             baseMillivolt = 300;
             millivoltStep = 20;
             baseVoutCode = 0;
         }
-        else if((0x0FU <= voutCode) && (0x72U >= voutCode))
+        else if((voutCode >= 0x0F) && (voutCode <= 0x72))
         {
             baseMillivolt = 600;
             millivoltStep = 5;
             baseVoutCode = 0x0F;
         }
-        else if((0x73U <= voutCode) && (0xAAU >= voutCode))
+        else if((voutCode >= 0x73) && (voutCode <= 0xAA))
         {
             baseMillivolt = 1100;
             millivoltStep = 10;
@@ -318,11 +318,11 @@ Board_STATUS Board_tps65941ConvertVolt(uint8_t voutCode,
             baseVoutCode = 0xAB;
         }
     }
-    else if(BOARD_TPS65941_LDO4_RESOURCE == powerResource)
+    else if(powerResource == BOARD_TPS65941_LDO4_RESOURCE)
     {
-        if((0x1FU  >= voutCode) || 
-           ((0x75U <= voutCode) && (0x7FU >= voutCode)) || 
-           (0x7FU  <= voutCode))
+        if((voutCode <= 0x1F) || 
+           ((voutCode >= 0x75) && (voutCode <= 0x7F)) || 
+           (voutCode >= 0x7F))
         {
             return BOARD_INVALID_PARAM;
         }
@@ -335,9 +335,9 @@ Board_STATUS Board_tps65941ConvertVolt(uint8_t voutCode,
     }
     else /* BOARD_TPS65941_LDO1_RESOURCE, BOARD_TPS65941_LDO2_RESOURCE, BOARD_TPS65941_LDO3_RESOURCE */
     {
-        if((0x03U  >= voutCode) || 
-           ((0x3BU <= voutCode) && (0x7FU >= voutCode)) || 
-           (0x7FU  <= voutCode))
+        if((voutCode <= 0x03) || 
+           ((voutCode >= 0x3B) && (voutCode <= 0x7F)) || 
+           (voutCode >= 0x7F))
         {
             return BOARD_INVALID_PARAM;
         }
@@ -383,30 +383,30 @@ Board_STATUS Board_tps65941ConvertVoutCode(uint16_t millivolt,
     uint16_t baseMillivolt, millivoltStep;
     uint8_t baseVoutCode;
 
-    if((BOARD_TPS65941_LDO4_RESOURCE < powerResource) || (NULL == voutCode))
+    if((powerResource > BOARD_TPS65941_LDO4_RESOURCE) || (voutCode == NULL))
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if(BOARD_TPS65941_BUCK5_RESOURCE >= powerResource)
+    if(powerResource <= BOARD_TPS65941_BUCK5_RESOURCE)
     {
-        if((300U > millivolt) || (3340U < millivolt))
+        if((millivolt < 300) || (millivolt > 3340))
         {
             return BOARD_INVALID_PARAM;
         }
-        else if((300U <= millivolt) && (580U >= millivolt))
+        else if((millivolt >= 300) && (millivolt <= 580))
         {
             baseMillivolt = 300;
             millivoltStep = 20;
             baseVoutCode = 0;
         }
-        else if((600U <= millivolt) && (1095U >= millivolt))
+        else if((millivolt >= 600) && (millivolt <= 1095))
         {
             baseMillivolt = 600;
             millivoltStep = 5;
             baseVoutCode = 0x0F;
         }
-        else if((1100U <= millivolt) && (1650U >= millivolt))
+        else if((millivolt >= 1100) && (millivolt <= 1650))
         {
             baseMillivolt = 1100;
             millivoltStep = 10;
@@ -419,9 +419,9 @@ Board_STATUS Board_tps65941ConvertVoutCode(uint16_t millivolt,
             baseVoutCode = 0xAB;
         }
     }
-    else if(BOARD_TPS65941_LDO4_RESOURCE == powerResource)
+    else if(powerResource == BOARD_TPS65941_LDO4_RESOURCE)
     {
-        if((3300U < millivolt) || (1200U > millivolt))
+        if((millivolt > 3300) || (millivolt < 1200))
         {
             return BOARD_INVALID_PARAM;
         }
@@ -434,7 +434,7 @@ Board_STATUS Board_tps65941ConvertVoutCode(uint16_t millivolt,
     }
     else /* BOARD_TPS65941_LDO1_RESOURCE, BOARD_TPS65941_LDO2_RESOURCE, BOARD_TPS65941_LDO3_RESOURCE */
     {
-        if((3300U < millivolt) || (600U > millivolt))
+        if((millivolt > 3300) || (millivolt < 600))
         {
             return BOARD_INVALID_PARAM;
         }
@@ -487,19 +487,19 @@ Board_STATUS Board_tps65941SetVoltage(void *handle,
     uint8_t voutCode;
     uint8_t regData = 0;
 
-    if((NULL == handle) || 
-       (BOARD_TPS65941_LDO4_RESOURCE < powerResource))
+    if((handle == NULL) || 
+       (powerResource > BOARD_TPS65941_LDO4_RESOURCE))
     {
         return BOARD_INVALID_PARAM;
     }
 
     boardStatus = Board_tps65941ConvertVoutCode(millivolt, powerResource, &voutCode);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
 
-    if(BOARD_TPS65941_BUCK5_RESOURCE >= powerResource)
+    if(powerResource <= BOARD_TPS65941_BUCK5_RESOURCE)
     {
         /* Setting the BUCK voltage */
         boardStatus = Board_i2c8BitRegRd(handle,
@@ -508,7 +508,7 @@ Board_STATUS Board_tps65941SetVoltage(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -521,7 +521,7 @@ Board_STATUS Board_tps65941SetVoltage(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -533,7 +533,7 @@ Board_STATUS Board_tps65941SetVoltage(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -547,7 +547,7 @@ Board_STATUS Board_tps65941SetVoltage(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -559,7 +559,7 @@ Board_STATUS Board_tps65941SetVoltage(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -573,7 +573,7 @@ Board_STATUS Board_tps65941SetVoltage(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -587,12 +587,12 @@ Board_STATUS Board_tps65941SetVoltage(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
 
-        if(BOARD_TPS65941_LDO4_RESOURCE == powerResource)
+        if(powerResource == BOARD_TPS65941_LDO4_RESOURCE)
         {
             regData &= ~(BOARD_TPS65941_LDO4_VSET_BIT_MASK);
             regData |= (voutCode << BOARD_TPS65941_LDO4_VSET_SHIFT);
@@ -609,7 +609,7 @@ Board_STATUS Board_tps65941SetVoltage(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -621,7 +621,7 @@ Board_STATUS Board_tps65941SetVoltage(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -635,7 +635,7 @@ Board_STATUS Board_tps65941SetVoltage(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -674,14 +674,14 @@ Board_STATUS Board_tps65941GetVoltage(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-    if((NULL == handle) ||
-       (BOARD_TPS65941_LDO4_RESOURCE < powerResource) ||
-       (NULL == millivolt))
+    if((handle == NULL) ||
+       (powerResource > BOARD_TPS65941_LDO4_RESOURCE) ||
+       (millivolt == NULL))
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if(BOARD_TPS65941_BUCK5_RESOURCE >= powerResource)
+    if(powerResource <= BOARD_TPS65941_BUCK5_RESOURCE)
     {
         /* Reading the BUCK voltage */
         boardStatus = Board_i2c8BitRegRd(handle,
@@ -690,7 +690,7 @@ Board_STATUS Board_tps65941GetVoltage(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -704,12 +704,12 @@ Board_STATUS Board_tps65941GetVoltage(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
 
-        if(BOARD_TPS65941_LDO4_RESOURCE == powerResource)
+        if(powerResource == BOARD_TPS65941_LDO4_RESOURCE)
         {
             regData = (regData & BOARD_TPS65941_LDO4_VSET_BIT_MASK) >> BOARD_TPS65941_LDO4_VSET_SHIFT;
         }
@@ -720,7 +720,7 @@ Board_STATUS Board_tps65941GetVoltage(void *handle,
     }
 
     boardStatus = Board_tps65941ConvertVolt(regData, powerResource, millivolt);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -756,11 +756,11 @@ static Board_STATUS Board_tps65941SetIntr(void *handle,
     uint8_t regShift = 0;
 
     regAddr = tps65941IntrRegMap[intrType].maskRegAddr;
-    if(0 != regAddr)
+    if(regAddr != 0)
     {
         if(!(intrNum >> BOARD_TPS65941_INTR_REG_WIDTH))
         {
-            intrNum &= 0xFFU;
+            intrNum &= 0xFF;
             regAddr += intrNum / BOARD_TPS65941_INTR_REG_WIDTH;
 
             boardStatus = Board_i2c8BitRegRd(handle,
@@ -769,7 +769,7 @@ static Board_STATUS Board_tps65941SetIntr(void *handle,
                                             &regData,
                                             BOARD_I2C_NUM_OF_BYTES_01,
                                             BOARD_I2C_TRANSACTION_TIMEOUT);
-            if(BOARD_SOK != boardStatus)
+            if(boardStatus != BOARD_SOK)
             {
                 return BOARD_I2C_TRANSFER_FAIL;
             }
@@ -777,7 +777,7 @@ static Board_STATUS Board_tps65941SetIntr(void *handle,
             regShift = intrNum % BOARD_TPS65941_INTR_REG_WIDTH;
             regMask  = (1 << regShift);
 
-            if(BOARD_TPS65941_INTR_DISABLE == intrEnable)
+            if(intrEnable == BOARD_TPS65941_INTR_DISABLE)
             {
                 regData |= regMask;
             }
@@ -792,7 +792,7 @@ static Board_STATUS Board_tps65941SetIntr(void *handle,
                                             &regData,
                                             BOARD_I2C_NUM_OF_BYTES_01,
                                             BOARD_I2C_TRANSACTION_TIMEOUT);
-            if(BOARD_SOK != boardStatus)
+            if(boardStatus != BOARD_SOK)
             {
                 return BOARD_I2C_TRANSFER_FAIL;
             }
@@ -824,7 +824,7 @@ Board_STATUS Board_tps65941ConfigIntr(void *handle,
 {
     Board_STATUS boardStatus = BOARD_SOK;
 
-    if((NULL == handle) || (BOARD_TPS65941_INTR_DISABLE < intrEnable))
+    if((handle == NULL) || (intrEnable > BOARD_TPS65941_INTR_DISABLE))
     {
         return BOARD_INVALID_PARAM;
     }
@@ -865,7 +865,7 @@ Board_STATUS Board_tps65941GetIntrStatus(void *handle,
     uint8_t regMask  = 0;
     uint8_t regShift = 0;
 
-    if((NULL == handle) || (NULL == intrStatus))
+    if((handle == NULL) || (intrStatus == NULL))
     {
         return BOARD_INVALID_PARAM;
     }
@@ -875,7 +875,7 @@ Board_STATUS Board_tps65941GetIntrStatus(void *handle,
 
     regAddr = tps65941IntrRegMap[intrType].intrRegAddr;
 
-    if(BOARD_TPS65941_INTR_TYPE_GPIO != intrType)
+    if(intrType != BOARD_TPS65941_INTR_TYPE_GPIO)
     {
         regAddr += intrNum / BOARD_TPS65941_INTR_REG_WIDTH;
         regShift = intrNum % BOARD_TPS65941_INTR_REG_WIDTH;
@@ -883,7 +883,7 @@ Board_STATUS Board_tps65941GetIntrStatus(void *handle,
     }
     else
     {
-        if(!((intrNum >> (BOARD_TPS65941_INTR_REG_WIDTH / 2)) > 0U))
+        if(!((intrNum >> (BOARD_TPS65941_INTR_REG_WIDTH / 2)) > 0))
         {
             regAddr += 1;
             regShift = intrNum % BOARD_TPS65941_INTR_REG_WIDTH;
@@ -892,7 +892,7 @@ Board_STATUS Board_tps65941GetIntrStatus(void *handle,
         else
         {
             regShift = intrNum % BOARD_TPS65941_INTR_REG_WIDTH;
-            if(3 <= regShift)
+            if(regShift >= 3)
             {
                 regShift -= 3;
             }
@@ -906,7 +906,7 @@ Board_STATUS Board_tps65941GetIntrStatus(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -939,13 +939,13 @@ Board_STATUS Board_tps65941ClearIntr(void *handle,
 {
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t intrType = 0;
-    uint8_t intrNum  = 0;
+    uint8_t intrNum = 0;
     uint8_t regAddr  = 0;
     uint8_t regData  = 0;
     uint8_t regMask  = 0;
     uint8_t regShift = 0;
 
-    if(NULL == handle)
+    if(handle == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
@@ -954,7 +954,7 @@ Board_STATUS Board_tps65941ClearIntr(void *handle,
     intrNum = intrID & 0xFF;
 
     regAddr = tps65941IntrRegMap[intrType].intrRegAddr;
-    if(BOARD_TPS65941_INTR_TYPE_GPIO != intrType)
+    if(intrType != BOARD_TPS65941_INTR_TYPE_GPIO)
     {
         regAddr += intrNum / BOARD_TPS65941_INTR_REG_WIDTH;
         regShift = intrNum % BOARD_TPS65941_INTR_REG_WIDTH;
@@ -962,7 +962,7 @@ Board_STATUS Board_tps65941ClearIntr(void *handle,
     }
     else
     {
-        if(!((intrNum >> (BOARD_TPS65941_INTR_REG_WIDTH / 2)) > 0U))
+        if(!((intrNum >> (BOARD_TPS65941_INTR_REG_WIDTH / 2)) > 0))
         {
             regAddr += 1;
             regShift = intrNum % BOARD_TPS65941_INTR_REG_WIDTH;
@@ -971,7 +971,7 @@ Board_STATUS Board_tps65941ClearIntr(void *handle,
         else
         {
             regShift = intrNum % BOARD_TPS65941_INTR_REG_WIDTH;
-            if(3 <= regShift)
+            if(regShift >= 3)
             {
                 regShift -= 3;
             }
@@ -985,7 +985,7 @@ Board_STATUS Board_tps65941ClearIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1002,7 +1002,7 @@ Board_STATUS Board_tps65941ClearIntr(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -1041,8 +1041,8 @@ Board_STATUS Board_tps65941SetVoltageMonitor(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-    if((NULL == handle) || (NULL == voltMonitorCfg) ||
-        (BOARD_TPS65941_LDO4_RESOURCE < powerResource))
+    if((handle == NULL) || (voltMonitorCfg == NULL) ||
+        (powerResource > BOARD_TPS65941_LDO4_RESOURCE))
     {
         return BOARD_INVALID_PARAM;
     }
@@ -1054,7 +1054,7 @@ Board_STATUS Board_tps65941SetVoltageMonitor(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1070,12 +1070,12 @@ Board_STATUS Board_tps65941SetVoltageMonitor(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
 
-    if(BOARD_TPS65941_BUCK5_RESOURCE >= powerResource)
+    if(powerResource <= BOARD_TPS65941_BUCK5_RESOURCE)
     {
         /* Setting the current limit */
         boardStatus = Board_i2c8BitRegRd(handle,
@@ -1084,7 +1084,7 @@ Board_STATUS Board_tps65941SetVoltageMonitor(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -1098,7 +1098,7 @@ Board_STATUS Board_tps65941SetVoltageMonitor(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -1110,7 +1110,7 @@ Board_STATUS Board_tps65941SetVoltageMonitor(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1124,7 +1124,7 @@ Board_STATUS Board_tps65941SetVoltageMonitor(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1136,7 +1136,7 @@ Board_STATUS Board_tps65941SetVoltageMonitor(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1150,7 +1150,7 @@ Board_STATUS Board_tps65941SetVoltageMonitor(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1185,8 +1185,8 @@ Board_STATUS Board_tps65941SetVccaMonitor(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-    if((NULL == handle) || (NULL == voltMonitorCfg) ||
-        (BOARD_TPS65941_PG_5V_LEVEL < vccaPgLevel))
+    if((handle == NULL) || (voltMonitorCfg == NULL) ||
+        (vccaPgLevel > BOARD_TPS65941_PG_5V_LEVEL))
     {
         return BOARD_INVALID_PARAM;
     }
@@ -1198,7 +1198,7 @@ Board_STATUS Board_tps65941SetVccaMonitor(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1216,7 +1216,7 @@ Board_STATUS Board_tps65941SetVccaMonitor(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1228,7 +1228,7 @@ Board_STATUS Board_tps65941SetVccaMonitor(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1242,7 +1242,7 @@ Board_STATUS Board_tps65941SetVccaMonitor(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1254,7 +1254,7 @@ Board_STATUS Board_tps65941SetVccaMonitor(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1270,7 +1270,7 @@ Board_STATUS Board_tps65941SetVccaMonitor(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1300,8 +1300,8 @@ Board_STATUS Board_tps65941SetThermalThresVal(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-    if((NULL == handle) ||
-       (BOARD_TPS65941_THERMAL_TEMP_130C < thermalThresholdVal))
+    if((handle == NULL) ||
+       (thermalThresholdVal > BOARD_TPS65941_THERMAL_TEMP_130C))
     {
         return BOARD_INVALID_PARAM;
     }
@@ -1313,7 +1313,7 @@ Board_STATUS Board_tps65941SetThermalThresVal(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1327,7 +1327,7 @@ Board_STATUS Board_tps65941SetThermalThresVal(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1358,7 +1358,7 @@ Board_STATUS Board_tps65941GetThermalStatus(void *handle,
     Board_STATUS boardStatus;
     uint8_t regData = 0;
 
-    if((NULL == handle) || (NULL == thermalStatus))
+    if((handle == NULL) || (thermalStatus == NULL))
     {
         return BOARD_INVALID_PARAM;
     }
@@ -1369,7 +1369,7 @@ Board_STATUS Board_tps65941GetThermalStatus(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1382,7 +1382,7 @@ Board_STATUS Board_tps65941GetThermalStatus(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -1399,7 +1399,7 @@ Board_STATUS Board_tps65941GetThermalStatus(void *handle,
                                              &regData,
                                              BOARD_I2C_NUM_OF_BYTES_01,
                                              BOARD_I2C_TRANSACTION_TIMEOUT);
-            if(BOARD_SOK != boardStatus)
+            if(boardStatus != BOARD_SOK)
             {
                 return BOARD_I2C_TRANSFER_FAIL;
             }
@@ -1438,7 +1438,7 @@ Board_STATUS Board_tps65941SetThermalMonitor(void *handle,
     Board_STATUS boardStatus;
     uint8_t regData = 0;
 
-    if(NULL == handle)
+    if(handle == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
@@ -1450,7 +1450,7 @@ Board_STATUS Board_tps65941SetThermalMonitor(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1464,7 +1464,7 @@ Board_STATUS Board_tps65941SetThermalMonitor(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1493,7 +1493,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData;
 
-    if((NULL == handle) || (NULL == timeCfg) || (NULL == dateCfg))
+    if((handle == NULL) || (timeCfg == NULL) || (dateCfg == NULL))
     {
         return BOARD_INVALID_PARAM;
     }
@@ -1505,7 +1505,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1519,7 +1519,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1531,7 +1531,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1547,7 +1547,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1559,7 +1559,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1575,7 +1575,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1587,7 +1587,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1601,7 +1601,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1613,7 +1613,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1622,7 +1622,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
     regData |= ((timeCfg->hour/10) << BOARD_TPS65941_RTC_ALRM_HR_1_SHIFT);
     regData &= ~(BOARD_TPS65941_RTC_ALRM_HR_0_BIT_MASK);
     regData |= ((timeCfg->hour%10) << BOARD_TPS65941_RTC_ALRM_HR_0_SHIFT);
-    if(BOARD_TPS65941_12_HOUR_MODE == timeCfg->timeMode)
+    if(timeCfg->timeMode == BOARD_TPS65941_12_HOUR_MODE)
     {
         regData &= ~(BOARD_TPS65941_RTC_ALRM_AM_PM_BIT_MASK);
         regData |= (timeCfg->meridienMode << BOARD_TPS65941_RTC_ALRM_AM_PM_SHIFT);
@@ -1634,7 +1634,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1646,7 +1646,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1662,7 +1662,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1674,7 +1674,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1690,7 +1690,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1702,7 +1702,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1718,7 +1718,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1730,7 +1730,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1744,7 +1744,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1756,7 +1756,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1770,7 +1770,7 @@ Board_STATUS Board_tps65941SetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1800,7 +1800,7 @@ Board_STATUS Board_tps65941GetRtc(void *handle,
     uint8_t regData = 0;
     uint8_t data1, data2;
 
-    if((NULL == handle) || (NULL == timeCfg) || (NULL == dateCfg))
+    if((handle == NULL) || (timeCfg == NULL) || (dateCfg == NULL))
     {
         return BOARD_INVALID_PARAM;
     }
@@ -1812,7 +1812,7 @@ Board_STATUS Board_tps65941GetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1826,7 +1826,7 @@ Board_STATUS Board_tps65941GetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1838,7 +1838,7 @@ Board_STATUS Board_tps65941GetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1856,7 +1856,7 @@ Board_STATUS Board_tps65941GetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1874,7 +1874,7 @@ Board_STATUS Board_tps65941GetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1895,7 +1895,7 @@ Board_STATUS Board_tps65941GetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1922,7 +1922,7 @@ Board_STATUS Board_tps65941GetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1940,7 +1940,7 @@ Board_STATUS Board_tps65941GetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1958,7 +1958,7 @@ Board_STATUS Board_tps65941GetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -1976,7 +1976,7 @@ Board_STATUS Board_tps65941GetRtc(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2009,7 +2009,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData;
 
-    if((NULL == handle) || (NULL == timeCfg) || (NULL == dateCfg))
+    if((handle == NULL) || (timeCfg == NULL) || (dateCfg == NULL))
     {
         return BOARD_INVALID_PARAM;
     }
@@ -2021,7 +2021,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2037,7 +2037,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2049,7 +2049,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2065,7 +2065,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2077,7 +2077,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2091,7 +2091,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2103,7 +2103,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2112,7 +2112,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
     regData |= ((timeCfg->hour/10) << BOARD_TPS65941_RTC_ALRM_HR_1_SHIFT);
     regData &= ~(BOARD_TPS65941_RTC_ALRM_HR_0_BIT_MASK);
     regData |= ((timeCfg->hour%10) << BOARD_TPS65941_RTC_ALRM_HR_0_SHIFT);
-    if(BOARD_TPS65941_12_HOUR_MODE == timeCfg->timeMode)
+    if(timeCfg->timeMode == BOARD_TPS65941_12_HOUR_MODE)
     {
         regData &= ~(BOARD_TPS65941_RTC_ALRM_AM_PM_BIT_MASK);
         regData |= (timeCfg->meridienMode << BOARD_TPS65941_RTC_ALRM_AM_PM_SHIFT);
@@ -2124,7 +2124,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2136,7 +2136,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2152,7 +2152,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2164,7 +2164,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2180,7 +2180,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2192,7 +2192,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2208,7 +2208,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2220,7 +2220,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2234,7 +2234,7 @@ Board_STATUS Board_tps65941SetAlarmIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2266,7 +2266,7 @@ Board_STATUS Board_tps65941SetTimerIntr(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-    if((NULL == handle) || (BOARD_TPS65941_DAY_INTR_PERIOD < timerPeriod))
+    if((handle == NULL) || (timerPeriod > BOARD_TPS65941_DAY_INTR_PERIOD))
     {
         return BOARD_INVALID_PARAM;
     }
@@ -2278,7 +2278,7 @@ Board_STATUS Board_tps65941SetTimerIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2292,7 +2292,7 @@ Board_STATUS Board_tps65941SetTimerIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2304,7 +2304,7 @@ Board_STATUS Board_tps65941SetTimerIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2318,7 +2318,7 @@ Board_STATUS Board_tps65941SetTimerIntr(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2348,8 +2348,8 @@ Board_STATUS Board_tps65941WdtDisable(void *handle,
     Board_STATUS boardStatus;
     uint8_t regData = 0;
 
-    if((NULL == handle) || 
-       (BOARD_TPS65941_WDT_DISABLE < wdtDisable))
+    if((handle == NULL) || 
+       (wdtDisable > BOARD_TPS65941_WDT_DISABLE))
     {
         return BOARD_INVALID_PARAM;
     }
@@ -2361,7 +2361,7 @@ Board_STATUS Board_tps65941WdtDisable(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2375,7 +2375,7 @@ Board_STATUS Board_tps65941WdtDisable(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2407,18 +2407,18 @@ Board_STATUS Board_tps65941WdtConfig(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-    if((NULL == handle) || (NULL == wdtCfg) ||
-       (BOARD_TPS65941_WDT_QA_MODE < wdtCfgMode))
+    if((handle == NULL) || (wdtCfg == NULL) ||
+       (wdtCfgMode > BOARD_TPS65941_WDT_QA_MODE))
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if((0x7F < wdtCfg->win1Duration) || (0x7F < wdtCfg->win2Duration))
+    if((wdtCfg->win1Duration > 0x7F) || (wdtCfg->win2Duration > 0x7F))
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if((0x7 < wdtCfg->failThreshold) || (0x7 < wdtCfg->rstThreshold))
+    if((wdtCfg->failThreshold > 0x7) || (wdtCfg->rstThreshold > 0x7))
     {
         return BOARD_INVALID_PARAM;
     }
@@ -2430,7 +2430,7 @@ Board_STATUS Board_tps65941WdtConfig(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2444,7 +2444,7 @@ Board_STATUS Board_tps65941WdtConfig(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2456,7 +2456,7 @@ Board_STATUS Board_tps65941WdtConfig(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2470,7 +2470,7 @@ Board_STATUS Board_tps65941WdtConfig(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2482,7 +2482,7 @@ Board_STATUS Board_tps65941WdtConfig(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2495,7 +2495,7 @@ Board_STATUS Board_tps65941WdtConfig(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2507,7 +2507,7 @@ Board_STATUS Board_tps65941WdtConfig(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2525,7 +2525,7 @@ Board_STATUS Board_tps65941WdtConfig(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2537,7 +2537,7 @@ Board_STATUS Board_tps65941WdtConfig(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2551,7 +2551,7 @@ Board_STATUS Board_tps65941WdtConfig(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
@@ -2592,7 +2592,7 @@ Board_STATUS Board_tps65941GetWdtStat(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-    if((NULL == handle) || (NULL == wdtErrStat))
+    if((handle == NULL) || (wdtErrStat == NULL))
     {
         return BOARD_INVALID_PARAM;
     }
@@ -2606,54 +2606,54 @@ Board_STATUS Board_tps65941GetWdtStat(void *handle,
                                      &regData,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }
 
-    if(BOARD_TPS65941_WDT_RST_INT == wdtErrType)
+    if(wdtErrType == BOARD_TPS65941_WDT_RST_INT)
     {
         if((regData & BOARD_TPS65941_WDT_RST_STAT_BIT_MASK) >> BOARD_TPS65941_WDT_RST_STAT_SHIFT)
         {
             *wdtErrStat = BOARD_TPS65941_WDT_ERR_LATCHED;
         }
     }
-    else if(BOARD_TPS65941_WDT_FAIL_INT == wdtErrType)
+    else if(wdtErrType == BOARD_TPS65941_WDT_FAIL_INT)
     {
         if((regData & BOARD_TPS65941_WDT_FAIL_STAT_BIT_MASK) >> BOARD_TPS65941_WDT_FAIL_STAT_SHIFT)
         {
             *wdtErrStat = BOARD_TPS65941_WDT_ERR_LATCHED;
         }
     }
-    else if(BOARD_TPS65941_WDT_ANSW_ERR == wdtErrType)
+    else if(wdtErrType == BOARD_TPS65941_WDT_ANSW_ERR)
     {
         if((regData & BOARD_TPS65941_WDT_ANSW_ERR_BIT_MASK) >> BOARD_TPS65941_WDT_ANSW_ERR_SHIFT)
         {
             *wdtErrStat = BOARD_TPS65941_WDT_ERR_LATCHED;
         }
     }
-    else if(BOARD_TPS65941_WDT_SEQ_ERR == wdtErrType)
+    else if(wdtErrType == BOARD_TPS65941_WDT_SEQ_ERR)
     {
         if((regData & BOARD_TPS65941_WDT_SEQ_ERR_BIT_MASK) >> BOARD_TPS65941_WDT_SEQ_ERR_SHIFT)
         {
             *wdtErrStat = BOARD_TPS65941_WDT_ERR_LATCHED;
         }
     }
-    else if(BOARD_TPS65941_WDT_ANSW_ERLY_ERR == wdtErrType)
+    else if(wdtErrType == BOARD_TPS65941_WDT_ANSW_ERLY_ERR)
     {
         if((regData & BOARD_TPS65941_WDT_ANSW_ERLY_BIT_MASK) >> BOARD_TPS65941_WDT_ANSW_ERLY_SHIFT)
         {
             *wdtErrStat = BOARD_TPS65941_WDT_ERR_LATCHED;
         }
     }
-    else if(BOARD_TPS65941_WDT_TRIG_ERLY_ERR == wdtErrType)
+    else if(wdtErrType == BOARD_TPS65941_WDT_TRIG_ERLY_ERR)
     {
         if((regData & BOARD_TPS65941_WDT_TRIG_ERLY_BIT_MASK) >> BOARD_TPS65941_WDT_TRIG_ERLY_SHIFT)
         {
             *wdtErrStat = BOARD_TPS65941_WDT_ERR_LATCHED;
         }
     }
-    else if(BOARD_TPS65941_WDT_TIMEOUT_ERR == wdtErrType)
+    else if(wdtErrType == BOARD_TPS65941_WDT_TIMEOUT_ERR)
     {
         if((regData & BOARD_TPS65941_WDT_TIMEOUT_BIT_MASK) >> BOARD_TPS65941_WDT_TIMEOUT_SHIFT)
         {
@@ -2698,14 +2698,14 @@ Board_STATUS Board_tps65941StartEsm(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-    if((NULL == handle) || (BOARD_TPS65941_ESM_MCU < esmCfg) ||
-       (BOARD_TPS65941_ESM_PWM_MODE < esmMode))
+    if((handle == NULL) || (esmCfg > BOARD_TPS65941_ESM_MCU) ||
+       (esmMode > BOARD_TPS65941_ESM_PWM_MODE))
     {
         return BOARD_INVALID_PARAM;
     }
 
     /* Start the ESM with the configuration mode */
-    if(BOARD_TPS65941_ESM_SOC == esmCfg)
+    if(esmCfg == BOARD_TPS65941_ESM_SOC)
     {
         boardStatus = Board_i2c8BitRegRd(handle,
                                          slaveAddr,
@@ -2713,7 +2713,7 @@ Board_STATUS Board_tps65941StartEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2729,7 +2729,7 @@ Board_STATUS Board_tps65941StartEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2740,7 +2740,7 @@ Board_STATUS Board_tps65941StartEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2754,7 +2754,7 @@ Board_STATUS Board_tps65941StartEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2767,7 +2767,7 @@ Board_STATUS Board_tps65941StartEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2783,7 +2783,7 @@ Board_STATUS Board_tps65941StartEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2794,7 +2794,7 @@ Board_STATUS Board_tps65941StartEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2808,7 +2808,7 @@ Board_STATUS Board_tps65941StartEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2838,12 +2838,12 @@ Board_STATUS Board_tps65941StopEsm(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-    if((NULL == handle) || (BOARD_TPS65941_ESM_MCU < esmCfg))
+    if((handle == NULL) || (esmCfg > BOARD_TPS65941_ESM_MCU))
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if(BOARD_TPS65941_ESM_SOC == esmCfg)
+    if(esmCfg == BOARD_TPS65941_ESM_SOC)
     {
         boardStatus = Board_i2c8BitRegRd(handle,
                                          slaveAddr,
@@ -2851,7 +2851,7 @@ Board_STATUS Board_tps65941StopEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2865,7 +2865,7 @@ Board_STATUS Board_tps65941StopEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2878,7 +2878,7 @@ Board_STATUS Board_tps65941StopEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2892,7 +2892,7 @@ Board_STATUS Board_tps65941StopEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2924,13 +2924,13 @@ Board_STATUS Board_tps65941ConfigEsm(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-    if((NULL == handle) || (NULL == esmCfg) ||
-       (BOARD_TPS65941_ESM_MCU < esmCfgType))
+    if((handle == NULL) || (esmCfg == NULL) ||
+       (esmCfgType > BOARD_TPS65941_ESM_MCU))
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if(BOARD_TPS65941_ESM_SOC == esmCfgType)
+    if(esmCfgType == BOARD_TPS65941_ESM_SOC)
     {
         regData = esmCfg->delay1TimeInterval;
         boardStatus = Board_i2c8BitRegWr(handle,
@@ -2939,7 +2939,7 @@ Board_STATUS Board_tps65941ConfigEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2951,7 +2951,7 @@ Board_STATUS Board_tps65941ConfigEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2963,7 +2963,7 @@ Board_STATUS Board_tps65941ConfigEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2975,7 +2975,7 @@ Board_STATUS Board_tps65941ConfigEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2987,7 +2987,7 @@ Board_STATUS Board_tps65941ConfigEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -2999,7 +2999,7 @@ Board_STATUS Board_tps65941ConfigEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -3013,7 +3013,7 @@ Board_STATUS Board_tps65941ConfigEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -3025,7 +3025,7 @@ Board_STATUS Board_tps65941ConfigEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -3037,7 +3037,7 @@ Board_STATUS Board_tps65941ConfigEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -3049,7 +3049,7 @@ Board_STATUS Board_tps65941ConfigEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -3061,7 +3061,7 @@ Board_STATUS Board_tps65941ConfigEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -3073,7 +3073,7 @@ Board_STATUS Board_tps65941ConfigEsm(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -3106,14 +3106,14 @@ Board_STATUS Board_tps65941GetEsmCount(void *handle,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t regData = 0;
 
-    if((NULL == handle) || (NULL == esmErrCnt) ||
-       (BOARD_TPS65941_ESM_MCU < esmCfg))
+    if((handle == NULL) || (esmErrCnt == NULL) ||
+       (esmCfg > BOARD_TPS65941_ESM_MCU))
     {
         return BOARD_INVALID_PARAM;
     }
 
     /* Reading the ESM Error count */
-    if(BOARD_TPS65941_ESM_SOC == esmCfg)
+    if(esmCfg == BOARD_TPS65941_ESM_SOC)
     {
         boardStatus = Board_i2c8BitRegRd(handle,
                                          slaveAddr,
@@ -3121,7 +3121,7 @@ Board_STATUS Board_tps65941GetEsmCount(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
@@ -3135,7 +3135,7 @@ Board_STATUS Board_tps65941GetEsmCount(void *handle,
                                          &regData,
                                          BOARD_I2C_NUM_OF_BYTES_01,
                                          BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != boardStatus)
+        if(boardStatus != BOARD_SOK)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }

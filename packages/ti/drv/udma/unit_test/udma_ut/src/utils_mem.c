@@ -77,7 +77,7 @@ static uint8_t gUtilsHeapMemDdr[UTILS_MEM_HEAP_SIZE_DDR] __attribute__(( aligned
 static uint8_t gUtilsHeapMemInternal[UTILS_MEM_HEAP_SIZE_INTERNAL] __attribute__(( aligned(128), section(".udma_buffer_internal") ));
 static uint8_t gUtilsHeapMemOspi[UTILS_MEM_HEAP_SIZE_OSPI] __attribute__(( aligned(128), section(".udma_buffer_ospi") ));
 
-static uint32_t gUtilsMemClearBuf = UFALSE;
+static uint32_t gUtilsMemClearBuf = FALSE;
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -115,7 +115,7 @@ int32_t Utils_memInit(void)
     gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_OSPI] = HeapP_create(&heapMemPrm);
     GT_assert(UdmaUtTrace, gUtilsHeapMemHandle[UTILS_MEM_HEAP_ID_OSPI] != NULL);
 
-    gUtilsMemClearBuf = UTRUE;
+    gUtilsMemClearBuf = TRUE;
 
     return (UDMA_SOK);
 }
@@ -149,7 +149,7 @@ void *Utils_memAlloc(uint32_t heapId, uint32_t size, uint32_t align)
 
     /* allocate memory  */
         addr = HeapP_alloc(gUtilsHeapMemHandle[heapId], size);
-    if((NULL != addr) && (UTRUE == gUtilsMemClearBuf))
+    if((addr != NULL) && (TRUE == gUtilsMemClearBuf))
     {
         memset(addr, 0U, size);
         /* Flush and invalidate the CPU write */

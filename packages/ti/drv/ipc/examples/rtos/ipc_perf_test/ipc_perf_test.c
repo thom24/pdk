@@ -215,8 +215,8 @@ uint8_t ctrlBuf[RPMSG_DATA_SIZE]      __attribute__ ((section("ipc_data_buffer")
 uint8_t sysVqBuf[VQ_BUF_SIZE]         __attribute__ ((section("ipc_data_buffer"), aligned (8)));
 uint8_t rpmsgBuf[RPMSG_DATA_SIZE]     __attribute__ ((section("ipc_data_buffer"), aligned (8)));
 uint8_t tstBuf[RPMSG_DATA_SIZE]       __attribute__ ((section("ipc_data_buffer"), aligned (8)));
-uint32_t testCompleted  = UFALSE;
-uint32_t gPrintHostCore = UFALSE;
+uint32_t testCompleted  = FALSE;
+uint32_t gPrintHostCore = FALSE;
 
 SemaphoreP_Handle   semHandle;
 
@@ -228,7 +228,7 @@ int32_t Ipc_perf_test(void)
     TaskP_Handle        tskHandle  = NULL;
     int32_t		        status     = IPC_SOK;
     uint32_t            selfId     = Ipc_getCoreId();
-    uint32_t            curHost    = UFALSE;
+    uint32_t            curHost    = FALSE;
     Ipc_Testcase*       tstcase    = NULL;
     uint32_t            remoteEndPt;
     uint32_t            remoteProcId;
@@ -246,7 +246,7 @@ int32_t Ipc_perf_test(void)
     /* MCU1_0 needs to kickstart the test */
     if(IPC_MCU1_0 == selfId)
     {
-        curTestIndex = 0U;
+        curTestIndex = 0;
         tstcase = Ipc_getTestcase(curTestIndex);
 
         Ipc_sendMessage(handle, myEndPt, tstcase->hostCore, IPC_PING);
@@ -265,7 +265,7 @@ int32_t Ipc_perf_test(void)
     {
         tskHandle = Ipc_createRcvThread(handle, &myEndPt);
 
-        while(UTRUE != testCompleted)
+        while(testCompleted != TRUE)
         {
             tstcase = Ipc_getTestcase(curTestIndex);
             if( NULL != tstcase)
@@ -273,28 +273,28 @@ int32_t Ipc_perf_test(void)
                 /* If you are not host core or you are
                  * A72, wait for the message */
                 if( (selfId != tstcase->hostCore) ||
-                    ((PRINT_HOST_CORE == selfId) && (0U == curTestIndex)))
+                    ((PRINT_HOST_CORE == selfId) && (curTestIndex == 0)))
                 {
                     SemaphoreP_pend(semHandle, SemaphoreP_WAIT_FOREVER);
-                    if(UTRUE == testCompleted)
+                    if(testCompleted == TRUE )
                     {
                         continue;
                     }
 
-                    curHost = UTRUE;
+                    curHost = TRUE;
                     tstcase = Ipc_getTestcase(curTestIndex);
 
-                    if((UTRUE == gPrintHostCore) && (0U == curTestIndex))
+                    if((TRUE == gPrintHostCore) && (curTestIndex == 0))
                     {
                         UART_printf("\n\nPerformance Test : Started\n");
                     }
 
-                    if((UTRUE == gPrintHostCore) && (NULL == tstcase))
+                    if((TRUE == gPrintHostCore) && (NULL == tstcase))
                     {
                         /* Test completed */
                         Ipc_printTestReport();
 
-                        //testCompleted = UTRUE;
+                        //testCompleted = TRUE;
                         continue;
                     }
                     else
@@ -319,10 +319,10 @@ int32_t Ipc_perf_test(void)
                     /* Notify other cores that test completed */
                     Ipc_sendTestCompletedMsg(handle, myEndPt);
                 }
-                else if((selfId != tstcase->hostCore) && (UTRUE == curHost))
+                else if((selfId != tstcase->hostCore) && (TRUE == curHost))
                 {
                     Ipc_sendNewTestIndex(handle, myEndPt, curTestIndex, tstcase->hostCore);
-                    curHost = UFALSE;
+                    curHost = FALSE;
                 }
             }
         }
@@ -332,7 +332,7 @@ int32_t Ipc_perf_test(void)
             TaskP_delete(tskHandle);
         }
 
-        if(UTRUE == gPrintHostCore)
+        if(TRUE == gPrintHostCore)
         {
             UART_printf("Performance Test : Completed\n");
         }
@@ -355,14 +355,14 @@ void Ipc_recvTaskFxn(void *arg0, void *arg1)
     handle = (RPMessage_Handle)arg0;
     myEndPt = (uint32_t)(*(uint32_t*)arg1);
 
-    while(UTRUE != testCompleted)
+    while( testCompleted != TRUE)
     {
         len = MSGSIZE;
         status = RPMessage_recv(handle, (Ptr)buf, &len, &remoteEndPt, &remoteProcId,
                 IPC_RPMESSAGE_TIMEOUT_FOREVER);
         if(IPC_SOK != status)
         {
-            testCompleted = UTRUE;
+            testCompleted = TRUE;
             App_printf("Ipc_recvTaskFxn:  recvd fxn failed...exiting\n");
             break;
         }
@@ -461,7 +461,7 @@ void Ipc_perf_test_setup(void)
 
     if(PRINT_HOST_CORE == selfId)
     {
-        gPrintHostCore = UTRUE;
+        gPrintHostCore = TRUE;
     }
 }
 
@@ -668,7 +668,7 @@ void Ipc_sendTestResult(RPMessage_Handle handle, uint32_t srcEndPt)
 uint32_t Ipc_processPerfCmd(RPMessage_Handle handle, uint32_t dstEndPt, uint32_t dstCoreId,
                 uint32_t srcEndPt, uint8_t *buf, uint32_t bufSize)
 {
-    uint32_t        retVal = UFALSE;
+    uint32_t        retVal = FALSE;
     uint32_t        funcCode;
     uint32_t        dataSize;
     uint32_t        selfId = Ipc_getCoreId();
@@ -695,13 +695,13 @@ uint32_t Ipc_processPerfCmd(RPMessage_Handle handle, uint32_t dstEndPt, uint32_t
                     case IPC_FC_PERFTEST_TESTINDEX:
                         memcpy((void*)&curTestIndex, (const void*)&buf[6], sizeof(uint32_t));
                         SemaphoreP_post(semHandle);
-                        retVal = UTRUE;
+                        retVal = TRUE;
                         break;
 
                     case IPC_FC_PERFTEST_COMPLETED:
                         memcpy((void*)&curTestIndex, (const void*)&buf[6], sizeof(uint32_t));
                         SemaphoreP_post(semHandle);
-                        retVal = UTRUE;
+                        retVal = TRUE;
 
                         /* Send Test Result to print host core */
                         if(PRINT_HOST_CORE != selfId)
@@ -711,7 +711,7 @@ uint32_t Ipc_processPerfCmd(RPMessage_Handle handle, uint32_t dstEndPt, uint32_t
 
                         if(PRINT_HOST_CORE != selfId)
                         {
-                            testCompleted = UTRUE;
+                            testCompleted = TRUE;
                         }
 
                         break;

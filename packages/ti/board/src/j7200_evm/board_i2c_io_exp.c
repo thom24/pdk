@@ -68,14 +68,14 @@ Board_STATUS Board_i2cIoExpReadDirPort(uint8_t slaveAddr,
     uint8_t subAddr;
     I2C_Transaction transaction;
 
-    if(NULL == gIoExpI2cHandle)
+    if(gIoExpI2cHandle == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if (ONE_PORT_IOEXP == ioExpType)
+    if (ioExpType == ONE_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             subAddr = BOARD_1PORT_IOEXP_CONFIGURATION_CMD;
         }
@@ -84,13 +84,13 @@ Board_STATUS Board_i2cIoExpReadDirPort(uint8_t slaveAddr,
             return BOARD_INVALID_PARAM;
         }
     }
-    else if (TWO_PORT_IOEXP == ioExpType)
+    else if (ioExpType == TWO_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             subAddr = BOARD_2PORT_IOEXP_PORT0_CONFIGURATION_CMD;
         }
-        else if(PORTNUM_1 == portNum)
+        else if(portNum == PORTNUM_1)
         {
             subAddr = BOARD_2PORT_IOEXP_PORT1_CONFIGURATION_CMD;
         }
@@ -99,17 +99,17 @@ Board_STATUS Board_i2cIoExpReadDirPort(uint8_t slaveAddr,
             return BOARD_INVALID_PARAM;
         }
     }
-    else if (THREE_PORT_IOEXP == ioExpType)
+    else if (ioExpType == THREE_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             subAddr = BOARD_3PORT_IOEXP_PORT0_CONFIGURATION_CMD;
         }
-        else if(PORTNUM_1 == portNum)
+        else if(portNum == PORTNUM_1)
         {
             subAddr = BOARD_3PORT_IOEXP_PORT1_CONFIGURATION_CMD;
         }
-        else if(PORTNUM_2 == portNum)
+        else if(portNum == PORTNUM_2)
         {
             subAddr = BOARD_3PORT_IOEXP_PORT2_CONFIGURATION_CMD;
         }
@@ -136,7 +136,7 @@ Board_STATUS Board_i2cIoExpReadDirPort(uint8_t slaveAddr,
     BOARD_delay(200);
 
     ret = I2C_transfer(gIoExpI2cHandle, &transaction);
-    if(I2C_STS_SUCCESS != ret)
+    if(ret != I2C_STS_SUCCESS)
     {
         ret = BOARD_I2C_TRANSFER_FAIL;
         return ret;
@@ -148,7 +148,7 @@ Board_STATUS Board_i2cIoExpReadDirPort(uint8_t slaveAddr,
     BOARD_delay(20000);
 
     ret = I2C_transfer(gIoExpI2cHandle, &transaction);
-    if(I2C_STS_SUCCESS != ret)
+    if(ret != I2C_STS_SUCCESS)
     {
         ret = BOARD_I2C_TRANSFER_FAIL;
         return ret;
@@ -182,14 +182,14 @@ Board_STATUS Board_i2cIoExpReadOutputPort(uint8_t slaveAddr,
     uint8_t subAddr;
     I2C_Transaction transaction;
 
-    if(NULL == gIoExpI2cHandle)
+    if(gIoExpI2cHandle == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if (ONE_PORT_IOEXP == ioExpType)
+    if (ioExpType == ONE_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             subAddr = BOARD_1PORT_IOEXP_OUTPUT_CMD;
         }
@@ -198,13 +198,13 @@ Board_STATUS Board_i2cIoExpReadOutputPort(uint8_t slaveAddr,
             return BOARD_INVALID_PARAM;
         }
     }
-    else if (TWO_PORT_IOEXP == ioExpType)
+    else if (ioExpType == TWO_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             subAddr = BOARD_2PORT_IOEXP_PORT0_OUTPUT_CMD;
         }
-        else if(PORTNUM_1 == portNum)
+        else if(portNum == PORTNUM_1)
         {
             subAddr = BOARD_2PORT_IOEXP_PORT1_OUTPUT_CMD;
         }
@@ -213,17 +213,17 @@ Board_STATUS Board_i2cIoExpReadOutputPort(uint8_t slaveAddr,
             return BOARD_INVALID_PARAM;
         }
     }
-    else if (THREE_PORT_IOEXP == ioExpType)
+    else if (ioExpType == THREE_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             subAddr = BOARD_3PORT_IOEXP_PORT0_OUTPUT_CMD;
         }
-        else if(PORTNUM_1 == portNum)
+        else if(portNum == PORTNUM_1)
         {
             subAddr = BOARD_3PORT_IOEXP_PORT1_OUTPUT_CMD;
         }
-        else if(PORTNUM_2 == portNum)
+        else if(portNum == PORTNUM_2)
         {
             subAddr = BOARD_3PORT_IOEXP_PORT2_OUTPUT_CMD;
         }
@@ -250,7 +250,7 @@ Board_STATUS Board_i2cIoExpReadOutputPort(uint8_t slaveAddr,
     BOARD_delay(200);
 
     ret = I2C_transfer(gIoExpI2cHandle, &transaction);
-    if(I2C_STS_SUCCESS != ret)
+    if(ret != I2C_STS_SUCCESS)
     {
         ret = BOARD_I2C_TRANSFER_FAIL;
         return ret;
@@ -262,7 +262,7 @@ Board_STATUS Board_i2cIoExpReadOutputPort(uint8_t slaveAddr,
     BOARD_delay(20000);
 
     ret = I2C_transfer(gIoExpI2cHandle, &transaction);
-    if(I2C_STS_SUCCESS != ret)
+    if(ret != I2C_STS_SUCCESS)
     {
         ret = BOARD_I2C_TRANSFER_FAIL;
         return ret;
@@ -296,14 +296,14 @@ Board_STATUS Board_i2cIoExpReadInputPort(uint8_t slaveAddr,
     uint8_t subAddr;
     I2C_Transaction transaction;
 
-    if(NULL == gIoExpI2cHandle)
+    if(gIoExpI2cHandle == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if (ONE_PORT_IOEXP == ioExpType)
+    if (ioExpType == ONE_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             subAddr = BOARD_1PORT_IOEXP_INPUT_CMD;
         }
@@ -312,13 +312,13 @@ Board_STATUS Board_i2cIoExpReadInputPort(uint8_t slaveAddr,
             return BOARD_INVALID_PARAM;
         }
     }
-    else if (TWO_PORT_IOEXP == ioExpType)
+    else if (ioExpType == TWO_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             subAddr = BOARD_2PORT_IOEXP_PORT0_INPUT_CMD;
         }
-        else if(PORTNUM_1 == portNum)
+        else if(portNum == PORTNUM_1)
         {
             subAddr = BOARD_2PORT_IOEXP_PORT1_INPUT_CMD;
         }
@@ -327,17 +327,17 @@ Board_STATUS Board_i2cIoExpReadInputPort(uint8_t slaveAddr,
             return BOARD_INVALID_PARAM;
         }
     }
-    else if (THREE_PORT_IOEXP == ioExpType)
+    else if (ioExpType == THREE_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             subAddr = BOARD_3PORT_IOEXP_PORT0_INPUT_CMD;
         }
-        else if(PORTNUM_1 == portNum)
+        else if(portNum == PORTNUM_1)
         {
             subAddr = BOARD_3PORT_IOEXP_PORT1_INPUT_CMD;
         }
-        else if(PORTNUM_2 == portNum)
+        else if(portNum == PORTNUM_2)
         {
             subAddr = BOARD_3PORT_IOEXP_PORT2_INPUT_CMD;
         }
@@ -364,7 +364,7 @@ Board_STATUS Board_i2cIoExpReadInputPort(uint8_t slaveAddr,
     BOARD_delay(200);
 
     ret = I2C_transfer(gIoExpI2cHandle, &transaction);
-    if(I2C_STS_SUCCESS != ret)
+    if(ret != I2C_STS_SUCCESS)
     {
         ret = BOARD_I2C_TRANSFER_FAIL;
         return ret;
@@ -376,7 +376,7 @@ Board_STATUS Board_i2cIoExpReadInputPort(uint8_t slaveAddr,
     BOARD_delay(20000);
 
     ret = I2C_transfer(gIoExpI2cHandle, &transaction);
-    if(I2C_STS_SUCCESS != ret)
+    if(ret != I2C_STS_SUCCESS)
     {
         ret = BOARD_I2C_TRANSFER_FAIL;
         return ret;
@@ -409,59 +409,59 @@ Board_STATUS Board_i2cIoExpSetPortDirection(uint8_t slaveAddr,
     uint8_t dataBuff[2] = {0};
     I2C_Transaction transaction;
 
-    if(NULL == gIoExpI2cHandle)
+    if(gIoExpI2cHandle == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if (ONE_PORT_IOEXP == ioExpType)
+    if (ioExpType == ONE_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             dataBuff[0] = BOARD_1PORT_IOEXP_CONFIGURATION_CMD;
         }
         else
         {
-            return BOARD_INVALID_PARAM;
+            return -1;
         }
     }
-    else if (TWO_PORT_IOEXP == ioExpType)
+    else if (ioExpType == TWO_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             dataBuff[0] = BOARD_2PORT_IOEXP_PORT0_CONFIGURATION_CMD;
         }
-        else if(PORTNUM_1 == portNum)
+        else if(portNum == PORTNUM_1)
         {
             dataBuff[0] = BOARD_2PORT_IOEXP_PORT1_CONFIGURATION_CMD;
         }
         else
         {
-            return BOARD_INVALID_PARAM;
+            return -1;
         }
     }
-    else if (THREE_PORT_IOEXP == ioExpType)
+    else if (ioExpType == THREE_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             dataBuff[0] = BOARD_3PORT_IOEXP_PORT0_CONFIGURATION_CMD;
         }
-        else if(PORTNUM_1 == portNum)
+        else if(portNum == PORTNUM_1)
         {
             dataBuff[0] = BOARD_3PORT_IOEXP_PORT1_CONFIGURATION_CMD;
         }
-        else if(PORTNUM_2 == portNum)
+        else if(portNum == PORTNUM_2)
         {
             dataBuff[0] = BOARD_3PORT_IOEXP_PORT2_CONFIGURATION_CMD;
         }
         else
         {
-            return BOARD_INVALID_PARAM;
+            return -1;
         }
     }
     else
     {
-        return BOARD_INVALID_PARAM;
+        return -1;
     }
 
     dataBuff[1] = data;
@@ -478,7 +478,7 @@ Board_STATUS Board_i2cIoExpSetPortDirection(uint8_t slaveAddr,
     BOARD_delay(200);
 
     ret = I2C_transfer(gIoExpI2cHandle, &transaction);
-    if(I2C_STS_SUCCESS != ret)
+    if(ret != I2C_STS_SUCCESS)
     {
         ret = BOARD_I2C_TRANSFER_FAIL;
         return ret;
@@ -516,14 +516,14 @@ Board_STATUS Board_i2cIoExpSetPinDirection(uint8_t slaveAddr,
     uint8_t data;
     I2C_Transaction transaction;
 
-    if(NULL == gIoExpI2cHandle)
+    if(gIoExpI2cHandle == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if (ONE_PORT_IOEXP == ioExpType)
+    if (ioExpType == ONE_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             dataBuff[0] = BOARD_1PORT_IOEXP_CONFIGURATION_CMD;
         }
@@ -532,13 +532,13 @@ Board_STATUS Board_i2cIoExpSetPinDirection(uint8_t slaveAddr,
             return BOARD_INVALID_PARAM;
         }
     }
-    else if (TWO_PORT_IOEXP == ioExpType)
+    else if (ioExpType == TWO_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             dataBuff[0] = BOARD_2PORT_IOEXP_PORT0_CONFIGURATION_CMD;
         }
-        else if(PORTNUM_1 == portNum)
+        else if(portNum == PORTNUM_1)
         {
             dataBuff[0] = BOARD_2PORT_IOEXP_PORT1_CONFIGURATION_CMD;
         }
@@ -547,17 +547,17 @@ Board_STATUS Board_i2cIoExpSetPinDirection(uint8_t slaveAddr,
             return BOARD_INVALID_PARAM;
         }
     }
-    else if (THREE_PORT_IOEXP == ioExpType)
+    else if (ioExpType == THREE_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             dataBuff[0] = BOARD_3PORT_IOEXP_PORT0_CONFIGURATION_CMD;
         }
-        else if(PORTNUM_1 == portNum)
+        else if(portNum == PORTNUM_1)
         {
             dataBuff[0] = BOARD_3PORT_IOEXP_PORT1_CONFIGURATION_CMD;
         }
-        else if(PORTNUM_2 == portNum)
+        else if(portNum == PORTNUM_2)
         {
             dataBuff[0] = BOARD_3PORT_IOEXP_PORT2_CONFIGURATION_CMD;
         }
@@ -572,7 +572,7 @@ Board_STATUS Board_i2cIoExpSetPinDirection(uint8_t slaveAddr,
     }
 
     Board_i2cIoExpReadDirPort(slaveAddr, ioExpType, portNum, &data);
-    if(PIN_DIRECTION_OUTPUT == direction)
+    if(direction == PIN_DIRECTION_OUTPUT)
     {
         dataBuff[1] = ((data & ~(1 << pinNum)) | (0 << pinNum));
     }
@@ -593,7 +593,7 @@ Board_STATUS Board_i2cIoExpSetPinDirection(uint8_t slaveAddr,
     BOARD_delay(200);
 
     ret = I2C_transfer(gIoExpI2cHandle, &transaction);
-    if(I2C_STS_SUCCESS != ret)
+    if(ret != I2C_STS_SUCCESS)
     {
         ret = BOARD_I2C_TRANSFER_FAIL;
         return ret;
@@ -627,14 +627,14 @@ Board_STATUS Board_i2cIoExpWritePort(uint8_t slaveAddr,
     uint8_t dataBuff[2] = {0};
     I2C_Transaction transaction;
 
-    if(NULL == gIoExpI2cHandle)
+    if(gIoExpI2cHandle == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if (ONE_PORT_IOEXP == ioExpType)
+    if (ioExpType == ONE_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             dataBuff[0] = BOARD_1PORT_IOEXP_OUTPUT_CMD;
         }
@@ -643,13 +643,13 @@ Board_STATUS Board_i2cIoExpWritePort(uint8_t slaveAddr,
             return BOARD_INVALID_PARAM;
         }
     }
-    else if (TWO_PORT_IOEXP == ioExpType)
+    else if (ioExpType == TWO_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             dataBuff[0] = BOARD_2PORT_IOEXP_PORT0_OUTPUT_CMD;
         }
-        else if(PORTNUM_1 == portNum)
+        else if(portNum == PORTNUM_1)
         {
             dataBuff[0] = BOARD_2PORT_IOEXP_PORT1_OUTPUT_CMD;
         }
@@ -658,17 +658,17 @@ Board_STATUS Board_i2cIoExpWritePort(uint8_t slaveAddr,
             return BOARD_INVALID_PARAM;
         }
     }
-    else if (THREE_PORT_IOEXP == ioExpType)
+    else if (ioExpType == THREE_PORT_IOEXP)
     {
-        if(PORTNUM_0 == portNum)
+        if(portNum == PORTNUM_0)
         {
             dataBuff[0] = BOARD_3PORT_IOEXP_PORT0_OUTPUT_CMD;
         }
-        else if(PORTNUM_1 == portNum)
+        else if(portNum == PORTNUM_1)
         {
             dataBuff[0] = BOARD_3PORT_IOEXP_PORT1_OUTPUT_CMD;
         }
-        else if(PORTNUM_2 == portNum)
+        else if(portNum == PORTNUM_2)
         {
             dataBuff[0] = BOARD_3PORT_IOEXP_PORT2_OUTPUT_CMD;
         }
@@ -696,7 +696,7 @@ Board_STATUS Board_i2cIoExpWritePort(uint8_t slaveAddr,
     BOARD_delay(200);
 
     ret = I2C_transfer(gIoExpI2cHandle, &transaction);
-    if(I2C_STS_SUCCESS != ret)
+    if(ret != I2C_STS_SUCCESS)
     {
         ret = BOARD_I2C_TRANSFER_FAIL;
         return ret;
@@ -735,7 +735,7 @@ Board_STATUS Board_i2cIoExpPinLevelSet(uint8_t slaveAddr,
     uint8_t data;
 
     ret = Board_i2cIoExpReadOutputPort(slaveAddr, ioExpType, portNum, &data);
-    if(BOARD_SOK != ret)
+    if(ret != BOARD_SOK)
     {
         ret = BOARD_I2C_TRANSFER_FAIL;
         return ret;
@@ -774,7 +774,7 @@ Board_STATUS Board_i2cIoExpPinLevelGet(uint8_t slaveAddr,
     uint8_t data;
 
     ret = Board_i2cIoExpReadInputPort(slaveAddr, ioExpType, portNum, &data);
-    if(BOARD_SOK != ret)
+    if(ret != BOARD_SOK)
     {
         ret = BOARD_I2C_TRANSFER_FAIL;
         return ret;
@@ -796,11 +796,11 @@ Board_STATUS Board_i2cIoExpInit(void)
     Board_STATUS ret = BOARD_SOK;
 
     /* If handle not opened yet, initializes i2c */
-    if (NULL == gIoExpI2cHandle)
+    if (gIoExpI2cHandle == NULL)
     {
         gIoExpI2cHandle = Board_getI2CHandle(gBoardI2cInitCfg.socDomain,
                                              gBoardI2cInitCfg.i2cInst);
-        if(NULL == gIoExpI2cHandle)
+        if(gIoExpI2cHandle == NULL)
         {
             ret = BOARD_I2C_OPEN_FAIL;
         }

@@ -100,7 +100,7 @@ typedef struct
 
 static Utils_PrfObj        gUtils_prfObj;
 static Utils_AccPrfLoadObj gUtils_accPrfLoadObj;
-static uint32_t            gUtils_startLoadCalc = UFALSE;
+static uint32_t               gUtils_startLoadCalc = 0;
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -141,12 +141,12 @@ Utils_PrfTsHndl *Utils_prfTsCreate(const char *name)
     {
         pHndl = &gUtils_prfObj.tsObj[hndlId];
 
-        if(UFALSE == pHndl->isAlloc)
+        if(FALSE == pHndl->isAlloc)
         {
             /* One less for NULL character */
             strncpy(pHndl->name, name, ((uint32_t) sizeof (pHndl->name) - 1U));
             pHndl->name[sizeof (pHndl->name) - 1U] = (UInt8) '\0';
-            pHndl->isAlloc = UTRUE;
+            pHndl->isAlloc = (uint32_t) TRUE;
             Utils_prfTsReset(pHndl);
             break;
         }
@@ -159,7 +159,7 @@ Utils_PrfTsHndl *Utils_prfTsCreate(const char *name)
 
 int32_t Utils_prfTsDelete(Utils_PrfTsHndl *pHndl)
 {
-    pHndl->isAlloc = UFALSE;
+    pHndl->isAlloc = (uint32_t) FALSE;
     return (0);
 }
 
@@ -281,7 +281,7 @@ int32_t Utils_prfTsPrintAll(uint32_t resetAfterPrint, uint32_t trace)
     {
         pHndl = &gUtils_prfObj.tsObj[hndlId];
 
-        if(UTRUE == pHndl->isAlloc)
+        if(TRUE == pHndl->isAlloc)
         {
             Utils_prfTsPrint(pHndl, resetAfterPrint, trace);
         }
@@ -305,9 +305,9 @@ int32_t Utils_prfLoadRegister(TaskP_Handle pTsk, const char *name)
     {
         pHndl = &gUtils_prfObj.loadObj[hndlId];
 
-        if(UFALSE == pHndl->isAlloc)
+        if(FALSE == pHndl->isAlloc)
         {
-            pHndl->isAlloc = UTRUE;
+            pHndl->isAlloc = (uint32_t) TRUE;
             pHndl->pTsk    = pTsk;
             /* One less for NULL character */
             strncpy(pHndl->name, name, ((uint32_t) sizeof (pHndl->name) - 1U));
@@ -335,9 +335,9 @@ int32_t Utils_prfLoadUnRegister(TaskP_Handle pTsk)
     {
         pHndl = &gUtils_prfObj.loadObj[hndlId];
 
-        if((UTRUE == pHndl->isAlloc) && (pHndl->pTsk == pTsk))
+        if((TRUE == pHndl->isAlloc) && (pHndl->pTsk == pTsk))
         {
-            pHndl->isAlloc = UFALSE;
+            pHndl->isAlloc = (uint32_t) FALSE;
             status         = CSL_SOK;
             break;
         }
@@ -370,13 +370,13 @@ int32_t Utils_prfLoadPrintAll(uint32_t printTskLoad, uint32_t trace)
               hwiLoad,
               swiLoad);
 
-    if((UTRUE) == printTskLoad)
+    if(((uint32_t) TRUE) == printTskLoad)
     {
         for (hndlId = 0; hndlId < UTILS_PRF_MAX_HNDL; hndlId++)
         {
             pHndl = &gUtils_prfObj.loadObj[hndlId];
 
-            if(UTRUE == pHndl->isAlloc)
+            if(TRUE == pHndl->isAlloc)
             {
                 tskLoad = (uint32_t) ((pHndl->totalTskThreadTime *
                                      (uint64_t) 100U) /
@@ -401,7 +401,7 @@ void Utils_prfLoadCalcStart(void)
     uint32_t cookie;
 
     cookie = Hwi_disable();
-    gUtils_startLoadCalc = UTRUE;
+    gUtils_startLoadCalc = (uint32_t) TRUE;
     Hwi_restore(cookie);
 
     return;
@@ -412,7 +412,7 @@ void Utils_prfLoadCalcStop(void)
     uint32_t cookie;
 
     cookie = Hwi_disable();
-    gUtils_startLoadCalc = UFALSE;
+    gUtils_startLoadCalc = FALSE;
     Hwi_restore(cookie);
 
     return;
@@ -433,7 +433,7 @@ void Utils_prfLoadCalcReset(void)
     {
         pHndl = &gUtils_prfObj.loadObj[hndlId];
 
-        if((UTRUE == pHndl->isAlloc) &&
+        if(((uint32_t) TRUE == pHndl->isAlloc) &&
             (pHndl->pTsk != NULL))
         {
             pHndl->totalTskThreadTime = 0;
@@ -451,7 +451,7 @@ void Utils_prfLoadUpdate(void)
     TaskP_Handle        idlTskHndl = NULL;
     Utils_PrfLoadObj   *pHndl;
 
-    if(UTRUE == gUtils_startLoadCalc)
+    if(((uint32_t) TRUE) == (uint32_t) gUtils_startLoadCalc)
     {
         idlTskHndl = Task_getIdleTask();
 
@@ -471,7 +471,7 @@ void Utils_prfLoadUpdate(void)
         {
             pHndl = &gUtils_prfObj.loadObj[hndlId];
 
-            if((UTRUE == pHndl->isAlloc) &&
+            if(((uint32_t) TRUE == pHndl->isAlloc) &&
                 (pHndl->pTsk != NULL))
             {
                 Load_getTaskLoad(pHndl->pTsk, &tskLoadStat);

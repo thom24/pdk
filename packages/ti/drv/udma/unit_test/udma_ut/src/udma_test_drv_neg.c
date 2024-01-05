@@ -513,7 +513,7 @@ int32_t udmaTestUdmaInitSkipEventRegTc(UdmaTestTaskObj *taskObj)
         {
             drvHandle = &testObj->drvObj[instId];
             UdmaInitPrms_init(instId, &initPrms);
-            initPrms.skipGlobalEventReg = UTRUE;
+            initPrms.skipGlobalEventReg = TRUE;
             retVal = Udma_init(drvHandle, &initPrms);
             if(UDMA_SOK != retVal)
             {
@@ -532,7 +532,7 @@ int32_t udmaTestUdmaInitSkipEventRegTc(UdmaTestTaskObj *taskObj)
             {
                 GT_1trace(testObj->traceMask, GT_INFO1, " |TEST INFO|:: UDMA Deinit Instance %d:: Pass\r\n", instId);
             }
-            initPrms.skipGlobalEventReg = UFALSE;
+            initPrms.skipGlobalEventReg = FALSE;
         }
     }
 

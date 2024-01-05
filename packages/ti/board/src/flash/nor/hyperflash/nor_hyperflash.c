@@ -140,7 +140,7 @@ static NOR_STATUS Nor_hpfReadId(NOR_Info *Nor_hpfInfo)
     uint16_t manfID, devID;
     uint16_t queryStr[3];
     uint32_t count = 0;
-    uint32_t idReadCount = 0U;
+    uint32_t idReadCount = 0;
 
     hpfObject = (HPF_Object *)Nor_hpfInfo->hwHandle;
 
@@ -158,18 +158,18 @@ static NOR_STATUS Nor_hpfReadId(NOR_Info *Nor_hpfInfo)
         manfID = HW_RD_REG16(hpfObject->baseAddr + NOR_HPF_MANF_ID_ADDR);
         devID = HW_RD_REG16(hpfObject->baseAddr + NOR_HPF_DEV_ID_ADDR);
 
-        if ((NOR_MANF_ID == manfID) && (NOR_DEVICE_ID == devID)
-            && ('P' == queryStr[0]) && ('R' == queryStr[1]) && ('I' == queryStr[2]))
+        if ((manfID == NOR_MANF_ID) && (devID == NOR_DEVICE_ID)
+            && queryStr[0] == 'P' && queryStr[1] == 'R' && queryStr[2] == 'I')
         {
             idReadCount++;
         }
         else
         {
-            idReadCount = 0U;
+            idReadCount = 0;
         }
         count++;
 
-        if(4U <= idReadCount)
+        if(idReadCount >= 4)
         {
             Nor_hpfInfo->manufacturerId = manfID;
             Nor_hpfInfo->deviceId = devID;
@@ -203,7 +203,7 @@ NOR_HANDLE Nor_hpfOpen(uint32_t norIntf, uint32_t portNum, void *params)
 #endif
     int32_t retVal;
 
-    if (BTRUE != gHpfObject.isOpen)
+    if (gHpfObject.isOpen != TRUE)
     {
         /* 
          * Hyperbus controller should be enabled after PLL clocks are stable for
@@ -237,7 +237,7 @@ NOR_HANDLE Nor_hpfOpen(uint32_t norIntf, uint32_t portNum, void *params)
         retVal = CSL_hyperbusSetCSBaseAddr(hpbCoreRegs,
                                            hpfParams.chipSelect,
                                            hpfParams.baseAddress);
-        if (CSL_PASS != retVal)
+        if (retVal != CSL_PASS)
         {
             return hpfHandle;
         }
@@ -245,7 +245,7 @@ NOR_HANDLE Nor_hpfOpen(uint32_t norIntf, uint32_t portNum, void *params)
         retVal = CSL_hyperbusSetMemTiming(hpbCoreRegs,
                                           hpfParams.chipSelect,
                                           &(hpfParams.hyperbusTimingConfig));
-        if (CSL_PASS != retVal)
+        if (retVal != CSL_PASS)
         {
             return hpfHandle;
         }
@@ -253,9 +253,9 @@ NOR_HANDLE Nor_hpfOpen(uint32_t norIntf, uint32_t portNum, void *params)
         gHpfObject.baseAddr = hpfParams.regionAddress + hpfParams.baseAddress;
         gHpfObject.cs = hpfParams.chipSelect;
         Nor_hpfInfo.hwHandle = (NOR_HANDLE)(&gHpfObject);
-        if (NOR_PASS == Nor_hpfReadId(&Nor_hpfInfo))
+        if (Nor_hpfReadId(&Nor_hpfInfo) == NOR_PASS)
         {
-            gHpfObject.isOpen = BTRUE;
+            gHpfObject.isOpen = 1;
             hpfHandle = (NOR_HANDLE)(&Nor_hpfInfo);
         }
 
@@ -280,7 +280,7 @@ void Nor_hpfClose(NOR_HANDLE handle)
     hpfObject = (HPF_Object *)norInfoHandle->hwHandle;
 
     HW_WR_REG16(hpfObject->baseAddr, NOR_CMD_RESET);
-    hpfObject->isOpen = BFALSE;
+    hpfObject->isOpen = FALSE;
 
     /* Disabling hyperbus in FSS0 */
     CSL_REG32_WR(MCU_FSS0_SYSCONFIG, DISABLE_FSS0_HPB);
@@ -353,12 +353,12 @@ NOR_STATUS Nor_hpfWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
     do
     {
         retVal = Nor_hpfWaitDevReady(handle, NOR_WRR_WRITE_TIMEOUT);
-        if (NOR_PASS != retVal)
+        if (retVal != NOR_PASS)
         {
             break;
         }
 
-        if (NOR_MAX_WRITE_LEN < len)
+        if (len > NOR_MAX_WRITE_LEN)
         {
             wrLength = NOR_MAX_WRITE_LEN;
         }
@@ -370,7 +370,7 @@ NOR_STATUS Nor_hpfWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         HW_WR_REG16((hpfObject->baseAddr + NOR_HPF_CMD_ADDR1), NOR_CMD_WRITE_UNLOCK1);
         HW_WR_REG16((hpfObject->baseAddr + NOR_HPF_CMD_ADDR2), NOR_CMD_WRITE_UNLOCK2);
         HW_WR_REG16((hpfObject->baseAddr + addr), NOR_CMD_WRITE_BUFFER);
-        HW_WR_REG16((hpfObject->baseAddr + addr), (wrLength/2) - 1U);
+        HW_WR_REG16((hpfObject->baseAddr + addr), (wrLength/2) - 1);
 
         for (wrCnt = 0; wrCnt < wrLength; wrCnt += 2)
         {
@@ -381,7 +381,7 @@ NOR_STATUS Nor_hpfWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         /* Confirm buffer write commence */
         HW_WR_REG16((hpfObject->baseAddr + addr), NOR_CMD_WRITE_COMMENCE);
         retVal = Nor_hpfWaitDevReady(handle, NOR_WRR_WRITE_TIMEOUT);
-        if (NOR_PASS != retVal)
+        if (retVal != NOR_PASS)
         {
             break;
         }
@@ -390,7 +390,7 @@ NOR_STATUS Nor_hpfWrite(NOR_HANDLE handle, uint32_t addr, uint32_t len,
         bufLen += wrLength;
         len -= wrLength;
 
-    } while(0U != len);
+    } while(len != 0);
 
     return retVal;
 }
@@ -428,7 +428,7 @@ NOR_STATUS Nor_hpfErase(NOR_HANDLE handle, int32_t sector, bool erase)
     HW_WR_REG16((hpfObject->baseAddr + NOR_HPF_CMD_ADDR1), NOR_CMD_ERASE_CMD2);
     HW_WR_REG16((hpfObject->baseAddr + NOR_HPF_CMD_ADDR2), NOR_CMD_ERASE_CMD3);
 
-    if (NOR_BE_SECTOR_NUM == sector)
+    if (sector == NOR_BE_SECTOR_NUM)
     {
         /* Chip erase */
         HW_WR_REG16((hpfObject->baseAddr + NOR_HPF_CMD_ADDR1), NOR_CMD_BULK_ERASE);

@@ -161,7 +161,7 @@ uint32_t W25QFL_IsWriteSuccess(W25QFL_Handle flashHandle)
 {
     SPI_Handle handle = (SPI_Handle)flashHandle->spiHandle;
     SPI_Transaction transaction;
-    unsigned int retVal = UFALSE;
+    unsigned int retVal = false;
 
     gFlashAppTxBuffer[0U] = FLASH_READ_STAT_REG1;
     gFlashAppTxBuffer[1U] = FLASH_DUMMY_BYTE;
@@ -176,7 +176,7 @@ uint32_t W25QFL_IsWriteSuccess(W25QFL_Handle flashHandle)
 
     if(0x02U == gFlashAppRxBuffer[1U])
     {
-        retVal = UTRUE;
+        retVal = true;
     }
 
     return retVal;
@@ -245,13 +245,13 @@ void W25QFL_ReadFromFlash(W25QFL_Handle flashHandle)
 bool W25QFL_VerifyData(void)
 {
     unsigned int index = 0U;
-    bool retVal = BTRUE;
+    bool retVal = true;
 
     for(index = 4U; index < 260U; index++)
     {
         if(gFlashAppRxBuffer[index] != gFlashAppVerifyData[index - 4U])
         {
-            retVal = BFALSE;
+            retVal = false;
             break;
         }
     }

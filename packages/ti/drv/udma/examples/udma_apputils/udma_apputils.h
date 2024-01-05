@@ -142,14 +142,14 @@ void *Udma_appPhyToVirtFxn(uint64_t phyAddr, uint32_t chNum, void *appData);
 /**
  *  \brief Returns if print can be supported for a platform/build
  *
- *  \return UTRUE if print can be supported for a platform. Else UFALSE
+ *  \return TRUE if print can be supported for a platform. Else FALSE
  */
 uint32_t Udma_appIsPrintSupported(void);
 
 /**
  *  \brief Returns if UDMA IP statistics is supported in the SoC
  *
- *  \return UTRUE if statistics is supported. Else UFALSE
+ *  \return TRUE if statistics is supported. Else FALSE
  */
 uint32_t Udma_appIsUdmapStatsSupported(void);
 

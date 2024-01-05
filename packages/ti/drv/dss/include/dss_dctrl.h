@@ -425,7 +425,7 @@ typedef struct
     uint32_t overlayId;
     /**< Overlay Id. See \ref CSL_DssOverlayId for values */
     uint32_t colorbarEnable;
-    /**< Overlay Color bar Enable. UTRUE: Enable UFALSE: Disable */
+    /**< Overlay Color bar Enable. TRUE: Enable FALSE: Disable */
     CSL_DssOverlayCfg overlayCfg;
     /**< Overlay Configuration. See \ref CSL_DssOverlayCfg for details */
 } Dss_DctrlOverlayParams;
@@ -782,13 +782,13 @@ static inline void Dss_DctrlSyncOpCfgInit(Dss_DctrlSyncOpCfg *syncOpCfg)
 
     if(NULL != syncOpCfg)
     {
-        syncOpCfg->enabled   = UFALSE;
-        syncOpCfg->isPrimary = UTRUE;
+        syncOpCfg->enabled = FALSE;
+        syncOpCfg->isPrimary = TRUE;
         for(i = 0; i < CSL_DSS_VP_ID_MAX; i++)
         {
             syncOpCfg->syncVpIds[i] = CSL_DSS_VP_ID_1;
         }
-        syncOpCfg->numSyncVpIds = 0U;
+        syncOpCfg->numSyncVpIds = 0;
     }
 }
 
@@ -810,7 +810,7 @@ static inline void Dss_dctrlOverlayParamsInit(
     if(NULL != overlayParams)
     {
         overlayParams->overlayId = CSL_DSS_OVERLAY_ID_1;
-        overlayParams->colorbarEnable = UFALSE;
+        overlayParams->colorbarEnable = FALSE;
         CSL_dssOverlayCfgInit(&(overlayParams->overlayCfg));
     }
 }

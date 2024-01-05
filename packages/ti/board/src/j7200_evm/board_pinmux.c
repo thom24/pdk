@@ -92,7 +92,7 @@ static void Board_pinmuxWriteProxy1Reg(uint8_t domain,
     uint32_t    claimShift;
     uint32_t    claimRegVal;
 
-    if(BOARD_SOC_DOMAIN_MAIN == domain)
+    if(domain == BOARD_SOC_DOMAIN_MAIN)
     {
         claimAddr = BOARD_MAIN_MMR_P7_CLAIM_ADDR;
         /* Get the register offset from base of P7 claim offset range */
@@ -111,11 +111,11 @@ static void Board_pinmuxWriteProxy1Reg(uint8_t domain,
     claimShift  = claimOffset % BOARD_MMR_CLAIM_ADDR_PER_REG;
     claimOffset = claimOffset / BOARD_MMR_CLAIM_ADDR_PER_REG;
 
-    claimRegVal = HW_RD_REG32((claimAddr + (4U*claimOffset)));
-    claimRegVal |= (1U << claimShift);
+    claimRegVal = HW_RD_REG32((claimAddr + 4*claimOffset));
+    claimRegVal |= (1 << claimShift);
 
     /* Claim the register access */
-    HW_WR_REG32((claimAddr + (4U*claimOffset)), claimRegVal);
+    HW_WR_REG32((claimAddr + 4*claimOffset), claimRegVal);
 
     /* Write PAD config MMR register */
     HW_WR_REG32(baseAddr, regVal);
@@ -143,7 +143,7 @@ static uint32_t Board_pinmuxGetBaseAddr(uint8_t domain)
             baseAddr = BOARD_WKUP_PMUX_CTRL_ADDR;
         break;
         default:
-            baseAddr = 0U;
+            baseAddr = 0;
         break;
     }
 
@@ -274,7 +274,7 @@ Board_STATUS Board_pinmuxSetReg(uint8_t  domain,
     Board_pinmuxKickCtrl(domain, 0);
 
     baseAddr = Board_pinmuxGetBaseAddr(domain);
-    if(0U != baseAddr)
+    if(baseAddr != 0)
     {
         Board_pinmuxWriteProxy1Reg(domain, 
                                    (baseAddr + offset), 
@@ -311,7 +311,7 @@ Board_STATUS Board_pinmuxGetReg(uint8_t  domain,
     Board_STATUS status = BOARD_SOK;
 
     baseAddr = Board_pinmuxGetBaseAddr(domain);
-    if(0U != baseAddr)
+    if(baseAddr != 0)
     {
         *muxData = HW_RD_REG32((baseAddr + offset));
     }
@@ -398,21 +398,21 @@ Board_STATUS Board_pinmuxUpdate (pinmuxBoardCfg_t *pinmuxData,
 
 #if defined (_TMS320C6X)
     /* MAIN domain pinmux needs RAT configuration for C66x core. */
-    if(BOARD_SOC_DOMAIN_MAIN == domain)
+    if(domain == BOARD_SOC_DOMAIN_MAIN)
     {
         Board_setC66xRATCfg();
     }
 #endif
 
     baseAddr = Board_pinmuxGetBaseAddr(domain);
-    if(0U != baseAddr)
+    if(baseAddr != 0)
     {
         for(i = 0; PINMUX_END != pinmuxData[i].moduleId; i++)
         {
             pModuleData = pinmuxData[i].modulePinCfg;
             for(j = 0; (PINMUX_END != pModuleData[j].modInstNum); j++)
             {
-                if(ITRUE == pModuleData[j].doPinConfig)
+                if(pModuleData[j].doPinConfig == TRUE)
                 {
                     pInstanceData = pModuleData[j].instPins;
                     for(k = 0; (PINMUX_END != pInstanceData[k].pinOffset); k++)
@@ -433,7 +433,7 @@ Board_STATUS Board_pinmuxUpdate (pinmuxBoardCfg_t *pinmuxData,
     }
 
 #if defined (_TMS320C6X)
-    if(BOARD_SOC_DOMAIN_MAIN == domain)
+    if(domain == BOARD_SOC_DOMAIN_MAIN)
     {
         /* Clear the RAT configuration to allow applications to use the region */
         Board_clearC66xRATCfg();
@@ -468,14 +468,14 @@ Board_STATUS Board_pinmuxConfig (void)
     Board_pinmuxUpdate(gJ7200_WkupPinmuxData,
                        BOARD_SOC_DOMAIN_WKUP);
 
-    if(BOARD_PINMUX_SOM_AUDIO == gBoardPinmuxCfg.somMux)
+    if(gBoardPinmuxCfg.somMux == BOARD_PINMUX_SOM_AUDIO)
     {
         Board_pinmuxUpdate(gJ7200_MainPinmuxDataAudio,
                            BOARD_SOC_DOMAIN_MAIN);
         Board_pinmuxUpdate(gJ7200_WkupPinmuxDataAudio,
                            BOARD_SOC_DOMAIN_WKUP);
     }
-    else if(BOARD_PINMUX_SOM_PROFIBUS == gBoardPinmuxCfg.somMux)
+    else if(gBoardPinmuxCfg.somMux == BOARD_PINMUX_SOM_PROFIBUS)
     {
         Board_pinmuxUpdate(gJ7200_MainPinmuxDataProfibus,
                            BOARD_SOC_DOMAIN_MAIN);
@@ -487,7 +487,7 @@ Board_STATUS Board_pinmuxConfig (void)
         /* Pinmux for 'BOARD_PINMUX_SOM_CAN' is active by default */
     }
 
-    if(BOARD_PINMUX_FSS_HPB == gBoardPinmuxCfg.fssCfg)
+    if(gBoardPinmuxCfg.fssCfg == BOARD_PINMUX_FSS_HPB)
     {
         Board_pinmuxUpdate(gJ7200_WkupPinmuxDataHpb,
                            BOARD_SOC_DOMAIN_WKUP);

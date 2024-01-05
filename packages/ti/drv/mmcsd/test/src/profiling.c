@@ -383,7 +383,7 @@ void mmcsd_reset_benchmarks(mmcsdTestBenchmarkElem_t *benchmark_elem_ptr)
    if(benchmark_elem_ptr==NULL)
      return;
 
-    benchmark_elem_ptr->valid = BFALSE; 
+    benchmark_elem_ptr->valid=FALSE; 
     benchmark_elem_ptr->write.num_bytes_transferred =0;
     benchmark_elem_ptr->write.bandwidth_mbytes_per_sec=0;
     benchmark_elem_ptr->read.num_bytes_transferred =0;
@@ -393,7 +393,7 @@ void mmcsd_reset_benchmarks(mmcsdTestBenchmarkElem_t *benchmark_elem_ptr)
 void mmcsd_store_benchmarks(mmcsdTestBenchmarkElem_t *benchmark_elem_ptr,uint32_t bytes_transferred)
 {    
 	 /* Store the benchmark information */
-     benchmark_elem_ptr->valid = BTRUE;
+     benchmark_elem_ptr->valid=TRUE;
 
      benchmark_elem_ptr->write.bandwidth_mbytes_per_sec = profile_Context.profile_Points[PROFILE_MMCSD_WRITE].bandwidth_mbytes_per_sec;
      benchmark_elem_ptr->write.num_bytes_transferred = bytes_transferred;

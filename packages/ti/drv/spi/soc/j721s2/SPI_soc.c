@@ -56,7 +56,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             (uint32_t)SPI_PINMODE_4_PIN,        /* pinMode */
             MCSPI_CHANNEL_0,                    /* chNum */
             MCSPI_SINGLE_CH,                    /* chMode */
-            BTRUE,                              /* enableIntr */
+            (bool)true,                         /* enableIntr */
             50000000,                           /* inputClkFreq */
             MCSPI_INITDLY_0,                    /* initDelay */
             MCSPI_RX_TX_FIFO_SIZE,              /* rxTrigLvl */
@@ -68,7 +68,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,   /* tcs */
                     MCSPI_TX_RX_MODE,                  /* trMode */
                     NULL,                              /* dmaInfo */
-                    UTRUE
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -76,7 +76,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -84,7 +84,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -92,7 +92,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MCU_MCSPI0_CH0_RX,      /* rxDmaEventNumber */
@@ -102,7 +102,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,                                  /* edmaTxTC */
             0,                                  /* edmaRxTC */
             NULL,                               /* edmaHandle */
-            BFALSE                              /* dmaMode */
+            (bool)false                         /* dmaMode */
         },
         {
             (uint32_t)CSL_MCU_MCSPI1_CFG_BASE,
@@ -111,7 +111,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             (uint32_t)SPI_PINMODE_4_PIN,
             MCSPI_CHANNEL_0,
             MCSPI_SINGLE_CH,
-            BTRUE,
+            (bool)true,
             50000000,
             MCSPI_INITDLY_0,
             MCSPI_RX_TX_FIFO_SIZE,
@@ -123,7 +123,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UTRUE
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -131,7 +131,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -139,7 +139,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -147,7 +147,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MCU_MCSPI1_CH0_RX,
@@ -157,7 +157,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            BFALSE
+            (bool)false
         },
         {
             (uint32_t)CSL_MCU_MCSPI2_CFG_BASE,
@@ -166,7 +166,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             (uint32_t)SPI_PINMODE_4_PIN,
             MCSPI_CHANNEL_0,
             MCSPI_SINGLE_CH,
-            BTRUE,
+            (bool)true,
             50000000,
             MCSPI_INITDLY_0,
             MCSPI_RX_TX_FIFO_SIZE,
@@ -178,7 +178,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UTRUE
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -186,7 +186,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -194,7 +194,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -202,7 +202,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MCU_MCSPI2_CH0_RX,
@@ -212,7 +212,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            BFALSE
+            (bool)false
         },
     },
     /* MAIN Domain MCSPI Instances */
@@ -224,7 +224,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             (uint32_t)SPI_PINMODE_4_PIN,        /* pinMode */
             MCSPI_CHANNEL_0,                    /* chNum */
             MCSPI_SINGLE_CH,                    /* chMode */
-            BTRUE,                              /* enableIntr */
+            (bool)true,                         /* enableIntr */
             50000000,                           /* inputClkFreq */
             MCSPI_INITDLY_0,                    /* initDelay */
             MCSPI_RX_TX_FIFO_SIZE,              /* rxTrigLvl */
@@ -236,7 +236,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,   /* tcs */
                     MCSPI_TX_RX_MODE,                  /* trMode */
                     NULL,                               /* edmaHandle */
-                    UTRUE
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -244,7 +244,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -252,7 +252,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -260,7 +260,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MAIN_MCSPI0_CH0_RX,     /* rxDmaEventNumber */
@@ -270,7 +270,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,                                  /* edmaTxTC */
             0,                                  /* edmaRxTC */
             NULL,                               /* edmaHandle */
-            BFALSE
+            (bool)false
         },
         {
             (uint32_t)CSL_MCSPI1_CFG_BASE,
@@ -279,7 +279,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             (uint32_t)SPI_PINMODE_4_PIN,
             MCSPI_CHANNEL_0,
             MCSPI_SINGLE_CH,
-            BTRUE,
+            (bool)true,
             50000000,
             MCSPI_INITDLY_0,
             MCSPI_RX_TX_FIFO_SIZE,
@@ -291,7 +291,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UTRUE
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -299,7 +299,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -307,7 +307,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -315,7 +315,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MAIN_MCSPI1_CH0_RX,
@@ -325,7 +325,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            BFALSE
+            (bool)false
         },
         {
             (uint32_t)CSL_MCSPI2_CFG_BASE,
@@ -334,7 +334,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             (uint32_t)SPI_PINMODE_4_PIN,
             MCSPI_CHANNEL_0,
             MCSPI_SINGLE_CH,
-            BTRUE,
+            (bool)true,
             50000000,
             MCSPI_INITDLY_0,
             MCSPI_RX_TX_FIFO_SIZE,
@@ -346,7 +346,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UTRUE
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -354,7 +354,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -362,7 +362,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -370,7 +370,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MAIN_MCSPI2_CH0_RX,
@@ -380,7 +380,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            BFALSE
+            (bool)false
         },
         {
             (uint32_t)CSL_MCSPI3_CFG_BASE,
@@ -389,7 +389,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             (uint32_t)SPI_PINMODE_4_PIN,
             MCSPI_CHANNEL_0,
             MCSPI_SINGLE_CH,
-            BTRUE,
+            (bool)true,
             50000000,
             MCSPI_INITDLY_0,
             MCSPI_RX_TX_FIFO_SIZE,
@@ -401,7 +401,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UTRUE
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -409,7 +409,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -417,7 +417,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -425,7 +425,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MAIN_MCSPI3_CH0_RX,
@@ -435,7 +435,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            BFALSE
+            (bool)false
         },
         {
             (uint32_t)CSL_MCSPI4_CFG_BASE,
@@ -444,7 +444,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             (uint32_t)SPI_PINMODE_4_PIN,
             MCSPI_CHANNEL_0,
             MCSPI_SINGLE_CH,
-            BTRUE,
+            (bool)true,
             50000000,
             MCSPI_INITDLY_0,
             MCSPI_RX_TX_FIFO_SIZE,
@@ -456,7 +456,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UTRUE
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -464,7 +464,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -472,7 +472,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -480,7 +480,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MAIN_MCSPI4_CH0_RX,
@@ -490,7 +490,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            BFALSE
+            (bool)false
         },
         {
             (uint32_t)CSL_MCSPI5_CFG_BASE,
@@ -499,7 +499,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             (uint32_t)SPI_PINMODE_4_PIN,
             MCSPI_CHANNEL_0,
             MCSPI_SINGLE_CH,
-            BTRUE,
+            (bool)true,
             50000000,
             MCSPI_INITDLY_0,
             MCSPI_RX_TX_FIFO_SIZE,
@@ -511,7 +511,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UTRUE
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -519,7 +519,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -527,7 +527,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -535,7 +535,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MAIN_MCSPI5_CH0_RX,
@@ -545,7 +545,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            BFALSE
+            (bool)false
         },
         {
             (uint32_t)CSL_MCSPI6_CFG_BASE,
@@ -554,7 +554,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             (uint32_t)SPI_PINMODE_4_PIN,
             MCSPI_CHANNEL_0,
             MCSPI_SINGLE_CH,
-            BTRUE,
+            (bool)true,
             50000000,
             MCSPI_INITDLY_0,
             MCSPI_RX_TX_FIFO_SIZE,
@@ -566,7 +566,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UTRUE
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -574,7 +574,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -582,7 +582,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -590,7 +590,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MAIN_MCSPI6_CH0_RX,
@@ -600,7 +600,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            BFALSE
+            (bool)false
         },
         {
             (uint32_t)CSL_MCSPI7_CFG_BASE,
@@ -609,7 +609,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             (uint32_t)SPI_PINMODE_4_PIN,
             MCSPI_CHANNEL_0,
             MCSPI_SINGLE_CH,
-            BTRUE,
+            (bool)true,
             50000000,
             MCSPI_INITDLY_0,
             MCSPI_RX_TX_FIFO_SIZE,
@@ -621,7 +621,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UTRUE
+                    TRUE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -629,7 +629,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -637,7 +637,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
                 {
                     MCSPI_CS_POL_LOW,
@@ -645,7 +645,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
                     MCSPI_CH0CONF_TCS0_ZEROCYCLEDLY,
                     MCSPI_TX_RX_MODE,
                     NULL,                              /* dmaInfo */
-                    UFALSE
+                    FALSE
                 },
             },
             CSL_PDMA_CH_MAIN_MCSPI7_CH0_RX,
@@ -655,7 +655,7 @@ SPI_v1_HWAttrs spiInitCfg[CSL_MCSPI_DOMAIN_CNT][CSL_MCSPI_PER_CNT] =
             0,
             0,
             NULL,
-            BFALSE
+            (bool)false
         },
     },
 };
@@ -697,18 +697,18 @@ OSPI_v0_HwAttrs ospiInitCfg[SPI_OSPI_DOMAIN_CNT][SPI_OSPI_PER_CNT + 1U] =
             256,                               /* device page size is 256 bytes  */
             18,                                /* device block size is 2 ^ 18 = 256K bytes */
             OSPI_XFER_LINES_OCTAL,             /* xferLines */
-            BFALSE,                            /* Interrupt mode */
-            BTRUE,                             /* Direct Access Controller mode */
-            BFALSE,                            /* DMA mode */
+            (bool)false,                       /* Interrupt mode */
+            (bool)true,                        /* Direct Access Controller mode */
+            (bool)false,                       /* DMA mode */
             NULL,                              /* dmaInfo */
-            BTRUE,                             /* enable PHY */
+            (bool)true,                        /* enable PHY */
             0,                                 /* rdDataCapDelay */
-            BTRUE,                             /* enable DDR - dtrEnable*/
-            BFALSE,                            /* enable XIP */
+            (bool)true,                       /* enable DDR - dtrEnable*/
+            (bool)false,                       /* enable XIP */
             10U,                               /* Chip Select Start Of Transfer delay */
             0,                                 /* Baudrate divider. Set to a non-zero value (2 to 32)
                                                 to override default divider settings */
-            BFALSE,                            /* enable Cache */
+            (bool)false,                       /* enable Cache */
         },
         {
             1,                                  /* Instance Number */
@@ -739,17 +739,17 @@ OSPI_v0_HwAttrs ospiInitCfg[SPI_OSPI_DOMAIN_CNT][SPI_OSPI_PER_CNT + 1U] =
             256,
             17,
             OSPI_XFER_LINES_OCTAL,
-            BFALSE,
-            BTRUE,
-            BFALSE,
+            (bool)false,
+            (bool)true,
+            (bool)false,
             NULL,
-            BTRUE,
+            (bool)true,
             0,
-            BTRUE,
-            BFALSE,
+            (bool)true,
+            (bool)false,
             10U,
             0,
-            BFALSE,
+            (bool)false,
         },
         {
             (uintptr_t)(0U),
@@ -1234,10 +1234,10 @@ int32_t OSPI_socInit(void)
 
     CSL_armR5GetCpuID(&r5CpuInfo);
 
-    if ((uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0 == r5CpuInfo.grpId)
+    if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
     {
         /* Configure the MCU SS OSPI instances for MCU SS Pulsar R5 . R5FSS'n'_CORE'n' */
-        if(0U == r5CpuInfo.cpuID)
+        if(r5CpuInfo.cpuID == 0U)
         {
             /*  ********* OSPI-0 . intrNum = R5FSS'n'_CORE'n' **************** */
             ospiInitCfg[0][0].intrNum = CSLR_MCU_R5FSS0_CORE0_INTR_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0;
@@ -1252,10 +1252,10 @@ int32_t OSPI_socInit(void)
             ospiInitCfg[0][1].intrNum = CSLR_MCU_R5FSS0_CORE1_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0;
         }
     }
-    else if ((uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1 == r5CpuInfo.grpId) /* Main R5 SS0*/
+    else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1) /* Main R5 SS0*/
     {
         /* Configure the Main SS OSPI instances for Main SS Pulsar R5 . R5FSS'n'_CORE'n' */
-        if(0U == r5CpuInfo.cpuID)
+        if(r5CpuInfo.cpuID == 0U)
         {
             /*  ********* OSPI-0 . intrNum = R5FSS'n'_CORE'n' **************** */
             ospiInitCfg[0][0].intrNum = CSLR_R5FSS0_CORE0_INTR_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0;
@@ -1270,10 +1270,10 @@ int32_t OSPI_socInit(void)
             ospiInitCfg[0][1].intrNum = CSLR_R5FSS0_CORE1_INTR_MCU_FSS0_OSPI_1_OSPI_LVL_INTR_0;
         }
     }
-    else if ((uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2 == r5CpuInfo.grpId) /* Main R5 SS1*/
+    else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2) /* Main R5 SS1*/
     {
         /* Configure the Main SS OSPI instances for Main SS Pulsar R5 . R5FSS'n'_CORE'n' */
-        if(0U == r5CpuInfo.cpuID)
+        if(r5CpuInfo.cpuID == 0U)
         {
             /*  ********* OSPI-0 . intrNum = R5FSS'n'_CORE'n' **************** */
             ospiInitCfg[0][0].intrNum = CSLR_R5FSS1_CORE0_INTR_MCU_FSS0_OSPI_0_OSPI_LVL_INTR_0;
@@ -1298,7 +1298,7 @@ int32_t OSPI_socInit(void)
 
 /**
  * \brief  This function will configure the interrupt path to the destination CPU
- *         using DMSC firmware via sciclient. if setIntrPath is set to BTRUE,
+ *         using DMSC firmware via sciclient. if setIntrPath is set to TRUE,
  *         a path is set, else the interrupt path is released
  *
  * \param  hwAttrs_ptr Pointer to hardware attributes
@@ -1335,13 +1335,13 @@ int32_t MCSPI_socInit(void)
 
     CSL_armR5GetCpuID(&r5CpuInfo);
 
-    if ((uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0 == r5CpuInfo.grpId)             /* MCU R5 */
+    if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)             /* MCU R5 */
     {
         /* No change required */
     }
-    else if ((uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1 == r5CpuInfo.grpId)         /* MAIN R5 SS0 */
+    else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1)         /* MAIN R5 SS0 */
     {
-        if(0U == r5CpuInfo.cpuID)                                           /* Main R5 -SS0 - CPU0 */
+        if(r5CpuInfo.cpuID == 0U)                                           /* Main R5 -SS0 - CPU0 */
         {
             spiInitCfg[0][0].intNum = CSLR_R5FSS0_CORE0_INTR_MCU_MCSPI0_INTR_SPI_0;
             spiInitCfg[0][1].intNum = CSLR_R5FSS0_CORE0_INTR_MCU_MCSPI1_INTR_SPI_0;
@@ -1370,9 +1370,9 @@ int32_t MCSPI_socInit(void)
             spiInitCfg[1][7].intNum = CSLR_R5FSS0_CORE1_INTR_MCSPI7_INTR_SPI_0;
         }
     }
-    else if ((uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2 == r5CpuInfo.grpId)         /* MAIN R5 SS1 */
+    else if (r5CpuInfo.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)         /* MAIN R5 SS1 */
     {
-        if(0U == r5CpuInfo.cpuID)                                           /* Main R5 -SS1 - CPU0 */
+        if(r5CpuInfo.cpuID == 0U)                                           /* Main R5 -SS1 - CPU0 */
         {
             spiInitCfg[0][0].intNum = CSLR_R5FSS1_CORE0_INTR_MCU_MCSPI0_INTR_SPI_0;
             spiInitCfg[0][1].intNum = CSLR_R5FSS1_CORE0_INTR_MCU_MCSPI1_INTR_SPI_0;
@@ -1411,7 +1411,7 @@ int32_t MCSPI_socInit(void)
 
 /**
  * \brief  This function will configure the interrupt path to the destination CPU
- *         using DMSC firmware via sciclient. if setIntrPath is set to BTRUE,
+ *         using DMSC firmware via sciclient. if setIntrPath is set to TRUE,
  *         a path is set, else the interrupt path is released
  *
  * \param  instance    MCSPI Instance

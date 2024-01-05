@@ -104,7 +104,7 @@ int32_t Udma_init(Udma_DrvHandle drvHandle, const Udma_InitPrms *initPrms)
 {
     int32_t                             retVal = UDMA_SOK;
     uint32_t  utcId;
-    if((NULL_PTR == drvHandle) || (NULL_PTR == initPrms))
+    if((drvHandle == NULL_PTR) || (initPrms == NULL_PTR))
     {
       retVal = UDMA_EBADARGS;
     }
@@ -141,7 +141,7 @@ int32_t Udma_deinit(Udma_DrvHandle drvHandle)
     int32_t     retVal = UDMA_SOK;
 
     /* Error check */
-    if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+    if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
     {
         retVal = UDMA_EBADARGS;
     }
@@ -169,8 +169,8 @@ int32_t UdmaInitPrms_init(uint32_t instId, Udma_InitPrms *initPrms)
         initPrms->virtToPhyFxn          = &Udma_defaultVirtToPhyFxn;
         initPrms->phyToVirtFxn          = &Udma_defaultPhyToVirtFxn;
         initPrms->printFxn              = (Udma_PrintFxn) NULL_PTR;
-        initPrms->rmInitPrms.druStartId = 0U;
-        initPrms->rmInitPrms.druEndId   = 15U;
+        initPrms->rmInitPrms.druStartId = 0;
+        initPrms->rmInitPrms.druEndId   = 15;
     }
 
     return (retVal);
@@ -188,11 +188,11 @@ static int32_t Udma_chAllocResource(Udma_ChHandle chHandle)
   int32_t i;
   drvHandle = chHandle->drvHandle;
 
-  if ( UDMA_DMA_CH_ANY == chHandle->chPrms.chNum )
+  if ( chHandle->chPrms.chNum == UDMA_DMA_CH_ANY )
   {
     for ( i = drvHandle->initPrms.rmInitPrms.druStartId; i <= drvHandle->initPrms.rmInitPrms.druEndId; i++)
     {
-      if ( 0 == ( drvHandle->druChannelStatus & ( 1 << i )) )
+      if ( ( drvHandle->druChannelStatus & ( 1 << i )) == 0 )
       {
         drvHandle->druChannelStatus |= ( 1 << i );
         chHandle->druChNum = i;
@@ -227,7 +227,7 @@ static int32_t Udma_chFreeResource(Udma_ChHandle chHandle)
   
   drvHandle = chHandle->drvHandle;
 
-  if ( UDMA_DMA_CH_INVALID != chHandle->druChNum )
+  if ( chHandle->druChNum  != UDMA_DMA_CH_INVALID )
   {
     drvHandle->druChannelStatus &= ~((uint64_t)(1<< chHandle->druChNum));
     chHandle->druChNum  = UDMA_DMA_CH_INVALID;
@@ -279,16 +279,16 @@ int32_t Udma_chOpen(Udma_DrvHandle drvHandle,
 {
     int32_t     retVal = UDMA_SOK, tempRetVal;
     uint32_t    utcId = chPrms->utcId;
-    uint32_t    allocDone = UFALSE;
+    uint32_t    allocDone = (uint32_t) FALSE;
 
     /* Error check */
-    if((NULL_PTR == drvHandle) || (NULL_PTR == chHandle) || (NULL_PTR == chPrms))
+    if((drvHandle == NULL_PTR) || (NULL_PTR == chHandle) || (NULL_PTR == chPrms))
     {
         retVal = UDMA_EBADARGS;
     }
     if(UDMA_SOK == retVal)
     {
-        if(UDMA_INIT_DONE != drvHandle->drvInitDone)
+        if(drvHandle->drvInitDone != UDMA_INIT_DONE)
         {
             retVal = UDMA_EFAIL;
         }
@@ -310,7 +310,7 @@ int32_t Udma_chOpen(Udma_DrvHandle drvHandle,
         retVal = Udma_chAllocResource(chHandle);
         if(UDMA_SOK == retVal)
         {
-            allocDone = UTRUE;
+            allocDone = (uint32_t) TRUE;
         }
         else
         {
@@ -329,7 +329,7 @@ int32_t Udma_chOpen(Udma_DrvHandle drvHandle,
     else
     {
         /* Error. Free-up resource if allocated */
-        if(UTRUE == allocDone)
+        if(((uint32_t) TRUE) == allocDone)
         {
             tempRetVal = Udma_chFreeResource(chHandle);
             if(UDMA_SOK != tempRetVal)
@@ -351,15 +351,15 @@ int32_t Udma_chConfigUtc(Udma_ChHandle chHandle, const Udma_ChUtcPrms *utcPrms)
     CSL_DruChConfig         druChCfg;
 
     /* Error check */
-    if( (NULL_PTR == chHandle) ||
-        (UDMA_INIT_DONE != chHandle->chInitDone) )
+    if((NULL_PTR == chHandle) ||
+       (chHandle->chInitDone != UDMA_INIT_DONE) )
     {
         retVal = UDMA_EBADARGS;
     }
     if(UDMA_SOK == retVal)
     {
         drvHandle = chHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }
@@ -411,14 +411,14 @@ int32_t Udma_chEnable(Udma_ChHandle chHandle)
     uint32_t utcChNum;
 
     /* Error check */
-    if((NULL_PTR == chHandle) || (UDMA_INIT_DONE != chHandle->chInitDone))
+    if((NULL_PTR == chHandle) || (chHandle->chInitDone != UDMA_INIT_DONE))
     {
         retVal = UDMA_EBADARGS;
     }
     if(UDMA_SOK == retVal)
     {
         drvHandle = chHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }
@@ -451,14 +451,14 @@ int32_t Udma_chDisable(Udma_ChHandle chHandle, uint32_t timeout)
     Udma_DrvHandle          drvHandle;
     uint32_t utcChNum;
     /* Error check */
-    if((NULL_PTR == chHandle) || (UDMA_INIT_DONE != chHandle->chInitDone))
+    if((NULL_PTR == chHandle) || (chHandle->chInitDone != UDMA_INIT_DONE))
     {
         retVal = UDMA_EBADARGS;
     }
     if(UDMA_SOK == retVal)
     {
         drvHandle = chHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }
@@ -495,15 +495,15 @@ volatile uint64_t *Udma_druGetTriggerRegAddr(Udma_ChHandle chHandle)
     volatile uint64_t      *pSwTrigReg = (volatile uint64_t *) NULL_PTR;
 
     /* Error check */
-    if( (NULL_PTR == chHandle) ||
-        (UDMA_INIT_DONE != chHandle->chInitDone) )
+    if((NULL_PTR == chHandle) ||
+       (chHandle->chInitDone != UDMA_INIT_DONE) )
     {
         retVal = UDMA_EBADARGS;
     }
     if(UDMA_SOK == retVal)
     {
         drvHandle = chHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }
@@ -523,14 +523,14 @@ int32_t Udma_chClose(Udma_ChHandle chHandle)
     Udma_DrvHandle  drvHandle;
 
     /* Error check */
-    if((NULL_PTR == chHandle) || (UDMA_INIT_DONE != chHandle->chInitDone))
+    if((NULL_PTR == chHandle) || (chHandle->chInitDone != UDMA_INIT_DONE))
     {
         retVal = UDMA_EBADARGS;
     }
     if(UDMA_SOK == retVal)
     {
         drvHandle = chHandle->drvHandle;
-        if((NULL_PTR == drvHandle) || (UDMA_INIT_DONE != drvHandle->drvInitDone))
+        if((NULL_PTR == drvHandle) || (drvHandle->drvInitDone != UDMA_INIT_DONE))
         {
             retVal = UDMA_EFAIL;
         }

@@ -197,7 +197,7 @@ static int8_t BoardDiag_norFlashReadWriteTest(Board_flashHandle  handle,
     }
 
     /* Verify Data */
-    if (BoardDiag_memCompare(&txBuf[0],&rxBuf[0],TEST_DATA_LEN, &failIndex) == BFALSE)
+    if (BoardDiag_memCompare(&txBuf[0],&rxBuf[0],TEST_DATA_LEN, &failIndex) == false)
     {
         UART_printf("\n Data mismatch at offset = 0x%x\n", failIndex);
         return -1;
@@ -238,22 +238,22 @@ static int8_t BoardDiag_norFlashStressTest(void)
     OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
 
     /* Modify the default OSPI configurations if necessary */
-    ospi_cfg.intrEnable = BFALSE;
+    ospi_cfg.intrEnable = false;
 
 #if defined(UDMA_ENABLE)
-    ospi_cfg.dmaEnable  = BTRUE;
+    ospi_cfg.dmaEnable  = true;
     ospiUdmaInit(&ospi_cfg);
 #else
-    ospi_cfg.dmaEnable  = BFALSE;
+    ospi_cfg.dmaEnable  = false;
 #endif
 #if defined(j721e_evm) || defined(am64x_svb) || defined(j721s2_evm) || defined(j784s4_evm)
-    ospi_cfg.phyEnable  = BFALSE;
+    ospi_cfg.phyEnable  = false;
 #endif
 #if defined(am64x_svb)
     ospi_cfg.chipSelect = CSL_OSPI_CS1;
 #endif
     ospi_cfg.xferLines = OSPI_XFER_LINES_QUAD;
-    ospi_cfg.dtrEnable = BFALSE;
+    ospi_cfg.dtrEnable = false;
 
     /* Set the default OSPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
@@ -336,7 +336,7 @@ static int8_t BoardDiag_norFlashTest(void)
 {
     Board_flashHandle boardHandle;
     Board_FlashInfo *flashInfo;
-    bool testStatus = BTRUE;          /* return value */
+    bool testStatus = true;          /* return value */
     OSPI_v0_HwAttrs ospi_cfg;
 
     UART_printf("\nReading Device ID\n");
@@ -345,22 +345,22 @@ static int8_t BoardDiag_norFlashTest(void)
     OSPI_socGetInitCfg(BOARD_OSPI_DOMAIN, BOARD_SPI_NOR_INSTANCE, &ospi_cfg);
 
     /* Modify the default OSPI configurations if necessary */
-    ospi_cfg.intrEnable = BFALSE;
+    ospi_cfg.intrEnable = false;
 
 #if defined(UDMA_ENABLE)
-    ospi_cfg.dmaEnable  = BTRUE;
+    ospi_cfg.dmaEnable  = true;
     ospiUdmaInit(&ospi_cfg);
 #else
-    ospi_cfg.dmaEnable  = BFALSE;
+    ospi_cfg.dmaEnable  = false;
 #endif
 #if defined(j721e_evm) || defined(am64x_svb) || defined(j721s2_evm) || defined(j784s4_evm)
-    ospi_cfg.phyEnable  = BFALSE;
+    ospi_cfg.phyEnable  = false;
 #endif
 #if defined(am64x_svb)
     ospi_cfg.chipSelect = CSL_OSPI_CS1;
 #endif
     ospi_cfg.xferLines = OSPI_XFER_LINES_QUAD;
-    ospi_cfg.dtrEnable = BFALSE;
+    ospi_cfg.dtrEnable = false;
 
     /* Set the default OSPI init configurations */
     OSPI_socSetInitCfg(BOARD_OSPI_DOMAIN, BOARD_SPI_NOR_INSTANCE, &ospi_cfg);

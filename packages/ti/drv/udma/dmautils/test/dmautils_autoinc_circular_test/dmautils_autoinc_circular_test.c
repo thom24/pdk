@@ -173,8 +173,8 @@ static void appC7xClecInitDru(void)
     for(i=dru_input_start; i<(dru_input_start+dru_input_num); i++)
     {
         /* Configure CLEC */
-        cfgClec.secureClaimEnable = UFALSE;
-        cfgClec.evtSendEnable     = UTRUE;
+        cfgClec.secureClaimEnable = FALSE;
+        cfgClec.evtSendEnable     = TRUE;
 
         /* cfgClec.rtMap value is different for each C7x */
         cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_4;

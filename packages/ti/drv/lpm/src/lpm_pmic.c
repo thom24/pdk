@@ -478,7 +478,7 @@ static int32_t Lpm_pmicI2cLldIntfSetup(Pmic_CoreCfg_t  *pPmicConfigData,
              (instType == PMIC_MAIN_INST)? "PMIC_MAIN_INST": "PMIC_QA_INST");
 
     /* Main I2c BUS */
-    if(PMIC_MAIN_INST == instType)
+    if(instType == PMIC_MAIN_INST)
     {
         /* Initialize i2c core instances */
         I2C_init();
@@ -504,7 +504,7 @@ static int32_t Lpm_pmicI2cLldIntfSetup(Pmic_CoreCfg_t  *pPmicConfigData,
     }
 
     /* Main I2c BUS */
-    if(PMIC_MAIN_INST == instType)
+    if(instType == PMIC_MAIN_INST)
     {
         pPmicConfigData->pCommHandle = i2cHandle;
     }
@@ -563,8 +563,8 @@ static int32_t Lpm_pmicLeoDualI2cPinSetup(Pmic_CoreHandle_t *pPmicHandle)
     {
         if(PMIC_INTF_SINGLE_I2C == pPmicHandle->commMode)
         {
-            if(PMIC_TPS6594X_GPIO_PINFUNC_GPIO2_SDA_I2C2_SDO_SPI == 
-               gpioCfg.pinFunc)
+            if(gpioCfg.pinFunc ==
+               PMIC_TPS6594X_GPIO_PINFUNC_GPIO2_SDA_I2C2_SDO_SPI)
             {
                 gpioCfg.pinFunc = PMIC_TPS6594X_GPIO_PINFUNC_GPIO;
             }
@@ -601,7 +601,7 @@ static int32_t Lpm_pmicHeraDualI2cPinSetup(Pmic_CoreHandle_t *pPmicHandle)
 
     if(PMIC_INTF_SINGLE_I2C == pPmicHandle->commMode)
     {
-       if(PMIC_LP8764X_GPIO_PINFUNC_GPIO2_SCL_I2C2 == gpioCfg.pinFunc)
+       if(gpioCfg.pinFunc == PMIC_LP8764X_GPIO_PINFUNC_GPIO2_SCL_I2C2)
        {
            gpioCfg.pinFunc = PMIC_LP8764X_GPIO_PINFUNC_GPIO;
        }
@@ -628,7 +628,7 @@ static int32_t Lpm_pmicHeraDualI2cPinSetup(Pmic_CoreHandle_t *pPmicHandle)
     {
         if(PMIC_INTF_SINGLE_I2C == pPmicHandle->commMode)
         {
-            if(PMIC_LP8764X_GPIO_PINFUNC_GPIO3_SDA_I2C2 == gpioCfg.pinFunc)
+            if(gpioCfg.pinFunc == PMIC_LP8764X_GPIO_PINFUNC_GPIO3_SDA_I2C2)
             {
                 gpioCfg.pinFunc = PMIC_LP8764X_GPIO_PINFUNC_GPIO;
             }
@@ -738,7 +738,7 @@ static uint32_t Lpm_pmicGetStartupType(Pmic_CoreHandle_t *pPmicCoreHandle)
     int32_t pmicStatus        = 0;
     uint8_t type = 0U;
 
-    pmicStatus = Pmic_irqGetErrStatus(pPmicCoreHandle, &errStat, BFALSE);
+    pmicStatus = Pmic_irqGetErrStatus(pPmicCoreHandle, &errStat, false);
     switch(pPmicCoreHandle->pmicDeviceType)
     {
         case PMIC_DEV_LEO_TPS6594X:
@@ -746,24 +746,24 @@ static uint32_t Lpm_pmicGetStartupType(Pmic_CoreHandle_t *pPmicCoreHandle)
             {
                 case PMIC_ENABLE_STARTUP_TYPE:
                     if((0 == pmicStatus) &&
-                       (0U != (errStat.intStatus[PMIC_TPS6594X_ENABLE_INT/32U] &
-                        (1U << (PMIC_TPS6594X_ENABLE_INT % 32U)))))
+                       ((errStat.intStatus[PMIC_TPS6594X_ENABLE_INT/32U] &
+                        (1U << (PMIC_TPS6594X_ENABLE_INT % 32U))) != 0U))
                     {
                         type = PMIC_ENABLE_STARTUP_TYPE;
                     }
                     break;
                 case PMIC_NPWRON_STARTUP_TYPE:
                     if((0 == pmicStatus) &&
-                       (0U != (errStat.intStatus[PMIC_TPS6594X_NPWRON_START_INT/32U] &
-                        (1U << (PMIC_TPS6594X_NPWRON_START_INT % 32U)))))
+                       ((errStat.intStatus[PMIC_TPS6594X_NPWRON_START_INT/32U] &
+                        (1U << (PMIC_TPS6594X_NPWRON_START_INT % 32U))) != 0U))
                     {
                         type = PMIC_NPWRON_STARTUP_TYPE;
                     }
                     break;
                 case PMIC_FSD_STARTUP_TYPE:
                     if((0 == pmicStatus) &&
-                       (0U != (errStat.intStatus[PMIC_TPS6594X_FSD_INT/32U] &
-                        (1U << (PMIC_TPS6594X_FSD_INT % 32U)))))
+                       ((errStat.intStatus[PMIC_TPS6594X_FSD_INT/32U] &
+                        (1U << (PMIC_TPS6594X_FSD_INT % 32U))) != 0U))
                     {
                         type = PMIC_FSD_STARTUP_TYPE;
                     }
@@ -778,16 +778,16 @@ static uint32_t Lpm_pmicGetStartupType(Pmic_CoreHandle_t *pPmicCoreHandle)
             {
                 case PMIC_ENABLE_STARTUP_TYPE:
                     if((0 == pmicStatus) &&
-                       (0U != (errStat.intStatus[PMIC_LP8764X_ENABLE_INT/32U] &
-                        (1U << (PMIC_LP8764X_ENABLE_INT % 32U)))))
+                       ((errStat.intStatus[PMIC_LP8764X_ENABLE_INT/32U] &
+                        (1U << (PMIC_LP8764X_ENABLE_INT % 32U))) != 0U))
                     {
                         type = PMIC_ENABLE_STARTUP_TYPE;
                     }
                     break;
                 case PMIC_FSD_STARTUP_TYPE:
                     if((0 == pmicStatus) &&
-                       (0U != (errStat.intStatus[PMIC_LP8764X_FSD_INT/32U] &
-                        (1U << (PMIC_LP8764X_FSD_INT % 32U)))))
+                       ((errStat.intStatus[PMIC_LP8764X_FSD_INT/32U] &
+                        (1U << (PMIC_LP8764X_FSD_INT % 32U))) != 0U))
                     {
                         type = PMIC_FSD_STARTUP_TYPE;
                     }
@@ -815,17 +815,17 @@ static int32_t Lpm_pmiIntrClr(Pmic_CoreHandle_t *pmicHandle)
     Pmic_IrqStatus_t errStat  = {0U};
     uint8_t irqNum;
 
-    if(0U != gLpmStartupType)
+    if(gLpmStartupType != 0U)
     {
         pmicStatus = Lpm_pmicGetStartupType(pmicHandle);
     }
 
     if(0 == pmicStatus)
     {
-        pmicStatus = Pmic_irqGetErrStatus(&handle, &errStat, BFALSE);
+        pmicStatus = Pmic_irqGetErrStatus(&handle, &errStat, false);
         {
             int i = 0;
-            for(i = 0; i < 4; i++)
+            for(i=0;i<4; i++)
             {
                 AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME"INT STAT[%d]: 0x%08x\n", i, errStat.intStatus[i]);
             }
@@ -852,10 +852,10 @@ static int32_t Lpm_pmiIntrClr(Pmic_CoreHandle_t *pmicHandle)
 
     if(0 == pmicStatus)
     {
-        pmicStatus = Pmic_irqGetErrStatus(&handle, &errStat, BFALSE);
+        pmicStatus = Pmic_irqGetErrStatus(&handle, &errStat, false);
         {
             int i = 0;
-            for(i = 0; i < 4; i++)
+            for(i=0;i<4; i++)
             {
                 AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME"INT STAT[%d]: 0x%08x\n", i, errStat.intStatus[i]);
             }
@@ -872,8 +872,8 @@ static int32_t Lpm_pmiIntrClr(Pmic_CoreHandle_t *pmicHandle)
  */
 static uint64_t Lpm_pmicPrintTimeTakenInUsecs(uint64_t t1, const char *str)
 {
-    uint64_t t2 = 0U;
-    uint64_t delta = 0U;
+    uint64_t t2 = 0;
+    uint64_t delta = 0;
 
     t2 = TimerP_getTimeInUsecs();
     delta = t2 - t1;
@@ -905,13 +905,13 @@ static int32_t Lpm_pmicAppInit(Pmic_CoreHandle_t **pmicCoreHandle,
     /* Initialize Pmic Semaphore */
     Lpm_pmicOsalSemaphoreInit();
 
-    if(NULL == pmicCoreHandle)
+    if(pmicCoreHandle == NULL)
     {
         AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME"Invalid PMIC core Handle Reference\n");
         return -1;
     }
 
-    if(NULL == pmicConfigData)
+    if(pmicConfigData == NULL)
     {
         AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME"Invalid PMIC config Data - NULL \n");
         return -1;
@@ -920,7 +920,7 @@ static int32_t Lpm_pmicAppInit(Pmic_CoreHandle_t **pmicCoreHandle,
 
     /* Allocate memory for PMIC core Handle */
     pmicHandle = malloc(sizeof(Pmic_CoreHandle_t));
-    if(NULL == pmicHandle)
+    if(pmicHandle == NULL)
     {
         AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME"Failed to allocate memory to pmicHandle\n");
         return -1;
@@ -931,7 +931,7 @@ static int32_t Lpm_pmicAppInit(Pmic_CoreHandle_t **pmicCoreHandle,
     /* For single I2C Instance */
     if(PMIC_INTF_SINGLE_I2C == pmicConfigData->commMode)
     {
-        uint64_t delta = 0U;
+        uint64_t delta = 0;
         /* Get PMIC valid Main I2C Instance */
         pmicStatus = Lpm_pmicI2cLldIntfSetup(pmicConfigData,
                                                   PMIC_MAIN_INST);
@@ -940,7 +940,7 @@ static int32_t Lpm_pmicAppInit(Pmic_CoreHandle_t **pmicCoreHandle,
             pmicConfigData->validParams |= PMIC_CFG_COMM_HANDLE_VALID_SHIFT;
             /* Update instance type to pmicConfigData */
             pmicConfigData->instType = PMIC_MAIN_INST;
-            if(1 == gLpmEnableBenchMark)
+            if(true == gLpmEnableBenchMark)
             {
                 uint64_t t1 = 0;
                 t1 = Lpm_pmicPrintTimeTakenInUsecs(0U, NULL);
@@ -1065,7 +1065,7 @@ static int32_t Lpm_pmicAppInit(Pmic_CoreHandle_t **pmicCoreHandle,
     /* For DUAL I2C Instance */
     else if(PMIC_INTF_DUAL_I2C == pmicConfigData->commMode)
     {
-        uint64_t delta = 0U;
+        uint64_t delta = 0;
         /* Get PMIC valid Main I2C Instance */
         pmicStatus = Lpm_pmicI2cLldIntfSetup(pmicConfigData,
                                                   PMIC_MAIN_INST);
@@ -1074,7 +1074,7 @@ static int32_t Lpm_pmicAppInit(Pmic_CoreHandle_t **pmicCoreHandle,
             pmicConfigData->validParams |= PMIC_CFG_COMM_HANDLE_VALID_SHIFT;
             /* Update instance type to pmicConfigData */
             pmicConfigData->instType = PMIC_MAIN_INST;
-            if(1 == gLpmEnableBenchMark)
+            if(true == gLpmEnableBenchMark)
             {
                 uint64_t t1 = 0;
                 t1 = Lpm_pmicPrintTimeTakenInUsecs(0U, NULL);
@@ -1183,7 +1183,7 @@ static int32_t Lpm_pmicAppInit(Pmic_CoreHandle_t **pmicCoreHandle,
             pmicConfigData->validParams |= PMIC_CFG_QACOMM_HANDLE_VALID_SHIFT;
             /* Update instance type to pmicConfigData */
             pmicConfigData->instType = PMIC_QA_INST;
-            if(1 == gLpmEnableBenchMark)
+            if(true == gLpmEnableBenchMark)
             {
                 uint64_t t1 = 0;
                 t1 = Lpm_pmicPrintTimeTakenInUsecs(0U, NULL);
@@ -1575,19 +1575,19 @@ static int32_t Lpm_pmicSpiStubRead(Pmic_CoreHandle_t  *pPmicCorehandle,
     int32_t pmicStatus = 0;
     uint8_t instType = 0U;
     uint16_t regAddr = 0U;
-    bool wdgopn = BFALSE, crcopn = BFALSE;
+    bool wdgopn = 0, crcopn = 0;
     uint8_t rxBuf[4U] = {0U};
 
     /* Check for WatchDog Operation */
     if(0U != (pBuf[1U] & (0x04 << 5U)))
     {
-        wdgopn = BTRUE;
+        wdgopn = true;
     }
 
     /* Check for CRC Operation */
     if(0U != (pBuf[1U] & (0x01 << 5U)))
     {
-        crcopn = BTRUE;
+        crcopn = true;
     }
 
     /* Update register Address from spi buffer */
@@ -1595,11 +1595,11 @@ static int32_t Lpm_pmicSpiStubRead(Pmic_CoreHandle_t  *pPmicCorehandle,
     bufLen = 1U;
 
     /* Find Instance type from wdg or crc operation */
-    if(BTRUE == wdgopn)
+    if(true == wdgopn)
     {
         instType = PMIC_QA_INST;
     }
-    else if(BTRUE == crcopn)
+    else if(true == crcopn)
     {
         instType = PMIC_NVM_INST;
     }
@@ -1609,7 +1609,7 @@ static int32_t Lpm_pmicSpiStubRead(Pmic_CoreHandle_t  *pPmicCorehandle,
     }
 
     /* Increase buffer lenth 1 more to get CRC, if CRC is Enabled */
-    if(BTRUE == pPmicCorehandle->crcEnable)
+    if(true == pPmicCorehandle->crcEnable)
     {
         bufLen++;
     }
@@ -1625,7 +1625,7 @@ static int32_t Lpm_pmicSpiStubRead(Pmic_CoreHandle_t  *pPmicCorehandle,
     pBuf[2U] = rxBuf[0U];
 
     /* Updating the Recieved CRC to SPI Buffer */
-    if(BTRUE == pPmicCorehandle->crcEnable)
+    if(true == pPmicCorehandle->crcEnable)
     {
         pBuf[3U] = Lpm_pmicGetCrc8Val(pBuf, 3U);
     }
@@ -1643,7 +1643,7 @@ static int32_t Lpm_pmicSpiWrite(Pmic_CoreHandle_t  *pPmicCorehandle,
 {
     int32_t  pmicStatus = 0;
     uint8_t  instType = 0U;
-    bool     wdgopn = BFALSE;
+    bool     wdgopn = 0;
     uint16_t regAddr = 0U;
     uint8_t  txBuf[4U] = {0U};
 
@@ -1653,11 +1653,11 @@ static int32_t Lpm_pmicSpiWrite(Pmic_CoreHandle_t  *pPmicCorehandle,
     /* Check for WatchDog Operation */
     if(0U != (pBuf[1U] & (0x04 << 5U)))
     {
-        wdgopn = BTRUE;
+        wdgopn = true;
     }
 
     /* Find Instance type from wdg operation */
-    if(BTRUE == wdgopn)
+    if(true == wdgopn)
     {
         instType = PMIC_QA_INST;
     }
@@ -1671,10 +1671,10 @@ static int32_t Lpm_pmicSpiWrite(Pmic_CoreHandle_t  *pPmicCorehandle,
     bufLen = 1U;
 
     /* Updating the Recieved CRC to SPI Buffer */
-    if(BTRUE == pPmicCorehandle->crcEnable)
+    if(true == pPmicCorehandle->crcEnable)
     {
         uint8_t crcbuf[4U] = {0U};
-        if(BTRUE == wdgopn)
+        if(true == wdgopn)
         {
             crcbuf[0U] = pPmicCoreHandleI2C->qaSlaveAddr << 1U;
         }
@@ -1717,30 +1717,30 @@ static void Lpm_boardConfigurationForMainDomain(void)
 
     Sciclient_BoardCfgPrms_t bootAppBoardCfgPrms = {
                                                     .boardConfigLow = (uint32_t)&bootAppBoardCfg,
-                                                    .boardConfigHigh = 0U,
+                                                    .boardConfigHigh = 0,
                                                     .boardConfigSize = sizeof(bootAppBoardCfg),
                                                     .devGrp = DEVGRP_01
                                                    };
     Sciclient_BoardCfgPrms_t bootAppBoardCfgPmPrms = {
                                                       .boardConfigLow = (uint32_t)boardCfgInfo.boardCfgLowPm,
-                                                      .boardConfigHigh = 0U,
+                                                      .boardConfigHigh = 0,
                                                       .boardConfigSize = boardCfgInfo.boardCfgLowPmSize,
                                                       .devGrp = DEVGRP_01
                                                      };
     Sciclient_BoardCfgPrms_t bootAppBoardCfgRmPrms = {
                                                       .boardConfigLow = (uint32_t)&bootAppBoardCfg_rm,
-                                                      .boardConfigHigh = 0U,
+                                                      .boardConfigHigh = 0,
                                                       .boardConfigSize = sizeof(bootAppBoardCfg_rm),
                                                       .devGrp = DEVGRP_01
                                                      };
     Sciclient_BoardCfgPrms_t bootAppBoardCfgSecPrms = {
                                                        .boardConfigLow = (uint32_t)&bootAppBoardCfg_sec,
-                                                       .boardConfigHigh = 0U,
+                                                       .boardConfigHigh = 0,
                                                        .boardConfigSize = sizeof(bootAppBoardCfg_sec),
                                                        .devGrp = DEVGRP_01
                                                       };
 
-    if(0xDEADBEEFU == ccs_halt)
+    if(ccs_halt == 0xDEADBEEF)
     {
         AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                         "Connect CCS and break out of ccs_halt loop!!\n");
@@ -1748,25 +1748,25 @@ static void Lpm_boardConfigurationForMainDomain(void)
     }
 
     retVal = Sciclient_boardCfg(&bootAppBoardCfgPrms);
-    if (CSL_PASS != retVal)
+    if (retVal != CSL_PASS)
     {
          AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                          "Sciclient_boardCfg() failed.\n");
     }
     retVal = Sciclient_boardCfgPm(&bootAppBoardCfgPmPrms);
-    if (CSL_PASS != retVal)
+    if (retVal != CSL_PASS)
     {
          AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME 
                          "Sciclient_boardCfgPm() failed.\n");
     }
     retVal = Sciclient_boardCfgSec(&bootAppBoardCfgSecPrms);
-    if (CSL_PASS != retVal)
+    if (retVal != CSL_PASS)
     {
          AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                          "Sciclient_boardCfgSec() failed.\n");
     }
     retVal = Sciclient_boardCfgRm(&bootAppBoardCfgRmPrms);
-    if (CSL_PASS != retVal)
+    if (retVal != CSL_PASS)
     {
          AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                          "Sciclient_boardCfgRm() failed.\n");
@@ -1792,7 +1792,7 @@ static void Lpm_setupI2CTransfer(I2C_Handle handle,  uint32_t slaveAddr,
     i2cTransaction.readBuf = (uint8_t *)&readData[0];
     i2cTransaction.readCount = numReadBytes;
     status = I2C_transfer(handle, &i2cTransaction);
-    if(BFALSE == status)
+    if(FALSE == status)
     {
         AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "\n Data Transfer failed. \n");
     }
@@ -1865,7 +1865,7 @@ static void Lpm_bringBackMAINDomain(void)
     status = Lpm_enableMCU2MAINBridges();
 
     /* Pass board config for MAIN domain i.e. DEVGRP01 */
-    if(CSL_PASS == status)
+    if(status == CSL_PASS)
     {
         AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                         "WKUPMCU2MAIN and MAIN2WKUPMCU Bridges configured successfully!\n");
@@ -1942,7 +1942,7 @@ static uint32_t Lpm_mcuToActiveSwitch(void)
 
 /* Refer TISCI_MSG_SYS_RESET in TISCI user guide for more details
    http://software-dl.ti.com/tisci/esd/latest/2_tisci_msgs/pm/sysreset.html */
-volatile uint32_t loopSwResetMainDomain = 0U;
+volatile uint32_t loopSwResetMainDomain = 0;
 static void Lpm_swResetMainDomain(void)
 {
     struct tisci_msg_sys_reset_req request;
@@ -1964,7 +1964,7 @@ static void Lpm_swResetMainDomain(void)
     respParam.respPayloadSize = (uint32_t) sizeof (response);
 
     /* For debug purpose */
-    if(0xDEADBEEFU == loopSwResetMainDomain)
+    if(loopSwResetMainDomain == 0xDEADBEEF)
     {
         AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                         "Connect CCS and change loopSwResetMainDomain to 0!\n");
@@ -1972,12 +1972,12 @@ static void Lpm_swResetMainDomain(void)
                         "After that the MAIN domain will be reset!\n");
     }
 
-    while(0xDEADBEEFU == loopSwResetMainDomain);
+    while(loopSwResetMainDomain == 0xDEADBEEF);
 
     int32_t retVal;
     retVal = Sciclient_service(&reqParam, &respParam);
 
-    if (0U == (respParam.flags & TISCI_MSG_FLAG_ACK)) {
+    if ((respParam.flags & TISCI_MSG_FLAG_ACK) == 0) {
             AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                             "retVal = %d\nGOT NACK! resp flag = 0x%08x\n",
                             retVal, respParam.flags);
@@ -2076,7 +2076,7 @@ static void Lpm_pmicStateChangeActiveToMCUOnly(void)
     uint8_t dataToSlave[2];
     uint8_t dataFromSlave[2];
 
-    if(0xFEEDFACEU == loopPMICStateChangeActiveToMCUOnly)
+    if(loopPMICStateChangeActiveToMCUOnly == 0xFEEDFACE)
     {
         AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                         "Connect CCS and change the loopPMICStateChangeActiveToMCUOnly to 0x0!!!!\n");
@@ -2084,7 +2084,7 @@ static void Lpm_pmicStateChangeActiveToMCUOnly(void)
                         "This will disconnect the JTAG interface too and you can only see the MCU running from UART prints!!!!\n");
     }
 
-    while(0xFEEDFACEU == loopPMICStateChangeActiveToMCUOnly);
+    while(loopPMICStateChangeActiveToMCUOnly == 0xFEEDFACE);
 
     /* Read INT_TOP */
     dataToSlave[0] = 0x5A;
@@ -2172,7 +2172,7 @@ static void Lpm_pmicStateChangeActiveToMCUOnly(void)
     return;
 }
 
-volatile uint32_t loopPMICStateChangeActiveToIORetention = 0U;
+volatile uint32_t loopPMICStateChangeActiveToIORetention = 0;
 void Lpm_mostlyConfigureIORetention(void)
 {
     uint8_t dataToSlave[2];
@@ -2230,7 +2230,7 @@ void Lpm_pmicStateChangeActiveToIORetention(void)
     uint8_t dataToSlave[2];
     uint8_t dataFromSlave[2] = {0U, 0U};
 
-    if(0xFEEDFACEU == loopPMICStateChangeActiveToIORetention)
+    if(loopPMICStateChangeActiveToIORetention == 0xFEEDFACE)
     {
         AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                         "Connect CCS and change the loopPMICStateChangeActiveToIORetention to 0x0!!!!\n");
@@ -2238,7 +2238,7 @@ void Lpm_pmicStateChangeActiveToIORetention(void)
                         "This will disconnect the JTAG interface too and you can only see the MCU running from UART prints!!!!\n");
     }
 
-    while(0xFEEDFACEU == loopPMICStateChangeActiveToIORetention);
+    while(loopPMICStateChangeActiveToIORetention == 0xFEEDFACE);
 
    /* Change FSM_NSLEEP_TRIGGERS */
     dataToSlave[0] = 0x86;
@@ -2530,13 +2530,13 @@ uint32_t Lpm_activeToIoRetSwitch()
 
 uint32_t Lpm_pmicInit()
 {
-    uint32_t pmicStatus = 0U;
+    uint32_t pmicStatus = 0;
 #if defined(PMIC_USE_DRV)
     pmicStatus = Lpm_initPMIC();
 #else
     pmicStatus = Lpm_i2cInitPMIC();
 #endif
-    if(0U != pmicStatus)
+    if(0 != pmicStatus)
     {
         AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME"Lpm_initPMIC failed!\n");
     }
@@ -2546,7 +2546,7 @@ uint32_t Lpm_pmicInit()
 /* MCU Only task */
 uint32_t Lpm_pmicApp()
 {
-    uint32_t status = 0U;
+    uint32_t status = 0;
     AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME "Inside MCU ONLY task!\n");
 
     /* Before entering MCU_ONLY mode we need to disable all VTM temp sensors in
@@ -2564,7 +2564,7 @@ uint32_t Lpm_pmicApp()
     TaskP_sleep(10000);
 
     /* Change state from ACTIVE to MCU ONLY */
-    if (0U == status)
+    if (0 == status)
     {
         AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                         "############################ACTIVE -> MCU ONLY MODE############################\n");
@@ -2588,7 +2588,7 @@ uint32_t Lpm_pmicApp()
     TaskP_sleep(10000);
 
     /* Change state from MCU ONLY to ACTIVE */
-    if (0U == status)
+    if (0 == status)
     {
         AppUtils_Printf(MSG_NORMAL, MSG_APP_NAME
                         "############################MCU ONLY -> ACTIVE MODE############################\n");

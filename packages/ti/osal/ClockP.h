@@ -62,21 +62,16 @@ extern "C" {
 #include <stdbool.h>
 #include <stddef.h>
 
-/**
- * \anchor ClockP_Status
- * \name Status codes for ClockP APIs
- *
- * @{
- */
 /*!
  *  @brief    Status codes for ClockP APIs
  */
-typedef int32_t ClockP_Status;
-/*! API completed successfully */
-#define ClockP_OK                                   ((int32_t) 0)
-/*! API failed */
-#define ClockP_FAILURE                              (-(int32_t) 1)
-/* @} */
+typedef enum ClockP_Status_e
+{
+    /*! API completed successfully */
+    ClockP_OK         = 0,
+    /*! API failed */
+    ClockP_FAILURE    = (-(int32_t)1)
+} ClockP_Status;
 
 /**
  * \anchor ClockP_RunMode

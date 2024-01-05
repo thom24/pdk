@@ -232,9 +232,9 @@ int32_t BOARD_udmaPrime(Udma_ChHandle chHandle, const void *startAddr, uint32_t 
     uint32_t        numTR;
     
     /* Init Src Buffer */
-    for (offset = 0U; offset < BOARD_DDR_PRIME_BUFFER_NUM_BYTES; offset += 4U)
+    for (offset = 0U; offset < BOARD_DDR_PRIME_BUFFER_NUM_BYTES; offset += 4)
     {
-        *((volatile uint32_t *) srcBuf) = 0xA5A5A5A5U;
+        *((volatile uint32_t *) srcBuf) = 0xA5A5A5A5;
         srcBuf++;
     }
     /* Writeback buffer */
@@ -302,10 +302,10 @@ int32_t BOARD_udmaPrime(Udma_ChHandle chHandle, const void *startAddr, uint32_t 
     if(size % BOARD_DDR_PRIME_BUFFER_NUM_BYTES)
     {
         memPtr = (uintptr_t)startAddr + size;
-        for (offset = 0U; offset <= (size % BOARD_DDR_PRIME_BUFFER_NUM_BYTES); offset += 4U)
+        for (offset = 0U; offset <= (size % BOARD_DDR_PRIME_BUFFER_NUM_BYTES); offset += 4)
         {
             memPtr -= 4;
-            *((volatile uint32_t *) memPtr) = 0xA5A5A5A5U;
+            *((volatile uint32_t *) memPtr) = 0xA5A5A5A5;
         }
     }
 
@@ -348,7 +348,7 @@ static int32_t BOARD_udmaInit(Udma_DrvHandle drvHandle)
 
     /* Use MCU NAVSS for MCU domain cores. Rest cores all uses Main NAVSS */
     socDomain = Board_getSocDomain();
-    if(BOARD_SOC_DOMAIN_MCU == socDomain)
+    if(socDomain == BOARD_SOC_DOMAIN_MCU)
     {
         instId = UDMA_INST_ID_MCU_0;
     }
@@ -517,7 +517,7 @@ static int32_t BOARD_udmaDelete(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle
     }
 
     /* Flush any pending request from the free queue */
-    while(BTRUE)
+    while(1)
     {
         tempRetVal = Udma_ringFlushRaw(
                          Udma_chGetFqRingHandle(chHandle), &pDesc);
@@ -547,7 +547,7 @@ static int32_t BOARD_udmaDelete(Udma_DrvHandle drvHandle, Udma_ChHandle chHandle
         BOARD_DEBUG_LOG("[DMA] UDMA channel close failed!!\n");
     }
 
-    if(NULL != gBoardUdmaDDRPrimeDoneSem)
+    if(gBoardUdmaDDRPrimeDoneSem != NULL)
     {
         SemaphoreP_delete(gBoardUdmaDDRPrimeDoneSem);
         gBoardUdmaDDRPrimeDoneSem = NULL;
@@ -569,7 +569,7 @@ static uint32_t BOARD_udmaTrpdinit(Udma_ChHandle chHandle,
     uint32_t *pTrResp;
     uint32_t cqRingNum = Udma_chGetCqRingNum(chHandle);
 
-    uint32_t numTR = 1U, trIdx;
+    uint32_t numTR = 1, trIdx;
     uint16_t icnt[BOARD_MAX_TR][4] = {0};
     uint32_t addrOffset[BOARD_MAX_TR] = {0};
 
@@ -618,7 +618,7 @@ static uint32_t BOARD_udmaTrpdinit(Udma_ChHandle chHandle,
     /* Make TRPD */
     UdmaUtils_makeTrpd(pTrpd, UDMA_TR_TYPE_15, numTR, cqRingNum);
 
-    for (trIdx = 0U; trIdx < numTR; trIdx ++)
+    for (trIdx = 0u; trIdx < numTR; trIdx ++)
     {
         /* Setup TR */
         pTr->flags    = CSL_FMK(UDMAP_TR_FLAGS_TYPE, 15)                                            |

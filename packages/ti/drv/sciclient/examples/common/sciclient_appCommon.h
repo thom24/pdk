@@ -65,10 +65,10 @@ extern "C" {
  *  @{
  *  Macros to enable or disable tests and printing.
  */
-#define TEST_ENABLE                     (UTRUE)
-#define TEST_DISABLE                    (UFALSE)
-#define PRINT_ENABLE                    (UTRUE)
-#define PRINT_DISABLE                   (UFALSE)
+#define TEST_ENABLE                     (TRUE)
+#define TEST_DISABLE                    (FALSE)
+#define PRINT_ENABLE                    (TRUE)
+#define PRINT_DISABLE                   (FALSE)
 /* @} */
 
 /**

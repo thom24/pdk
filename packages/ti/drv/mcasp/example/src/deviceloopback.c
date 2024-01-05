@@ -146,7 +146,7 @@ uint32_t get_sample_offset(uint32_t dir,uint32_t ser_no,uint32_t timeslot_no,
     Mcasp_ChanParams * chanParams =   &mcasp_chanparam[dir];
     uint32_t num_serializers = chanParams->noOfSerRequested;
     uint32_t num_timeslots   = chanParams->noOfChannels;
-    uint32_t sample_word_offset = 0U;
+    uint32_t sample_word_offset=0;
 
     switch (chanParams->dataFormat)
     {
@@ -195,7 +195,7 @@ void initialize_dlbTestInfo(uint32_t frame_size_in_bytes_tx, uint32_t frame_size
     assert(NULL != dlbEventsQueue);
 
     /* Initialize for Tx and Rx */
-	for(dir = 0U; dir < 2U; dir++)
+	for(dir=0;dir<2;dir++)
     {
       Mcasp_ChanParams * chanParams =   &mcasp_chanparam[dir];
  	  /* In the loopback test, all serializers and their timeslots share the same data sizer per direction. The frame_size_in_bytes is split
@@ -205,7 +205,7 @@ void initialize_dlbTestInfo(uint32_t frame_size_in_bytes_tx, uint32_t frame_size
 	  uint32_t samples_per_timeslot_words = samples_per_timeslot_bytes/(chanParams->wordWidth/8);
 
         /* For each serializer initialize its timeslot data */  
-       for(ser = 0U; ser < chanParams->noOfSerRequested ; ser++)
+       for(ser = 0; ser < chanParams->noOfSerRequested ; ser++)
        {
          /* For Tx and Rx */
             uint32_t timeslot;
@@ -216,7 +216,7 @@ void initialize_dlbTestInfo(uint32_t frame_size_in_bytes_tx, uint32_t frame_size
             serInfoPtr->index = chanParams->indexOfSersRequested[ser]; /* This is the actual serializer number */
 
              /* For all timeslots within the serializer */
-            for (timeslot = 0U; timeslot < chanParams->noOfChannels; timeslot++)
+            for (timeslot=0;timeslot<chanParams->noOfChannels;timeslot++)
             {
                tsInfo_t *tsInfoPtr = &(serInfoPtr->tsInfo[timeslot]);
                int index;
@@ -249,14 +249,14 @@ void initialize_dlbTestInfo(uint32_t frame_size_in_bytes_tx, uint32_t frame_size
                tsInfoPtr->buf_num_samples = samples_per_timeslot_words;
 
                /* Assign the remaining parameters */
-               tsInfoPtr->ramp_last_val = 0U;  /* For Tx, it is the last put value on the ramp, for Rx it is the last ramp value received */
-               tsInfoPtr->ramp_synch_losses = 0U; /* Applicable to Rx */
-               tsInfoPtr->ramp_transmission_errors = 0U;
-               tsInfoPtr->ramp_synch_finds = 0U;  /* Applicable to Rx */
-               tsInfoPtr->ramp_last_val= ~(0x0U); /* Applicable to Rx Only */
+               tsInfoPtr->ramp_last_val = 0;  /* For Tx, it is the last put value on the ramp, for Rx it is the last ramp value received */
+               tsInfoPtr->ramp_synch_losses=0; /* Applicable to Rx */
+               tsInfoPtr->ramp_transmission_errors=0;
+               tsInfoPtr->ramp_synch_finds=0;  /* Applicable to Rx */
+               tsInfoPtr->ramp_last_val= ~(0x0); /* Applicable to Rx Only */
 			   tsInfoPtr->rampRxSynchState = RX_LOOPBACK_NOT_SYNCHED;
                tsInfoPtr->rampRxSynchStatePrev = RX_LOOPBACK_NOT_SYNCHED;
-               tsInfoPtr->total_frames = 0U;
+               tsInfoPtr->total_frames=0;
 
                /* Select the least word width for the ramp pattern. If we want to test the asymmetric loopback configuration,
                 * the ramp value sent/received should be the minimum of the Tx and Rx direction */
@@ -264,12 +264,12 @@ void initialize_dlbTestInfo(uint32_t frame_size_in_bytes_tx, uint32_t frame_size
                tsInfoPtr->ramp_mask = SAMPLE_MASK(tsInfoPtr->ValwordWidth- (4+4)); /* 4,4 bits for Ser,Tslot info */
                tsInfoPtr->wordBitsSelect=chanParams->wordBitsSelect;
 
-               for(index = 0; index < tsInfoPtr->buf_num_samples; index++) {
+               for(index=0;index<tsInfoPtr->buf_num_samples;index++) {
                   tsInfoPtr->sample_word_offsets[index]=get_sample_offset (dir,ser,timeslot,index,frameSizeBytesDir[dir]/(chanParams->wordWidth/8));
                }
 
             }/* tsInfo */
-            serInfoPtr->enabled = BTRUE;
+            serInfoPtr->enabled=TRUE;
         } /* serializer */
     }/* Dir */
 }
@@ -291,33 +291,33 @@ void gen_ramp_pattern(uint32_t frame_size_in_bytes)
 {
 
    /* For Tx */
-   uint32_t dir = TX, ser, timeslot; /* Ramp is generated ONLY for TX */
+   uint32_t dir=TX,ser,timeslot; /* Ramp is generated ONLY for TX */
    Mcasp_ChanParams * chanParams =   &mcasp_chanparam[dir];
    uint32_t num_serializers = chanParams->noOfSerRequested;
    
    /* Go to each serializer and insert the ramp patter, per timeslot buffer.
     i.e Each timeslot will have its own ramp */
-   for(ser = 0U; ser < num_serializers; ser++)
+   for(ser = 0; ser < num_serializers; ser++)
    {
        serInfo_t *serInfoPtr;
        serInfoPtr = &(dlbTestInfo[dir].serInfo[ser]);
 
-       if(BTRUE == serInfoPtr->enabled)
+       if(serInfoPtr->enabled==TRUE)
        {
            uint32_t num_timeslots = chanParams->noOfChannels;
            /* sample_val = fn(serializer_no(4 bits), timeslot_no (4 bits), ramp_val) */
            /* For all timeslots within the serializer */
-           for (timeslot = 0U; timeslot < num_timeslots; timeslot++)
+           for (timeslot=0;timeslot<num_timeslots;timeslot++)
            {
 			  uint32_t ramp_val,index,sample;
               tsInfo_t *tsInfoPtr = &(serInfoPtr->tsInfo[timeslot]);
               tsInfoPtr->index = timeslot;
               
 			  /* Go through the samples in the buffer, and generate the ramp pattern */
-              for(index = 0; index < tsInfoPtr->buf_num_samples; index++) /* 32 bit samples */
+              for(index=0;index<tsInfoPtr->buf_num_samples;index++) /* 32 bit samples */
 			  {
                 /* Calculate the new ramp value */
-                ramp_val = (tsInfoPtr->ramp_last_val + 1U) & tsInfoPtr->ramp_mask;
+                ramp_val = (tsInfoPtr->ramp_last_val+1) & tsInfoPtr->ramp_mask;
                 tsInfoPtr->ramp_last_val = ramp_val; /* Overwriting with the new one */
 
                 /* Prepare the sample value to put */
@@ -352,40 +352,40 @@ void pack_unpack_buf (void *frame_buf, uint32_t frame_size,uint32_t dir)
    Mcasp_ChanParams * chanParams =   &mcasp_chanparam[dir];
 
      /* For each serializer, for each timeslot finish writing its samples */
-     for(ser = 0U; ser < chanParams->noOfSerRequested; ser++)
+     for(ser = 0; ser < chanParams->noOfSerRequested; ser++)
      {
         serInfo_t *serInfoPtr=&(dlbTestInfo[dir].serInfo[ser]);
 
-        if(BTRUE == serInfoPtr->enabled)
+        if(serInfoPtr->enabled==TRUE)
         {
            uint32_t num_timeslots = chanParams->noOfChannels;
            /* For all timeslots within the serializer */
-           for (timeslot = 0U; timeslot < num_timeslots; timeslot++)
+           for (timeslot=0;timeslot<num_timeslots;timeslot++)
            {
               tsInfo_t *tsInfoPtr = &(serInfoPtr->tsInfo[timeslot]);
               /* For each sample from the unpacked buffer, find its place inside the frame buffer and put it there */
-			  for(index = 0; index < tsInfoPtr->buf_num_samples; index++) /* 32 bit samples */
+			  for(index=0;index < tsInfoPtr->buf_num_samples;index++) /* 32 bit samples */
               {
                   /* Find the byte offset */
 				  uint32_t sample_word_offset = tsInfoPtr->sample_word_offsets[index];
                   switch(chanParams->wordWidth)
                   {
                     case Mcasp_WordLength_32:
-					  if(TX == dir) { /* Pack */
+					  if(dir==TX) { /* Pack */
                         *((uint32_t* )frame_buf + sample_word_offset) = tsInfoPtr->buf[index];
 					  } else { /* Un-Pack */
                         tsInfoPtr->buf[index] = *((uint32_t* )frame_buf + sample_word_offset);					  
 					  }
                       break;
                     case Mcasp_WordLength_16:
-					  if(TX == dir) { /* Pack */
+					  if(dir==TX) { /* Pack */
    					    *((uint16_t* )frame_buf + sample_word_offset) = (uint16_t) tsInfoPtr->buf[index];
                       } else { /* Un Pack */
                         tsInfoPtr->buf[index] = *((uint16_t* )frame_buf + sample_word_offset);
 					  }
 					   break;
                     case Mcasp_WordLength_8:
-					  if(TX == dir) { /* Pack */
+					  if(dir==TX) { /* Pack */
    					    *((uint8_t* )frame_buf + sample_word_offset) = (uint8_t) tsInfoPtr->buf[index];
                       } else { /* Un Pack */
                         tsInfoPtr->buf[index] = *((uint8_t* )frame_buf + sample_word_offset);
@@ -410,35 +410,35 @@ void analyze_received_samples(uint32_t frame_size_in_bytes)
 {
 
    /* For Tx */
-   uint32_t dir = RX; /* Ramp is generated ONLY for TX */
+   uint32_t dir=RX; /* Ramp is generated ONLY for TX */
    uint32_t ser,timeslot,index;
    Mcasp_ChanParams * chanParams =   &mcasp_chanparam[dir];
    uint32_t num_serializers = chanParams->noOfSerRequested;
 
    /* Go to each serializer and insert the ramp patter, per timeslot buffer.
     i.e Each timeslot will have its own ramp */
-   for(ser = 0U; ser < num_serializers; ser++)
+   for(ser = 0; ser < num_serializers; ser++)
    {
        serInfo_t *serInfoPtr;
        serInfoPtr = &(dlbTestInfo[dir].serInfo[ser]);
 
-       if(BTRUE == serInfoPtr->enabled)
+       if(serInfoPtr->enabled==TRUE)
        {
            uint32_t num_timeslots = chanParams->noOfChannels;
            /* sample_val = fn(serializer_no(4 bits), timeslot_no (4 bits), ramp_val) */
            /* For all timeslots within the serializer */
 
-           for (timeslot = 0U; timeslot < num_timeslots; timeslot++)
+           for (timeslot=0;timeslot<num_timeslots;timeslot++)
            {
               tsInfo_t *tsInfoPtr = &(serInfoPtr->tsInfo[timeslot]);
-              uint32_t continuous_sync = 0U;
+              uint32_t continuous_sync=0;
 			  /* Go through the samples in the buffer, and generate the ramp pattern */
-              for(index = 0; index < tsInfoPtr->buf_num_samples; index++) /* 32 bit samples */
+              for(index=0;index<tsInfoPtr->buf_num_samples;index++) /* 32 bit samples */
 			  {
   			    uint32_t receivedSample=tsInfoPtr->buf[index];
   			    uint32_t ramp_last_val_temp = tsInfoPtr->ramp_last_val;
 
-                if(Mcasp_WordBitsSelect_MSB == mcasp_chanparam[TX].wordBitsSelect)
+                if(mcasp_chanparam[TX].wordBitsSelect==Mcasp_WordBitsSelect_MSB)
                  {
                     receivedSample = receivedSample >> (mcasp_chanparam[RX].wordWidth - tsInfoPtr->ValwordWidth);
                  }
@@ -451,20 +451,20 @@ void analyze_received_samples(uint32_t frame_size_in_bytes)
 				  /* Calculate the new ramp value */
 				  if(receivedSample_val != ((uint32_t)(ramp_last_val_temp+1)& tsInfoPtr->ramp_mask)) {
     				tsInfoPtr->ramp_transmission_errors++;
-    				continuous_sync = 0U; /* Synch lost */
+    				continuous_sync=0; /* Synch lost */
     			  } else {
     				continuous_sync++; /* Unbroken synch for sometime */
     			  }
 				
                   tsInfoPtr->ramp_last_val = receivedSample_val & tsInfoPtr->ramp_mask ; /* Overwriting with the new one */
 
-				  if(RX_SYNC_THRESHOLD == continuous_sync) {
+				  if(continuous_sync== RX_SYNC_THRESHOLD) {
     				tsInfoPtr->rampRxSynchState = RX_LOOPBACK_SYNCHED;
     			  }
 				  else
 				  {
     				/* Synch was present earlier and we lost it now , as indicated by continous_synch==0 */
-    				if((0U == continuous_sync) && (RX_LOOPBACK_SYNCHED == tsInfoPtr->rampRxSynchStatePrev))
+    				if((continuous_sync==0) && (tsInfoPtr->rampRxSynchStatePrev==RX_LOOPBACK_SYNCHED)) 
 					{
     				  tsInfoPtr->rampRxSynchState=RX_LOOPBACK_NOT_SYNCHED;
     				}
@@ -473,10 +473,10 @@ void analyze_received_samples(uint32_t frame_size_in_bytes)
     			/* If State changed */
  	            if(tsInfoPtr->rampRxSynchState!=tsInfoPtr->rampRxSynchStatePrev) 
 				{
- 	               if(RX_LOOPBACK_SYNCHED == tsInfoPtr->rampRxSynchState)
+ 	               if(tsInfoPtr->rampRxSynchState ==RX_LOOPBACK_SYNCHED) 
 				   {
   	        	      tsInfoPtr->ramp_synch_finds++;
-  	                  tsInfoPtr->statusChange = FOUND_SYNC;
+  	                  tsInfoPtr->statusChange=FOUND_SYNC;
 
   	                  /* Push the event in to the event queue */
   	                  {
@@ -538,7 +538,7 @@ void analyze_received_samples(uint32_t frame_size_in_bytes)
                           dlbEvent_t *dlbEvent;
                           dlbEvent = (dlbEvent_t *) HeapP_alloc(myHeap, sizeof(dlbEvent_t));
 
-                          if(NULL != dlbEvent) {
+                          if(dlbEvent!=NULL) {
                             dlbEvent->statusChange=LOST_SYNC_SER_TS_MISMATCH;
                             dlbEvent->dir=RX;
                             dlbEvent->frame_no=tsInfoPtr->total_frames;
@@ -569,7 +569,7 @@ void analyze_received_samples(uint32_t frame_size_in_bytes)
 void deviceloopback_process_samples(void *buf, uint32_t len_in_bytes, int dir)
 {
    /* Now check for ramp */
-    if (RX == dir)
+    if (dir == RX)
     {
         /* Unpack the Rx buffer */
         pack_unpack_buf (buf,len_in_bytes,RX);
@@ -577,7 +577,7 @@ void deviceloopback_process_samples(void *buf, uint32_t len_in_bytes, int dir)
         /* Analyze the received samples for ramp */
         analyze_received_samples(len_in_bytes);
     }
-    else if (TX == dir)
+    else if (dir == TX)
     {
         /* Generate Ramp pattern for all serializers/timeslots */
         gen_ramp_pattern(len_in_bytes);
@@ -593,48 +593,48 @@ void finish_deviceloopback() {
 	/* Analyze the results of the loopback test */
 		/* Test ran to completion */
     /* For Tx */
-     uint32_t dir = RX; /* Ramp is generated ONLY for TX */
+     uint32_t dir=RX; /* Ramp is generated ONLY for TX */
      uint32_t ser,timeslot;
      Mcasp_ChanParams * chanParams =   &mcasp_chanparam[dir];
      uint32_t num_serializers = chanParams->noOfSerRequested;
-     bool test_pass = BTRUE;
+     bool test_pass=TRUE;
 
      /* Go to each serializer and insert the ramp patter, per timeslot buffer.
       i.e Each timeslot will have its own ramp */
-     for(ser = 0U; ser < num_serializers; ser++)
+     for(ser = 0; ser < num_serializers; ser++)
      {
          serInfo_t *serInfoPtr;
          serInfoPtr = &(dlbTestInfo[dir].serInfo[ser]);
 
-         if(BTRUE == serInfoPtr->enabled)
+         if(serInfoPtr->enabled==TRUE)
          {
              uint32_t num_timeslots = chanParams->noOfChannels;
              /* sample_val = fn(serializer_no(4 bits), timeslot_no (4 bits), ramp_val) */
              /* For all timeslots within the serializer */
 
-             for (timeslot = 0U; timeslot < num_timeslots; timeslot++)
+             for (timeslot=0;timeslot<num_timeslots;timeslot++)
              {
                 tsInfo_t *tsInfoPtr = &(serInfoPtr->tsInfo[timeslot]);
 
-                if(0U == tsInfoPtr->ramp_synch_losses)
+                if(tsInfoPtr->ramp_synch_losses==0)
                 {
 
-                    if(0U == tsInfoPtr->ramp_synch_finds)
+                    if(tsInfoPtr->ramp_synch_finds==0)
                     {
                         MCASP_log("\nTEST FAIL: Ramp test never found sync on rx for Serializer=%d, timeslot=%d\n", serInfoPtr->index, timeslot);
-                        test_pass = BFALSE;
+                        test_pass=FALSE;
                     }
                 }
                 else
                 {
                     MCASP_log("\nTEST FAIL: Sync losses sync on rx for Serializer=%d, timeslot=%d\n", serInfoPtr->index, timeslot);
-                    test_pass = BFALSE;
+                    test_pass=FALSE;
                 }
 
              }
          }
      }
-    if(BTRUE == test_pass) {
+    if(test_pass==TRUE) {
 	      MCASP_log("\nAll tests have passed\n");
 	} else {
 		 MCASP_log("\nTEST FAIL:Some tests have failed\n");

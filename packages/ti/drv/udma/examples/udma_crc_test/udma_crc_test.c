@@ -673,7 +673,7 @@ static void App_print(const char *str)
 {
     UART_printf("%s", str);
 
-    if(UTRUE == Udma_appIsPrintSupported())
+    if(TRUE == Udma_appIsPrintSupported())
     {
         printf("%s", str);
     }

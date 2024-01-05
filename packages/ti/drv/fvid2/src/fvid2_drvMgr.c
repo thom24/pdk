@@ -490,13 +490,13 @@ int32_t Fvid2_init(const Fvid2_InitPrms *initPrms)
     Fvid2Utils_memset(&gFdmObj, 0U, sizeof (gFdmObj));
 
     /* Mark pool flags as free */
-    for (cnt = 0U; cnt < FVID2_CFG_FDM_NUM_DRV_OBJS; cnt++)
+    for (cnt = 0u; cnt < FVID2_CFG_FDM_NUM_DRV_OBJS; cnt++)
     {
-        gFdmObj.fdmDriverObjects[cnt].isUsed = UFALSE;
+        gFdmObj.fdmDriverObjects[cnt].isUsed = (uint32_t) FALSE;
     }
-    for (cnt = 0U; cnt < FVID2_CFG_FDM_NUM_CH_OBJS; cnt++)
+    for (cnt = 0u; cnt < FVID2_CFG_FDM_NUM_CH_OBJS; cnt++)
     {
-        gFdmObj.fdmChannelObjects[cnt].isUsed = UFALSE;
+        gFdmObj.fdmChannelObjects[cnt].isUsed = (uint32_t) FALSE;
     }
 
     gFdmObj.versionString = FVID2_VERSION_STRING;
@@ -600,9 +600,9 @@ int32_t Fvid2_registerDriver(const Fvid2_DrvOps *drvOps)
     (void) SemaphoreP_pend(gFdmObj.lockSem, SemaphoreP_WAIT_FOREVER);
 
     /* Check whether the driver is already registered */
-    for (cnt = 0U; cnt < FVID2_CFG_FDM_NUM_DRV_OBJS; cnt++)
+    for (cnt = 0u; cnt < FVID2_CFG_FDM_NUM_DRV_OBJS; cnt++)
     {
-        if (UTRUE == gFdmObj.fdmDriverObjects[cnt].isUsed)
+        if (TRUE == gFdmObj.fdmDriverObjects[cnt].isUsed)
         {
             /* Check for NULL pointers */
             OSAL_Assert(NULL_PTR == gFdmObj.fdmDriverObjects[cnt].drvOps);
@@ -678,9 +678,9 @@ Fvid2_Handle Fvid2_create(uint32_t              drvId,
     (void) SemaphoreP_pend(gFdmObj.lockSem, SemaphoreP_WAIT_FOREVER);
 
     /* Get the matching driver object */
-    for (cnt = 0U; cnt < FVID2_CFG_FDM_NUM_DRV_OBJS; cnt++)
+    for (cnt = 0u; cnt < FVID2_CFG_FDM_NUM_DRV_OBJS; cnt++)
     {
-        if (UTRUE == gFdmObj.fdmDriverObjects[cnt].isUsed)
+        if (TRUE == gFdmObj.fdmDriverObjects[cnt].isUsed)
         {
             /* Check for NULL pointers */
             OSAL_Assert(NULL_PTR == gFdmObj.fdmDriverObjects[cnt].drvOps);
@@ -1255,7 +1255,7 @@ int32_t Fvid2_checkDqFrameList(const Fvid2_FrameList *frameList,
     else
     {
         /* Check whether max frames is within range */
-        if (FVID2_MAX_FRAME_PTR < maxFrames)
+        if (maxFrames > FVID2_MAX_FRAME_PTR)
         {
             GT_0trace(Fvid2Trace, GT_ERR,
                       "Number of frames exceeds FVID2 max!!\r\n");
@@ -1425,12 +1425,12 @@ static Fdm_Driver *fdmAllocDriverObject(void)
     Fdm_Driver *drv = NULL;
 
     /* Get a free driver object */
-    for (cnt = 0U; cnt < FVID2_CFG_FDM_NUM_DRV_OBJS; cnt++)
+    for (cnt = 0u; cnt < FVID2_CFG_FDM_NUM_DRV_OBJS; cnt++)
     {
-        if (UFALSE == gFdmObj.fdmDriverObjects[cnt].isUsed)
+        if (FALSE == gFdmObj.fdmDriverObjects[cnt].isUsed)
         {
             drv         = &gFdmObj.fdmDriverObjects[cnt];
-            drv->isUsed = UTRUE;
+            drv->isUsed = (uint32_t) TRUE;
             break;
         }
     }
@@ -1451,16 +1451,16 @@ static int32_t fdmFreeDriverObject(const Fvid2_DrvOps *drvOps)
     OSAL_Assert(NULL_PTR == drvOps);
 
     /* Free the driver object */
-    for (cnt = 0U; cnt < FVID2_CFG_FDM_NUM_DRV_OBJS; cnt++)
+    for (cnt = 0u; cnt < FVID2_CFG_FDM_NUM_DRV_OBJS; cnt++)
     {
-        if ((UTRUE  == gFdmObj.fdmDriverObjects[cnt].isUsed) &&
+        if ((TRUE == gFdmObj.fdmDriverObjects[cnt].isUsed) &&
             (drvOps == gFdmObj.fdmDriverObjects[cnt].drvOps))
         {
-            if (0U == gFdmObj.fdmDriverObjects[cnt].numOpens)
+            if (0u == gFdmObj.fdmDriverObjects[cnt].numOpens)
             {
-                gFdmObj.fdmDriverObjects[cnt].isUsed   = UFALSE;
+                gFdmObj.fdmDriverObjects[cnt].isUsed   = (uint32_t) FALSE;
                 gFdmObj.fdmDriverObjects[cnt].drvOps   = NULL;
-                gFdmObj.fdmDriverObjects[cnt].numOpens = 0U;
+                gFdmObj.fdmDriverObjects[cnt].numOpens = 0u;
                 retVal = FVID2_SOK;
             }
             else
@@ -1491,12 +1491,12 @@ static Fdm_Channel *fdmAllocChannelObject(void)
     Fdm_Channel *channel = NULL;
 
     /* Get a free channel object */
-    for (cnt = 0U; cnt < FVID2_CFG_FDM_NUM_CH_OBJS; cnt++)
+    for (cnt = 0u; cnt < FVID2_CFG_FDM_NUM_CH_OBJS; cnt++)
     {
-        if (UFALSE == gFdmObj.fdmChannelObjects[cnt].isUsed)
+        if (FALSE == gFdmObj.fdmChannelObjects[cnt].isUsed)
         {
             channel         = &gFdmObj.fdmChannelObjects[cnt];
-            channel->isUsed = UTRUE;
+            channel->isUsed = (uint32_t) TRUE;
             break;
         }
     }
@@ -1516,9 +1516,9 @@ static int32_t fdmFreeChannelObject(Fdm_Channel *channel)
     OSAL_Assert(NULL_PTR == channel);
 
     /* Free the channel object */
-    if (UTRUE == channel->isUsed)
+    if (TRUE == channel->isUsed)
     {
-        channel->isUsed = UFALSE;
+        channel->isUsed = (uint32_t) FALSE;
         retVal          = FVID2_SOK;
     }
     else
@@ -1544,7 +1544,7 @@ void Fvid2_printf(const char *format, ...)
               (const char *) format, vaArgPtr);
     va_end(vaArgPtr);
 
-    if(NULL != gFdmInitPrms.printFxn)
+    if(gFdmInitPrms.printFxn != NULL)
     {
         gFdmInitPrms.printFxn(buf);
     }

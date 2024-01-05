@@ -60,7 +60,7 @@ static HwiP_nonOs hwiStructs[OSAL_NONOS_CONFIGNUM_HWI];
 
 osalArch_Config_t gOsalArchConfig =
 {
-    .disableIrqOnInit = BFALSE,
+    .disableIrqOnInit = (bool)false,
 };
 
 void osalArch_Init (osalArch_Config_t *cfg)
@@ -88,9 +88,9 @@ void OsalArch_compileTime_SizeChk(void)
 #endif
 }
 
-static bool gFirstTime = BTRUE;
-static bool gTimestampFirstTime = BTRUE;
-static bool gHwiInitialized = BFALSE;
+static bool gFirstTime = (bool)true;
+static bool gTimestampFirstTime = (bool)true;
+static bool gHwiInitialized = (bool)false;
 static CSL_vimRegs *gVimRegs;
 
 static TimeStamp_Struct gTimeStamp = {(uint32_t)NULL,(uint32_t)NULL};
@@ -153,7 +153,7 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
     /* Check if user has specified any memory block to be used, which gets
      * the precedence over the internal static memory block
      */
-    if ((uintptr_t)(0U) != gOsal_HwAttrs.extHwiPBlock.base)
+    if (0U != gOsal_HwAttrs.extHwiPBlock.base)
     {
         /* pick up the external memory block configured */
         hwiPool        = (HwiP_nonOs *) gOsal_HwAttrs.extHwiPBlock.base;
@@ -166,11 +166,11 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
         hwiPool        = (HwiP_nonOs *) &hwiStructs[0];
         maxHwi         = OSAL_NONOS_CONFIGNUM_HWI;
 
-        if(BFALSE == gHwiInitialized)
+        if((bool)false == gHwiInitialized)
         {
           /* Initializing the first time */
           (void)memset((void *)hwiStructs,0,sizeof(hwiStructs));
-          gHwiInitialized = BTRUE;
+          gHwiInitialized = (bool)true;
         }
     }
 
@@ -178,9 +178,9 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
     {
 
     key = OsalArch_globalDisableInterrupt();
-    for (i = 0U; i < maxHwi; i++) {
-        if (BFALSE == hwiPool[i].used) {
-            hwiPool[i].used = BTRUE;
+    for (i = 0u; i < maxHwi; i++) {
+        if ((bool)false == hwiPool[i].used) {
+            hwiPool[i].used = (bool)true;
             break;
         }
     }
@@ -198,7 +198,7 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
 
     if (NULL_PTR != hwi_handle)
     {
-        if (BTRUE == gFirstTime)
+        if ((bool)true == gFirstTime)
         {
             Intc_Init();
             CSL_armR5GetCpuID(&info);
@@ -238,8 +238,8 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
                 gVimRegs = (CSL_vimRegs *)(uintptr_t)CSL_MCU_DOMAIN_VIM_BASE_ADDR1;
             }
 #endif
-            gFirstTime = BFALSE;
-            if (BFALSE == gOsalArchConfig.disableIrqOnInit)
+            gFirstTime = (bool)false;
+            if ((bool)false == gOsalArchConfig.disableIrqOnInit)
             {
                 Intc_SystemEnable();
             }
@@ -280,7 +280,7 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
         Intc_IntRegister((uint16_t)interruptNum, (IntrFuncPtr) hwiFxn, (void *)params->arg);
 
         /* Enabling the interrupt if configured */
-        if (UTRUE == params->enableIntr)
+        if (TRUE == params->enableIntr)
         {
             /* Enabling the interrupt in INTC. */
             Intc_IntEnable((uint16_t)interruptNum);
@@ -327,11 +327,11 @@ HwiP_Handle OsalArch_HwiPCreateDirect(uint32_t interruptNum, HwiP_DirectFxn hwiF
         hwiPool        = (HwiP_nonOs *) &hwiStructs[0];
         maxHwi         = OSAL_NONOS_CONFIGNUM_HWI;
 
-        if(BFALSE == gHwiInitialized)
+        if((bool)false == gHwiInitialized)
         {
           /* Initializing the first time */
           (void)memset((void *)hwiStructs,0,sizeof(hwiStructs));
-          gHwiInitialized = BTRUE;
+          gHwiInitialized = (bool)true;
         }
     }
 
@@ -340,8 +340,8 @@ HwiP_Handle OsalArch_HwiPCreateDirect(uint32_t interruptNum, HwiP_DirectFxn hwiF
 
         key = OsalArch_globalDisableInterrupt();
         for (i = 0U; i < maxHwi; i++) {
-            if (BFALSE == hwiPool[i].used) {
-                hwiPool[i].used = BTRUE;
+            if ((bool)false == hwiPool[i].used) {
+                hwiPool[i].used = (bool)true;
                 break;
             }
         }
@@ -359,7 +359,7 @@ HwiP_Handle OsalArch_HwiPCreateDirect(uint32_t interruptNum, HwiP_DirectFxn hwiF
 
         if (NULL_PTR != hwi_handle)
         {
-            if (BTRUE == gFirstTime)
+            if ((bool)true == gFirstTime)
             {
                 Intc_Init();
                 CSL_armR5GetCpuID(&info);
@@ -399,8 +399,8 @@ HwiP_Handle OsalArch_HwiPCreateDirect(uint32_t interruptNum, HwiP_DirectFxn hwiF
                     gVimRegs = (CSL_vimRegs *)(uintptr_t)CSL_MCU_DOMAIN_VIM_BASE_ADDR1;
                 }
 #endif
-                gFirstTime = BFALSE;
-                if (BFALSE == gOsalArchConfig.disableIrqOnInit)
+                gFirstTime = (bool)false;
+                if ((bool)false == gOsalArchConfig.disableIrqOnInit)
                 {
                     Intc_SystemEnable();
                 }
@@ -431,7 +431,7 @@ HwiP_Handle OsalArch_HwiPCreateDirect(uint32_t interruptNum, HwiP_DirectFxn hwiF
                            (CSL_VimIntrType)intrSrcType, (uint32_t)hwiFxn );
 
             /* Enabling the interrupt if configured */
-            if (UTRUE == params->enableIntr)
+            if (TRUE == params->enableIntr)
             {
                 /* Enabling the interrupt in INTC. */
                 Intc_IntEnable((uint16_t)interruptNum);
@@ -455,9 +455,9 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
 
     /* mark that handle as free */
     key = OsalArch_globalDisableInterrupt();
-    if (BTRUE == hwi_hnd->used)
+    if ((bool)true == hwi_hnd->used)
     {
-        hwi_hnd->used = BFALSE;
+        hwi_hnd->used = (bool)false;
         Intc_IntUnregister((uint16_t)(hwi_hnd->hwi.intNum));
         /* Disabling the interrupt in INTC. */
         Intc_IntDisable((uint16_t)(hwi_hnd->hwi.intNum));
@@ -483,11 +483,11 @@ void    osalArch_TimestampInit(void)
     /* FreeRTOS R5F port already initialized PMU counter as part of 
      * schedular start for runtime measurement */
 #if !defined(FREERTOS)
-    if (BTRUE == gTimestampFirstTime)
+    if ((bool)true == gTimestampFirstTime)
     {
         osal_TimestampProvider_initCCNT();
         /* One time initialization is done */
-        gTimestampFirstTime = BFALSE;
+        gTimestampFirstTime = (bool)false;
     }
 #endif
 
@@ -562,11 +562,11 @@ void osalArch_TimestampCcntAutoRefresh(uintptr_t arg)
 
 bool Osal_isInAbortContext( void )
 {
-    bool retVal = BFALSE;
+    bool retVal = false;
     extern volatile uint32_t gCurrentProcessorState;
     if (CSL_ARM_R5_ABORT_MODE == gCurrentProcessorState)
     {
-        retVal = BTRUE;
+        retVal = true;
     }
 
     return retVal;

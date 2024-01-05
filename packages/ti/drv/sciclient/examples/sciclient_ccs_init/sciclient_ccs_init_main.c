@@ -237,7 +237,7 @@ static int32_t App_getRevisionTest(void)
         NULL,
         1U,
         0U,
-        UTRUE
+        TRUE
     };
     struct tisci_msg_version_req req = {0};
     const Sciclient_ReqPrm_t      reqPrm =

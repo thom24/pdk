@@ -73,7 +73,7 @@ SemaphoreP_Status SemaphoreP_delete(SemaphoreP_Handle handle)
     int ret;
 
     ret = sem_close((sem_t *)handle);
-    if (0 > ret) {
+    if (ret < 0) {
         return SemaphoreP_FAILURE;
     }
 
@@ -106,12 +106,12 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
         ret = sem_wait((sem_t *)handle);
     } else {
         clock_gettime(CLOCK_REALTIME, &ts);
-        ts.tv_sec  += (timeout_ns) / 1000000000;
-        ts.tv_nsec += timeout_ns % 1000000000;
+        ts.tv_sec += (timeout_ns)/1000000000;
+        ts.tv_nsec += timeout_ns%1000000000;
 
         ret = sem_timedwait((sem_t *)handle, &ts);
     }
-    if (0 > ret) {
+    if (ret < 0) {
         if (ETIMEDOUT == errno) {
                 return (SemaphoreP_TIMEOUT);
         } else {
@@ -132,7 +132,7 @@ SemaphoreP_Status SemaphoreP_post(SemaphoreP_Handle handle)
     int ret;
 
     ret = sem_post((sem_t *)handle);
-    if (0 > ret) {
+    if (ret < 0) {
         return (SemaphoreP_FAILURE);
     }
 

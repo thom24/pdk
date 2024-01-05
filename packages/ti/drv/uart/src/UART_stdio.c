@@ -459,7 +459,7 @@ uint32_t UART_getNum(void)
         ** from ASCII to hexadecimal.
         */
         value = (value * 10U) + (((uint32_t)(rxByte)) - 0x30U);
-    } while (BTRUE == BTRUE);
+    } while (true == true);
 
     /* Accounting for the sign of the number.*/
     value = value * ((uint32_t)(sign));

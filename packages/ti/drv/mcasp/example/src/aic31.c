@@ -219,7 +219,7 @@ Void Aic31_init(Void)
     for (i = 0; i < AIC31_NUM_INSTANCES; i++)
     {
         /* have to initialize statically */
-        Aic31_module.inUse[i] = UFALSE;
+        Aic31_module.inUse[i] = FALSE;
         memset((Void *)&Aic31_Instances[i], 0x0, sizeof(Aic31_Object));
     }
 
@@ -241,14 +241,14 @@ Void Aic31_init(Void)
 {
     int32_t         retVal        = IOM_COMPLETED;
     Aic31_Params *params        = NULL;
-    uint32_t        count         = 0U`;
+    uint32_t        count         = 0;
     Aic31_Object *instHandle    = NULL;
 
 /* Begin parameter checking                                                   */
 #ifndef PSP_DISABLE_INPUT_PARAMETER_CHECK
     if ((NULL == devp)                  ||
         (AIC31_NUM_INSTANCES <= devId)  ||
-        (UTRUE == Aic31_module.inUse[devId]))
+        (TRUE == Aic31_module.inUse[devId]))
     {
         retVal = IOM_EBADARGS;
     }
@@ -259,7 +259,7 @@ Void Aic31_init(Void)
     {
         instHandle =  &Aic31_Instances[devId];
 
-        if (NULL == devParams) 
+        if (devParams == NULL) 
         {
             params = (Aic31_Params*)&Aic31_PARAMS;
         }
@@ -268,7 +268,7 @@ Void Aic31_init(Void)
             params = (Aic31_Params*) devParams;
         }
 
-        Aic31_module.inUse[devId] = UTRUE;
+        Aic31_module.inUse[devId] = TRUE;
 
         /* copy the initialization parameters                                 */
         instHandle->acType           = params->acType;
@@ -285,9 +285,9 @@ Void Aic31_init(Void)
 #ifdef SW_I2C
         instHandle->acCtrlBusInstNum = params->acCtrlBusInstNum;
 
-        if (ICodec_ControlBusType_I2C == instHandle->acControlBusType)
+        if (instHandle->acControlBusType == ICodec_ControlBusType_I2C)
         {
-            if (0 == instHandle->acCtrlBusInstNum)
+            if (instHandle->acCtrlBusInstNum == 0)
             {
                 instHandle->acBaseAddress = SOC_I2C_1_REGS;
             }
@@ -303,13 +303,13 @@ Void Aic31_init(Void)
         }
 #endif /* SW_I2C */
 
-        for (count = 0U; count < ICodec_Channel_MAX; count++)
+        for (count = 0; count < ICodec_Channel_MAX; count++)
         {
             /* Set the state of both the channels as closed                   */
             instHandle->ChanObj[count].chanStatus = ICodec_DriverState_CLOSED;
             instHandle->ChanObj[count].channelMode = ICodec_Channel_MAX;
-            instHandle->ChanObj[count].samplingRate = 0U;
-            instHandle->ChanObj[count].chanGain  = 0U;
+            instHandle->ChanObj[count].samplingRate = 0;
+            instHandle->ChanObj[count].chanGain  = 0;
             instHandle->ChanObj[count].devHandle = NULL;
         }
 
@@ -360,8 +360,8 @@ Void Aic31_init(Void)
         if ((NULL == instHandle)                                             ||
             (AIC31_NUM_INSTANCES <= instHandle->instNum)                     ||
            (ICodec_DriverState_CREATED != instHandle->devState)              ||
-            (ICodec_DriverState_CLOSED != instHandle->ChanObj[0].chanStatus) ||
-            (ICodec_DriverState_CLOSED != instHandle->ChanObj[1].chanStatus))
+            (instHandle->ChanObj[0].chanStatus != ICodec_DriverState_CLOSED) ||
+            (instHandle->ChanObj[1].chanStatus != ICodec_DriverState_CLOSED))
         {
             retVal = IOM_EBADARGS;
         }
@@ -372,7 +372,7 @@ Void Aic31_init(Void)
     if (IOM_COMPLETED == retVal)
     {
         instHandle->devState = ICodec_DriverState_DELETED;
-        Aic31_module.inUse[instHandle->instNum] = UFALSE;
+        Aic31_module.inUse[instHandle->instNum] = FALSE;
     }
 
     return (retVal);
@@ -416,7 +416,7 @@ Void Aic31_init(Void)
     String                  remName      = NULL;
     uint8_t                   tempData     = 0;
     I2c_ChanParams          i2cChanPrms  = {0};
-    Bool                    retVal       = Aic31_REG_WRITE_FAIL;
+    Bool                    retVal       = (Bool)Aic31_REG_WRITE_FAIL;
     IOM_Fxns                *iomFxns;
     Ptr                     devicepointer;
 #endif /* SW_I2C */
@@ -478,7 +478,7 @@ Void Aic31_init(Void)
                         instHandle->acSlotWidth,
                         0);
 
-        if (ICodec_DataPath_TX == instHandle->acDataPath)
+        if (instHandle->acDataPath == ICodec_DataPath_TX)
         {
             if (ICodec_OpMode_MASTER == instHandle->acOpMode)
             {
@@ -490,7 +490,7 @@ Void Aic31_init(Void)
             /* Initialize DAC */
             AIC31DACInit(instHandle->acBaseAddress);
         }
-        else if (ICodec_DataPath_RX == instHandle->acDataPath)
+        else if (instHandle->acDataPath == ICodec_DataPath_RX)
         {
             if (ICodec_OpMode_MASTER == instHandle->acOpMode)
             {
@@ -622,20 +622,20 @@ Void Aic31_init(Void)
                 /* Configure the audio serial data interface mode             */
                 switch (instHandle->acSerialDataType)
                 {
-                    case ICodec_DataType_I2S:    tempData = (0U << 6U); break;
-                    case ICodec_DataType_DSP:    tempData = (1U << 6U); break;
-                    case ICodec_DataType_RIGHTJ: tempData = (2U << 6U); break;
-                    case ICodec_DataType_LEFTJ:  tempData = (3U << 6U); break;
-                    default:                     tempData = (0U << 6U); break;
+                    case ICodec_DataType_I2S:    tempData = (0u << 6u); break;
+                    case ICodec_DataType_DSP:    tempData = (1u << 6u); break;
+                    case ICodec_DataType_RIGHTJ: tempData = (2u << 6u); break;
+                    case ICodec_DataType_LEFTJ:  tempData = (3u << 6u); break;
+                    default:                     tempData = (0u << 6u); break;
                 }
 
                 /* configure the slot width                                   */
                 switch (instHandle->acSlotWidth)
                 {
-                    case ICodec_SlotWidth_16:  tempData |= (0U << 4U); break;
-                    case ICodec_SlotWidth_20:  tempData |= (1U << 4U); break;
-                    case ICodec_SlotWidth_24:  tempData |= (2U << 4U); break;
-                    case ICodec_SlotWidth_32:  tempData |= (3U << 4U); break;
+                    case ICodec_SlotWidth_16:  tempData |= (0u << 4u); break;
+                    case ICodec_SlotWidth_20:  tempData |= (1u << 4u); break;
+                    case ICodec_SlotWidth_24:  tempData |= (2u << 4u); break;
+                    case ICodec_SlotWidth_32:  tempData |= (3u << 4u); break;
                     default:  tempData |= (0x00 << 4); break;
                 }
 
@@ -718,7 +718,7 @@ Void Aic31_init(Void)
     Aic31_Channel_Object  *chanHandle = NULL;
     ICodec_RegData        *wRegPtr    = NULL;
     Int                    status     = IOM_COMPLETED;
-    uint32_t                 tempVal    = 0U;
+    uint32_t                 tempVal    = 0;
     ICodec_CodecData      *codecData  = NULL;
     Bool                   retVal     = Aic31_REG_WRITE_FAIL;
 
@@ -747,12 +747,12 @@ Void Aic31_init(Void)
         /* Interpret the control command and execute the comnand              */
         if (Aic31_AC_IOCTL_MUTE_ON == cmd)
         {
-            status = aic31MuteConfig(instHandle, chanHandle->channelMode, UTRUE);
+            status = aic31MuteConfig(instHandle,chanHandle->channelMode,TRUE);
         }
 
         else if (Aic31_AC_IOCTL_MUTE_OFF == cmd)
         {
-            status = aic31MuteConfig(instHandle, chanHandle->channelMode, UFALSE);
+            status = aic31MuteConfig(instHandle,chanHandle->channelMode,FALSE);
         }
 
         else if (Aic31_AC_IOCTL_SET_VOLUME == cmd)
@@ -787,7 +787,7 @@ Void Aic31_init(Void)
                     /* calculate the actual values to be set depending on the *
                      * percentage of the values requested                     */
                     tempVal =
-                        ((*(uint32_t*)cmdArgs) * Aic31_MAX_AGC_GAIN_VALUE)/100U;
+                        ((*(uint32_t*)cmdArgs) * Aic31_MAX_AGC_GAIN_VALUE)/100u;
 
                     /* modify the ADC volume                                  */
                     retVal  = aic31RegWriteBf(
@@ -1790,14 +1790,14 @@ static Bool aic31RegWriteBf(Aic31_Object *instHandle,
 {
     uint8_t   regData     = 0;                  /* Temporary Register data      */
     uint8_t   mask        = 0;                  /* Bit field mask               */
-    Bool    bFalseWhile = UTRUE;
+    Bool    bFalseWhile = TRUE;
     Bool    retVal      = Aic31_REG_WRITE_FAIL;
 
     assert(NULL != instHandle);
 
     do
     {
-        bFalseWhile = UFALSE;
+        bFalseWhile = FALSE;
     
         /* Read the current value of the register                             */
         retVal = aic31RegRead( instHandle , regAddr , &regData );
@@ -2086,7 +2086,7 @@ static int32_t aic31DeinitDac(Aic31_Object *instHandle)
  *
  *  \param   instHandle [IN] pointer to the driver instance object
  *  \param   acChannel  [IN] channel type input or output
- *  \param   muteconfig [IN] mute configuration value UTRUE or UFALSE
+ *  \param   muteconfig [IN] mute configuration value TRUE or FALSE
  *
  *  \return  IOM_COMPLETED if success
  *           IOM_EBADARGS  in case of error
@@ -2097,20 +2097,20 @@ static int32_t aic31MuteConfig(Aic31_Object    *instHandle,
 {
     /* Intialize the local variables                                          */
     int32_t status        = IOM_COMPLETED;
-    Bool  notMuteConfig   = UFALSE;
-    Bool  retVal          = Aic31_REG_WRITE_FAIL;
+    Bool  notMuteConfig = FALSE;
+    Bool  retVal        = Aic31_REG_WRITE_FAIL;
 
     assert(NULL != instHandle);
 
     if (ICodec_Channel_INPUT == acChannel)
     {
-        if (UTRUE == muteConfig)
+        if (TRUE == muteConfig)
         {
-            notMuteConfig = UFALSE;
+            notMuteConfig = FALSE;
         }
         else
         {
-            notMuteConfig = UTRUE;
+            notMuteConfig = TRUE;
         }
     
         /* Mute the left and right input channels                             */

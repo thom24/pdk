@@ -162,10 +162,10 @@ Board_STATUS Board_getBoardData(Board_IDInfo_v2 *info, uint32_t boardID);
  * \n                      BOARD_ID_SOM(0x2) - SoM Board
  * \n                      BOARD_ID_CP(0x3) - CP Board
  *
- * \return   BTRUE if the given board is detected else BFALSE.
+ * \return   TRUE if the given board is detected else FALSE.
  *           SoM board will be always connected to the base board.
- *           For SoM boardID return value BTRUE indicates dual PMIC
- *           SoM and BFALSE indicates alternate PMIC SoM
+ *           For SoM boardID return value TRUE indicates dual PMIC
+ *           SoM and FALSE indicates alternate PMIC SoM
  *
  */
 bool Board_detectBoard(uint32_t boardID);
@@ -179,7 +179,7 @@ bool Board_detectBoard(uint32_t boardID);
  * \n                      BOARD_ID_SOM(0x2) - SoM Board
  * \n                      BOARD_ID_CP(0x3) - CP Board
  *
- * \return BTRUE if board revision is E2, BFALSE for all other cases
+ * \return TRUE if board revision is E2, FALSE for all other cases
  */
 bool Board_isAlpha(uint32_t boardID);
 

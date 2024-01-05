@@ -106,7 +106,7 @@ static void QSPI_close_v1(SPI_Handle handle)
     QSPI_HwAttrs const  *hwAttrs = NULL;
 
     /* Input parameter validation */
-    if (NULL != handle)
+    if (handle != NULL)
     {
         /* Get the pointer to the object and hwAttrs */
         object = (QSPI_v1_Object*)handle->object;
@@ -117,7 +117,7 @@ static void QSPI_close_v1(SPI_Handle handle)
             (QSPI_INTR_MASK_FRAME | QSPI_INTR_MASK_WORD));
 
         /* Destruct the Hwi */
-        if ((SPI_OPER_MODE_BLOCKING == object->intrPollMode) && (BTRUE == hwAttrs->intrEnable))
+        if ((SPI_OPER_MODE_BLOCKING == object->intrPollMode) && (true == hwAttrs->intrEnable))
         {
             SPI_osalHardwareIntDestruct(object->hwi, hwAttrs->eventId);
         }
@@ -132,14 +132,14 @@ static void QSPI_close_v1(SPI_Handle handle)
         }
 
     #ifdef SPI_DMA_ENABLE
-        if (BTRUE == hwAttrs->dmaEnable)
+        if (hwAttrs->dmaEnable == true)
         {
             QSPI_dmaFreeChannel(handle);
         }
     #endif
 
         /* Open flag is set false */
-        object->isOpen = BFALSE;
+        object->isOpen = (bool)false;
     }
 
     return;
@@ -195,10 +195,10 @@ static void QSPI_hwiFxn_v1(uintptr_t arg)
 static void QSPI_init_v1(SPI_Handle handle)
 {
     /* Input parameter validation */
-    if (NULL != handle)
+    if (handle != NULL)
     {
         /* Mark the object as available */
-        ((QSPI_v1_Object *)(handle->object))->isOpen = BFALSE;
+        ((QSPI_v1_Object *)(handle->object))->isOpen = (bool)false;
     }
 }
 
@@ -217,7 +217,7 @@ static SPI_Handle QSPI_open_v1(SPI_Handle handle, const SPI_Params *params)
     uint32_t clkDiv;
 
     /* Input parameter validation */
-    if (NULL != handle)
+    if (handle != NULL)
     {
     /* Get the pointer to the object and hwAttrs */
     object = (QSPI_v1_Object*)handle->object;
@@ -225,18 +225,18 @@ static SPI_Handle QSPI_open_v1(SPI_Handle handle, const SPI_Params *params)
 
     /* Determine if the device index was already opened */
     key = SPI_osalHardwareIntDisable();
-    if (BTRUE == object->isOpen) {
+    if(object->isOpen == (bool)true) {
         SPI_osalHardwareIntRestore(key);
         handle = NULL;
     }
     else
     {
       /* Mark the handle as being used */
-      object->isOpen = BTRUE;
+      object->isOpen = (bool)true;
       SPI_osalHardwareIntRestore(key);
 
       /* Store the I2C parameters */
-      if (NULL == params) {
+      if (params == NULL) {
         /* No params passed in, so use the defaults */
         SPI_Params_init(&(object->qspiParams));
       }
@@ -252,12 +252,12 @@ static SPI_Handle QSPI_open_v1(SPI_Handle handle, const SPI_Params *params)
       /* Extract QSPI operating mode based on hwAttrs and input parameters */
       if(SPI_MODE_BLOCKING == object->qspiParams.transferMode)
       {
-          if(BTRUE == hwAttrs->intrEnable)
+          if(true == hwAttrs->intrEnable)
           {
               object->intrPollMode = SPI_OPER_MODE_BLOCKING;
           }
 #ifdef SPI_DMA_ENABLE
-          else if (BTRUE == hwAttrs->dmaEnable)
+          else if (true == hwAttrs->dmaEnable)
           {
               object->intrPollMode = SPI_OPER_MODE_BLOCKING;
           }
@@ -274,12 +274,12 @@ static SPI_Handle QSPI_open_v1(SPI_Handle handle, const SPI_Params *params)
 
 
       /* Extract the polling mode from hardware attributes. */
-      if ((SPI_OPER_MODE_BLOCKING == object->intrPollMode) && (BTRUE == hwAttrs->intrEnable))
+      if ((SPI_OPER_MODE_BLOCKING == object->intrPollMode) && (true == hwAttrs->intrEnable))
       {
 		/* register interrrupt when the 1st channel of the instance is opened */
         Osal_RegisterInterrupt_initParams(&interruptRegParams);             
 
-        interruptRegParams.corepacConfig.name = NULL;
+        interruptRegParams.corepacConfig.name=NULL;
         interruptRegParams.corepacConfig.priority = 0x20;
         interruptRegParams.corepacConfig.corepacEventNum = hwAttrs->eventId;
         interruptRegParams.corepacConfig.intVecNum=hwAttrs->intrNum; /* Host Interrupt vector */
@@ -291,14 +291,14 @@ static SPI_Handle QSPI_open_v1(SPI_Handle handle, const SPI_Params *params)
 
         SPI_osalRegisterInterrupt(&interruptRegParams,&(object->hwi));
 
-        if(NULL == object->hwi) {
+        if(object->hwi == NULL) {
             QSPI_close_v1(handle);
             ret_flag = 1u;
             handle = NULL;
         }
       }
 
-      if(0U == ret_flag)
+      if(ret_flag == 0u)
       {
         /*
          * Construct thread safe handles for this QSPI peripheral
@@ -322,13 +322,13 @@ static SPI_Handle QSPI_open_v1(SPI_Handle handle, const SPI_Params *params)
           /* Store internal callback function */
           object->qspiParams.transferCallbackFxn = &QSPI_transferCallback_v1;
         }
-        if(SPI_OPER_MODE_CALLBACK == object->intrPollMode){
+        if(object->intrPollMode == SPI_OPER_MODE_CALLBACK){
           /* Check to see if a callback function was defined for async mode */
-          OSAL_Assert(NULL == object->qspiParams.transferCallbackFxn);
+          OSAL_Assert(object->qspiParams.transferCallbackFxn == NULL);
         }
 
 #ifdef SPI_DMA_ENABLE
-        if (BTRUE == hwAttrs->dmaEnable)
+        if (hwAttrs->dmaEnable == true)
         {
             /* DMA Configuration */
             QSPI_dmaConfig(handle);
@@ -422,7 +422,7 @@ static void QSPI_primeTransfer_v1(SPI_Handle handle,
 
 
     /* Interrupt mode */
-    if ((SPI_OPER_MODE_BLOCKING == object->intrPollMode) && (BTRUE == hwAttrs->intrEnable))
+    if ((SPI_OPER_MODE_BLOCKING == object->intrPollMode) && (true == hwAttrs->intrEnable))
     {
 #ifdef WORD_INTERRUPT
         /* Enable the word count interrupt */
@@ -519,7 +519,7 @@ static void QSPI_mmap_mode_read_v1(SPI_Handle handle,
     }
 
 #ifdef SPI_DMA_ENABLE
-    if (BTRUE == hwAttrs->dmaEnable)
+    if (hwAttrs->dmaEnable == true)
     {
         QSPI_dmaTransfer(handle, (SPI_Transaction *)transaction);
     }
@@ -604,22 +604,22 @@ static void QSPI_cmd_mode_read_v1(SPI_Handle handle,
     }
 
     /* Enable interrupts in the polling mode */
-    if ((SPI_OPER_MODE_BLOCKING == object->intrPollMode) && (BTRUE == hwAttrs->intrEnable))
+    if ((SPI_OPER_MODE_BLOCKING == object->intrPollMode) && (true == hwAttrs->intrEnable))
     {
 #ifdef WORD_INTERRUPT
         /* Enable word count interrupt */
-        HW_SET_FIELD32(cmd, QSPI_SPI_CMD_REG_WIRQ, UTRUE);
+        HW_SET_FIELD32(cmd, QSPI_SPI_CMD_REG_WIRQ, true);
 #else
         /* Enable frame count interrupt */
-        HW_SET_FIELD32(cmd, QSPI_SPI_CMD_REG_FIRQ, UTRUE);
+        HW_SET_FIELD32(cmd, QSPI_SPI_CMD_REG_FIRQ, true);
 #endif
 
     }
     else
     {
         /* Disable word count interrupt */
-        HW_SET_FIELD32(cmd, QSPI_SPI_CMD_REG_WIRQ, UFALSE);
-        HW_SET_FIELD32(cmd, QSPI_SPI_CMD_REG_FIRQ, UFALSE);
+        HW_SET_FIELD32(cmd, QSPI_SPI_CMD_REG_WIRQ, false);
+        HW_SET_FIELD32(cmd, QSPI_SPI_CMD_REG_FIRQ, false);
     }
 
     /* Extract frame length in bytes */
@@ -636,7 +636,7 @@ static void QSPI_cmd_mode_read_v1(SPI_Handle handle,
 
 #ifdef WORD_INTERRUPT
         /* interrupt mode */
-        if ((SPI_OPER_MODE_BLOCKING == object->intrPollMode) && (BTRUE == hwAttrs->intrEnable))
+        if ((SPI_OPER_MODE_BLOCKING == object->intrPollMode) && (true == hwAttrs->intrEnable))
         {
             /* wait for the lock posted form the word completion interrupt */
             SPI_osalPendLock(object->transferComplete, SemaphoreP_WAIT_FOREVER);
@@ -654,7 +654,7 @@ static void QSPI_cmd_mode_read_v1(SPI_Handle handle,
 #endif
 
 
-        if(4U >= wordLenBytes)
+        if(wordLenBytes <= 4U)
         {
             numWords = 1U;
 
@@ -826,7 +826,7 @@ static void QSPI_mmap_mode_write_v1(SPI_Handle handle,
     }
 
 #ifdef SPI_DMA_ENABLE
-    if (BTRUE == hwAttrs->dmaEnable)
+    if (hwAttrs->dmaEnable == true)
     {
         QSPI_dmaTransfer(handle, transaction);
     }
@@ -886,22 +886,22 @@ static void QSPI_cmd_mode_write_v1(SPI_Handle handle,
 
 
     /* Enable interrupts in the polling mode */
-    if ((SPI_OPER_MODE_BLOCKING == object->intrPollMode) && (UTRUE == hwAttrs->intrEnable))
+    if ((SPI_OPER_MODE_BLOCKING == object->intrPollMode) && (true == hwAttrs->intrEnable))
     {
 #ifdef WORD_INTERRUPT
         /* Enable word count interrupt */
-        HW_SET_FIELD32(cmd, QSPI_SPI_CMD_REG_WIRQ, UTRUE);
+        HW_SET_FIELD32(cmd, QSPI_SPI_CMD_REG_WIRQ, true);
 #else
         /* Enable frame count interrupt */
-        HW_SET_FIELD32(cmd, QSPI_SPI_CMD_REG_FIRQ, UTRUE);
+        HW_SET_FIELD32(cmd, QSPI_SPI_CMD_REG_FIRQ, true);
 #endif
 
     }
     else
     {
         /* Disable word count interrupt */
-        HW_SET_FIELD32(cmd, QSPI_SPI_CMD_REG_WIRQ, UFALSE);
-        HW_SET_FIELD32(cmd, QSPI_SPI_CMD_REG_FIRQ, UFALSE);
+        HW_SET_FIELD32(cmd, QSPI_SPI_CMD_REG_WIRQ, false);
+        HW_SET_FIELD32(cmd, QSPI_SPI_CMD_REG_FIRQ, false);
     }
 
 
@@ -919,12 +919,12 @@ static void QSPI_cmd_mode_write_v1(SPI_Handle handle,
         dataVal[2] = 0;
         dataVal[3] = 0;
 
-        if(4U >= wordLenBytes)
+        if(wordLenBytes <= 4U)
         {
             /* Formulate the 32 bit word to write to data register */
             for(idx = 0U; idx < wordLenBytes; idx++)
             {
-                dataVal[0] |= (((uint32_t)(*srcAddr) << (8U - (8U * (idx + 1U)))));
+                dataVal[0] |= (((uint32_t)(*srcAddr) << (8u - (8u * (idx + 1u)))));
                 srcAddr++;
             }
 
@@ -935,36 +935,36 @@ static void QSPI_cmd_mode_write_v1(SPI_Handle handle,
             /* Formulate the 32 bit word to write to data register */
             for(idx = 0U; idx < 4U; idx++)
             {
-                dataVal[0] |= (((uint32_t)(*srcAddr) << (8U - (8U * (idx + 1U)))));
+                dataVal[0] |= (((uint32_t)(*srcAddr) << (8u - (8u * (idx + 1u)))));
                 srcAddr++;
             }
 
             for(idx1 = 4U; idx1 < wordLenBytes; idx1++)
             {
-                dataVal[1] |= (((uint32_t)(*srcAddr) << (8U - (8U * (idx + 1U)))));
+                dataVal[1] |= (((uint32_t)(*srcAddr) << (8u - (8u * (idx + 1u)))));
                 srcAddr++;
             }
 
             numWords = 2U;
         }
-        else if((wordLenBytes > 8U) && (12U >= wordLenBytes))
+        else if((wordLenBytes > 8U) && (wordLenBytes <= 12U))
         {
             /* Formulate the 32 bit word to write to data register */
             for(idx = 0U; idx < 4U; idx++)
             {
-                dataVal[0] |= (((uint32_t)(*srcAddr) << (8U - (8U * (idx + 1U)))));
+                dataVal[0] |= (((uint32_t)(*srcAddr) << (8u - (8u * (idx + 1u)))));
                 srcAddr++;
             }
 
             for(idx1 = 4U; idx1 < 8U; idx1++)
             {
-                dataVal[1] |= (((uint32_t)(*srcAddr) << (8U - (8U * (idx + 1U)))));
+                dataVal[1] |= (((uint32_t)(*srcAddr) << (8u - (8u * (idx + 1u)))));
                 srcAddr++;
             }
 
             for(idx2 = 8U; idx2 < 12U; idx2++)
             {
-                dataVal[2] |= (((uint32_t)(*srcAddr) << (8U - (8U * (idx + 1U)))));
+                dataVal[2] |= (((uint32_t)(*srcAddr) << (8u - (8u * (idx + 1u)))));
                 srcAddr++;
             }
 
@@ -975,25 +975,25 @@ static void QSPI_cmd_mode_write_v1(SPI_Handle handle,
             /* Formulate the 32 bit word to write to data register */
             for(idx = 0U; idx < 4U; idx++)
             {
-                dataVal[0] |= (((uint32_t)(*srcAddr) << (8U - (8U * (idx + 1U)))));
+                dataVal[0] |= (((uint32_t)(*srcAddr) << (8u - (8u * (idx + 1u)))));
                 srcAddr++;
             }
 
             for(idx1 = 4U; idx1 < 8U; idx1++)
             {
-                dataVal[1] |= (((uint32_t)(*srcAddr) << (8U - (8U * (idx + 1U)))));
+                dataVal[1] |= (((uint32_t)(*srcAddr) << (8u - (8u * (idx + 1u)))));
                 srcAddr++;
             }
 
             for(idx2 = 8U; idx2 < 12U; idx2++)
             {
-                dataVal[2] |= (((uint32_t)(*srcAddr) << (8U - (8U * (idx + 1U)))));
+                dataVal[2] |= (((uint32_t)(*srcAddr) << (8u - (8u * (idx + 1u)))));
                 srcAddr++;
             }
 
             for(idx3 = 12U; idx3 < 16U; idx3++)
             {
-                dataVal[3] |= (((uint32_t)(*srcAddr) << (8U - (8U * (idx + 1U)))));
+                dataVal[3] |= (((uint32_t)(*srcAddr) << (8u - (8u * (idx + 1u)))));
                 srcAddr++;
             }
 
@@ -1012,7 +1012,7 @@ static void QSPI_cmd_mode_write_v1(SPI_Handle handle,
 
 #ifdef WORD_INTERRUPT
         /* interrupt mode */
-        if ((SPI_OPER_MODE_BLOCKING == object->intrPollMode) && (BTRUE == hwAttrs->intrEnable))
+        if ((SPI_OPER_MODE_BLOCKING == object->intrPollMode) && (true == hwAttrs->intrEnable))
         {
             /* wait for the lock posted form the word completion interrupt */
             SPI_osalPendLock(object->transferComplete, SemaphoreP_WAIT_FOREVER);
@@ -1063,12 +1063,12 @@ static void QSPI_write_v1(SPI_Handle handle, const SPI_Transaction *transaction)
  */
 static bool QSPI_transfer_v1(SPI_Handle handle, SPI_Transaction *transaction)
 {
-    bool  ret = BFALSE;               /* return value */
+    bool  ret = false;                /* return value */
     QSPI_v1_Object   *object;         /* QSPI object */
     QSPI_HwAttrs const  *hwAttrs;     /* QSPI hardware attributes */
 
     /* Input parameter validation */
-    if ((NULL != handle) && (NULL != transaction))
+    if ((handle != NULL) && (transaction != NULL))
     {
     /* Get the pointer to the object and hwAttrs */
     object = (QSPI_v1_Object*)handle->object;
@@ -1092,32 +1092,32 @@ static bool QSPI_transfer_v1(SPI_Handle handle, SPI_Transaction *transaction)
          * QSPI_primeTransfer_v1 is a longer process and
          * protection is needed from the QSPI interrupt
          */
-        if ((SPI_OPER_MODE_BLOCKING == object->intrPollMode) && (BTRUE == hwAttrs->intrEnable))
+        if ((SPI_OPER_MODE_BLOCKING == object->intrPollMode) && (true == hwAttrs->intrEnable))
         {
             SPI_osalHardwareIntrEnable(hwAttrs->eventId,hwAttrs->intrNum);
         }
 
         QSPI_primeTransfer_v1(handle, transaction);
 
-        if (SPI_OPER_MODE_BLOCKING == object->intrPollMode) {
+        if (object->intrPollMode == SPI_OPER_MODE_BLOCKING) {
 #ifdef SPI_DMA_ENABLE
-            if ((BTRUE == hwAttrs->dmaEnable) && (QSPI_OPER_MODE_MMAP == object->qspiMode))
+            if ((hwAttrs->dmaEnable == true) && (QSPI_OPER_MODE_MMAP == object->qspiMode))
             {
                 SPI_osalPendLock(object->transferComplete, SemaphoreP_WAIT_FOREVER);
             }
 #endif
             /* transfer is completed and semaphore is posted. */
-            ret = BTRUE;
+            ret = (bool)true;
         }
         else {
             /* Always return true if in Asynchronous mode */
-            ret = BTRUE;
+            ret = (bool)true;
         }
 
         /* Release the lock for this particular I2C handle */
         SPI_osalPostLock(object->mutex);
     } else {
-	   transaction->status = SPI_TRANSFER_CANCELED;
+	   transaction->status=SPI_TRANSFER_CANCELED;
 	}
     }
 
@@ -1148,7 +1148,7 @@ static int32_t QSPI_control_v1(SPI_Handle handle, uint32_t cmd, const void *arg)
     int32_t retVal = SPI_STATUS_ERROR;
 
     /* Input parameter validation */
-    if (NULL != handle)
+    if (handle != NULL)
     {
     /* Get the pointer to the object */
     object = (QSPI_v1_Object*)handle->object;

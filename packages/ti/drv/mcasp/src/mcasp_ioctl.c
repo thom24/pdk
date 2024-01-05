@@ -140,8 +140,8 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
     uint32_t                  tempVal       = 0;
     uint32_t                  queryRes      = 0;
     int32_t                 status        = MCASP_COMPLETED;
-    Bool                    dlbMode       = UFALSE;
-    Bool                    falsewhile    = UTRUE;
+    Bool                    dlbMode       = FALSE;
+    Bool                    falsewhile    = TRUE;
     Mcasp_HwSetupData      *chanSetup     = NULL;
     Mcasp_HwSetup          *mcaspHwSetup  = NULL;
     uint32_t                  timeout       = Mcasp_POLLED_RETRYCOUNT;
@@ -153,7 +153,7 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
     int16_t linkCnt = 0;
     bool   tempQueueStatus;
     void  *tempCastPacket;
-    bool   breakLoop = BFALSE;
+    bool   breakLoop = (Bool) FALSE;
 #endif
     /* Validate the input parameters                                          */
     if((NULL != chanHandle) && (NULL != chanHandle->devHandle))
@@ -176,13 +176,13 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
     {
         /* Abort all the request, give application callback and configure     *
          * EDMA in the LOOPJOB for both input and output channels             */
-        if(NULL != instHandle->RcvObj.devHandle)
+        if(instHandle->RcvObj.devHandle!=NULL)
         {
-           Mcasp_localAbortRequests(&(instHandle->RcvObj), NULL);
+           Mcasp_localAbortRequests(&(instHandle->RcvObj),NULL);
         }
-        if(NULL != instHandle->XmtObj.devHandle)
+        if(instHandle->XmtObj.devHandle!=NULL)
         {
-           Mcasp_localAbortRequests(&(instHandle->XmtObj), NULL);
+           Mcasp_localAbortRequests(&(instHandle->XmtObj),NULL);
         }
     }
     /*-------------------------MCASP DRIVER MODE------------------------------*/
@@ -247,7 +247,7 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
             {
                 do
                 {
-                    falsewhile = UFALSE;
+                    falsewhile = FALSE;
 
                     if ((Mcasp_ChanMode_XMT_DIT == chanHandle->channelOpMode)
                         || (Mcasp_ChanMode_XMT_TDM == chanHandle->channelOpMode))
@@ -347,7 +347,7 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
     {
         do
         {
-            falsewhile = UFALSE;
+            falsewhile = FALSE;
 
             if (NULL == arg)
             {
@@ -378,7 +378,7 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
     {
         do
         {
-            falsewhile = UFALSE;
+            falsewhile = FALSE;
 
             if (NULL == arg)
             {
@@ -411,7 +411,7 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
     {
         do
         {
-            falsewhile = UFALSE;
+            falsewhile = FALSE;
 
             if (NULL == arg)
             {
@@ -456,7 +456,7 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
             dlbMode = *((bool *)arg);
             do
             {
-                falsewhile = UFALSE;
+                falsewhile = FALSE;
 
                 while (((uint32_t)serNum) < (((uint32_t)instHandle->hwInfo.numOfSerializers) - (1u)))
                 {
@@ -464,10 +464,10 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
                         instHandle->serStatus[serNum])
                     {
                         if (Mcasp_SerializerStatus_FREE !=
-                            instHandle->serStatus[serNum + 1])
+                            instHandle->serStatus[serNum+1])
                         {
                            /* Increment serializers counter                   */
-                           serNum += 2;
+                           serNum+=2;
                         }
                         else
                         {
@@ -478,10 +478,10 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
                     else
                     {
                         if (Mcasp_SerializerStatus_FREE ==
-                            instHandle->serStatus[serNum + 1])
+                            instHandle->serStatus[serNum+1])
                         {
                            /* Increment serializers counter                   */
-                           serNum += 2;
+                           serNum+=2;
                         }
                         else
                         {
@@ -515,7 +515,7 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
     {
         do
         {
-            falsewhile = UFALSE;
+            falsewhile = FALSE;
 
             if (NULL == arg)
             {
@@ -557,13 +557,13 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
                 status = MCASP_EBADARGS;
             }
 
-            if ((UTRUE == chanHandle->isDmaDriven) &&
+            if (((Bool) TRUE == chanHandle->isDmaDriven) &&
                 (MCASP_COMPLETED == status))
             {
                 status = EDMA3_DRV_getPaRAM(
                     (EDMA3_DRV_Handle) chanHandle->edmaHandle,
                     chanHandle->pramTbl[ \
-                        ((chanHandle->nextLinkParamSetToBeUpdated + 1U) % 2U)],
+                        ((chanHandle->nextLinkParamSetToBeUpdated + 1) % 2)],
                     &pramPtr);
 
                 if (MCASP_COMPLETED == status)
@@ -585,7 +585,7 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
                         {
                             /* user specified loop job is loaded
                              *                 */
-                            chanHandle->userLoopJob = UTRUE;
+                            chanHandle->userLoopJob = (Bool) TRUE;
 
                             chanHandle->loopJobBuffer =
                                 params->userLoopJobBuffer;
@@ -600,7 +600,7 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
                                 &(pramPtr.bCnt),
                                 &(pramPtr.cCnt),
                                 &syncType,
-                                UTRUE);
+                                (Bool) TRUE);
                             pramPtr.srcAddr =
                                 (uint32_t) params->userLoopJobBuffer;
                         }
@@ -624,7 +624,7 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
                         {
                             /* user specified loop job is loaded
                              *                 */
-                            chanHandle->userLoopJob = UTRUE;
+                            chanHandle->userLoopJob = (Bool) TRUE;
 
                             chanHandle->loopJobBuffer =
                                 params->userLoopJobBuffer;
@@ -639,7 +639,7 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
                                 &(pramPtr.bCnt),
                                 &(pramPtr.cCnt),
                                 &syncType,
-                                UTRUE);
+                                (Bool) TRUE);
                             pramPtr.destAddr =
                                 (uint32_t) params->userLoopJobBuffer;
                         }
@@ -671,16 +671,16 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
     {
         do
         {
-            falsewhile = UFALSE;
+            falsewhile = (Bool) FALSE;
 
             if (MCASP_OUTPUT == chanHandle->mode)
             {
-                if (UTRUE == chanHandle->bMuteON)
+                if ((Bool) TRUE == chanHandle->bMuteON)
                 {
                     status = MCASP_EBADARGS;
                     break;
     }
-                chanHandle->bMuteON = UTRUE;
+                chanHandle->bMuteON = (Bool) TRUE;
             }
             else
             {
@@ -694,17 +694,17 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
     {
         do
         {
-            falsewhile = UFALSE;
+            falsewhile = (Bool) FALSE;
 
             if (MCASP_OUTPUT == chanHandle->mode)
             {
                 /* Check if mute is not ON                                */
-                if (UFALSE == chanHandle->bMuteON)
+                if ((Bool) FALSE == chanHandle->bMuteON)
                 {
                     status = MCASP_EBADARGS;
                     break;
                 }
-                chanHandle->bMuteON = UFALSE;
+                chanHandle->bMuteON = (Bool) FALSE;
             } /* if only dma driven transaction */
             else
             {
@@ -732,9 +732,9 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
     {
         if (MCASP_INPUT == chanHandle->mode)
         {
-            if (UTRUE == instHandle->stopSmFsRcv)
+            if ((Bool) TRUE == instHandle->stopSmFsRcv)
             {
-                instHandle->stopSmFsRcv = UFALSE;
+                instHandle->stopSmFsRcv = (Bool) FALSE;
             }
             else
             {
@@ -744,9 +744,9 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
         }
         else
         {
-            if (UTRUE == instHandle->stopSmFsXmt)
+            if ((Bool) TRUE == instHandle->stopSmFsXmt)
             {
-                instHandle->stopSmFsXmt = UFALSE;
+                instHandle->stopSmFsXmt = (Bool) FALSE;
             }
             else
             {
@@ -756,12 +756,12 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
         }
         tempQueueStatus =
             Osal_Queue_empty(Osal_Queue_handle(&(chanHandle->queueFloatingList)));
-        if ((UTRUE == chanHandle->isDmaDriven)
-            && (BTRUE == tempQueueStatus))
+        if (((Bool) TRUE == chanHandle->isDmaDriven)
+            && ((Bool) TRUE == tempQueueStatus))
         {
             for (linkCnt = 0; linkCnt < (int16_t) Mcasp_MAXLINKCNT; linkCnt++)
             {
-                if (UFALSE ==
+                if ((Bool) FALSE ==
                     Osal_Queue_empty(Osal_Queue_handle(&(chanHandle->queueReqList))))
                 {
                     ioPacket = (MCASP_Packet *) Osal_Queue_get(
@@ -801,7 +801,7 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
                              * second paramset and since we are moving out    *
                              * loopjob from both param sets,the loopjobUpdated*
                              * inParamset is reset                            */
-                            chanHandle->loopjobUpdatedinParamset = UFALSE;
+                            chanHandle->loopjobUpdatedinParamset = (Bool) FALSE;
 
                             Mcasp_localGetNextIndex(chanHandle);
                         }
@@ -889,12 +889,12 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
     {
         do
         {
-            falsewhile = UFALSE;
+            falsewhile = (Bool) FALSE;
             if (MCASP_INPUT == chanHandle->mode)
             {
-                if (UFALSE == instHandle->stopSmFsRcv)
+                if ((Bool) FALSE == instHandle->stopSmFsRcv)
                 {
-                    instHandle->stopSmFsRcv = UTRUE;
+                    instHandle->stopSmFsRcv = (Bool) TRUE;
                 }
                 else
                 {
@@ -905,9 +905,9 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
             }
             else
             {
-                if (UFALSE == instHandle->stopSmFsXmt)
+                if ((Bool) FALSE == instHandle->stopSmFsXmt)
                 {
-                    instHandle->stopSmFsXmt = UTRUE;
+                    instHandle->stopSmFsXmt = (Bool) TRUE;
                 }
                 else
                 {
@@ -921,9 +921,9 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
     /*------------------------MCASP PAUSE CMD ----------------------------*/
     else if (Mcasp_IOCTL_PAUSE == cmd)
     {
-        if (UFALSE == chanHandle->paused)
+        if ((Bool) FALSE == chanHandle->paused)
         {
-            chanHandle->paused = UTRUE;
+            chanHandle->paused = (Bool) TRUE;
         }
         else
         {
@@ -935,9 +935,9 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
     {
         do
         {
-            falsewhile = UFALSE;
+            falsewhile = (Bool) FALSE;
 
-            if (UFALSE == chanHandle->paused)
+            if ((Bool) FALSE == chanHandle->paused)
             {
                 /* Pause is not issued so can not perform resume          */
                 status = MCASP_EBADARGS;
@@ -945,12 +945,12 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
             }
             tempQueueStatus =
                 Osal_Queue_empty(Osal_Queue_handle(&(chanHandle->queueFloatingList)));
-            if ((UTRUE == chanHandle->isDmaDriven)
-                && (BTRUE == tempQueueStatus))
+            if (((Bool) TRUE == chanHandle->isDmaDriven)
+                && ((Bool) TRUE == tempQueueStatus))
             {
                 for (linkCnt = 0; linkCnt < (int16_t) Mcasp_MAXLINKCNT; linkCnt++)
                 {
-                    if (UFALSE ==
+                    if ((Bool) FALSE ==
                         Osal_Queue_empty(Osal_Queue_handle(&(chanHandle->queueReqList))))
                     {
                         ioPacket = (MCASP_Packet *) Osal_Queue_get(
@@ -990,7 +990,7 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
                                  * from both param sets, the loopjobUpdated in*
                                  * Paramset is reset                          */
                                 chanHandle->loopjobUpdatedinParamset =
-                                    UFALSE;
+                                    (Bool) FALSE;
 
                                 Mcasp_localGetNextIndex(chanHandle);
                             }
@@ -1030,9 +1030,9 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
                         }
                         else
                         {
-                            breakLoop = UTRUE;
+                            breakLoop = (Bool) TRUE;
                         }
-                        if ((UTRUE == breakLoop) ||
+                        if (((Bool) TRUE == breakLoop) ||
                             (MCASP_COMPLETED != status))
                         {
                             break;
@@ -1041,7 +1041,7 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
                 }
             }
 
-            chanHandle->paused = UFALSE;
+            chanHandle->paused = (Bool) FALSE;
         } while (falsewhile);
     }
     /*****************command to modify the Timeout count value****************/
@@ -1056,7 +1056,7 @@ int32_t Mcasp_localSubmitIoctl(Mcasp_ChannelHandle      chanHandle,
     else if (Mcasp_IOCTL_FLUSH_RCV_FIFO == cmd)
     {
         if ((MCASP_INPUT == chanHandle->mode) &&
-            (UTRUE == chanHandle->enableHwFifo))
+            (TRUE == chanHandle->enableHwFifo))
         {
             uint32_t tempValue = 0x00;
             tempValue = McASPRxFifoStatusGet(instHandle->hwInfo.regs);
@@ -1161,7 +1161,7 @@ int32_t Mcasp_localConfigWordWidth(Mcasp_ChannelHandle chanHandle,
     status = Mcasp_localCalcWordWidth(chanHandle, chanParams->wordWidth, 
                                       &tempRoundedWordWidth);
 
-    if(MCASP_COMPLETED != status) 
+    if(status != MCASP_COMPLETED) 
     {
         return (status);
     }
@@ -1177,14 +1177,14 @@ int32_t Mcasp_localConfigWordWidth(Mcasp_ChannelHandle chanHandle,
         status = MCASP_EBADARGS;
     }
 
-    if(MCASP_COMPLETED != status) 
+    if(status != MCASP_COMPLETED) 
     {
         return (status);
     }
     
 #ifdef Mcasp_LOOPJOB_ENABLED
     /* Configure loop job for the user specified buffer if given  */
-    if (UFALSE == chanHandle->userLoopJob)
+    if (FALSE == chanHandle->userLoopJob)
     {
         /* Length of uint32_t per serialiser-this is what we have allocated */
         if (Mcasp_OpMode_DIT == chanHandle->channelMode)
@@ -1212,7 +1212,7 @@ int32_t Mcasp_localConfigWordWidth(Mcasp_ChannelHandle chanHandle,
     }
 #endif /* Mcasp_LOOPJOB_ENABLED */
 
-    if(MCASP_COMPLETED != status) 
+    if(status != MCASP_COMPLETED) 
     {
         return (status);
     }
@@ -1225,11 +1225,11 @@ int32_t Mcasp_localConfigWordWidth(Mcasp_ChannelHandle chanHandle,
         
         /* Shift right 'rot' number of nibbles to make the MSB reach the lower 
            bits in the serializer */
-        uint32_t rot = 8U - (chanHandle->roundedWordWidth * 2U);
+        uint32_t rot = 8-(chanHandle->roundedWordWidth*2);
 
         /* Change the RROT field of FMT Register                              */
         instHandle = (Mcasp_Object *)chanHandle->devHandle;
-        if (MCASP_INPUT == chanHandle->mode)
+        if (chanHandle->mode == MCASP_INPUT)
         {
             fmt = (fmt & (~MCASP_RXFMT_RROT_MASK)) | (rot << MCASP_RXFMT_RROT_SHIFT);
             McASPRxFmtSet(instHandle->hwInfo.regs, fmt);
@@ -1259,13 +1259,13 @@ int32_t Mcasp_localConfigWordWidth(Mcasp_ChannelHandle chanHandle,
 
 static void mcaspConfigLoopBack(Mcasp_HwHandle hMcasp,Bool loopBack)
 {
-    Bool       loopBackEnable = UFALSE;
-    Bool       orderBit       = UFALSE;
+    Bool       loopBackEnable = 0;
+    Bool       orderBit       = 0;
     Int16      serNum         = 0;
-    uint32_t     serMode      = 0U;
-    uint32_t dlbMode        = 0U;
-    uint32_t tempVal        = 0U;
-    if((NULL != hMcasp) && (0U != (hMcasp->regs)))
+    uint32_t     serMode        = 0;
+    uint32_t dlbMode        = 0;
+    uint32_t tempVal        = 0;
+    if((NULL != hMcasp) && (0 != (hMcasp->regs)))
     {
     /* Reset the RSRCLR and XSRCLR registers in GBLCTL                    */
     tempVal  = McASPGlobalCtlGet(hMcasp->regs);
@@ -1283,19 +1283,18 @@ static void mcaspConfigLoopBack(Mcasp_HwHandle hMcasp,Bool loopBack)
 
     /* configure loop back mode                                           */
     loopBackEnable =
-        (Bool) (MCASP_LBCTL_DLBEN_MASK == (dlbMode & MCASP_LBCTL_DLBEN_MASK));
-    if (UTRUE == loopBackEnable)
+        (Bool) ((dlbMode & MCASP_LBCTL_DLBEN_MASK) == MCASP_LBCTL_DLBEN_MASK);
+    if ((Bool) TRUE == loopBackEnable)
     {
         dlbMode &= MCASP_LBCTL_MODE_MASK;
         dlbMode |= (uint32_t) MCASP_LBCTL_MODE_XMTCLK << MCASP_LBCTL_MODE_SHIFT;
         McASPDlbRegWrite(hMcasp->regs, dlbMode);
     }
 
-    orderBit = (Bool) (MCASP_LBCTL_ORD_EVEN == 
-                        ((dlbMode & (uint32_t) MCASP_LBCTL_ORD_MASK)
-                        >> MCASP_LBCTL_ORD_SHIFT));
+    orderBit = (Bool) (((dlbMode & (uint32_t) MCASP_LBCTL_ORD_MASK)
+                        >> MCASP_LBCTL_ORD_SHIFT) == MCASP_LBCTL_ORD_EVEN);
 
-    if (UTRUE == orderBit)
+    if (orderBit == TRUE)
     {
         while (serNum < hMcasp->numOfSerializers)
         {
@@ -1345,9 +1344,9 @@ static void mcaspConfigLoopBack(Mcasp_HwHandle hMcasp,Bool loopBack)
 static void mcaspActivateClkRcvXmt(Mcasp_HwHandle hMcasp)
 {
     uint32_t bitValue = 0U;
-    uint32_t tempVal  = 0U;
+    uint32_t tempVal  = 0;
 
-    if((NULL != hMcasp) && (0U != (hMcasp->regs)))
+    if((NULL != hMcasp) && (0 != (hMcasp->regs)))
     {
     /* Sequence of start: starting hclk first                             */
     /* start AHCLKR */
@@ -1445,9 +1444,9 @@ static void mcaspActivateClkRcvXmt(Mcasp_HwHandle hMcasp)
 static void mcaspActivateRcvClkSer(Mcasp_HwHandle hMcasp)
 {
     uint32_t bitValue = 0U;
-    uint32_t tempVal  = 0U;
+    uint32_t tempVal  = 0;
 
-    if((NULL != hMcasp) && (0U != (hMcasp->regs)))
+    if((NULL != hMcasp) && (0 != (hMcasp->regs)))
     {
 
     /* Sequence of start: starting hclk first                             */
@@ -1557,9 +1556,9 @@ static void mcaspActivateRcvClkSer(Mcasp_HwHandle hMcasp)
 static void mcaspActivateXmtClkSer(Mcasp_HwHandle hMcasp)
 {
     uint32_t bitValue = 0U;
-    uint32_t tempVal  = 0U;
+    uint32_t tempVal  = 0;
 
-    if((NULL != hMcasp) && (0U != (hMcasp->regs)))
+    if((NULL != hMcasp) && (0 != (hMcasp->regs)))
     {
     /* Sequence of start: starting hclk first*/
 
@@ -2112,9 +2111,9 @@ static void mcaspDeviceInfoGet(Mcasp_ChannelHandle  chanHandle,
 {
     Mcasp_Object       *instHandle = NULL;
     Mcasp_AudioDevData *devData    = NULL;
-    Bool                isMaster   = UFALSE;
-    uint32_t tempVal1 = 0x0U;
-    uint32_t tempVal2 = 0x0U;
+    Bool                isMaster   = FALSE;
+    uint32_t tempVal1 = 0x0;
+    uint32_t tempVal2 = 0x0;
 
     if((chanHandle != NULL) && (NULL != arg))
     {
@@ -2137,7 +2136,7 @@ static void mcaspDeviceInfoGet(Mcasp_ChannelHandle  chanHandle,
              >> MCASP_ACLKXCTL_ASYNC_SHIFT))
         {
             /* check if the TX and RX sections are in sync                    */
-            isMaster = UTRUE;
+            isMaster = TRUE;
         }
         else
         {
@@ -2146,7 +2145,7 @@ static void mcaspDeviceInfoGet(Mcasp_ChannelHandle  chanHandle,
                 ((tempVal2 & (uint32_t) MCASP_ACLKRCTL_CLKRM_MASK)
                  >> MCASP_ACLKRCTL_CLKRM_SHIFT))
             {
-                isMaster = UTRUE;
+                isMaster = TRUE;
             }
         }
       }

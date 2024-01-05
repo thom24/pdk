@@ -222,7 +222,7 @@ int32_t Dss_dctrlDrvProcessHpdDp(uint32_t hpdState);
 int32_t Dss_dctrlDrvRegisterHpdCb(const Dss_DctrlDpHpdCbParams *cbParams);
 int32_t Dss_dctrlDrvDetectDp(void);
 #endif
-void Dss_dctrlDrvInitDSI(void);
+void Dss_dctrlDrvInitDSI();
 int32_t Dss_dctrlDrvSetDSIParams(Dss_DctrlDrvInfo *drvInfo,
     const Dss_DctrlDsiParams *dsPrms);
 int32_t Dss_dctrlDrvEnableVideoDSI(Dss_DctrlDrvInfo *drvInfo,

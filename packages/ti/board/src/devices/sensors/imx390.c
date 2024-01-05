@@ -3830,13 +3830,13 @@ Board_STATUS Board_imx390CamCfg(void *handle,
     uint8_t rdData;
 #endif
 
-    if(NULL == handle)
+    if(handle == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
 
     BOARD_DEVICES_STS_LOG("Configuring the remote camera sensor with slave alias address - 0x%x...\n\r", rmtSlvParams->i2cDevAliasAddr);
-    while(BOARD_DEVICES_CONFIG_END != Board_Imx390CfgObj[index].regAddr)
+    while(Board_Imx390CfgObj[index].regAddr != BOARD_DEVICES_CONFIG_END)
     {
 #if defined(BOARD_FPD_I2C_CFG_RD_BACK_EN)
         BOARD_DEVICES_STS_LOG("regAddr - 0x%4x --- regData - 0x%2x\n\r", Board_Imx390CfgObj[index].regAddr, Board_Imx390CfgObj[index].regData);
@@ -3848,15 +3848,13 @@ Board_STATUS Board_imx390CamCfg(void *handle,
                                   1U,
                                   BOARD_I2C_REG_ADDR_MSB_FIRST,
                                   BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != ret)
+        if(ret != 0)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }
 
-        if(0U != Board_Imx390CfgObj[index].i2cDelay)
-        {
+        if(Board_Imx390CfgObj[index].i2cDelay != 0)
             Board_delay((uint8_t)Board_Imx390CfgObj[index].i2cDelay);
-        }
 
 #if defined(BOARD_FPD_I2C_CFG_RD_BACK_EN)
 
@@ -3867,7 +3865,7 @@ Board_STATUS Board_imx390CamCfg(void *handle,
                                  1U,
                                  BOARD_I2C_REG_ADDR_MSB_FIRST,
                                  BOARD_I2C_TRANSACTION_TIMEOUT);
-        if(BOARD_SOK != ret)
+        if(ret != 0)
         {
             return BOARD_I2C_TRANSFER_FAIL;
         }

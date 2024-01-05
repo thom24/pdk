@@ -88,12 +88,12 @@ static Board_STATUS Board_serdesInitParams(CSL_SerdesLaneEnableParams *laneParam
     laneParams->laneCtrlRate[1]   = CSL_SERDES_LANE_FULL_RATE;
     laneParams->loopbackMode[1]   = CSL_SERDES_LOOPBACK_DISABLED;
 
-    if(CSL_SERDES_PHY_TYPE_SGMII == phyType)
+    if(phyType == CSL_SERDES_PHY_TYPE_SGMII)
     {
         laneParams->pcieGenType       = CSL_SERDES_PCIE_GEN3;
         laneParams->linkRate          = CSL_SERDES_LINK_RATE_1p25G;
     }
-    else if (CSL_SERDES_PHY_TYPE_QSGMII == phyType)
+    else if (phyType == CSL_SERDES_PHY_TYPE_QSGMII)
     {
         laneParams->pcieGenType       = CSL_SERDES_PCIE_GEN4;
         laneParams->linkRate          = CSL_SERDES_LINK_RATE_5G;
@@ -120,7 +120,7 @@ static Board_STATUS Board_serdesCfgEthernet(uint32_t phyType)
 
     /* Bail out early if SERDES is already configured */
     status = CSL_serdesConfigStatus(serdesLane0EnableParams.baseAddr);
-    if (UTRUE == status)
+    if (status == 1U)
     {
         return BOARD_SOK;
     }
@@ -141,7 +141,7 @@ static Board_STATUS Board_serdesCfgEthernet(uint32_t phyType)
                                  serdesLane0EnableParams.serdesInstance,
                                  serdesLane0EnableParams.phyType);
 
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
@@ -152,14 +152,14 @@ static Board_STATUS Board_serdesCfgEthernet(uint32_t phyType)
     /* Load the Serdes Config File */
     result = CSL_serdesEthernetInit(&serdesLane0EnableParams);
     /* Return error if input params are invalid */
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
 
     /* Common Lane Enable API for lane enable, pll enable etc */
     laneRetVal = CSL_serdesLaneEnable(&serdesLane0EnableParams);
-    if (CSL_SERDES_LANE_ENABLE_NO_ERR != laneRetVal)
+    if (laneRetVal != 0)
     {
         return BOARD_FAIL;
     }
@@ -200,7 +200,7 @@ static Board_STATUS Board_serdesCfgEthernetUsxgmii(void)
 
     /* Bail out early if SERDES is already configured */
     status = CSL_serdesConfigStatus(laneParams_serdes0.baseAddr);
-    if (CSL_SERDES_STATUS_PLL_NOT_LOCKED == status)
+    if (status == 1U)
     {
         return BOARD_SOK;
     }
@@ -228,7 +228,7 @@ static Board_STATUS Board_serdesCfgEthernetUsxgmii(void)
                                  laneParams_serdes0.serdesInstance,
                                  laneParams_serdes0.phyType);
 
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
@@ -239,14 +239,14 @@ static Board_STATUS Board_serdesCfgEthernetUsxgmii(void)
     /* Load the Serdes Config File */
     result = CSL_serdesEthernetInit(&laneParams_serdes0);
     /* Return error if input params are invalid */
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
 
     /* Common Lane Enable API for lane enable, pll enable etc */
     laneRetVal = CSL_serdesLaneEnable(&laneParams_serdes0);
-    if (CSL_SERDES_LANE_ENABLE_NO_ERR != laneRetVal)
+    if (laneRetVal != 0)
     {
         return BOARD_FAIL;
     }
@@ -273,7 +273,7 @@ Board_STATUS Board_serdesCfgSgmii(void)
     ret = Board_serdesCfgEthernet(CSL_SERDES_PHY_TYPE_SGMII);
     /* Lock MMR write access */
     Board_serdesKickCtrl(1);
-    if(BOARD_SOK != ret)
+    if(ret != BOARD_SOK)
     {
         return ret;
     }
@@ -300,7 +300,7 @@ Board_STATUS Board_serdesCfgQsgmii(void)
     ret = Board_serdesCfgEthernet(CSL_SERDES_PHY_TYPE_QSGMII);
     /* Lock MMR write access */
     Board_serdesKickCtrl(1);
-    if(BOARD_SOK != ret)
+    if(ret != BOARD_SOK)
     {
         return ret;
     }
@@ -327,7 +327,7 @@ Board_STATUS Board_serdesCfgUsxgmii(void)
     ret = Board_serdesCfgEthernetUsxgmii();
     /* Lock MMR write access */
     Board_serdesKickCtrl(1);
-    if(BOARD_SOK != ret)
+    if(ret != BOARD_SOK)
     {
         return ret;
     }
@@ -338,12 +338,12 @@ Board_STATUS Board_serdesCfgUsxgmii(void)
 int32_t Board_serdesCfgStatus(void)
 {
     CSL_SerdesStatus serdesStatus;
-    int32_t ret = IFALSE;
+    int32_t ret = FALSE;
 
     serdesStatus = CSL_serdesConfigStatus(CSL_SERDES_10G1_BASE);
-    if (CSL_SERDES_STATUS_PLL_LOCKED == serdesStatus)
+    if (serdesStatus == CSL_SERDES_STATUS_PLL_LOCKED)
     {
-        ret = ITRUE;
+        ret = TRUE;
     }
 
     return ret;

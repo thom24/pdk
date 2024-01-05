@@ -65,23 +65,23 @@
 /* ========================================================================== */
 /*                          Function Declarations                             */
 /* ========================================================================== */
-/* Returns UTRUE if instance and channel/context configurations matches,
-   returns UFALSE otherwise */
+/* Returns TRUE if instance and channel/context configurations matches,
+   returns FALSE otherwise */
 uint32_t Dss_m2mDrvDctrlOvlCfgChk(const Dss_DctrlOverlayParams *instCfg,
                                   const Dss_DctrlOverlayParams *progCfg);
 
-/* Returns UTRUE if instance and channel/context configurations matches,
-   returns UFALSE otherwise */
+/* Returns TRUE if instance and channel/context configurations matches,
+   returns FALSE otherwise */
 uint32_t Dss_m2mDrvDctrlOvlLayerCfgChk(const Dss_DctrlOverlayLayerParams *instCfg,
                                        const Dss_DctrlOverlayLayerParams *progCfg);
 
-/* Returns UTRUE if instance and channel/context configurations matches,
-   returns UFALSE otherwise */
+/* Returns TRUE if instance and channel/context configurations matches,
+   returns FALSE otherwise */
 uint32_t Dss_m2mDrvDctrlGlobalCfgChk(const Dss_DctrlGlobalDssParams *instCfg,
                                      const Dss_DctrlGlobalDssParams *progCfg);
 
-/* Returns UTRUE if instance and channel/context configurations matches,
-   returns UFALSE otherwise */
+/* Returns TRUE if instance and channel/context configurations matches,
+   returns FALSE otherwise */
 uint32_t Dss_m2mDrvDctrlPathCfgChk(const Dss_DctrlPathInfo * instCfg,
                                    const Dss_DctrlPathInfo * progCfg);
 
@@ -109,18 +109,18 @@ extern DssM2MDrv_CommonObj gDssM2mCommonObj;
 uint32_t Dss_m2mDrvDctrlOvlCfgChk(const Dss_DctrlOverlayParams *instCfg,
                                          const Dss_DctrlOverlayParams *progCfg)
 {
-    uint32_t retVal = UTRUE;
+    uint32_t retVal = (uint32_t) TRUE;
 
     if ((instCfg->overlayId                   != progCfg->overlayId)                   ||
         (instCfg->colorbarEnable              != progCfg->colorbarEnable)              ||
-        (UFALSE                               != instCfg->colorbarEnable)              ||
+        (instCfg->colorbarEnable              != FALSE)                                ||
         (instCfg->overlayCfg.colorKeyEnable   != progCfg->overlayCfg.colorKeyEnable)   ||
         (instCfg->overlayCfg.colorKeySel      != progCfg->overlayCfg.colorKeySel)      ||
         (instCfg->overlayCfg.transColorKeyMin != progCfg->overlayCfg.transColorKeyMin) ||
         (instCfg->overlayCfg.transColorKeyMax != progCfg->overlayCfg.transColorKeyMax) ||
         (instCfg->overlayCfg.backGroundColor  != progCfg->overlayCfg.backGroundColor))
     {
-        retVal = UFALSE;
+        retVal = (uint32_t) FALSE;
     }
 
     return retVal;
@@ -129,12 +129,12 @@ uint32_t Dss_m2mDrvDctrlOvlCfgChk(const Dss_DctrlOverlayParams *instCfg,
 uint32_t Dss_m2mDrvDctrlOvlLayerCfgChk(const Dss_DctrlOverlayLayerParams *instCfg,
                                        const Dss_DctrlOverlayLayerParams *progCfg)
 {
-    uint32_t retVal = UTRUE;
+    uint32_t retVal = (uint32_t) TRUE;
     uint32_t loopCnt = 0U;
 
     if ((instCfg->overlayId  != progCfg->overlayId))
     {
-        retVal = UFALSE;
+        retVal = (uint32_t) FALSE;
     }
     else
     {
@@ -145,9 +145,9 @@ uint32_t Dss_m2mDrvDctrlOvlLayerCfgChk(const Dss_DctrlOverlayLayerParams *instCf
                 break;
             }
         }
-        if (CSL_DSS_VID_PIPE_ID_MAX > loopCnt)
+        if (loopCnt < CSL_DSS_VID_PIPE_ID_MAX)
         {
-            retVal = UFALSE;
+            retVal = (uint32_t) FALSE;
         }
     }
 
@@ -157,14 +157,14 @@ uint32_t Dss_m2mDrvDctrlOvlLayerCfgChk(const Dss_DctrlOverlayLayerParams *instCf
 uint32_t Dss_m2mDrvDctrlGlobalCfgChk(const Dss_DctrlGlobalDssParams *instCfg,
                                      const Dss_DctrlGlobalDssParams *progCfg)
 {
-    uint32_t retVal = UTRUE;
+    uint32_t retVal = (uint32_t) TRUE;
 
     if ((instCfg->globalMflagCfg.globalMflagStart  != progCfg->globalMflagCfg.globalMflagStart)  ||
         (instCfg->globalMflagCfg.globalMflagCtrl   != progCfg->globalMflagCfg.globalMflagCtrl)   ||
         (instCfg->cbaCfg.priHigh                   != progCfg->cbaCfg.priHigh)                   ||
         (instCfg->cbaCfg.priLow                    != progCfg->cbaCfg.priLow))
     {
-        retVal = UFALSE;
+        retVal = (uint32_t) FALSE;
     }
 
     return retVal;
@@ -173,12 +173,12 @@ uint32_t Dss_m2mDrvDctrlGlobalCfgChk(const Dss_DctrlGlobalDssParams *instCfg,
 uint32_t Dss_m2mDrvDctrlPathCfgChk(const Dss_DctrlPathInfo * instCfg,
                                    const Dss_DctrlPathInfo * progCfg)
 {
-    uint32_t retVal = UTRUE;
+    uint32_t retVal = (uint32_t) TRUE;
     uint32_t loopCnt = 0U;
 
     if ((instCfg->numEdges  != progCfg->numEdges))
     {
-        retVal = UFALSE;
+        retVal = (uint32_t) FALSE;
     }
     else
     {
@@ -192,9 +192,9 @@ uint32_t Dss_m2mDrvDctrlPathCfgChk(const Dss_DctrlPathInfo * instCfg,
                 break;
             }
         }
-        if (DSS_DCTRL_MAX_EDGES > loopCnt)
+        if (loopCnt < DSS_DCTRL_MAX_EDGES)
         {
-            retVal = UFALSE;
+            retVal = (uint32_t) FALSE;
         }
     }
 
@@ -204,7 +204,7 @@ uint32_t Dss_m2mDrvDctrlPathCfgChk(const Dss_DctrlPathInfo * instCfg,
 int32_t Dss_m2mDrvPrgramDctrl(DssM2MDrv_VirtContext *context)
 {
     int32_t retVal = FVID2_SOK;
-    uint32_t copyCfg = UFALSE;
+    uint32_t copyCfg = (uint32_t) FALSE;
     uint32_t loopCnt = 0U;
     DssM2MDrv_InstObj *instObj;
     DssM2MDrv_dctrlCfg *instCfg, *progCfg;
@@ -220,7 +220,7 @@ int32_t Dss_m2mDrvPrgramDctrl(DssM2MDrv_VirtContext *context)
     if (FVID2_SOK == retVal)
     {
         /* Check DCTRL Overlay configuration */
-        if (UFALSE == Dss_m2mDrvDctrlOvlCfgChk(&instCfg->ovlParams,
+        if (((uint32_t) FALSE) == Dss_m2mDrvDctrlOvlCfgChk(&instCfg->ovlParams,
                                                            &progCfg->ovlParams))
         {
             if ((CSL_DSS_OVERLAY_ID_MAX <= instCfg->ovlParams.overlayId) ||
@@ -232,17 +232,17 @@ int32_t Dss_m2mDrvPrgramDctrl(DssM2MDrv_VirtContext *context)
             if (FVID2_SOK == retVal)
             {
                 /* Always Disable Color-bar */
-                CSL_dssOverlayColorBarEnable(instObj->ovrRegs, UFALSE);
+                CSL_dssOverlayColorBarEnable(instObj->ovrRegs, FALSE);
                 CSL_dssOverlaySetConfig(instObj->ovrRegs,
                                         &instCfg->ovlParams.overlayCfg);
-                copyCfg = UTRUE;
+                copyCfg = (uint32_t) TRUE;
             }
         }
     }
     if (FVID2_SOK == retVal)
     {
         /* Check DCTRL Overlay Layer configuration */
-        if (UFALSE == Dss_m2mDrvDctrlOvlLayerCfgChk(&instCfg->ovlLayerParams,
+        if (((uint32_t) FALSE) == Dss_m2mDrvDctrlOvlLayerCfgChk(&instCfg->ovlLayerParams,
                                                                 &progCfg->ovlLayerParams))
         {
             if ((CSL_DSS_OVERLAY_ID_MAX <= instCfg->ovlLayerParams.overlayId) ||
@@ -260,7 +260,7 @@ int32_t Dss_m2mDrvPrgramDctrl(DssM2MDrv_VirtContext *context)
                 {
                     if(CSL_DSS_OVERLAY_LAYER_INVALID != instCfg->ovlLayerParams.pipeLayerNum[loopCnt])
                     {
-                        layerCfg.layerEnable = UTRUE;
+                        layerCfg.layerEnable = TRUE;
                         layerCfg.layerNum = instCfg->ovlLayerParams.pipeLayerNum[loopCnt];
                         layerCfg.inputPipe = loopCnt;
                         CSL_dssOverlaySetLayerConfig(
@@ -268,24 +268,24 @@ int32_t Dss_m2mDrvPrgramDctrl(DssM2MDrv_VirtContext *context)
                                             (const CSL_DssOverlayLayerCfg *) &layerCfg);
                     }
                 }
-                copyCfg = UTRUE;
+                copyCfg = (uint32_t) TRUE;
             }
         }
     }
     if (FVID2_SOK == retVal)
     {
         /* Check DCTRL Global configuration */
-        if (UFALSE == Dss_m2mDrvDctrlGlobalCfgChk(&instCfg->globalParams,
+        if (((uint32_t) FALSE) == Dss_m2mDrvDctrlGlobalCfgChk(&instCfg->globalParams,
                                                               &progCfg->globalParams))
         {
             CSL_dssSetGlobalMflagConfig(instObj->commRegs,
                                 &instCfg->globalParams.globalMflagCfg);
             CSL_dssSetCbaConfig(instObj->commRegs,
                                 &instCfg->globalParams.cbaCfg);
-            copyCfg = UTRUE;
+            copyCfg = (uint32_t) TRUE;
         }
     }
-    if ((FVID2_SOK == retVal) && (UTRUE == copyCfg))
+    if ((FVID2_SOK == retVal) && (((uint32_t) TRUE) == copyCfg))
     {
         /* Update instance configurations */
         Fvid2Utils_memcpy(progCfg, instCfg, sizeof(DssM2MDrv_dctrlCfg));
@@ -306,7 +306,7 @@ int32_t Dss_m2mDrvIoctlSetOverlayParams(DssM2MDrv_VirtContext *context,
     }
     else
     {
-        if ((CSL_DSS_OVERLAY_ID_MAX <= ovlParams->overlayId) ||
+        if ((ovlParams->overlayId >= CSL_DSS_OVERLAY_ID_MAX) ||
             (ovlParams->overlayId != context->instObj->overlayId))
         {
             retVal = FVID2_EBADARGS;
@@ -337,7 +337,7 @@ int32_t Dss_m2mDrvIoctlSetLayerParams(DssM2MDrv_VirtContext *context,
     }
     else
     {
-        if ((CSL_DSS_OVERLAY_ID_MAX <= ovlLayerParams->overlayId) ||
+        if ((ovlLayerParams->overlayId >= CSL_DSS_OVERLAY_ID_MAX) ||
             (ovlLayerParams->overlayId != context->instObj->overlayId))
         {
             retVal = FVID2_EBADARGS;

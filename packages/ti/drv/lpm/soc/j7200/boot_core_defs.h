@@ -101,7 +101,7 @@
 
 /* Location Address used as flag to indicate loading of
  * all HLOS appimages for OSPI */
-#define MAIN_DOMAIN_HLOS             (0x1U)
+#define MAIN_DOMAIN_HLOS             (0x1)
 /* Name indicating that appimages for HLOS should be
  * loaded from MMCSD filesystem */
 #define MAIN_DOMAIN_HLOS_NAME        "hlos"

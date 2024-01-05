@@ -173,7 +173,7 @@ void i2c_test(UArg arg0, UArg arg1)
     I2C_Transaction i2cTransaction;
     char txBuf[I2C_EEPROM_TEST_LENGTH + I2C_EEPROM_ADDR_SIZE] = {0x00, };
     char rxBuf[I2C_EEPROM_TEST_LENGTH] = {0x00, };
-    bool status,test_pass = BFALSE;
+    bool status,test_pass=FALSE;
     int16_t transferStatus;
 
 #ifdef BARE_METAL
@@ -225,10 +225,10 @@ void i2c_test(UArg arg0, UArg arg1)
       if(ret!=I2C_STATUS_SUCCESS) {
           if(ret==I2C_STATUS_UNDEFINEDCMD) {
              I2C_log("\n CMD_RECOVER_BUS Command not supported\n");
-             test_pass = BTRUE;/* For Keystone platforms (i2c_V0) recovery is not supported yet, hence declaring it a pass because the failure test atleast worked */
+             test_pass=TRUE;/* For Keystone platforms (i2c_V0) recovery is not supported yet, hence declaring it a pass because the failure test atleast worked */
           } else {
           I2C_log("\n Bus Recovery failed with return code %d \n",ret);
-          test_pass = BFALSE;
+          test_pass=FALSE;
           }
           goto end_test;
       } else {
@@ -260,7 +260,7 @@ void i2c_test(UArg arg0, UArg arg1)
 
       if(transferStatus!=I2C_STS_SUCCESS) {
          I2C_log("\n Data Transfer Still failed failed with transfer code %d \n",transferStatus);
-         test_pass = BFALSE;
+         test_pass=FALSE;
          goto end_test;
       }
 
@@ -270,23 +270,23 @@ void i2c_test(UArg arg0, UArg arg1)
       memcpy(eepromData, rxBuf, I2C_EEPROM_TEST_LENGTH);
 #endif
       status = CompareData(&eepromData[0], &rxBuf[0], I2C_EEPROM_TEST_LENGTH);
-      if(BTRUE == status) {
+      if(TRUE == status) {
         I2C_log("\n EEPROM data matched \n");
-        test_pass = BTRUE;
+        test_pass=TRUE;
       } else {
-        test_pass = BFALSE;
+        test_pass=FALSE;
       }
    } else {
      /* The return status for a bogus slave address was not supposed to be success, hence test is a failure */
        I2C_log("\n Data Transfer for 0xff address went through without a fail status, hence test failed \n");
-       test_pass = BFALSE;
+       test_pass=FALSE;
    }
 
 
 end_test:
   I2C_log("\n Closing the driver.\n");
   I2C_close(handle);
-  if(BTRUE == test_pass)  {
+  if(test_pass==TRUE)  {
       UART_printStatus("\n All tests have passed. \n");
   }  else  {
       UART_printStatus("\n Some tests have failed. \n");
@@ -326,18 +326,18 @@ int main(void)
  */
 bool CompareData(char *expData, char *rxData, unsigned int length)
 {
-    uint32_t idx = 0U;
-    uint32_t match = UTRUE;
-    bool retVal = BFALSE;
+    uint32_t idx = 0;
+    uint32_t match = 1;
+    bool retVal = false;
 
-    for(idx = 0U; ((idx < length) && (UFALSE != match)); idx++)
+    for(idx = 0; ((idx < length) && (match != 0)); idx++)
     {
-        if(*expData != *rxData) match = UFALSE;
+        if(*expData != *rxData) match = 0;
         expData++;
         rxData++;
     }
 
-    if(UTRUE == match) retVal = BTRUE;
+    if(match == 1) retVal = true;
 
     return retVal;
 }

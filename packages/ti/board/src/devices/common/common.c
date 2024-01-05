@@ -93,7 +93,7 @@ Board_STATUS Board_i2c16BitRegRd(void   *handle,
     transaction.timeout      = i2cTimeout;
 
     /* 16-bit regAddr data to be sent */
-    if(BOARD_I2C_REG_ADDR_MSB_FIRST == byteOrdSel)
+    if(byteOrdSel == BOARD_I2C_REG_ADDR_MSB_FIRST)
     {
         tx[0] = (uint8_t)((regAddr & 0xFF00) >> 8);
         tx[1] = (uint8_t)(regAddr & 0x00FF);
@@ -105,10 +105,10 @@ Board_STATUS Board_i2c16BitRegRd(void   *handle,
     }
 
     ret = I2C_transfer(i2cHandle, &transaction);
-    if(I2C_STS_SUCCESS != ret)
+    if(ret != I2C_STS_SUCCESS)
     {
         BOARD_DEVICES_ERR_LOG("Failing while transmitting the rd reg addr with error code - %d\n", ret);
-        ret = BOARD_INVALID_PARAM;
+        ret = -1;
         return ret;
     }
 
@@ -118,10 +118,10 @@ Board_STATUS Board_i2c16BitRegRd(void   *handle,
     transaction.readCount    = numOfBytes;
 
     ret = I2C_transfer(i2cHandle, &transaction);
-    if(I2C_STS_SUCCESS != ret)
+    if(ret != I2C_STS_SUCCESS)
     {
         BOARD_DEVICES_ERR_LOG("Failing while reading the register data by returning - %d\n", ret);
-        ret = BOARD_INVALID_PARAM;
+        ret = -1;
         return ret;
     }
 
@@ -156,7 +156,7 @@ Board_STATUS Board_i2c16BitRegWr(void *handle,
 
     I2C_Transaction transaction;
 
-    if(4U < numOfBytes)
+    if(numOfBytes > 4u)
     {
         ret = BOARD_INVALID_PARAM;
     }
@@ -170,13 +170,13 @@ Board_STATUS Board_i2c16BitRegWr(void *handle,
 
         transaction.slaveAddress = slaveAddr;
         transaction.writeBuf     = &tx[0];
-        transaction.writeCount   = (numOfBytes + 2U);
+        transaction.writeCount   = (numOfBytes + 2);
         transaction.readBuf      = NULL;
         transaction.readCount    = 0;
         transaction.timeout      = i2cTimeout;
 
         /* 16-bit regAddr data to be sent */
-        if(BOARD_I2C_REG_ADDR_MSB_FIRST == byteOrdSel)
+        if(byteOrdSel == BOARD_I2C_REG_ADDR_MSB_FIRST)
         {
             tx[0] = (uint8_t)((regAddr & 0xFF00) >> 8);
             tx[1] = (uint8_t)(regAddr & 0x00FF);
@@ -198,11 +198,11 @@ Board_STATUS Board_i2c16BitRegWr(void *handle,
         }
 
         ret = I2C_transfer(i2cHandle, &transaction);
-        if(I2C_STS_SUCCESS != ret)
+        if(ret != I2C_STS_SUCCESS)
         {
             BOARD_DEVICES_ERR_LOG(
                     "Failing while writing data by returning - %d\n\r", ret);
-            ret = BOARD_INVALID_PARAM;
+            ret = -1;
             return ret;
         }
     }
@@ -247,10 +247,10 @@ Board_STATUS Board_i2c8BitRegRd(void   *handle,
     transaction.timeout      = i2cTimeout;
 
     ret = I2C_transfer(i2cHandle, &transaction);
-    if(I2C_STS_SUCCESS != ret)
+    if(ret != I2C_STS_SUCCESS)
     {
         BOARD_DEVICES_ERR_LOG("Failing while transmitting the rd reg addr with error code - %d\n", ret);
-        ret = BOARD_INVALID_PARAM;
+        ret = -1;
         return ret;
     }
 
@@ -260,10 +260,10 @@ Board_STATUS Board_i2c8BitRegRd(void   *handle,
     transaction.readCount    = numOfBytes;
 
     ret = I2C_transfer(i2cHandle, &transaction);
-    if(I2C_STS_SUCCESS != ret)
+    if(ret != I2C_STS_SUCCESS)
     {
         BOARD_DEVICES_ERR_LOG("Failing while reading the register data by returning - %d\n", ret);
-        ret = BOARD_INVALID_PARAM;
+        ret = -1;
         return ret;
     }
 
@@ -320,10 +320,10 @@ Board_STATUS Board_i2c8BitRegWr(void *handle,
     }
 
     ret = I2C_transfer(i2cHandle, &transaction);
-    if(I2C_STS_SUCCESS != ret)
+    if(ret != I2C_STS_SUCCESS)
     {
         BOARD_DEVICES_ERR_LOG("Failing while writing data by returning - %d\n\r", ret);
-        ret = BOARD_INVALID_PARAM;
+        ret = -1;
         return ret;
     }
 
@@ -365,21 +365,21 @@ Board_STATUS Board_i2c10bit16bitRegRd(void *handle,
     transaction.writeCount   = 2;
     transaction.readBuf      = rx;
     transaction.readCount    = 2;
-    transaction.expandSA     = BTRUE;
+    transaction.expandSA     = true;
     transaction.timeout      = i2cTimeout;
 
-    tx[0] = (((0xFF00U) & regAddr)  >> 8);
-    tx[1] = (0x00FFU) & regAddr;
+    tx[0] = ((0xFF00) & regAddr  >> 8);
+    tx[1] = (0x00FF) & regAddr;
 
     boardStatus = I2C_transfer(i2cHandle, &transaction);
-    if(I2C_STS_SUCCESS != boardStatus)
+    if(boardStatus != I2C_STS_SUCCESS)
     {
         BOARD_DEVICES_ERR_LOG("Failing while reading the register data by returning - %d\n", boardStatus);
-        boardStatus = BOARD_INVALID_PARAM;
+        boardStatus = -1;
     }
     *regData = (uint16_t)(rx[0] << 8) | (rx[1]);
 
-    return BOARD_SOK;
+    return 0;
 }
 
 /*********************************************************************
@@ -415,7 +415,7 @@ Board_STATUS Board_i2c10bit16bitRegWr(void *handle,
     transaction.writeCount   = 4;
     transaction.readBuf      = NULL;
     transaction.readCount    = 0;
-    transaction.expandSA     = BTRUE;
+    transaction.expandSA     = true;
     transaction.timeout      = i2cTimeout;
 
     /* MSB of 16-bit data should be sent first followed by the LSB */
@@ -427,10 +427,10 @@ Board_STATUS Board_i2c10bit16bitRegWr(void *handle,
     tx[3] = (uint8_t)(regData & 0x00FF);
 
     boardStatus = I2C_transfer(i2cHandle, &transaction);
-    if(I2C_STS_SUCCESS != boardStatus)
+    if(boardStatus != I2C_STS_SUCCESS)
     {
         BOARD_DEVICES_ERR_LOG("Failing while writing data by returning - %d\n\r", boardStatus);
-        boardStatus = BOARD_INVALID_PARAM;
+        boardStatus = -1;
     }
-    return BOARD_SOK;
+    return 0;
 }

@@ -389,7 +389,7 @@ uint32_t BootApp_GetTimeInMicroSec(uint32_t pmuCntrVal){
 void BootApp_McuDCacheClean(void *addr, uint32_t size)
 {
     /* Invalidate by MVA */
-    CSL_armR5CacheWbInv((const void *)addr, uint32_to_int32(size), BTRUE);
+    CSL_armR5CacheWbInv((const void *)addr, uint32_to_int32(size), (bool)TRUE);
 }
 #endif
 

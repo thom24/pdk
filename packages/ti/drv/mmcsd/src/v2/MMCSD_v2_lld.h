@@ -139,12 +139,12 @@ typedef struct hsMmcsdSysCfg
          enum #hsMmcsdIdleMode_t. */
     uint32_t enableWakeup;
     /**< Wake up enable/disable control. This can take following two values
-         - UTRUE  - Enable Wakeup
-         - UFALSE - Disable wakeup */
+         - TRUE  - Enable Wakeup
+         - FALSE - Disable wakeup */
     uint32_t enableAutoIdle;
     /**< Auto idle enable/disable control. This can take following two values
-         - UTRUE  - Enable auto idle.
-         - UFALSE - Disable auto idle. */
+         - TRUE  - Enable auto idle.
+         - FALSE - Disable auto idle. */
 }hsMmcsdSysCfg_t;
 
 
@@ -173,16 +173,16 @@ typedef struct hsMmcsdCmdObj
     uint32_t enableData;
     /**< This flag enables/disables data transfer. This can take following
          two values:
-         - UTRUE  - Enable data transfer
-         - UFALSE - Disable data transfer. */
+         - TRUE  - Enable data transfer
+         - FALSE - Disable data transfer. */
     uint32_t numBlks;
     /**< Transfer data length in number of blocks (multiple of BLEN). This can
          take values in the following range:
          1 <= numBlks <= 65535. Value of 0 means Stop count. */
     uint32_t enableDma;
     /**< This flag enables/disables Dma. This can take following two values:
-         - UTRUE  - Enable DMA.
-         - UFALSE - Disable DMA. */
+         - TRUE  - Enable DMA.
+         - FALSE - Disable DMA. */
 }hsMmcsdCmdObj_t;
 
 

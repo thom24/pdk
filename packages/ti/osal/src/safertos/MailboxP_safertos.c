@@ -95,11 +95,11 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
 
     key = HwiP_disable();
 
-     for (i = 0U; i < maxMailbox; i++)
+     for (i = 0; i < maxMailbox; i++)
      {
-         if (BFALSE == mailboxPool[i].used)
+         if ((bool)false == mailboxPool[i].used)
          {
-             mailboxPool[i].used = BTRUE;
+             mailboxPool[i].used = (bool)true;
              /* Update statistics */
              gOsalMailboxAllocCnt++;
              if (gOsalMailboxAllocCnt > gOsalMailboxPeak)
@@ -129,13 +129,13 @@ MailboxP_Handle MailboxP_create(const MailboxP_Params *params)
                                 (portUnsignedBaseType)params->count,
                                 (portUnsignedBaseType)params->size,
                                 &handle->mailboxHndl);
-        if(pdPASS != xCreateResult)
+        if(xCreateResult != pdPASS)
         {
             /* If there was an error reset the mailbox object and return NULL. */
             key = HwiP_disable();
-            handle->used = BFALSE;
+            handle->used = (bool)false;
             /* Found the osal mailbox object to delete */
-            if (0U < gOsalMailboxAllocCnt)
+            if (gOsalMailboxAllocCnt > 0U)
             {
                 gOsalMailboxAllocCnt--;
             }

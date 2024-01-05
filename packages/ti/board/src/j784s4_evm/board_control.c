@@ -97,7 +97,7 @@ static Board_STATUS Board_setIOMux(uint8_t mask,
 
     i2cCfg.i2cInst    = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
     i2cCfg.socDomain  = BOARD_SOC_DOMAIN_MAIN;
-    i2cCfg.enableIntr = BFALSE;
+    i2cCfg.enableIntr = false;
     Board_setI2cInitConfig(&i2cCfg);
 
     status = Board_i2cIoExpInit();
@@ -195,7 +195,7 @@ static Board_STATUS Board_enableDSI2EDPBridge(void)
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE4_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE4_ADDR;
-    ioExpCfg.enableIntr  = BFALSE;
+    ioExpCfg.enableIntr  = false;
     ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = PIN_NUM_2;
@@ -222,7 +222,7 @@ static Board_STATUS Board_configureDPPPower(bool enable)
     Board_STATUS status;
     i2cIoExpSignalLevel_t signalLevel;
     
-    if(BTRUE == enable)
+    if(enable == TRUE)
     {
         signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
     }
@@ -234,7 +234,7 @@ static Board_STATUS Board_configureDPPPower(bool enable)
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE4_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE4_ADDR;
-    ioExpCfg.enableIntr  = BFALSE;
+    ioExpCfg.enableIntr  = false;
     ioExpCfg.ioExpType   = ONE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = PIN_NUM_0;
@@ -271,7 +271,7 @@ static Board_STATUS Board_configureMCANMux()
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE1_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE1_ADDR;
-    ioExpCfg.enableIntr  = BFALSE;
+    ioExpCfg.enableIntr  = false;
     ioExpCfg.ioExpType   = TWO_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_1;
     ioExpCfg.pinNum      = PIN_NUM_4;
@@ -300,7 +300,7 @@ static Board_STATUS Board_linConfig(bool enable)
     Board_STATUS status;
     i2cIoExpSignalLevel_t signalLevel;
     
-    if(BTRUE == enable)
+    if(enable == TRUE)
     {
         signalLevel = GPIO_SIGNAL_LEVEL_HIGH;
     }
@@ -312,7 +312,7 @@ static Board_STATUS Board_linConfig(bool enable)
     ioExpCfg.i2cInst     = BOARD_I2C_IOEXP_DEVICE2_INSTANCE;
     ioExpCfg.socDomain   = BOARD_SOC_DOMAIN_MAIN;
     ioExpCfg.slaveAddr   = BOARD_I2C_IOEXP_DEVICE2_ADDR;
-    ioExpCfg.enableIntr  = BFALSE;
+    ioExpCfg.enableIntr  = false;
     ioExpCfg.ioExpType   = THREE_PORT_IOEXP;
     ioExpCfg.portNum     = PORTNUM_0;
     ioExpCfg.pinNum      = PIN_NUM_6;
@@ -360,11 +360,11 @@ Board_STATUS Board_control(uint32_t cmd, void *arg)
             break;
 
         case BOARD_CTRL_CMD_ENABLE_DP_PWR:
-            status = Board_configureDPPPower(BTRUE);
+            status = Board_configureDPPPower(TRUE);
             break;
 
         case BOARD_CTRL_CMD_DISABLE_DP_PWR:
-            status = Board_configureDPPPower(BFALSE);
+            status = Board_configureDPPPower(FALSE);
             break;
 
         case BOARD_CTRL_CMD_ENABLE_MCAN_MUX:
@@ -372,11 +372,11 @@ Board_STATUS Board_control(uint32_t cmd, void *arg)
             break;
 
         case BOARD_CTRL_CMD_LIN_ENABLE:
-            status = Board_linConfig(BTRUE);
+            status = Board_linConfig(TRUE);
             break;
 
         case BOARD_CTRL_CMD_LIN_DISABLE:
-            status = Board_linConfig(BFALSE);
+            status = Board_linConfig(FALSE);
             break;
 
         default:

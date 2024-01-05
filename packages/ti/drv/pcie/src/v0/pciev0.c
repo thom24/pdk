@@ -107,11 +107,11 @@ pcieRet_e Pciev0_getMemSpaceReserved
 {
   pcieRet_e retVal = pcie_RET_OK;
 
-  if (0 == pcieLObjIsValid) {
+  if (pcieLObjIsValid == 0) {
     retVal = pcie_RET_NO_INIT;
   }
   else {
-    if (IFALSE == pcie_check_handle_fcn(handle)) {
+    if (pcie_check_handle_fcn(handle) == 0) {
       retVal = pcie_RET_INV_HANDLE;
     }
     else {
@@ -142,11 +142,11 @@ pcieRet_e Pciev0_getMemSpaceRange
 {
   pcieRet_e retVal = pcie_RET_OK;
 
-  if (0 == pcieLObjIsValid) {
+  if (pcieLObjIsValid == 0) {
     retVal = pcie_RET_NO_INIT;
   }
   else {
-    if (IFALSE == pcie_check_handle_fcn(handle)) {
+    if (pcie_check_handle_fcn(handle) == 0) {
       retVal = pcie_RET_INV_HANDLE;
     }
     else {
@@ -189,18 +189,18 @@ pcieRet_e Pciev0_readRegs
   pcieRet_e retVal = pcie_RET_OK;
   int32_t i;
 
-  if (0 == pcieLObjIsValid) {
+  if (pcieLObjIsValid == 0) {
     retVal = pcie_RET_NO_INIT;
   }
   else {
-    if (IFALSE == pcie_check_handle_fcn(handle)) {
+    if (pcie_check_handle_fcn(handle) == 0) {
       retVal = pcie_RET_INV_HANDLE;
     }
     else {
       baseAppRegs = (CSL_Pciess_appRegs*)cfg->cfgBase;
 
       /* Get base address for Local or Remote config space */
-      if (pcie_LOCATION_LOCAL == location) 
+      if (location == pcie_LOCATION_LOCAL) 
       {
         pcie_get_loc_cfg_base(baseAppRegs, baseCfgEpRegs, baseCfgRcRegs)
       }
@@ -212,178 +212,178 @@ pcieRet_e Pciev0_readRegs
       /*****************************************************************************************
       *Application Registers
       *****************************************************************************************/
-      if ((pcie_RET_OK == retVal) && (NULL != readRegs->pid)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->pid != NULL)) {
         retVal = pciev0_read_pid_reg (baseAppRegs, readRegs->pid);
       }
-      if ((pcie_RET_OK == retVal) && (NULL != readRegs->cmdStatus)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->cmdStatus != NULL)) {
         retVal = pciev0_read_cmdStatus_reg (baseAppRegs, readRegs->cmdStatus);
       }
-      if ((pcie_RET_OK == retVal) && (NULL != readRegs->cfgTrans)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->cfgTrans != NULL)) {
         retVal = pciev0_read_cfgTrans_reg (baseAppRegs, readRegs->cfgTrans);
       }
-      if ((pcie_RET_OK == retVal) && (NULL != readRegs->ioBase)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->ioBase != NULL)) {
         retVal = pciev0_read_ioBase_reg (baseAppRegs, readRegs->ioBase);
       }
-      if ((pcie_RET_OK == retVal) && (NULL != readRegs->tlpCfg)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->tlpCfg != NULL)) {
         retVal = pciev0_read_tlpCfg_reg (baseAppRegs, readRegs->tlpCfg);
       }
-      if ((pcie_RET_OK == retVal) && (NULL != readRegs->rstCmd)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->rstCmd != NULL)) {
         retVal = pciev0_read_rstCmd_reg (baseAppRegs, readRegs->rstCmd);
       }
-      if ((pcie_RET_OK == retVal) && (NULL != readRegs->ptmCfg)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->ptmCfg != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != readRegs->pmCmd)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->pmCmd != NULL)) {
         retVal = pciev0_read_pmCmd_reg (baseAppRegs, readRegs->pmCmd);
       }
-      if ((pcie_RET_OK == retVal) && (NULL != readRegs->pmCfg)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->pmCfg != NULL)) {
         retVal = pciev0_read_pmCfg_reg (baseAppRegs, readRegs->pmCfg);
       }
-      if ((pcie_RET_OK == retVal) && (NULL != readRegs->actStatus)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->actStatus != NULL)) {
         retVal = pciev0_read_actStatus_reg (baseAppRegs, readRegs->actStatus);
       }
-      if ((pcie_RET_OK == retVal) && (NULL != readRegs->obSize)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->obSize != NULL)) {
         retVal = pciev0_read_obSize_reg (baseAppRegs, readRegs->obSize);
       }
-      if ((pcie_RET_OK == retVal) && (NULL != readRegs->diagCtrl)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->diagCtrl != NULL)) {
         retVal = pciev0_read_diagCtrl_reg (baseAppRegs, readRegs->diagCtrl);
       }
-      if ((pcie_RET_OK == retVal) && (NULL != readRegs->endian)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->endian != NULL)) {
         retVal = pciev0_read_endian_reg (baseAppRegs, readRegs->endian);
       }
-      if ((pcie_RET_OK == retVal) && (NULL != readRegs->priority)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->priority != NULL)) {
         retVal = pciev0_read_priority_reg (baseAppRegs, readRegs->priority);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->irqEOI)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->irqEOI != NULL)) {
         retVal = pciev0_read_irqEOI_reg (baseAppRegs, readRegs->irqEOI);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->msiIrq)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->msiIrq != NULL)) {
         retVal = pciev0_read_msiIrq_reg (baseAppRegs, readRegs->msiIrq);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->epIrqSet)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->epIrqSet != NULL)) {
         retVal = pciev0_read_epIrqSet_reg (baseAppRegs, readRegs->epIrqSet);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->epIrqClr)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->epIrqClr != NULL)) {
         retVal = pciev0_read_epIrqClr_reg (baseAppRegs, readRegs->epIrqClr);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->epIrqStatus)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->epIrqStatus != NULL)) {
         retVal = pciev0_read_epIrqStatus_reg (baseAppRegs, readRegs->epIrqStatus);
       }
       for (i = 0; i < 4; i++) {
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->genPurpose[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->genPurpose[i] != NULL)) {
           retVal = pciev0_read_genPurpose_reg (baseAppRegs, readRegs->genPurpose[i], i);
         }
       }
       for (i = 0; i < 8; i++) {
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->msiIrqStatusRaw[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->msiIrqStatusRaw[i] != NULL)) {
           retVal = pciev0_read_msiIrqStatusRaw_reg (baseAppRegs, readRegs->msiIrqStatusRaw[i], i);
         }
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->msiIrqStatus[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->msiIrqStatus[i] != NULL)) {
           retVal = pciev0_read_msiIrqStatus_reg (baseAppRegs, readRegs->msiIrqStatus[i], i);
         }
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->msiIrqEnableSet[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->msiIrqEnableSet[i] != NULL)) {
           retVal = pciev0_read_msiIrqEnableSet_reg (baseAppRegs, readRegs->msiIrqEnableSet[i], i);
         }
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->msiIrqEnableClr[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->msiIrqEnableClr[i] != NULL)) {
           retVal = pciev0_read_msiIrqEnableClr_reg (baseAppRegs, readRegs->msiIrqEnableClr[i], i);
         }
       }
       for (i = 0; i < 4; i++) {
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->legacyIrqStatusRaw[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->legacyIrqStatusRaw[i] != NULL)) {
           retVal = pciev0_read_legacyIrqStatusRaw_reg (baseAppRegs, readRegs->legacyIrqStatusRaw[i], i);
         }
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->legacyIrqStatus[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->legacyIrqStatus[i] != NULL)) {
           retVal = pciev0_read_legacyIrqStatus_reg (baseAppRegs, readRegs->legacyIrqStatus[i], i);
         }
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->legacyIrqEnableSet[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->legacyIrqEnableSet[i] != NULL)) {
           retVal = pciev0_read_legacyIrqEnableSet_reg (baseAppRegs, readRegs->legacyIrqEnableSet[i], i);
         }
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->legacyIrqEnableClr[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->legacyIrqEnableClr[i] != NULL)) {
           retVal = pciev0_read_legacyIrqEnableClr_reg (baseAppRegs, readRegs->legacyIrqEnableClr[i], i);
         }
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->errIrqStatusRaw)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->errIrqStatusRaw != NULL)) {
         retVal = pciev0_read_errIrqStatusRaw_reg (baseAppRegs, readRegs->errIrqStatusRaw);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->errIrqStatus)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->errIrqStatus != NULL)) {
         retVal = pciev0_read_errIrqStatus_reg (baseAppRegs, readRegs->errIrqStatus);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->errIrqEnableSet)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->errIrqEnableSet != NULL)) {
         retVal = pciev0_read_errIrqEnableSet_reg (baseAppRegs, readRegs->errIrqEnableSet);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->errIrqEnableClr)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->errIrqEnableClr != NULL)) {
         retVal = pciev0_read_errIrqEnableClr_reg (baseAppRegs, readRegs->errIrqEnableClr);
       }
 
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->pmRstIrqStatusRaw)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->pmRstIrqStatusRaw != NULL)) {
         retVal = pciev0_read_pmRstIrqStatusRaw_reg (baseAppRegs, readRegs->pmRstIrqStatusRaw);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->pmRstIrqStatus)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->pmRstIrqStatus != NULL)) {
         retVal = pciev0_read_pmRstIrqStatus_reg (baseAppRegs, readRegs->pmRstIrqStatus);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->pmRstIrqEnableSet)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->pmRstIrqEnableSet != NULL)) {
         retVal = pciev0_read_pmRstIrqEnableSet_reg (baseAppRegs, readRegs->pmRstIrqEnableSet);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->pmRstIrqEnableClr)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->pmRstIrqEnableClr != NULL)) {
         retVal = pciev0_read_pmRstIrqEnableClr_reg (baseAppRegs, readRegs->pmRstIrqEnableClr);
       }
 
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->ptmIrqStatusRaw)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->ptmIrqStatusRaw != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->ptmIrqStatus)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->ptmIrqStatus != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->ptmIrqEnableSet)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->ptmIrqEnableSet != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->ptmIrqEnableClr)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->ptmIrqEnableClr != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
 
       for (i = 0; i < 8; i ++) {
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->obOffsetLo[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->obOffsetLo[i] != NULL)) {
           retVal = pciev0_read_obOffsetLo_reg (baseAppRegs, readRegs->obOffsetLo[i], i);
         }
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->obOffsetHi[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->obOffsetHi[i] != NULL)) {
           retVal = pciev0_read_obOffsetHi_reg (baseAppRegs, readRegs->obOffsetHi[i], i);
         }
       }
 
       for (i = 0; i < 4; i ++) {
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->ibBar[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->ibBar[i] != NULL)) {
           retVal = pciev0_read_ibBar_reg (baseAppRegs,  readRegs->ibBar[i], i);
         }
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->ibStartLo[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->ibStartLo[i] != NULL)) {
           retVal = pciev0_read_ibStartLo_reg (baseAppRegs,  readRegs->ibStartLo[i], i);
         }
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->ibStartHi[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->ibStartHi[i] != NULL)) {
           retVal = pciev0_read_ibStartHi_reg (baseAppRegs,  readRegs->ibStartHi[i], i);
         }
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->ibOffset[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->ibOffset[i] != NULL)) {
           retVal = pciev0_read_ibOffset_reg (baseAppRegs,  readRegs->ibOffset[i], i);
         }
       }
 
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->pcsCfg0)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->pcsCfg0 != NULL)) {
         retVal = pciev0_read_pcsCfg0_reg (baseAppRegs, readRegs->pcsCfg0);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->pcsCfg1)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->pcsCfg1 != NULL)) {
         retVal = pciev0_read_pcsCfg1_reg (baseAppRegs, readRegs->pcsCfg1);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->pcsStatus)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->pcsStatus != NULL)) {
         retVal = pciev0_read_pcsStatus_reg (baseAppRegs, readRegs->pcsStatus);
       }
 
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->serdesCfg0)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->serdesCfg0 != NULL)) {
         retVal = pciev0_read_serdesCfg0_reg (baseAppRegs, readRegs->serdesCfg0);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->serdesCfg1)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->serdesCfg1 != NULL)) {
         retVal = pciev0_read_serdesCfg1_reg (baseAppRegs, readRegs->serdesCfg1);
       }
 
@@ -393,335 +393,335 @@ pcieRet_e Pciev0_readRegs
 
       /*Type 0, Type1 Common Registers*/
 
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->vndDevId)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->vndDevId != NULL)) {
         retVal = pciev0_read_vndDevId_reg (baseCfgEpRegs, readRegs->vndDevId);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->statusCmd)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->statusCmd != NULL)) {
         retVal = pciev0_read_statusCmd_reg (baseCfgEpRegs, readRegs->statusCmd);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->revId)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->revId != NULL)) {
         retVal = pciev0_read_revId_reg (baseCfgEpRegs, readRegs->revId);
       }
 
       /*Type 0 Registers*/
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->bist)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->bist != NULL)) {
         retVal = pciev0_read_bist_reg (baseCfgEpRegs, readRegs->bist);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->type0BarIdx)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->type0BarIdx != NULL)) {
         retVal = pciev0_read_type0Bar_reg (baseCfgEpRegs, &(readRegs->type0BarIdx->reg), 
                                                                            readRegs->type0BarIdx->idx);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->type0Bar32bitIdx)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->type0Bar32bitIdx != NULL)) {
         retVal = pciev0_read_type0Bar32bit_reg (baseCfgEpRegs, &(readRegs->type0Bar32bitIdx->reg),
                                                                                 readRegs->type0Bar32bitIdx->idx);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->type0BarMask32bitIdx)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->type0BarMask32bitIdx != NULL)) {
         retVal = pciev0_read_type0Bar32bit_reg (baseCfgEpRegs, &(readRegs->type0BarMask32bitIdx->reg),
                                                                                 readRegs->type0BarMask32bitIdx->idx);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->subId)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->subId != NULL)) {
         retVal = pciev0_read_subId_reg (baseCfgEpRegs, readRegs->subId);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->cardbusCisPointer)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->cardbusCisPointer != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->expRom)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->expRom != NULL)) {
         retVal = pciev0_read_expRom_reg (baseCfgEpRegs, readRegs->expRom);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->capPtr)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->capPtr != NULL)) {
         retVal = pciev0_read_capPtr_reg (baseCfgEpRegs, readRegs->capPtr);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->intPin)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->intPin != NULL)) {
         retVal = pciev0_read_intPin_reg (baseCfgEpRegs, readRegs->intPin);
       }
 
       /*Type 1 Registers*/
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->type1BistHeader)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->type1BistHeader != NULL)) {
         retVal = pciev0_read_type1BistHeader_reg (baseCfgRcRegs, readRegs->type1BistHeader);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->type1BarIdx)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->type1BarIdx != NULL)) {
         retVal = pciev0_read_type1Bar_reg (baseCfgRcRegs, &(readRegs->type1BarIdx->reg), 
                                                                            readRegs->type1BarIdx->idx);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->type1Bar32bitIdx)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->type1Bar32bitIdx != NULL)) {
         retVal = pciev0_read_type1Bar32bit_reg (baseCfgRcRegs, &(readRegs->type1Bar32bitIdx->reg),
                                                                                 readRegs->type1Bar32bitIdx->idx);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->type1BarMask32bitIdx)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->type1BarMask32bitIdx != NULL)) {
         retVal = pciev0_read_type1Bar32bit_reg (baseCfgRcRegs, &(readRegs->type1BarMask32bitIdx->reg),
                                                                                 readRegs->type1BarMask32bitIdx->idx);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->type1BusNum)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->type1BusNum != NULL)) {
         retVal = pciev0_read_type1BusNum_reg (baseCfgRcRegs, readRegs->type1BusNum);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->type1SecStat)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->type1SecStat != NULL)) {
         retVal = pciev0_read_type1SecStat_reg (baseCfgRcRegs, readRegs->type1SecStat);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->type1Memspace)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->type1Memspace != NULL)) {
         retVal = pciev0_read_type1Memspace_reg (baseCfgRcRegs, readRegs->type1Memspace);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->prefMem)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->prefMem != NULL)) {
         retVal = pciev0_read_prefMem_reg (baseCfgRcRegs, readRegs->prefMem);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->prefBaseUpper)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->prefBaseUpper != NULL)) {
         retVal = pciev0_read_prefBaseUpper_reg (baseCfgRcRegs, readRegs->prefBaseUpper);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->prefLimitUpper)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->prefLimitUpper != NULL)) {
         retVal = pciev0_read_prefLimitUpper_reg (baseCfgRcRegs, readRegs->prefLimitUpper);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->type1IOSpace)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->type1IOSpace != NULL)) {
         retVal = pciev0_read_type1IOSpace_reg (baseCfgRcRegs, readRegs->type1IOSpace);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->type1CapPtr)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->type1CapPtr != NULL)) {
         retVal = pciev0_read_type1CapPtr_reg (baseCfgRcRegs, readRegs->type1CapPtr);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->type1ExpnsnRom)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->type1ExpnsnRom != NULL)) {
         retVal = pciev0_read_type1ExpnsnRom_reg (baseCfgRcRegs, readRegs->type1ExpnsnRom);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->type1BridgeInt)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->type1BridgeInt != NULL)) {
         retVal = pciev0_read_type1BridgeInt_reg (baseCfgRcRegs, readRegs->type1BridgeInt);
       }
 
       /* Power Management Capabilities Registers */
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->pmCap)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->pmCap != NULL)) {
         retVal = pciev0_read_pmCap_reg (baseCfgEpRegs, readRegs->pmCap);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->pmCapCtlStat)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->pmCapCtlStat != NULL)) {
         retVal = pciev0_read_pmCapCtlStat_reg (baseCfgEpRegs, readRegs->pmCapCtlStat);
       }
 
       /*MSI Registers*/
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->msiCap)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->msiCap != NULL)) {
         retVal = pciev0_read_msiCap_reg (baseCfgEpRegs, readRegs->msiCap);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->msiLo32)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->msiLo32 != NULL)) {
         retVal = pciev0_read_msiLo32_reg (baseCfgEpRegs, readRegs->msiLo32);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->msiUp32)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->msiUp32 != NULL)) {
         retVal = pciev0_read_msiUp32_reg (baseCfgEpRegs, readRegs->msiUp32);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->msiData)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->msiData != NULL)) {
         retVal = pciev0_read_msiData_reg (baseCfgEpRegs, readRegs->msiData);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->msiCapOff10H)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->msiCapOff10H != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->msiCapOff14H)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->msiCapOff14H != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
 
       /*Capabilities Registers*/
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->pciesCap)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->pciesCap != NULL)) {
         retVal = pciev0_read_pciesCap_reg (baseCfgEpRegs, readRegs->pciesCap);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->deviceCap)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->deviceCap != NULL)) {
         retVal = pciev0_read_deviceCap_reg (baseCfgEpRegs, readRegs->deviceCap);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->devStatCtrl)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->devStatCtrl != NULL)) {
         retVal = pciev0_read_devStatCtrl_reg (baseCfgEpRegs, readRegs->devStatCtrl);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->linkCap)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->linkCap != NULL)) {
         retVal = pciev0_read_linkCap_reg (baseCfgEpRegs, readRegs->linkCap);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->linkStatCtrl)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->linkStatCtrl != NULL)) {
         retVal = pciev0_read_linkStatCtrl_reg (baseCfgEpRegs, readRegs->linkStatCtrl);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->slotCap)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->slotCap != NULL)) {
         retVal = pciev0_read_slotCap_reg (baseCfgRcRegs, readRegs->slotCap);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->slotStatCtrl)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->slotStatCtrl != NULL)) {
         retVal = pciev0_read_slotStatCtrl_reg (baseCfgRcRegs, readRegs->slotStatCtrl);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->rootCtrlCap)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->rootCtrlCap != NULL)) {
         retVal = pciev0_read_rootCtrlCap_reg (baseCfgRcRegs, readRegs->rootCtrlCap);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->rootStatus)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->rootStatus != NULL)) {
         retVal = pciev0_read_rootStatus_reg (baseCfgRcRegs, readRegs->rootStatus);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->devCap2)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->devCap2 != NULL)) {
         retVal = pciev0_read_devCap2_reg (baseCfgEpRegs, readRegs->devCap2);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->devStatCtrl2)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->devStatCtrl2 != NULL)) {
         retVal = pciev0_read_devStatCtrl2_reg (baseCfgEpRegs, readRegs->devStatCtrl2);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->linkCap2)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->linkCap2 != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->linkCtrl2)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->linkCtrl2 != NULL)) {
         retVal = pciev0_read_linkCtrl2_reg (baseCfgEpRegs, readRegs->linkCtrl2);
       }
 
 
       /*Capabilities Extended Registers*/
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->extCap)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->extCap != NULL)) {
         retVal = pciev0_read_extCap_reg (baseCfgEpRegs, readRegs->extCap);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->uncErr)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->uncErr != NULL)) {
         retVal = pciev0_read_uncErr_reg (baseCfgEpRegs, readRegs->uncErr);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->uncErrMask)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->uncErrMask != NULL)) {
         retVal = pciev0_read_uncErrMask_reg (baseCfgEpRegs, readRegs->uncErrMask);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->uncErrSvrty)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->uncErrSvrty != NULL)) {
         retVal = pciev0_read_uncErrSvrty_reg (baseCfgEpRegs, readRegs->uncErrSvrty);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->corErr)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->corErr != NULL)) {
         retVal = pciev0_read_corErr_reg (baseCfgEpRegs, readRegs->corErr);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->corErrMask)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->corErrMask != NULL)) {
         retVal = pciev0_read_corErrMask_reg (baseCfgEpRegs, readRegs->corErrMask);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->accr)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->accr != NULL)) {
         retVal = pciev0_read_accr_reg (baseCfgEpRegs, readRegs->accr);
       }
       for (i = 0; i < 4; i ++) {
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->hdrLog[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->hdrLog[i] != NULL)) {
           retVal = pciev0_read_hdrLog_reg (baseCfgEpRegs, readRegs->hdrLog[i], i);
         }
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->rootErrCmd)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->rootErrCmd != NULL)) {
         retVal = pciev0_read_rootErrCmd_reg (baseCfgEpRegs, readRegs->rootErrCmd);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->rootErrSt)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->rootErrSt != NULL)) {
         retVal = pciev0_read_rootErrSt_reg (baseCfgEpRegs, readRegs->rootErrSt);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->errSrcID)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->errSrcID != NULL)) {
         retVal = pciev0_read_errSrcID_reg (baseCfgEpRegs, readRegs->errSrcID);
       }
 
       /*Port Logic Registers*/
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plAckTimer)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plAckTimer != NULL)) {
         retVal = pciev0_read_plAckTimer_reg (baseCfgEpRegs, readRegs->plAckTimer);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plOMsg)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plOMsg != NULL)) {
         retVal = pciev0_read_plOMsg_reg (baseCfgEpRegs, readRegs->plOMsg);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plForceLink)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plForceLink != NULL)) {
         retVal = pciev0_read_plForceLink_reg (baseCfgEpRegs, readRegs->plForceLink);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->ackFreq)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->ackFreq != NULL)) {
         retVal = pciev0_read_ackFreq_reg (baseCfgEpRegs, readRegs->ackFreq);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->lnkCtrl)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->lnkCtrl != NULL)) {
         retVal = pciev0_read_lnkCtrl_reg (baseCfgEpRegs, readRegs->lnkCtrl);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->laneSkew)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->laneSkew != NULL)) {
         retVal = pciev0_read_laneSkew_reg (baseCfgEpRegs, readRegs->laneSkew);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->symNum)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->symNum != NULL)) {
         retVal = pciev0_read_symNum_reg (baseCfgEpRegs, readRegs->symNum);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->symTimerFltMask)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->symTimerFltMask != NULL)) {
         retVal = pciev0_read_symTimerFltMask_reg (baseCfgEpRegs, readRegs->symTimerFltMask);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->fltMask2)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->fltMask2 != NULL)) {
         retVal = pciev0_read_fltMask2_reg (baseCfgEpRegs, readRegs->fltMask2);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->debug0)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->debug0 != NULL)) {
         retVal = pciev0_read_debug0_reg (baseCfgEpRegs, readRegs->debug0);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->debug1)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->debug1 != NULL)) {
         retVal = pciev0_read_debug1_reg (baseCfgEpRegs, readRegs->debug1);
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->gen2)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->gen2 != NULL)) {
         retVal = pciev0_read_gen2_reg (baseCfgEpRegs, readRegs->gen2);
       }
 
       /* Reject hw rev 1 PLCONF registers */
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfObnpSubreqCtrl)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plconfObnpSubreqCtrl != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfTrPStsR)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plconfTrPStsR != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfTrNpStsR)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plconfTrNpStsR != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfTrCStsR)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plconfTrCStsR != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfQStsR)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plconfQStsR != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfVcTrAR1)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plconfVcTrAR1 != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfVcTrAR2)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plconfVcTrAR2 != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfVc0PrQC)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plconfVc0PrQC != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfVc0NprQC)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plconfVc0NprQC != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfVc0CrQC)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plconfVc0CrQC != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
       for (i = 0; i < 3; i++)
       {
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfVcPrQC[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->plconfVcPrQC[i] != NULL)) {
           /* Not supported on rev 0 */
           retVal = pcie_RET_INV_REG;
         }
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfVcNprQC[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->plconfVcNprQC[i] != NULL)) {
           /* Not supported on rev 0 */
           retVal = pcie_RET_INV_REG;
         }
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfVcCrQC[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->plconfVcCrQC[i] != NULL)) {
           /* Not supported on rev 0 */
           retVal = pcie_RET_INV_REG;
         }
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfPhyStsR)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plconfPhyStsR != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfPhyCtrlR)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plconfPhyCtrlR != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfMsiCtrlAddress)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plconfMsiCtrlAddress != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfMsiCtrlUpperAddress)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plconfMsiCtrlUpperAddress != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
       for (i = 0; i < 8; i++) {
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfMsiCtrlIntEnable[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->plconfMsiCtrlIntEnable[i] != NULL)) {
           /* Not supported on rev 0 */
           retVal = pcie_RET_INV_REG;
         }
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfMsiCtrlIntMask[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->plconfMsiCtrlIntMask[i] != NULL)) {
           /* Not supported on rev 0 */
           retVal = pcie_RET_INV_REG;
         }
-        if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfMsiCtrlIntStatus[i])) {
+        if ((retVal == pcie_RET_OK) && (readRegs->plconfMsiCtrlIntStatus[i] != NULL)) {
           /* Not supported on rev 0 */
           retVal = pcie_RET_INV_REG;
         }
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfMsiCtrlGpio)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plconfMsiCtrlGpio != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((retVal == pcie_RET_OK) && (NULL != readRegs->plconfPipeLoopback)) {
+      if ((retVal == pcie_RET_OK) && (readRegs->plconfPipeLoopback != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
@@ -889,11 +889,11 @@ pcieRet_e Pciev0_writeRegs
   pcieRet_e retVal = pcie_RET_OK;
   int32_t i;
 
-  if (0 == pcieLObjIsValid) {
+  if (pcieLObjIsValid == 0) {
     retVal = pcie_RET_NO_INIT;
   }
   else {
-    if (IFALSE == pcie_check_handle_fcn(handle)) {
+    if (pcie_check_handle_fcn(handle) == 0) {
       retVal = pcie_RET_INV_HANDLE;
     }
     else {
@@ -1469,67 +1469,67 @@ pcieRet_e Pciev0_writeRegs
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != writeRegs->tiConfIrqEnableSetMain)) {
+      if ((retVal == pcie_RET_OK) && (writeRegs->tiConfIrqEnableSetMain != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != writeRegs->tiConfIrqEnableClrMain)) {
+      if ((retVal == pcie_RET_OK) && (writeRegs->tiConfIrqEnableClrMain != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != writeRegs->tiConfIrqStatusRawMsi)) {
+      if ((retVal == pcie_RET_OK) && (writeRegs->tiConfIrqStatusRawMsi != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != writeRegs->tiConfIrqStatusMsi)) {
+      if ((retVal == pcie_RET_OK) && (writeRegs->tiConfIrqStatusMsi != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != writeRegs->tiConfIrqEnableSetMsi)) {
+      if ((retVal == pcie_RET_OK) && (writeRegs->tiConfIrqEnableSetMsi != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != writeRegs->tiConfIrqEnableClrMsi)) {
+      if ((retVal == pcie_RET_OK) && (writeRegs->tiConfIrqEnableClrMsi != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != writeRegs->tiConfDeviceType)) {
+      if ((retVal == pcie_RET_OK) && (writeRegs->tiConfDeviceType != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != writeRegs->tiConfDeviceCmd)) {
+      if ((retVal == pcie_RET_OK) && (writeRegs->tiConfDeviceCmd != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != writeRegs->tiConfPmCtrl)) {
+      if ((retVal == pcie_RET_OK) && (writeRegs->tiConfPmCtrl != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != writeRegs->tiConfPhyCs)) {
+      if ((retVal == pcie_RET_OK) && (writeRegs->tiConfPhyCs != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != writeRegs->tiConfIntxAssert)) {
+      if ((retVal == pcie_RET_OK) && (writeRegs->tiConfIntxAssert != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != writeRegs->tiConfIntxDeassert)) {
+      if ((retVal == pcie_RET_OK) && (writeRegs->tiConfIntxDeassert != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != writeRegs->tiConfMsiXmt)) {
+      if ((retVal == pcie_RET_OK) && (writeRegs->tiConfMsiXmt != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != writeRegs->tiConfDebugCfg)) {
+      if ((retVal == pcie_RET_OK) && (writeRegs->tiConfDebugCfg != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != writeRegs->tiConfDebugData)) {
+      if ((retVal == pcie_RET_OK) && (writeRegs->tiConfDebugData != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
-      if ((pcie_RET_OK == retVal) && (NULL != writeRegs->tiConfDiagCtrl)) {
+      if ((retVal == pcie_RET_OK) && (writeRegs->tiConfDiagCtrl != NULL)) {
         /* Not supported on rev 0 */
         retVal = pcie_RET_INV_REG;
       }
@@ -1559,11 +1559,11 @@ pcieRet_e Pciev0_cfgObOffset
   pcieObOffsetHiReg_t obOffsetHi;
   uint16_t            obAddrLoField;
 
-  if (0 == pcieLObjIsValid) {
+  if (pcieLObjIsValid == 0) {
     retVal = pcie_RET_NO_INIT;
   }
   else {
-    if (IFALSE == pcie_check_handle_fcn(handle)) {
+    if (pcie_check_handle_fcn(handle) == 0) {
       retVal = pcie_RET_INV_HANDLE;
     }
     else {
@@ -1611,11 +1611,11 @@ pcieRet_e Pciev0_cfgIbTrans
   uint32_t            ibStartLoField;
   uint32_t            ibOffsetField;
 
-  if (0 == pcieLObjIsValid) {
+  if (pcieLObjIsValid == 0) {
     retVal = pcie_RET_NO_INIT;
   }
   else {
-    if (IFALSE == pcie_check_handle_fcn(handle)) {
+    if (pcie_check_handle_fcn(handle) == 0) {
       retVal = pcie_RET_INV_HANDLE;
     }
     else {
@@ -1659,14 +1659,14 @@ pcieRet_e Pciev0_cfgBar
   pcieType0BarIdx_t  type0BarIdx;  
   pcieType1BarIdx_t  type1BarIdx;  
   pcieRegisters_t    setRegs;
-  uint32_t           barAddrField = 0U;
+  uint32_t           barAddrField = 0;
   pcieRet_e          retVal = pcie_RET_OK;
 
-  if (0 == pcieLObjIsValid) {
+  if (pcieLObjIsValid == 0) {
     retVal = pcie_RET_NO_INIT;
   }
   else {
-    if (IFALSE == pcie_check_handle_fcn(handle)) {
+    if (pcie_check_handle_fcn(handle) == 0) {
       retVal = pcie_RET_INV_HANDLE;
     }
     else { 
@@ -1674,7 +1674,7 @@ pcieRet_e Pciev0_cfgBar
       memset (&type0BarIdx, 0, sizeof(type0BarIdx));
       memset (&type1BarIdx, 0, sizeof(type1BarIdx));
 
-      if(pcie_RC_MODE == barCfg->mode)
+      if(barCfg->mode == pcie_RC_MODE)
       {
         pcie_getbits(barCfg->base, CSL_PCIE_CFG_SPACE_ROOTCOMPLEX_BAR_BASE_ADDRESS, barAddrField);
 
@@ -1700,7 +1700,7 @@ pcieRet_e Pciev0_cfgBar
       }
 
       pcieRet_e temp_var = Pcie_writeRegs (handle, barCfg->location, &setRegs);
-      if (pcie_RET_OK != temp_var)
+      if ((temp_var) != pcie_RET_OK)
       {
         retVal = temp_var;
       }

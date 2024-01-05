@@ -188,7 +188,7 @@ int32_t Dss_dispDrvInit(uint32_t numInst,
         else
         {
             /* Init successful */
-            pObj->isRegistered = UTRUE;
+            pObj->isRegistered = TRUE;
             pObj->numInst = numInst;
         }
     }
@@ -204,7 +204,7 @@ int32_t Dss_dispDrvDeInit(void)
     pObj = &gDss_DispDrvCommonObj;
     GT_assert(DssTrace, (NULL != pObj));
 
-    if(UTRUE == pObj->isRegistered)
+    if(TRUE == pObj->isRegistered)
     {
         /* Unregister from driver manager */
         retVal = Fvid2_unRegisterDriver(&pObj->fvidDrvOps);
@@ -213,7 +213,7 @@ int32_t Dss_dispDrvDeInit(void)
             GT_0trace(DssTrace, GT_ERR,
                       "Unregistering from FVID2 driver manager failed\r\n");
         }
-        pObj->isRegistered = UFALSE;
+        pObj->isRegistered = FALSE;
     }
 
     retVal += Dss_dispDrvPrivDeInit();
@@ -232,7 +232,7 @@ static Fdrv_Handle Dss_dispDrvCreate(uint32_t drvId,
                                      const Fvid2_DrvCbParams *fdmCbParams)
 {
     int32_t retVal = FVID2_SOK, tempRetVal;
-    uint32_t instCreateFlag = UFALSE, nodeId;
+    uint32_t instCreateFlag = FALSE, nodeId;
     Fdrv_Handle drvHandle = NULL;
     Dss_DispDrvInstObj *instObj = NULL;
     Dss_DispCreateParams *createParams;
@@ -266,7 +266,7 @@ static Fdrv_Handle Dss_dispDrvCreate(uint32_t drvId,
         (void) SemaphoreP_pend(instObj->lockSem, SemaphoreP_WAIT_FOREVER);
 
         /* Check if the instance is already opened */
-        if(UTRUE == instObj->drvState.isOpened)
+        if(TRUE == instObj->drvState.isOpened)
         {
             GT_0trace(DssTrace,
                       GT_ERR,
@@ -294,7 +294,7 @@ static Fdrv_Handle Dss_dispDrvCreate(uint32_t drvId,
         }
         else
         {
-            instCreateFlag = UTRUE;
+            instCreateFlag = TRUE;
         }
     }
 
@@ -317,9 +317,9 @@ static Fdrv_Handle Dss_dispDrvCreate(uint32_t drvId,
             fdmCbParams,
             sizeof (Fvid2_DrvCbParams));
 
-        instObj->drvState.isOpened = UTRUE;
-        instObj->isPrevBufRep      = UFALSE;
-        instObj->isInIsrContext    = UFALSE;
+        instObj->drvState.isOpened = TRUE;
+        instObj->isPrevBufRep = FALSE;
+        instObj->isInIsrContext = FALSE;
         drvHandle = instObj;
     }
 
@@ -384,7 +384,7 @@ static Fdrv_Handle Dss_dispDrvCreate(uint32_t drvId,
         /* Deallocate if error occurs */
         if(FVID2_SOK != retVal)
         {
-            if(UTRUE == instCreateFlag)
+            if(TRUE == instCreateFlag)
             {
                 tempRetVal = Dss_dispDrvDeleteInstObj(instObj);
                 GT_assert(DssTrace, (FVID2_SOK == tempRetVal));
@@ -420,7 +420,7 @@ static int32_t Dss_dispDrvDelete(Fdrv_Handle handle, void *reserved)
         (void) SemaphoreP_pend(instObj->lockSem, SemaphoreP_WAIT_FOREVER);
 
         /* Check if already opened. */
-        if(UTRUE != instObj->drvState.isOpened)
+        if(TRUE != instObj->drvState.isOpened)
         {
             GT_0trace(DssTrace, GT_ERR, "Driver not opened\r\n");
             retVal = FVID2_EFAIL;
@@ -430,7 +430,7 @@ static int32_t Dss_dispDrvDelete(Fdrv_Handle handle, void *reserved)
     if(FVID2_SOK == retVal)
     {
         /* If already started, stop it. */
-        if(UTRUE == instObj->drvState.isStarted)
+        if(TRUE == instObj->drvState.isStarted)
         {
             retVal = Dss_dispDrvStopIoctl(instObj);
             if(FVID2_SOK != retVal)
@@ -450,8 +450,8 @@ static int32_t Dss_dispDrvDelete(Fdrv_Handle handle, void *reserved)
         GT_assert(DssTrace, (FVID2_SOK == retVal));
 
         /* Reset other variables */
-        instObj->drvState.isOpened  = UFALSE;
-        instObj->drvState.isStarted = UFALSE;
+        instObj->drvState.isOpened = FALSE;
+        instObj->drvState.isStarted = FALSE;
         instObj->currStatus.queueCount = 0U;
         instObj->currStatus.dequeueCount = 0U;
         instObj->currStatus.dispFrmCount = 0U;
@@ -480,7 +480,7 @@ static int32_t Dss_dispDrvQueue(Fdrv_Handle handle,
     int32_t  retVal = FVID2_SOK;
     uint32_t frmCnt, cookie;
     uint32_t reqQCnt, isSafe;
-    uint32_t isBufAccepted = UTRUE;
+    uint32_t isBufAccepted = TRUE;
     Fvid2_Frame *frm, *newFrm;
     Dss_DispDrvInstObj *instObj;
     Dss_DispDrvQueObj *qObj, *qObjTemp;
@@ -501,13 +501,13 @@ static int32_t Dss_dispDrvQueue(Fdrv_Handle handle,
         instObj = (Dss_DispDrvInstObj *) handle;
 
         /* Check frame list for error and NULL pointer check */
-        retVal = Fvid2_checkFrameList(frmList, FVID2_MAX_FRAME_PTR);
+        retVal = Fvid2_checkFrameList(frmList, (uint32_t) FVID2_MAX_FRAME_PTR);
         if(FVID2_SOK != retVal)
         {
             GT_0trace(DssTrace, GT_ERR, "Check frame list error\r\n");
         }
 
-        if(UFALSE == instObj->drvState.isOpened)
+        if(FALSE == instObj->drvState.isOpened)
         {
             /* If driver handle is not open then skip this frame queue */
             GT_0trace(DssTrace,
@@ -528,7 +528,7 @@ static int32_t Dss_dispDrvQueue(Fdrv_Handle handle,
     if(FVID2_SOK == retVal)
     {
         /* For all frames that need to be queued. The loop is dummy */
-        for(frmCnt = 0U; frmCnt<frmList->numFrames; frmCnt++)
+        for(frmCnt=0U; frmCnt<frmList->numFrames; frmCnt++)
         {
             /* Get FVID2 frame pointer - NULL check is already done in
              * check frame list function */
@@ -584,11 +584,11 @@ static int32_t Dss_dispDrvQueue(Fdrv_Handle handle,
              */
             reqQCnt = Fvid2Utils_getNumQElem(instObj->bmObj.reqQ);
             if((0U == reqQCnt) &&
-               (UFALSE == instObj->createParams.progPipeVsyncEnable) &&
-               (UTRUE  == instObj->isPrevBufRep) &&
+               (FALSE == instObj->createParams.progPipeVsyncEnable) &&
+               (TRUE == instObj->isPrevBufRep) &&
                /* Don't program if queue is called from ISR callback context.
                 * Just push to request queue */
-               (UFALSE == instObj->isInIsrContext))
+               (FALSE == instObj->isInIsrContext))
             {
                 /* Call the user buffer program callback */
                 if(NULL != instObj->bufPrgmCbParams.bufPrgmCbFxn)
@@ -596,7 +596,7 @@ static int32_t Dss_dispDrvQueue(Fdrv_Handle handle,
                     newFrm = instObj->bufPrgmCbParams.bufPrgmCbFxn(
                                                     instObj->fdmCbParams.handle,
                                                     qObj->frm,
-                                                    UFALSE,
+                                                    FALSE,
                                                     qObj->creditCnt);
                     if(NULL != newFrm)
                     {
@@ -608,7 +608,7 @@ static int32_t Dss_dispDrvQueue(Fdrv_Handle handle,
                 /* Query display controller to check if it is safe to push */
                 isSafe = Dss_dispIsFarFromVsync(instObj);
 
-                if((FVID2_SOK == retVal) && (UTRUE == isSafe))
+                if((retVal == FVID2_SOK) && (isSafe == TRUE))
                 {
                     instObj->progFrame = qObj->frm;
 
@@ -634,7 +634,7 @@ static int32_t Dss_dispDrvQueue(Fdrv_Handle handle,
                                               instObj->progFrame->addr[0U],
                                               instObj->progFrame->addr[1U]);
 
-                    if(FVID2_SF_INTERLACED == instObj->inScanFormat)
+                    if(instObj->inScanFormat == FVID2_SF_INTERLACED)
                     {
                         CSL_dssVidPipeSetBuffAddr(pipeRegs,
                                                   FVID2_FID_BOTTOM,
@@ -656,7 +656,7 @@ static int32_t Dss_dispDrvQueue(Fdrv_Handle handle,
 
                 isBufAccepted = isSafe;
 
-                if(UTRUE == isBufAccepted)
+                if(TRUE == isBufAccepted)
                 {
                     /* Decrement the credit count of previously repeated buffer,
                      * This is not a repeat now as we are overwriting the
@@ -670,7 +670,7 @@ static int32_t Dss_dispDrvQueue(Fdrv_Handle handle,
 
                     Fvid2Utils_queue(instObj->bmObj.currQ, &qObj->qElem, qObj);
                     qObj->creditCnt++;
-                    instObj->isPrevBufRep = UFALSE;
+                    instObj->isPrevBufRep = FALSE;
                     /* This is like a queue only, so increment the count*/
                     instObj->currStatus.queueCount++;
                 }
@@ -710,7 +710,7 @@ static int32_t Dss_dispDrvDequeue(Fdrv_Handle handle,
     Dss_DispDrvBufManObj *bmObj;
 
     /* Check for NULL pointers */
-    if((NULL == handle) || (NULL == frmList) || (0U < streamId))
+    if((NULL == handle) || (NULL == frmList) || (streamId > 0U))
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -721,7 +721,7 @@ static int32_t Dss_dispDrvDequeue(Fdrv_Handle handle,
         instObj = (Dss_DispDrvInstObj *) handle;
         bmObj   = &instObj->bmObj;
 
-        if(UFALSE == instObj->drvState.isOpened)
+        if(FALSE == instObj->drvState.isOpened)
         {
             GT_0trace(
                 DssTrace,
@@ -746,7 +746,7 @@ static int32_t Dss_dispDrvDequeue(Fdrv_Handle handle,
             /* When display is stopped, give back all the driver owned buffer
              * including the current programmed and the buffers in request
              * queue */
-            if(UTRUE != instObj->drvState.isStarted)
+            if(TRUE != instObj->drvState.isStarted)
             {
                 /* Give the buffers in current state */
                 qObj = (Dss_DispDrvQueObj *) Fvid2Utils_dequeue(bmObj->currQ);
@@ -882,7 +882,7 @@ static void Dss_dispDrvClientCb(void *arg0)
     Dss_DispDrvInstObj *instObj;
     Dss_DispDrvQueObj *qObj, *qObjTemp;
     uint32_t currQCnt, reqQCnt, cookie;
-    uint32_t frmQueuedToDoneQ = UFALSE;
+    uint32_t frmQueuedToDoneQ = FALSE;
     CSL_dss_pipeRegs *pipeRegs;
     const Dss_SocInfo *socInfo;
     Fvid2_Frame *newFrm;
@@ -892,7 +892,7 @@ static void Dss_dispDrvClientCb(void *arg0)
     GT_assert(DssTrace, (NULL != arg0));
     instObj = (Dss_DispDrvInstObj *)arg0;
 
-    if(UTRUE == instObj->drvState.isStarted)
+    if(TRUE == instObj->drvState.isStarted)
     {
         cookie = HwiP_disable();
 
@@ -906,9 +906,9 @@ static void Dss_dispDrvClientCb(void *arg0)
 
             /* Decrement credit count as frame display is complete - credit can't
             * be zero */
-            GT_assert(DssTrace, (0U < qObj->creditCnt));
+            GT_assert(DssTrace, (qObj->creditCnt > 0U));
             qObj->creditCnt--;
-            if(0U < qObj->creditCnt)
+            if(qObj->creditCnt > 0U)
             {
                 instObj->currStatus.repeatFrmCount++;
             }
@@ -929,12 +929,12 @@ static void Dss_dispDrvClientCb(void *arg0)
                 * request in the current or request queue. Current queue is
                 * checked for 1 element as the current frame is still present
                 * in the queue. */
-                if((1U < currQCnt) || (0U < reqQCnt))
+                if((currQCnt > 1U) || (reqQCnt > 0U))
                 {
                     /* Return the frame to done queue */
                     GT_assert(DssTrace, (NULL != qObj->frm));
                     Fvid2Utils_queue(instObj->bmObj.doneQ, &qObj->qElem, qObj);
-                    frmQueuedToDoneQ = UTRUE;
+                    frmQueuedToDoneQ = TRUE;
                 }
                 /* In last frame repeat mode, if credit becomes 0 and there are
                 * no more request in the current and request queues, take this
@@ -944,7 +944,7 @@ static void Dss_dispDrvClientCb(void *arg0)
                 * queue a request in between and this frame will end-up
                 * in the current queue!!
                 * Also increment the repeat frame counter here. */
-                else if((1U == currQCnt) && (0U == reqQCnt))
+                else if((currQCnt == 1U) && (reqQCnt == 0U))
                 {
                     instObj->currStatus.repeatFrmCount++;
                     Fvid2Utils_queue(instObj->bmObj.reqQ, &qObj->qElem, qObj);
@@ -952,7 +952,7 @@ static void Dss_dispDrvClientCb(void *arg0)
                 else
                 {
                     /* This can't happen as currQCnt can't be zero!! */
-                    GT_assert(DssTrace, BFALSE);
+                    GT_assert(DssTrace, FALSE);
                 }
             }
         }
@@ -961,12 +961,12 @@ static void Dss_dispDrvClientCb(void *arg0)
         {
             /* Give callback to application if periodic call back is enabled or
              * if frame is put in done queue */
-            if((UTRUE == instObj->createParams.periodicCbEnable) ||
-               (UTRUE == frmQueuedToDoneQ))
+            if((TRUE == instObj->createParams.periodicCbEnable) ||
+               (TRUE == frmQueuedToDoneQ))
             {
-                instObj->isInIsrContext = UTRUE;
+                instObj->isInIsrContext = TRUE;
                 instObj->fdmCbParams.fdmCbFxn(instObj->fdmCbParams.fdmData);
-                instObj->isInIsrContext = UFALSE;
+                instObj->isInIsrContext = FALSE;
             }
         }
 
@@ -982,7 +982,7 @@ static void Dss_dispDrvClientCb(void *arg0)
             /* Increment credit */
             qObj->creditCnt++;
             Fvid2Utils_queue(instObj->bmObj.currQ, &qObj->qElem, qObj);
-            instObj->isPrevBufRep = UFALSE;
+            instObj->isPrevBufRep = FALSE;
         }
         else
         {
@@ -998,7 +998,7 @@ static void Dss_dispDrvClientCb(void *arg0)
             /* Increment credit */
             qObj->creditCnt++;
             /* Mark the buffer as repeated */
-            instObj->isPrevBufRep = UTRUE;
+            instObj->isPrevBufRep = TRUE;
         }
 
         /* Call the user buffer program callback */
@@ -1019,7 +1019,7 @@ static void Dss_dispDrvClientCb(void *arg0)
         /* Set frame to be programmed */
         instObj->progFrame = qObj->frm;
         /* Driver should always give the buffers when requested */
-        GT_assert(DssTrace, (NULL != instObj->progFrame));
+        GT_assert(DssTrace, (instObj->progFrame != NULL));
         /* Get video pipe registers */
         socInfo = Dss_getSocInfo();
         pipeRegs = socInfo->pipeRegs[instObj->pipeId];
@@ -1040,7 +1040,7 @@ static void Dss_dispDrvClientCb(void *arg0)
                                   instObj->progFrame->addr[0U],
                                   instObj->progFrame->addr[1U]);
 
-        if(FVID2_SF_INTERLACED == instObj->inScanFormat)
+        if(instObj->inScanFormat == FVID2_SF_INTERLACED)
         {
             CSL_dssVidPipeSetBuffAddr(pipeRegs,
                                       FVID2_FID_BOTTOM,
@@ -1058,12 +1058,12 @@ static void Dss_dispDrvClientCb(void *arg0)
 
         HwiP_restore(cookie);
     }
-    else if(UTRUE == instObj->drvState.isStarting)
+    else if(TRUE == instObj->drvState.isStarting)
     {
         cookie = HwiP_disable();
 
         /* Start display */
-        instObj->drvState.isStarted = UTRUE;
+        instObj->drvState.isStarted = TRUE;
         qObj = (Dss_DispDrvQueObj *) Fvid2Utils_dequeue(instObj->bmObj.reqQ);
         if(NULL != qObj)
         {
@@ -1073,7 +1073,7 @@ static void Dss_dispDrvClientCb(void *arg0)
             /* Increment credit */
             qObj->creditCnt++;
             Fvid2Utils_queue(instObj->bmObj.currQ, &qObj->qElem, qObj);
-            instObj->isPrevBufRep = UFALSE;
+            instObj->isPrevBufRep = FALSE;
             instObj->progFrame = qObj->frm;
         }
         else
@@ -1083,7 +1083,7 @@ static void Dss_dispDrvClientCb(void *arg0)
         }
 
         /* Driver should always give the buffers when requested */
-        GT_assert(DssTrace, (NULL != instObj->progFrame));
+        GT_assert(DssTrace, (instObj->progFrame != NULL));
 
         /* Get video pipe registers */
         socInfo = Dss_getSocInfo();
@@ -1095,7 +1095,7 @@ static void Dss_dispDrvClientCb(void *arg0)
                                   instObj->progFrame->addr[0U],
                                   instObj->progFrame->addr[1U]);
 
-        if(FVID2_SF_INTERLACED == instObj->inScanFormat)
+        if(instObj->inScanFormat == FVID2_SF_INTERLACED)
         {
             CSL_dssVidPipeSetBuffAddr(pipeRegs,
                                       FVID2_FID_BOTTOM,
@@ -1103,8 +1103,8 @@ static void Dss_dispDrvClientCb(void *arg0)
                                       instObj->progFrame->addr[4U]);
         }
 
-        CSL_dssVidPipeEnable(pipeRegs, UTRUE);
-        instObj->drvState.isStarting = UFALSE;
+        CSL_dssVidPipeEnable(pipeRegs, TRUE);
+        instObj->drvState.isStarting = FALSE;
 
         if(NULL != instObj->pipePrgmCbParams.pipePrgmCbFxn)
         {
@@ -1116,7 +1116,7 @@ static void Dss_dispDrvClientCb(void *arg0)
 
         HwiP_restore(cookie);
     }
-    else if(UTRUE == instObj->drvState.isStopping)
+    else if(TRUE == instObj->drvState.isStopping)
     {
         cookie = HwiP_disable();
 
@@ -1126,10 +1126,10 @@ static void Dss_dispDrvClientCb(void *arg0)
         GT_assert(DssTrace, (NULL != pipeRegs));
 
         /* Disable Video Pipe */
-        CSL_dssVidPipeEnable(pipeRegs, UFALSE);
+        CSL_dssVidPipeEnable(pipeRegs, FALSE);
         instObj->currFrame = NULL;
         instObj->progFrame = NULL;
-        instObj->drvState.isStopping = UFALSE;
+        instObj->drvState.isStopping = FALSE;
 
         /* Take the buffers in current state and push them in to the request
          * queue so that the next start will use those buffers */
@@ -1156,7 +1156,7 @@ static void Dss_dispDrvClientCb(void *arg0)
     else
     {
         /* Should never execute this */
-        GT_assert(DssTrace, BFALSE);
+        GT_assert(DssTrace, FALSE);
     }
 }
 
@@ -1194,7 +1194,7 @@ static int32_t Dss_dispDrvStartIoctl(Dss_DispDrvInstObj *instObj)
 
     /* Check if the number of elements in the queue is sufficient to prime */
     numElemInReqQ = Fvid2Utils_getNumQElem(instObj->bmObj.reqQ);
-    if(DSS_DISP_DRV_MIN_PRIME_BUFFERS > numElemInReqQ)
+    if(numElemInReqQ < DSS_DISP_DRV_MIN_PRIME_BUFFERS)
     {
         GT_0trace(DssTrace, GT_ERR, "Insufficient buffers queued\r\n");
         retVal = FVID2_EFAIL;
@@ -1202,7 +1202,7 @@ static int32_t Dss_dispDrvStartIoctl(Dss_DispDrvInstObj *instObj)
 
     if(FVID2_SOK == retVal)
     {
-        if(UFALSE == instObj->createParams.progPipeVsyncEnable)
+        if(FALSE == instObj->createParams.progPipeVsyncEnable)
         {
             /* Get video pipe registers */
             socInfo = Dss_getSocInfo();
@@ -1212,7 +1212,7 @@ static int32_t Dss_dispDrvStartIoctl(Dss_DispDrvInstObj *instObj)
             cookie = HwiP_disable();
             /* Check if it is safe to start or start is too near to VSYNC */
             isSafe = Dss_dispIsFarFromVsync(instObj);
-            if(UTRUE == isSafe)
+            if(TRUE == isSafe)
             {
                 qObj = (Dss_DispDrvQueObj *) Fvid2Utils_dequeue(
                                                         instObj->bmObj.reqQ);
@@ -1224,7 +1224,7 @@ static int32_t Dss_dispDrvStartIoctl(Dss_DispDrvInstObj *instObj)
                     /* Increment credit */
                     qObj->creditCnt++;
                     Fvid2Utils_queue(instObj->bmObj.currQ, &qObj->qElem, qObj);
-                    instObj->isPrevBufRep = UFALSE;
+                    instObj->isPrevBufRep = FALSE;
                     instObj->progFrame = qObj->frm;
                 }
                 else
@@ -1241,19 +1241,19 @@ static int32_t Dss_dispDrvStartIoctl(Dss_DispDrvInstObj *instObj)
                     /* Increment credit */
                     qObj->creditCnt++;
                     /* Mark the buffer as repeated */
-                    instObj->isPrevBufRep = UTRUE;
+                    instObj->isPrevBufRep = TRUE;
                     instObj->progFrame = qObj->frm;
                 }
 
                 /* Driver should always give the buffers when requested */
-                GT_assert(DssTrace, (NULL != instObj->progFrame));
+                GT_assert(DssTrace, (instObj->progFrame != NULL));
 
                 CSL_dssVidPipeSetBuffAddr(pipeRegs,
                                           FVID2_FID_TOP,
                                           instObj->progFrame->addr[0U],
                                           instObj->progFrame->addr[1U]);
 
-                if(FVID2_SF_INTERLACED == instObj->inScanFormat)
+                if(instObj->inScanFormat == FVID2_SF_INTERLACED)
                 {
                     CSL_dssVidPipeSetBuffAddr(pipeRegs,
                                               FVID2_FID_BOTTOM,
@@ -1262,9 +1262,9 @@ static int32_t Dss_dispDrvStartIoctl(Dss_DispDrvInstObj *instObj)
                 }
 
                 /* Start display */
-                instObj->drvState.isStarted = UTRUE;
-                dummyStart = UFALSE;
-                CSL_dssVidPipeEnable(pipeRegs, UTRUE);
+                instObj->drvState.isStarted = TRUE;
+                dummyStart = FALSE;
+                CSL_dssVidPipeEnable(pipeRegs, TRUE);
                 if(NULL != instObj->pipePrgmCbParams.pipePrgmCbFxn)
                 {
                     /* Give callback to application that buffer has been
@@ -1276,8 +1276,8 @@ static int32_t Dss_dispDrvStartIoctl(Dss_DispDrvInstObj *instObj)
             }
             else
             {
-                instObj->drvState.isStarting = UTRUE;
-                dummyStart = UTRUE;
+                instObj->drvState.isStarting = TRUE;
+                dummyStart = TRUE;
             }
 
             HwiP_restore(cookie);
@@ -1285,21 +1285,21 @@ static int32_t Dss_dispDrvStartIoctl(Dss_DispDrvInstObj *instObj)
 
             if(FVID2_SOK != retVal)
             {
-                instObj->drvState.isStarted  = UFALSE;
-                instObj->drvState.isStarting = UFALSE;
-                CSL_dssVidPipeEnable(pipeRegs, UFALSE);
+                instObj->drvState.isStarted = FALSE;
+                instObj->drvState.isStarting = FALSE;
+                CSL_dssVidPipeEnable(pipeRegs, FALSE);
                 Dss_dctrlDrvStopClient(instObj->dctrlHandle, dummyStart);
                 GT_0trace(DssTrace, GT_ERR, "Driver start failed!!\r\n");
             }
         }
         else
         {
-            instObj->drvState.isStarting = UTRUE;
-            retVal = Dss_dctrlDrvStartClient(instObj->dctrlHandle, UTRUE);
+            instObj->drvState.isStarting = TRUE;
+            retVal = Dss_dctrlDrvStartClient(instObj->dctrlHandle, TRUE);
             if(FVID2_SOK != retVal)
             {
-                instObj->drvState.isStarting = UFALSE;
-                Dss_dctrlDrvStopClient(instObj->dctrlHandle, UTRUE);
+                instObj->drvState.isStarting = FALSE;
+                Dss_dctrlDrvStopClient(instObj->dctrlHandle, TRUE);
                 GT_0trace(DssTrace, GT_ERR, "Driver start failed!!\r\n");
             }
         }
@@ -1330,7 +1330,7 @@ static int32_t Dss_dispDrvStopIoctl(Dss_DispDrvInstObj *instObj)
     /* Take the instance semaphore */
     (void) SemaphoreP_pend(instObj->lockSem, SemaphoreP_WAIT_FOREVER);
 
-    if(UFALSE == instObj->createParams.progPipeVsyncEnable)
+    if(FALSE == instObj->createParams.progPipeVsyncEnable)
     {
         /* Get video pipe registers */
         socInfo = Dss_getSocInfo();
@@ -1338,16 +1338,16 @@ static int32_t Dss_dispDrvStopIoctl(Dss_DispDrvInstObj *instObj)
         GT_assert(DssTrace, (NULL != pipeRegs));
 
         /* Disable Video Pipe */
-        CSL_dssVidPipeEnable(pipeRegs, UFALSE);
+        CSL_dssVidPipeEnable(pipeRegs, FALSE);
         instObj->currFrame = NULL;
         instObj->progFrame = NULL;
-        retVal = Dss_dctrlDrvStopClient(instObj->dctrlHandle, UFALSE);
+        retVal = Dss_dctrlDrvStopClient(instObj->dctrlHandle, FALSE);
 
         if(FVID2_SOK == retVal)
         {
             cookie = HwiP_disable();
 
-            instObj->drvState.isStarted = UFALSE;
+            instObj->drvState.isStarted = FALSE;
 
             /* Take the buffers in current state and push them in to the request
              * queue so that the next start will use those buffers */
@@ -1367,9 +1367,9 @@ static int32_t Dss_dispDrvStopIoctl(Dss_DispDrvInstObj *instObj)
     }
     else
     {
-        instObj->drvState.isStopping = UTRUE;
-        instObj->drvState.isStarted  = UFALSE;
-        retVal = Dss_dctrlDrvStopClient(instObj->dctrlHandle, UTRUE);
+        instObj->drvState.isStopping = TRUE;
+        instObj->drvState.isStarted = FALSE;
+        retVal = Dss_dctrlDrvStopClient(instObj->dctrlHandle, TRUE);
     }
 
     if(FVID2_SOK != retVal)
@@ -1398,7 +1398,7 @@ static int32_t Dss_dispDrvSetDssParamsIoctl(Dss_DispDrvInstObj *instObj,
     GT_assert(DssTrace, (NULL != instObj));
 
     /* Check for wrong inputs */
-    if((DSS_DISP_INST_MAX <= instObj->drvInstId) || (NULL == dispParams))
+    if((instObj->drvInstId >= DSS_DISP_INST_MAX) || (NULL == dispParams))
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1455,7 +1455,7 @@ static int32_t Dss_dispDrvSetDssParamsIoctl(Dss_DispDrvInstObj *instObj,
 
         layerNum = CSL_dssOverlayGetEnabledPipeLayerNum(overlayRegs,
                                                         pipeInfo->pipeId);
-        GT_assert(DssTrace, (CSL_DSS_OVERLAY_LAYER_MAX > layerNum));
+        GT_assert(DssTrace, (layerNum < CSL_DSS_OVERLAY_LAYER_MAX));
         overlayPosCfg.layerPos.startX = dispParams->layerPos.startX;
         overlayPosCfg.layerPos.startY = dispParams->layerPos.startY;
         CSL_dssOverlaySetPipePosConfig(
@@ -1488,7 +1488,7 @@ static int32_t Dss_dispDrvSetMflagParamsIoctl(
     GT_assert(DssTrace, (NULL != instObj));
 
     /* Check for wrong inputs */
-    if((DSS_DISP_INST_MAX <= instObj->drvInstId) || (NULL == mflagParams))
+    if((instObj->drvInstId >= DSS_DISP_INST_MAX) || (NULL == mflagParams))
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1504,7 +1504,7 @@ static int32_t Dss_dispDrvSetMflagParamsIoctl(
         pipeRegs = socInfo->pipeRegs[instObj->pipeId];
         GT_assert(DssTrace, (NULL != pipeRegs));
 
-        if(UTRUE == instObj->drvState.isStarted)
+        if(TRUE == instObj->drvState.isStarted)
         {
             retVal = FVID2_EDEVICE_INUSE;
             GT_0trace(DssTrace,
@@ -1536,7 +1536,7 @@ static int32_t Dss_dispDrvGetStatusIoctl(Dss_DispDrvInstObj *instObj,
     GT_assert(DssTrace, (NULL != instObj));
 
     /* Check for wrong inputs */
-    if((DSS_DISP_INST_MAX <= instObj->drvInstId) || (NULL == dispStatus))
+    if((instObj->drvInstId >= DSS_DISP_INST_MAX) || (NULL == dispStatus))
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1576,7 +1576,7 @@ static int32_t Dss_dispDrvSetPipeSafetyParamsIoctl(
     /* Check for NULL pointers */
     GT_assert(DssTrace, (NULL != instObj));
     /* Check for wrong inputs */
-    if((DSS_DISP_INST_MAX <= instObj->drvInstId) || (NULL == safetyChkParams))
+    if((instObj->drvInstId >= DSS_DISP_INST_MAX) || (NULL == safetyChkParams))
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1656,7 +1656,7 @@ static int32_t Dss_dispDrvSetPipeCscParamsIoctl(
     GT_assert(DssTrace, (NULL != instObj));
 
     /* Check for wrong inputs */
-    if((DSS_DISP_INST_MAX <= instObj->drvInstId) || (NULL == cscCoeff))
+    if((instObj->drvInstId >= DSS_DISP_INST_MAX) || (NULL == cscCoeff))
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1670,7 +1670,7 @@ static int32_t Dss_dispDrvSetPipeCscParamsIoctl(
      */
     if(FVID2_SOK == retVal)
     {
-        if(CSL_DSS_CSC_RANGE_CUSTOM == instObj->pipeParams[instObj->pipeId].pipeCfg.cscRange)
+        if(instObj->pipeParams[instObj->pipeId].pipeCfg.cscRange == CSL_DSS_CSC_RANGE_CUSTOM)
         {
             Fvid2Utils_memcpy(&instObj->pipeParams[instObj->pipeId].pipeCfg.custCscCoeff,
                             cscCoeff,
@@ -1711,7 +1711,7 @@ static int32_t Dss_dispDrvSetBufPrgmCbParamsIoctl(
     GT_assert(DssTrace, (NULL != instObj));
 
     /* Check for wrong inputs */
-    if((DSS_DISP_INST_MAX <= instObj->drvInstId) || (NULL == bufPrgmCbParams))
+    if((instObj->drvInstId >= DSS_DISP_INST_MAX) || (NULL == bufPrgmCbParams))
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1723,7 +1723,7 @@ static int32_t Dss_dispDrvSetBufPrgmCbParamsIoctl(
     if(FVID2_SOK == retVal)
     {
         /* IOCTL supported only when display is stopped */
-        if(UTRUE == instObj->drvState.isStarted)
+        if(TRUE == instObj->drvState.isStarted)
         {
             GT_0trace(DssTrace, GT_ERR, "Display in progress!!\r\n");
             retVal = FVID2_EFAIL;
@@ -1758,7 +1758,7 @@ static int32_t Dss_dispDrvSetPipePrgmCbParamsIoctl(
     GT_assert(DssTrace, (NULL != instObj));
 
     /* Check for wrong inputs */
-    if((DSS_DISP_INST_MAX <= instObj->drvInstId) || (NULL == pipePrgmCbParams))
+    if((instObj->drvInstId >= DSS_DISP_INST_MAX) || (NULL == pipePrgmCbParams))
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1770,7 +1770,7 @@ static int32_t Dss_dispDrvSetPipePrgmCbParamsIoctl(
     if(FVID2_SOK == retVal)
     {
         /* IOCTL supported only when display is stopped */
-        if(UTRUE == instObj->drvState.isStarted)
+        if(TRUE == instObj->drvState.isStarted)
         {
             GT_0trace(DssTrace, GT_ERR, "Display in progress!!\r\n");
             retVal = FVID2_EFAIL;
@@ -1807,7 +1807,7 @@ static int32_t Dss_dispDrvSetPipeUnderFlowCbParamsIoctl(
     GT_assert(DssTrace, (NULL != instObj));
 
     /* Check for wrong inputs */
-    if((DSS_DISP_INST_MAX <= instObj->drvInstId) || (NULL == underFlowCbParams))
+    if((instObj->drvInstId >= DSS_DISP_INST_MAX) || (NULL == underFlowCbParams))
     {
         GT_0trace(DssTrace, GT_ERR, "Invalid argument!!\r\n");
         retVal = FVID2_EBADARGS;
@@ -1819,7 +1819,7 @@ static int32_t Dss_dispDrvSetPipeUnderFlowCbParamsIoctl(
     if(FVID2_SOK == retVal)
     {
         /* IOCTL supported only when display is stopped */
-        if(UTRUE == instObj->drvState.isStarted)
+        if(TRUE == instObj->drvState.isStarted)
         {
             GT_0trace(DssTrace, GT_ERR, "Display in progress!!\r\n");
             retVal = FVID2_EFAIL;
@@ -1851,8 +1851,8 @@ static int32_t Dss_dispDrvValidateDssParams(const Dss_DispDrvInstObj *instObj,
 {
     int32_t retVal = FVID2_SOK;
 
-    if((UFALSE == Dss_dispIsVidInst(instObj->drvInstId)) &&
-       (UFALSE == Dss_dispIsVidLInst(instObj->drvInstId)))
+    if((FALSE == Dss_dispIsVidInst(instObj->drvInstId)) &&
+       (FALSE == Dss_dispIsVidLInst(instObj->drvInstId)))
     {
         GT_0trace(DssTrace,
                   GT_ERR,
@@ -1904,14 +1904,14 @@ static int32_t Dss_dispDrvValidateDssParams(const Dss_DispDrvInstObj *instObj,
     if((dispParams->pipeCfg.inFmt.height != dispParams->pipeCfg.outHeight) ||
        (dispParams->pipeCfg.inFmt.width != dispParams->pipeCfg.outWidth))
     {
-        if(UTRUE == Dss_dispIsVidLInst(instObj->drvInstId))
+        if(TRUE == Dss_dispIsVidLInst(instObj->drvInstId))
         {
             GT_0trace(DssTrace,
                       GT_ERR,
                       "Scaling cant be enabled for video lite pipe \r\n");
             retVal = FVID2_EINVALID_PARAMS;
         }
-        if(UFALSE == dispParams->pipeCfg.scEnable)
+        if(FALSE == dispParams->pipeCfg.scEnable)
         {
             GT_0trace(DssTrace,
                       GT_ERR,
@@ -1920,10 +1920,10 @@ static int32_t Dss_dispDrvValidateDssParams(const Dss_DispDrvInstObj *instObj,
         }
     }
 
-    if((32U <= dispParams->cropParams.cropCfg.cropTop) ||
-       (32U <= dispParams->cropParams.cropCfg.cropBottom) ||
-       (32U <= dispParams->cropParams.cropCfg.cropLeft) ||
-       (32U <= dispParams->cropParams.cropCfg.cropRight))
+    if((dispParams->cropParams.cropCfg.cropTop >= 32U) ||
+       (dispParams->cropParams.cropCfg.cropBottom >= 32U) ||
+       (dispParams->cropParams.cropCfg.cropLeft >= 32U) ||
+       (dispParams->cropParams.cropCfg.cropRight >= 32U))
     {
         GT_0trace(DssTrace,
                   GT_ERR,
@@ -1931,10 +1931,10 @@ static int32_t Dss_dispDrvValidateDssParams(const Dss_DispDrvInstObj *instObj,
         retVal = FVID2_EINVALID_PARAMS;
     }
 
-    if(((FVID2_FLIP_TYPE_V  == dispParams->pipeCfg.flipType) ||
-        (FVID2_FLIP_TYPE_H  == dispParams->pipeCfg.flipType)) &&
-       ((FVID2_DF_RGB24_888 == dispParams->pipeCfg.inFmt.dataFormat) ||
-        (FVID2_DF_BGR24_888 == dispParams->pipeCfg.inFmt.dataFormat)))
+    if(((dispParams->pipeCfg.flipType == FVID2_FLIP_TYPE_V) ||
+        (dispParams->pipeCfg.flipType == FVID2_FLIP_TYPE_H)) &&
+       ((dispParams->pipeCfg.inFmt.dataFormat == FVID2_DF_RGB24_888) ||
+        (dispParams->pipeCfg.inFmt.dataFormat == FVID2_DF_BGR24_888)))
     {
         GT_0trace(DssTrace,
                   GT_ERR,
@@ -1988,7 +1988,7 @@ static int32_t Dss_dispDrvValidateRtParams(const Dss_DispDrvInstObj *instObj,
         if((rtParams->inFrmParams->height != rtParams->outFrmParams->height) ||
            (rtParams->inFrmParams->width != rtParams->outFrmParams->width))
         {
-            if(UTRUE == Dss_dispIsVidLInst(instObj->drvInstId))
+            if(TRUE == Dss_dispIsVidLInst(instObj->drvInstId))
             {
                 retVal = FVID2_EINVALID_PARAMS;
             }
@@ -1999,10 +1999,10 @@ static int32_t Dss_dispDrvValidateRtParams(const Dss_DispDrvInstObj *instObj,
     {
         pipeParams = &instObj->pipeParams[instObj->pipeId];
         frameRtParams = rtParams->inFrmParams;
-        if(((FVID2_FLIP_TYPE_V  == pipeParams->pipeCfg.flipType) ||
-            (FVID2_FLIP_TYPE_H  == pipeParams->pipeCfg.flipType)) &&
-           ((FVID2_DF_RGB24_888 == frameRtParams->dataFormat) ||
-            (FVID2_DF_BGR24_888 == frameRtParams->dataFormat)))
+        if(((pipeParams->pipeCfg.flipType == FVID2_FLIP_TYPE_V) ||
+           (pipeParams->pipeCfg.flipType == FVID2_FLIP_TYPE_H)) &&
+          ((frameRtParams->dataFormat == FVID2_DF_RGB24_888) ||
+           (frameRtParams->dataFormat == FVID2_DF_BGR24_888)))
         {
             GT_0trace(DssTrace,
                       GT_ERR,
@@ -2027,7 +2027,7 @@ static int32_t Dss_dispDrvApplyRtParams(Dss_DispDrvInstObj *instObj,
     CSL_dss_pipeRegs *pipeRegs;
     CSL_dss_overlayRegs *overlayRegs;
     const Dss_SocInfo *socInfo;
-    uint32_t pipeRtUpdate = UFALSE;
+    uint32_t pipeRtUpdate = FALSE;
     Dss_DctrlDrvPipeInfo *pipeInfo;
     CSL_DssOverlayPipePosCfg overlayPosCfg;
     Dss_DispParams *pipeParams;
@@ -2040,30 +2040,30 @@ static int32_t Dss_dispDrvApplyRtParams(Dss_DispDrvInstObj *instObj,
     pipeParams = &instObj->pipeParams[instObj->pipeId];
     if(NULL != rtParams->scParams)
     {
-        pipeRtUpdate = UTRUE;
+        pipeRtUpdate = TRUE;
         pipeParams->pipeCfg.pixelInc = rtParams->scParams->pixelInc;
     }
     if(NULL != rtParams->inFrmParams)
     {
-        pipeRtUpdate = UTRUE;
+        pipeRtUpdate = TRUE;
         pipeParams->pipeCfg.inFmt.width  = rtParams->inFrmParams->width;
         pipeParams->pipeCfg.inFmt.height = rtParams->inFrmParams->height;
         pipeParams->pipeCfg.inFmt.dataFormat =
                                             rtParams->inFrmParams->dataFormat;
-        for(i = 0U; i < FVID2_MAX_PLANES; i++)
+        for(i=0U; i<FVID2_MAX_PLANES; i++)
         {
             pipeParams->pipeCfg.inFmt.pitch[i] =
                                             rtParams->inFrmParams->pitch[i];
         }
     }
-    if((NULL  != rtParams->outFrmParams) &&
-       (UTRUE == Dss_dispIsVidInst(instObj->drvInstId)))
+    if((NULL != rtParams->outFrmParams) &&
+       (TRUE == Dss_dispIsVidInst(instObj->drvInstId)))
     {
-        pipeRtUpdate = UTRUE;
+        pipeRtUpdate = TRUE;
         pipeParams->pipeCfg.outWidth  = rtParams->outFrmParams->width;
         pipeParams->pipeCfg.outHeight = rtParams->outFrmParams->height;
     }
-    if(UTRUE == pipeRtUpdate)
+    if(TRUE == pipeRtUpdate)
     {
         rtParamsRetVal =
             CSL_dssVidPipeSetConfig(
@@ -2115,7 +2115,7 @@ static void Dss_dispSafetyErrCbFxn(const uint32_t *event,
     pipeRegs = socInfo->pipeRegs[pipeId];
     GT_assert(DssTrace, (NULL != pipeRegs));
 
-    for(i = 0U; i < numEvents; i++)
+    for(i=0U; i<numEvents; i++)
     {
         currEvent = event[i];
         if(DSS_PIPE_EVENT_SAFETY_VIOLATION == currEvent)
@@ -2136,7 +2136,7 @@ static void Dss_dispSafetyErrCbFxn(const uint32_t *event,
         }
         else
         {
-            GT_assert(DssTrace, BFALSE);
+            GT_assert(DssTrace, FALSE);
         }
     }
 
@@ -2145,13 +2145,13 @@ static void Dss_dispSafetyErrCbFxn(const uint32_t *event,
 
 static uint32_t Dss_dispIsFarFromVsync(const Dss_DispDrvInstObj *instObj)
 {
-    uint32_t isFarFromVsync = UFALSE;
+    uint32_t isFarFromVsync = FALSE;
 
     isFarFromVsync = Dss_dctrlDrvIsSafeToPush(instObj->dctrlHandle);
 
-    if(DSS_DISP_NUM_LINES_NEAR_VSYNC >= instObj->dispHeight)
+    if(instObj->dispHeight <= DSS_DISP_NUM_LINES_NEAR_VSYNC)
     {
-        isFarFromVsync = UFALSE;
+        isFarFromVsync = FALSE;
     }
 
     return isFarFromVsync;

@@ -40,7 +40,6 @@ extern "C" {
 
 #include <stdint.h>
 #include <ti/csl/hw_types.h>
-#include <ti/csl/tistdtypes.h>
 
 /**
  * @brief   The return type for board library API calls

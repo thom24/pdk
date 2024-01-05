@@ -221,7 +221,7 @@ void mainTask(void *arg0, void* arg1)
         NULL,
         1U,
         0U,
-        UTRUE
+        TRUE
     };
 
     r = Sciclient_init(&config);
@@ -263,7 +263,7 @@ void mainTask(void *arg0, void* arg1)
                 MCU_SRAM_ADDRESS_FAIL_START,
                 MCU_SRAM_ADDRESS_FAIL_END,
                 PROC_HOST_ID,
-                MCU_1_0_PRIVID, UTRUE, UTRUE);
+                MCU_1_0_PRIVID, TRUE, TRUE);
         if (CSL_PASS == r)
         {
             App_sciclientPrintf(
@@ -298,7 +298,7 @@ void mainTask(void *arg0, void* arg1)
                 MSMC_RAM_ADDRESS_FAIL_END,
                 PROC_HOST_ID,
                 MCU_1_0_PRIVID,
-                UFALSE, UTRUE);
+                FALSE, TRUE);
         if (CSL_PASS == r)
         {
             App_sciclientPrintf(
@@ -335,7 +335,7 @@ void mainTask(void *arg0, void* arg1)
                 DRAM_ADDRESS_FAIL_END,
                 PROC_HOST_ID,
                 MCU_1_0_PRIVID,
-                UTRUE, UTRUE);
+                TRUE, TRUE);
         if (CSL_PASS == r)
         {
             App_sciclientPrintf("\nDRAM Tests Passed.\n");
@@ -570,7 +570,7 @@ int32_t Sciclient_fw_test(
             App_sciclientPrintf( "\nThis Step Failed!!");
         }
     }
-    if ((r == CSL_PASS) && (passTest == UTRUE))
+    if ((r == CSL_PASS) && (passTest == TRUE))
     {
         App_sciclientPrintf( "\n5. Reading content from Region 1 to make sure the address is accesible.");
         /* Access memory region to make sure able to read and write */
@@ -592,7 +592,7 @@ int32_t Sciclient_fw_test(
             App_sciclientPrintf( "\nThis Step Failed!!");
         }
     }
-    if ((r == CSL_PASS) && (failTest == UTRUE))
+    if ((r == CSL_PASS) && (failTest == TRUE))
     {
         App_sciclientPrintf( "\n5. Reading content from Region 2 to make sure the address is not accesible.");
         /* Access memory region to make sure unable to read and write */

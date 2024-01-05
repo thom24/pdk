@@ -98,17 +98,17 @@ volatile uint32_t ulCriticalNesting = 9999UL;
 
 /* Saved as part of the task context.  If ulPortTaskHasFPUContext is non-zero then
  * a floating point context must be saved and restored for the task. */
-uint32_t ulPortTaskHasFPUContext = UFALSE;
+uint32_t ulPortTaskHasFPUContext = pdFALSE;
 
 /* Set to 1 to pend a context switch from an ISR. */
-uint32_t ulPortYieldRequired = UFALSE;
+uint32_t ulPortYieldRequired = pdFALSE;
 
 /* Counts the interrupt nesting depth.  A context switch is only performed if
  * if the nesting depth is 0. */
 uint32_t ulPortInterruptNesting = 0UL;
 
 /* set to true when schedular gets enabled in xPortStartScheduler */
-uint32_t ulPortSchedularRunning = UFALSE;
+uint32_t ulPortSchedularRunning = pdFALSE;
 
 
 /* set to true when scheduler gets enabled in xPortStartScheduler */
@@ -123,7 +123,7 @@ typedef struct tskTaskControlBlock       /* The old naming convention is used to
 {
     volatile StackType_t * pxTopOfStack; /*< Points to the location of the last item placed on the tasks stack.  THIS MUST BE THE FIRST MEMBER OF THE TCB STRUCT. */
 
-    #if ( 1 == portUSING_MPU_WRAPPERS )
+    #if ( portUSING_MPU_WRAPPERS == 1 )
         xMPU_SETTINGS xMPUSettings; /*< The MPU settings are defined as part of the port layer.  THIS MUST BE THE SECOND MEMBER OF THE TCB STRUCT. */
     #endif
 
@@ -133,15 +133,15 @@ typedef struct tskTaskControlBlock       /* The old naming convention is used to
     StackType_t * pxStack;                      /*< Points to the start of the stack. */
     char pcTaskName[ configMAX_TASK_NAME_LEN ]; /*< Descriptive name given to the task when created.  Facilitates debugging only. */ /*lint !e971 Unqualified char types are allowed for strings and single characters only. */
 
-    #if ( ( portSTACK_GROWTH > 0 ) || ( 1 == configRECORD_STACK_HIGH_ADDRESS ) )
+    #if ( ( portSTACK_GROWTH > 0 ) || ( configRECORD_STACK_HIGH_ADDRESS == 1 ) )
         StackType_t * pxEndOfStack; /*< Points to the highest valid address for the stack. */
     #endif
 
-    #if ( 1 == portCRITICAL_NESTING_IN_TCB )
+    #if ( portCRITICAL_NESTING_IN_TCB == 1 )
         UBaseType_t uxCriticalNesting; /*< Holds the critical section nesting depth for ports that do not maintain their own count in the port layer. */
     #endif
 
-    #if ( 1 == configUSE_TRACE_FACILITY )
+    #if ( configUSE_TRACE_FACILITY == 1 )
         UBaseType_t uxTCBNumber;  /*< Stores a number that increments each time a TCB is created.  It allows debuggers to determine when a task has been deleted and then recreated. */
         UBaseType_t uxTaskNumber; /*< Stores a number specifically for use by third party trace code. */
     #endif
@@ -151,7 +151,7 @@ typedef struct tskTaskControlBlock       /* The old naming convention is used to
         UBaseType_t uxMutexesHeld;
     #endif
 
-    #if ( 1 == configUSE_APPLICATION_TASK_TAG )
+    #if ( configUSE_APPLICATION_TASK_TAG == 1 )
         TaskHookFunction_t pxTaskTag;
     #endif
 
@@ -159,11 +159,11 @@ typedef struct tskTaskControlBlock       /* The old naming convention is used to
         void * pvThreadLocalStoragePointers[ configNUM_THREAD_LOCAL_STORAGE_POINTERS ];
     #endif
 
-    #if ( 1 == configGENERATE_RUN_TIME_STATS )
+    #if ( configGENERATE_RUN_TIME_STATS == 1 )
         uint32_t ulRunTimeCounter; /*< Stores the amount of time the task has spent in the Running state. */
     #endif
 
-    #if ( 1 == configUSE_NEWLIB_REENTRANT )
+    #if ( configUSE_NEWLIB_REENTRANT == 1 )
 
         /* Allocate a Newlib reent structure that is specific to this task.
          * Note Newlib support has been included by popular demand, but is not
@@ -178,22 +178,22 @@ typedef struct tskTaskControlBlock       /* The old naming convention is used to
         struct  _reent xNewLib_reent;
     #endif
 
-    #if ( 1 == configUSE_TASK_NOTIFICATIONS )
+    #if ( configUSE_TASK_NOTIFICATIONS == 1 )
         volatile uint32_t ulNotifiedValue[ configTASK_NOTIFICATION_ARRAY_ENTRIES ];
         volatile uint8_t ucNotifyState[ configTASK_NOTIFICATION_ARRAY_ENTRIES ];
     #endif
 
     /* See the comments in FreeRTOS.h with the definition of
      * tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE. */
-    #if ( 0 != tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE ) /*lint !e731 !e9029 Macro has been consolidated for readability reasons. */
+    #if ( tskSTATIC_AND_DYNAMIC_ALLOCATION_POSSIBLE != 0 ) /*lint !e731 !e9029 Macro has been consolidated for readability reasons. */
         uint8_t ucStaticallyAllocated;                     /*< Set to pdTRUE if the task is a statically allocated to ensure no attempt is made to free the memory. */
     #endif
 
-    #if ( 1 == INCLUDE_xTaskAbortDelay )
+    #if ( INCLUDE_xTaskAbortDelay == 1 )
         uint8_t ucDelayAborted;
     #endif
 
-    #if ( 1 == configUSE_POSIX_ERRNO )
+    #if ( configUSE_POSIX_ERRNO == 1 )
         int iTaskErrno;
     #endif
 } tskTCB;
@@ -213,7 +213,7 @@ static void prvTaskExitError( void )
      *
      * Force an assert() to be triggered if configASSERT() is
      * defined, then stop here so application writers can catch the error. */
-    DebugP_assert(BFALSE);
+    DebugP_assert((bool)false);
 }
 
 #define TaskSupport_buildTaskStack ti_sysbios_family_c62_TaskSupport_buildTaskStack
@@ -243,13 +243,13 @@ void ti_sysbios_knl_Task_Func(uint32_t arg1, uint32_t arg2)
     pxCode((void *)arg1);
 }
 
-#if ( 1 == portHAS_STACK_OVERFLOW_CHECKING )
+#if ( portHAS_STACK_OVERFLOW_CHECKING == 1 )
 StackType_t *pxPortInitialiseStack(StackType_t * pxTopOfStack, StackType_t * pxEndOfStack, TaskFunction_t pxCode, void * pvParameters )
 #else
 StackType_t *pxPortInitialiseStack(StackType_t * pxTopOfStack, TaskFunction_t pxCode, void * pvParameters )
 #endif
 {
-#if ( 1 == portHAS_STACK_OVERFLOW_CHECKING )
+#if ( portHAS_STACK_OVERFLOW_CHECKING == 1 )
     {
         (void) pxEndOfStack;
     }
@@ -288,7 +288,7 @@ static void prvPortInitTickTimer(void)
     pTickTimerHandle = TimerP_create(configTIMER_ID, &prvPorttimerTickIsr, &timerParams);
 
     /* don't expect the handle to be null */
-    DebugP_assert (NULL != pTickTimerHandle);
+    DebugP_assert (pTickTimerHandle != NULL);
 
 }
 
@@ -298,7 +298,7 @@ static void prvPortStartTickTimer(void)
     status = TimerP_start(pTickTimerHandle);
 
     /* don't expect the handle to be null */
-    DebugP_assert (TimerP_OK == status);
+    DebugP_assert (status == TimerP_OK);
 
 }
 
@@ -317,7 +317,7 @@ BaseType_t xPortStartScheduler(void)
 
     /* Start the ISR handling of the timer that generates the tick ISR. */
     prvPortStartTickTimer();
-    ulPortSchedularRunning = UTRUE;
+    ulPortSchedularRunning = pdTRUE;
 
     /* Start the first task executing. */
     vPortRestoreTaskContext();
@@ -334,20 +334,20 @@ BaseType_t xPortStartScheduler(void)
 
 void vPortYeildFromISR( uint32_t xSwitchRequired )
 {
-    if( UFALSE != xSwitchRequired )
+    if( xSwitchRequired != pdFALSE )
     {
-        ulPortYieldRequired = UTRUE;
+        ulPortYieldRequired = pdTRUE;
     }
 }
 
 void vPortTimerTickHandler()
 {
-    if( UTRUE == ulPortSchedularRunning )
+    if( ulPortSchedularRunning == pdTRUE )
     {
         /* Increment the RTOS tick. */
-        if( pdFALSE != xTaskIncrementTick() )
+        if( xTaskIncrementTick() != pdFALSE )
         {
-            ulPortYieldRequired = UTRUE;
+            ulPortYieldRequired = pdTRUE;
         }
     }
 }
@@ -356,7 +356,7 @@ void vPortTaskUsesFPU( void )
 {
     /* A task is registering the fact that it needs an FPU context.  Set the
      * FPU flag (which is saved as part of the task context). */
-    ulPortTaskHasFPUContext = UTRUE;
+    ulPortTaskHasFPUContext = pdTRUE;
 
 }
 
@@ -413,7 +413,7 @@ void vApplicationStackOverflowHook( TaskHandle_t xTask,
                                     char * pcTaskName )
 {
     DebugP_log1("[FreeRTOS] Stack overflow detected for task [%s]", (uintptr_t)pcTaskName);
-    DebugP_assert(BFALSE);
+    DebugP_assert((bool)false);
 }
 
 /* configSUPPORT_STATIC_ALLOCATION is set to 1, so the application must provide an
@@ -505,7 +505,7 @@ void vPortYield( void )
         DebugP_log1("Doing switch to same task:%p",(uintptr_t)oldSP);
         uxPortIncorrectYieldCount++;
     }
-    if (UFALSE == pxCurrentTCB->uxCriticalNesting)
+    if (pxCurrentTCB->uxCriticalNesting == 0)
     {
         /* Enable interrupts if task was preempted outside critical section */
         portENABLE_INTERRUPTS();
@@ -543,10 +543,10 @@ void vPortYieldAsyncFromISR( void )
  */
 BaseType_t xPortInIsrContext()
 {
-    BaseType_t inISR = pdFALSE;
-    if (UFALSE != ulPortInterruptNesting)
+    BaseType_t inISR = false;
+    if (ulPortInterruptNesting != 0)
     {
-        inISR =  pdTRUE;
+        inISR =  true;
     }
     return inISR;
 }
@@ -601,7 +601,7 @@ int32_t _system_pre_init(void)
 {
     vPortCacheConfig();
     extended_system_pre_init();
-    return ITRUE;
+    return 1;
 }
 
 /*****************************************************************************/
@@ -622,7 +622,7 @@ void _system_post_cinit(void)
 {
     osalArch_Config_t cfg;
 
-    cfg.disableIrqOnInit = BTRUE;
+    cfg.disableIrqOnInit = (bool)true;
     osalArch_Init(&cfg);
     extended_system_post_cinit();
 }

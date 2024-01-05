@@ -54,7 +54,7 @@ static HwiP_nonOs hwiStructs[OSAL_NONOS_CONFIGNUM_HWI];
 
 osalArch_Config_t gOsalArchConfig =
 {
-    .disableIrqOnInit = BFALSE,
+    .disableIrqOnInit = (bool)false,
 };
 
 /* Below function posts the interrupt delay */
@@ -76,11 +76,11 @@ void OsalArch_compileTime_SizeChk(void)
     OSAL_COMPILE_TIME_SIZE_CHECK ((uint32_t)sizeof(HwiP_nonOs),OSAL_NONOS_HWIP_SIZE_BYTES);
 }
 
-static bool gFirstTime = BFALSE;
+static bool gFirstTime = (bool)false;
 static CSL_IntcContext               gContext;
 static CSL_IntcEventHandlerRecord    gEventRecord[OSAL_NONOS_CONFIGNUM_HWI];
-static bool gTimestampFirstTime = BTRUE;
-static bool gHwiInitialized = BFALSE;
+static bool gTimestampFirstTime = (bool)true;
+static bool gHwiInitialized = (bool)false;
 /* This function enables the interrupt for a given interrupt number */
 void OsalArch_enableInterrupt(uint32_t intNum)
 {
@@ -138,12 +138,12 @@ void OsalArch_globalRestoreInterrupt (uintptr_t restoreValue)
    this is needed only once per start */
 void OsalArch_oneTimeInit(void)
 {
-     if (BFALSE == gFirstTime) {
+     if ((bool)false == gFirstTime) {
          /* record the index in the handle */
          gContext.numEvtEntries      = (Uint16)OSAL_NONOS_CONFIGNUM_HWI;
          gContext.eventhandlerRecord = gEventRecord;
          (void)CSL_intcInit(&gContext);
-         gFirstTime = BTRUE;
+         gFirstTime = (bool)true;
      }
 }
 
@@ -165,7 +165,7 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
     /* Check if user has specified any memory block to be used, which gets
      * the precedence over the internal static memory block
      */
-    if ((uintptr_t)(0U) != gOsal_HwAttrs.extHwiPBlock.base)
+    if (0U != gOsal_HwAttrs.extHwiPBlock.base)
     {
         /* pick up the external memory block configured */
         hwiPool        = (HwiP_nonOs *) gOsal_HwAttrs.extHwiPBlock.base;
@@ -178,11 +178,11 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
         hwiPool        = (HwiP_nonOs *) &hwiStructs[0];
         maxHwi         = OSAL_NONOS_CONFIGNUM_HWI;
         
-        if(BFALSE == gHwiInitialized) 
+        if((bool)false == gHwiInitialized) 
         {
           /* Initializing the first time */
           (void)memset((void *)hwiStructs,0,sizeof(hwiStructs));
-          gHwiInitialized = BTRUE; 
+          gHwiInitialized = (bool)true; 
         }
     }
 
@@ -196,8 +196,8 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
       key = OsalArch_globalDisableInterrupt();
       for (i = 0U; i < maxHwi; i++) 
       {
-        if (BFALSE == hwiPool[i].used) {
-            hwiPool[i].used = BTRUE;
+        if (hwiPool[i].used == (bool)false) {
+            hwiPool[i].used = (bool)true;
             break;
         }
       }
@@ -217,7 +217,7 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
     {
          OsalArch_oneTimeInit();
          (void)CSL_intcGlobalNmiEnable();
-         if (BFALSE == gOsalArchConfig.disableIrqOnInit)
+         if ((bool)false == gOsalArchConfig.disableIrqOnInit)
          {
             (void)CSL_intcGlobalEnable((CSL_IntcGlobalEnableState *)NULL_PTR);
          }
@@ -236,7 +236,7 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
              (void)CSL_intcHwControl(hwi_handle->handle,CSL_INTC_CMD_EVTENABLE,NULL_PTR);
 
              /* Enabling the interrupt if configured */
-             if (UTRUE == params->enableIntr)
+             if (params->enableIntr == 1U)
              {
                  /* Enabling the interrupt in INTC. */
                  OsalArch_enableInterrupt(interruptNum);
@@ -250,7 +250,7 @@ HwiP_Handle OsalArch_HwiPCreate(uint32_t interruptNum, HwiP_Fxn hwiFxn,
          else
          {
              /* Free the pool */
-             hwiPool[i].used = BFALSE;
+             hwiPool[i].used = (bool)false;
              retHandle = NULL_PTR;
          }
     }
@@ -267,9 +267,9 @@ HwiP_Status OsalArch_HwiPDelete(HwiP_Handle handle)
 
     /* mark that handle as free */
     key = OsalArch_globalDisableInterrupt();
-    if (BTRUE == hwi_hnd->used)
+    if ((bool)true == hwi_hnd->used)
     {
-        hwi_hnd->used = BFALSE;
+        hwi_hnd->used = (bool)false;
         CSL_intcUnplugEventHandler(hwi_hnd->hwi.handle);
         status = CSL_intcClose(hwi_hnd->hwi.handle);
 
@@ -296,9 +296,9 @@ HwiP_Handle OsalArch_getHandle(uint32_t interruptNum)
    Hwi_Struct *handle= (Hwi_Struct *) NULL_PTR, *handle_temp;
    uintptr_t         temp;
    HwiP_nonOs       *hwiPool;
-   uint32_t          maxHwi = 0U;
+   uint32_t          maxHwi = 0;
 
-   if ((uintptr_t)(0U) != gOsal_HwAttrs.extHwiPBlock.base)
+   if (0U != gOsal_HwAttrs.extHwiPBlock.base)
    {
        /* pick up the external memory block configured */
        hwiPool        = (HwiP_nonOs *) gOsal_HwAttrs.extHwiPBlock.base;
@@ -316,9 +316,9 @@ HwiP_Handle OsalArch_getHandle(uint32_t interruptNum)
      /* Go through the list and find out if there is an HWI whose interrupt number matches */
 
      /* First go through the external memory pool */
-     for (i = 0U; i < maxHwi; i++)
+     for (i = 0; i < maxHwi; i++)
      {
-         if(BTRUE == hwiPool[i].used) {
+         if((bool)true == hwiPool[i].used) {
              handle_temp=&hwiPool[i].hwi;
              if(handle_temp->intcObj.vectId == (CSL_IntcVectId)interruptNum) {
                 handle=handle_temp;
@@ -330,11 +330,11 @@ HwiP_Handle OsalArch_getHandle(uint32_t interruptNum)
      /* Now check the internal static pool, if not found already */
      if (NULL_PTR != handle)
      {
-         for(i = 0U; i < OSAL_NONOS_CONFIGNUM_HWI; i++) {
-              if(BTRUE == hwiStructs[i].used) {
-                  handle_temp = &hwiStructs[i].hwi;
-                  if(handle_temp->intcObj.vectId == (CSL_IntcVectId)interruptNum) {
-                     handle = handle_temp;
+         for(i=0;i<OSAL_NONOS_CONFIGNUM_HWI;i++) {
+              if((bool)true == hwiStructs[i].used) {
+                  handle_temp=&hwiStructs[i].hwi;
+                  if(handle_temp->intcObj.vectId==(CSL_IntcVectId)interruptNum) {
+                     handle=handle_temp;
                      break;
                   }
               }
@@ -349,9 +349,9 @@ HwiP_Handle OsalArch_getHandle(uint32_t interruptNum)
 uint32_t OsalArch_getEventId(uint32_t interruptNum)
 {
    Hwi_Struct *handle;
-   uint32_t retVal = CSL_INVALID_EVENT_ID;
+   uint32_t retVal= CSL_INVALID_EVENT_ID;
    /* Find the handle registered to this interrupt number */
-   handle = (Hwi_Struct *)OsalArch_getHandle(interruptNum);
+   handle=(Hwi_Struct *)OsalArch_getHandle(interruptNum);
    if(NULL_PTR != handle) {
       retVal = handle->intcObj.eventId;
    } 
@@ -372,11 +372,11 @@ void    osalArch_TimestampInit(void)
     /* FreeRTOS C66x port already initialized TSC counter as part of 
      * schedular start for runtime measurement */
 #if !defined(FREERTOS)
-    if (BTRUE == gTimestampFirstTime)
+    if ((bool)true == gTimestampFirstTime)
     {
         /* Initialize TSCL to 0, for count */
         CSL_tscEnable();
-        gTimestampFirstTime = BFALSE;
+        gTimestampFirstTime = (bool)false;
     }
 #endif
 

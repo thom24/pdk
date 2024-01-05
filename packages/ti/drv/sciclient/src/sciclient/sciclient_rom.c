@@ -123,12 +123,12 @@ int32_t Sciclient_loadFirmware(const uint32_t *pSciclient_firmware)
     /* ROM doesn't check for flags */
     header.flags = 0U;
 
-    if (NULL != pSciclient_firmware)
+    if (pSciclient_firmware != NULL)
     {
         payload.bufferAddress = (uint32_t)(uintptr_t)pSciclient_firmware;
 
         /*Size is not needed actually.It is taken from x509 certificate*/
-        payload.bufferSizeBytes = 0xFFFFFFFFU;
+        payload.bufferSizeBytes = 0xffffffffU;
 
         /* Verify thread status before reading/writing */
         status = Sciclient_verifyThread(txThread);
@@ -153,11 +153,12 @@ int32_t Sciclient_loadFirmware(const uint32_t *pSciclient_firmware)
         }
         if (CSL_PASS == status)
         {
-            while (0U == (HW_RD_REG32(Sciclient_threadStatusReg(rxThread)) &
-                 CSL_SEC_PROXY_RT_THREAD_STATUS_CUR_CNT_MASK)) {;}
+            while ((HW_RD_REG32(Sciclient_threadStatusReg(rxThread)) &
+                 CSL_SEC_PROXY_RT_THREAD_STATUS_CUR_CNT_MASK) == 0U) {;}
             /* Check the message type and flag of the response */
-            if ((SCICLIENT_ROM_MSG_M3_TO_R5_M3FW_RESULT == pLocalRespHdr->type)
-                && (SCICLIENT_ROM_MSG_CERT_AUTH_PASS    == pLocalRespHdr->flags))
+            if ((pLocalRespHdr->type ==
+                SCICLIENT_ROM_MSG_M3_TO_R5_M3FW_RESULT)
+                && (pLocalRespHdr->flags == SCICLIENT_ROM_MSG_CERT_AUTH_PASS))
             {
                 status = CSL_PASS;
             }
@@ -203,16 +204,17 @@ int32_t Sciclient_bootNotification(void)
         (Sciclient_RomFirmwareLoadHdr_t *)(CSL_secProxyGetDataAddr(
                                             pSciclient_secProxyCfg, rxThread, 0U)
                                             + ((uintptr_t) secHeaderSizeWords * (uintptr_t) 4U));
-        if (CSL_PASS == status)
+        if (status == CSL_PASS)
         {
             status = Sciclient_verifyThread(rxThread);
         }
-        if (CSL_PASS == status)
+        if (status == CSL_PASS)
         {
-            while (0U == (HW_RD_REG32(Sciclient_threadStatusReg(rxThread)) &
-                 CSL_SEC_PROXY_RT_THREAD_STATUS_CUR_CNT_MASK)) {;}
+            while ((HW_RD_REG32(Sciclient_threadStatusReg(rxThread)) &
+                 CSL_SEC_PROXY_RT_THREAD_STATUS_CUR_CNT_MASK) == 0U) {;}
             /* Check the message type and flag of the response */
-            if (TISCI_MSG_BOOT_NOTIFICATION == pLocalRespHdr->type)
+            if (pLocalRespHdr->type ==
+                TISCI_MSG_BOOT_NOTIFICATION)
             {
                 status = CSL_PASS;
             }

@@ -61,47 +61,47 @@ typedef uintptr_t NAND_HANDLE;
 
 /** NAND return type macros */
 /** \brief On Success. */
-#define NAND_PASS                         (0)
+#define NAND_PASS                         (0U)
 
 /** \brief On Failure. */
-#define NAND_FAIL                         (-1)
+#define NAND_FAIL                         (-1U)
 
 /** \brief Error code for Timeout. */
-#define NAND_TIMEOUT                      (-2)
+#define NAND_TIMEOUT                      (-2U)
 
 /** \brief Error code to indicate mode not supported. */
-#define NAND_MODE_NOT_SUPP                (-3)
+#define NAND_MODE_NOT_SUPP                (-3U)
 
 /** \brief Error code to indicate invalid parameter. */
-#define NAND_INVALID_PARAM                (-4)
+#define NAND_INVALID_PARAM                (-4U)
 
 /** \brief Error code to indicate DMA operation failure. */
-#define NAND_DMA_FAIL                     (-5)
+#define NAND_DMA_FAIL                     (-5U)
 
 /** \brief Error code to indicate NAND device is Busy. */
-#define NAND_DEV_BUSY                     (-6)
+#define NAND_DEV_BUSY                     (-6U)
 
 /** \brief Error code to indicate NAND device is Write Protected. */
-#define NAND_DEV_PROTECTED                (-7)
+#define NAND_DEV_PROTECTED                (-7U)
 
 /** \brief Error code to indicate ECC error for the last access. */
-#define NAND_ECC_ERR                      (-8)
+#define NAND_ECC_ERR                      (-8U)
 
 /** \brief Error code to indicate ECC error is corrected. */
-#define NAND_ECC_ERR_CORRECTED            (-9)
+#define NAND_ECC_ERR_CORRECTED            (-9U)
 
 /** \brief Error code to indicate Uncorrectable ecc errrors. */
-#define NAND_ECC_UNCORRECTABLE            (-10)
+#define NAND_ECC_UNCORRECTABLE            (-10U)
 
 /** \brief Error code to indicate Block is good to read/write. */
-#define NAND_BLOCK_GOOD                   (-11)
+#define NAND_BLOCK_GOOD                   (-11U)
 
 /** \brief Error code to indicate Block is marked as Bad. */
-#define NAND_BLOCK_BAD                    (-12)
+#define NAND_BLOCK_BAD                    (-12U)
 
 /** \brief Error code to indicate failure in reading the spare area of the
            page. */
-#define NAND_SPARE_AREA_READ_FAIL         (-13)
+#define NAND_SPARE_AREA_READ_FAIL         (-13U)
 
 /*
 * \breif NAND device size (bus width) in bits

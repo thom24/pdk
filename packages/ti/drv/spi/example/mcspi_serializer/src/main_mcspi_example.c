@@ -149,7 +149,7 @@ void spi_test(UArg arg0, UArg arg1)
     SPI_Params spiParams;                /* SPI params structure */
     SPI_Handle handle;                   /* SPI handle */
     SPI_Transaction transaction;         /* SPI transaction */
-    bool retVal = BFALSE;                /* return value */
+    bool retVal = false;                 /* return value */
 
     /* Init GPIO driver */
     GPIO_init();
@@ -181,7 +181,7 @@ void spi_test(UArg arg0, UArg arg1)
     retVal = SPI_transfer(handle, &transaction);
     delay(DELAY_VALUE);
 
-    if(BFALSE == retVal)
+    if(false == retVal)
     {
         SPI_log("\n Error occurred in spi transfer \n");
     }
@@ -193,12 +193,12 @@ void spi_test(UArg arg0, UArg arg1)
          */
         if(SPI_MODE_CALLBACK == spiParams.transferMode)
         {
-            while(1U == txCompleteCallbackFlag);
+            while(txCompleteCallbackFlag == 1U);
         }
 
         retVal = VerifyData((uint8_t *)&serializerData[0], &rxBuf[0], transferLength);
 
-        if(BTRUE == retVal)
+        if(true == retVal)
         {
             SPI_log("\n All tests have passed. \n");
         }
@@ -210,7 +210,7 @@ void spi_test(UArg arg0, UArg arg1)
 
     SPI_close(handle);
 
-    while(BTRUE);
+    while(1);
 }
 
 /*
@@ -228,7 +228,7 @@ int main(void)
     Error_init(&eb);
 
     task = Task_create(spi_test, NULL, &eb);
-        if (NULL == task) {
+        if (task == NULL) {
             System_printf("Task_create() failed!\n");
             BIOS_exit(0);
         }
@@ -286,17 +286,17 @@ void MCSPICallbackFxn(SPI_Handle handle, SPI_Transaction * transaction)
 bool VerifyData(uint8_t *expData, uint8_t *rxData, uint32_t length)
 {
     uint32_t idx = 0;
-    uint32_t match = UTRUE;
-    bool retVal = BFALSE;
+    uint32_t match = 1;
+    bool retVal = false;
 
-    for(idx = 0; ((idx < length) && (UFALSE != match)); idx++)
+    for(idx = 0; ((idx < length) && (match != 0)); idx++)
     {
-        if(*expData != *rxData) match = UFALSE;
+        if(*expData != *rxData) match = 0;
         expData++;
         rxData++;
     }
 
-    if(UTRUE == match) retVal = BTRUE;
+    if(match == 1) retVal = true;
 
     return retVal;
 }

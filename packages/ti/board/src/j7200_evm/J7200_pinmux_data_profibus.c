@@ -52,7 +52,7 @@ static pinmuxPerCfg_t gSpi5PinCfg[] =
 
 static pinmuxModuleCfg_t gSpiPinCfg[] =
 {
-    {5, 1, gSpi5PinCfg},
+    {5, TRUE, gSpi5PinCfg},
     {PINMUX_END}
 };
 
@@ -84,7 +84,7 @@ static pinmuxPerCfg_t gUart3PinCfg[] =
 
 static pinmuxModuleCfg_t gUartPinCfg[] =
 {
-    {3, 1, gUart3PinCfg},
+    {3, TRUE, gUart3PinCfg},
     {PINMUX_END}
 };
 

@@ -356,7 +356,7 @@ uint32_t GPIO_PinBankUsageCount[GPIO_NUM_PORTS][GPIO_NUM_BANKS] = {{0U}};
  * \param  portNum     The GPIO port number to configure the interrupt path.
  * \param  pinNum      The GPIO pin number to configure the interrupt path.
  * \param  hwAttrs     The GPIO_v0_HwAttrs for this SOC
- *  \param  setIntrPath BTRUE - set the interrupt path, BFALSE - clear the interrupt path
+ *  \param  setIntrPath TRUE - set the interrupt path, FALSE - clear the interrupt path
  * \return CSL_PASS if successful, CSL_FAIL if failed
  *
  */

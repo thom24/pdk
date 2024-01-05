@@ -127,7 +127,7 @@ uintptr_t       gIpcRProcIdToMBoxDataMap[IPC_MAX_PROCS];
 #ifndef IPC_EXCLUDE_POLLED_RX
 #define IPC_POLL_TIMER  100
 
-uint32_t     g_pollTaskExit = UFALSE;
+uint32_t     g_pollTaskExit = FALSE;
 TaskP_Handle g_pollTask     = NULL;
 
 void Mailbox_Poll_Task(void* arg0, void* arg1)
@@ -138,15 +138,15 @@ void Mailbox_Poll_Task(void* arg0, void* arg1)
     Ipc_MailboxData        *mbox = NULL;
     Ipc_MailboxFifo        *fifo = NULL;
 
-    while(UFALSE == g_pollTaskExit)
+    while(FALSE == g_pollTaskExit)
     {
-        for(n = 0U; n < g_ipc_mBoxCnt; n++)
+        for(n = 0; n < g_ipc_mBoxCnt; n++)
         {
              mbox = &g_ipc_mBoxData[n];
-             for(cnt = 0U; cnt < mbox->fifoCnt; cnt++)
+             for(cnt = 0; cnt < mbox->fifoCnt; cnt++)
              {
                  fifo = &mbox->fifoTable[cnt];
-                 if(0U < MailboxGetMessageCount(mbox->baseAddr, fifo->queueId))
+                 if(MailboxGetMessageCount(mbox->baseAddr, fifo->queueId) > 0)
                  {
                     /* Get the message from Mailbox fifo */
                     MailboxGetMessage(mbox->baseAddr, fifo->queueId, msg);
@@ -174,7 +174,7 @@ void Mailbox_Poll_Task(void* arg0, void* arg1)
 
 void Mailbox_Poll_TaskExit()
 {
-    g_pollTaskExit = UTRUE;
+    g_pollTaskExit = TRUE;
 }
 
 #if defined(BUILD_C7X) && !defined(MAILBOX_INTERRUPT_MODE)
@@ -233,7 +233,7 @@ static void Ipc_mailboxDisable(uintptr_t baseAddr, uint32_t userId, uint32_t que
  */
 uint32_t Ipc_mailboxClear(uintptr_t baseAddr, uint32_t queueId)
 {
-    uint32_t retVal = 0U;
+    uint32_t retVal = 0;
     uint32_t msg[4];
 
     retVal = MailboxGetMessage(baseAddr, queueId, msg);
@@ -247,7 +247,7 @@ uint32_t Ipc_mailboxClear(uintptr_t baseAddr, uint32_t queueId)
 int32_t Ipc_mailboxSend(uint32_t selfId, uint32_t remoteProcId, uint32_t val,
                         uint32_t timeoutCnt)
 {
-    int32_t   status = IPC_SOK;
+    int32_t   status = 0;
     uint32_t  clusterId;
     uint32_t  userId;
     uint32_t  queueId;
@@ -266,7 +266,7 @@ int32_t Ipc_mailboxSend(uint32_t selfId, uint32_t remoteProcId, uint32_t val,
     Ipc_getMailboxInfoTx(selfId, remoteProcId,
         &clusterId, &userId, &queueId);
 
-    if( (MAILBOX_CLUSTER_INVALID != clusterId) && (16U > queueId) )
+    if( (clusterId != MAILBOX_CLUSTER_INVALID) && (queueId < 16U) )
     {
         uint32_t    retVal;
 
@@ -289,7 +289,7 @@ int32_t Ipc_mailboxSend(uint32_t selfId, uint32_t remoteProcId, uint32_t val,
         {
             retVal = MailboxSendMessage(baseAddr, queueId, val);
             cnt--;
-        } while( (0U != cnt) && (MESSAGE_INVALID == retVal) );
+        } while( (cnt != 0U) && (retVal == MESSAGE_INVALID));
 
         if(MESSAGE_INVALID == retVal)
         {
@@ -336,7 +336,7 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
     Ipc_getMailboxInfoRx(selfId, remoteProcId,
         &clusterId, &userId, &queueId);
 
-    if( (MAILBOX_CLUSTER_INVALID != clusterId) && (IPC_MAX_PROCS > remoteProcId) )
+    if( (clusterId != MAILBOX_CLUSTER_INVALID) && (IPC_MAX_PROCS > remoteProcId))
     {
         baseAddr = Ipc_getMailboxBaseAddr(clusterId);
     }
@@ -346,9 +346,9 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
         retVal = IPC_EFAIL;
     }
 
-    if(IPC_SOK == retVal)
+    if(retVal == IPC_SOK)
     {
-        for(n = 0U; n < g_ipc_mBoxCnt; n++)
+        for(n = 0; n < g_ipc_mBoxCnt; n++)
         {
             if((baseAddr == g_ipc_mBoxData[n].baseAddr) && (userId == g_ipc_mBoxData[n].userId))
             {
@@ -363,7 +363,7 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
         {
             /* Could not find one, this is new entry */
             mbox->baseAddr = baseAddr;
-            mbox->fifoCnt  = 0U;
+            mbox->fifoCnt  = 0;
             mbox->userId   = userId;
 
             if (NULL != pOsal->registerIntr)
@@ -384,25 +384,25 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
                         /* Release the resource first */
                         Ipc_sciclientIrqRelease(selfId, clusterId, userId, cfg.eventId);
 
-                        uint32_t timeout_cnt = 10U;
+                        uint32_t timeout_cnt = 10;
                         do
                         {
                             retVal = Ipc_sciclientIrqSet(selfId, clusterId, userId, cfg.eventId);
-                            if(IPC_SOK != retVal)
+                            if(retVal != 0)
                             {
                                 SystemP_printf("Failed to register irq through sciclient...%x\n", retVal);
                             }
                             timeout_cnt--;
-                        }while((IPC_SOK != retVal) && (0U < timeout_cnt));
+                        }while((retVal != 0) && (timeout_cnt > 0U));
 
-                        if(0U == timeout_cnt)
+                        if(timeout_cnt == 0U)
                         {
                             retVal = IPC_EFAIL;
                         }
                     }
 #endif
                     /* Register Mailbox interrupt now... */
-                    if (IPC_SOK == retVal)
+                    if (retVal == IPC_SOK)
                     {
                         /* disable the mailbox interrupt (from previous runs) */
                         Ipc_mailboxDisable(baseAddr, userId, queueId);
@@ -419,7 +419,7 @@ int32_t Ipc_mailboxRegister(uint16_t selfId, uint16_t remoteProcId,
 #ifndef MAILBOX_INTERRUPT_MODE
             {
                 /* Mailbox interrupt is not supported currently */
-                if(NULL == g_pollTask)
+                if(g_pollTask == NULL)
                 {
                     StartmailboxPollingTask();
                 }
@@ -477,11 +477,11 @@ static void Ipc_mailboxInternalCallback(uintptr_t arg)
     Ipc_MailboxFifo      *fifo;
 
     mbox = (Ipc_MailboxData *)arg;
-    if(NULL != mbox)
+    if(mbox != NULL)
     {
         mbox->intCnt++;
 
-        for(n = 0U; n < mbox->fifoCnt; n++)
+        for(n = 0; n < mbox->fifoCnt; n++)
         {
             fifo = &mbox->fifoTable[n];
 
@@ -572,7 +572,7 @@ void *Mailbox_plugInterrupt(Ipc_MbConfig *cfg, Ipc_OsalIsrFxn func, uintptr_t ar
 #ifndef IPC_SUPPORT_SCICLIENT
     /* Configure Main NavSS512 interrupt router */
     #ifdef QNX_OS
-    if((uintptr_t)0 == g_navssIntRtrBaseVirtAddr)
+    if(g_navssIntRtrBaseVirtAddr == 0)
     {
         g_navssIntRtrBaseVirtAddr = IpcUtils_getMemoryAddress(IPC_MCU_NAVSS0_INTR0_CFG_BASE,
                 NVSS_INTRTR_SIZE );
@@ -633,10 +633,10 @@ void *Mailbox_plugInterrupt(Ipc_MbConfig *cfg, Ipc_OsalIsrFxn func, uintptr_t ar
     intrPrms.corepacConfig.intVecNum        = OSAL_REGINT_INTVEC_EVENT_COMBINER;
 #else
     intrPrms.corepacConfig.intVecNum        = coreIntrNum;
-    intrPrms.corepacConfig.corepacEventNum  = 0U;
+    intrPrms.corepacConfig.corepacEventNum  = 0;
 #endif
 #ifdef QNX_OS
-    intrPrms.corepacConfig.intAutoEnable  = 1U;
+    intrPrms.corepacConfig.intAutoEnable  = 1;
 #endif
     osalRetVal = Osal_RegisterInterrupt(&intrPrms, &hwiHandle);
     if(OSAL_INT_SUCCESS != osalRetVal)

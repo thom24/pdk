@@ -40,25 +40,6 @@
 #include "cdn_stdint.h"
 #include <stddef.h>
 #include <stdbool.h>
-#include <ti/csl/tistdtypes.h>
-
-// Defined for Bool/uint32_t macros
-#ifdef TRUE
-#undef TRUE
-#define TRUE    UTRUE
-
-#undef FALSE
-#define FALSE   UFALSE
-#endif
-
-//Defined for bool macros
-#ifdef true
-#undef true
-#define true    BTRUE
-
-#undef false
-#define false   BFALSE
-#endif
 
 #endif /* __KERNEL__ */
 #endif  /* INCLUDE_CDN_STDTYPES_H__ */

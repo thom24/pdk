@@ -113,7 +113,7 @@ static Board_STATUS Board_CfgSgmii(void)
                                  serdesLane0EnableParams.serdesInstance,
                                  serdesLane0EnableParams.phyType);
 
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
@@ -123,14 +123,14 @@ static Board_STATUS Board_CfgSgmii(void)
     /* Load the Serdes Config File */
     result = CSL_serdesEthernetInit(&serdesLane0EnableParams);
     /* Return error if input params are invalid */
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
 
     /* Common Lane Enable API for lane enable, pll enable etc */
     laneRetVal = CSL_serdesLaneEnable(&serdesLane0EnableParams);
-    if (CSL_SERDES_LANE_ENABLE_NO_ERR != laneRetVal)
+    if (laneRetVal != 0)
     {
         return BOARD_FAIL;
     }
@@ -179,7 +179,7 @@ static Board_STATUS Board_CfgQsgmii(void)
                                  serdesLane0EnableParams.serdesInstance,
                                  serdesLane0EnableParams.phyType);
 
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
@@ -187,14 +187,14 @@ static Board_STATUS Board_CfgQsgmii(void)
     /* Load the Serdes Config File */
     result = CSL_serdesEthernetInit(&serdesLane0EnableParams);
     /* Return error if input params are invalid */
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
 
     /* Common Lane Enable API for lane enable, pll enable etc */
     laneRetVal = CSL_serdesLaneEnable(&serdesLane0EnableParams);
-    if (CSL_SERDES_LANE_ENABLE_NO_ERR != laneRetVal)
+    if (laneRetVal != 0)
     {
         return BOARD_FAIL;
     }
@@ -212,7 +212,7 @@ static Board_STATUS Board_CfgSierra0Clks(void)
     uint32_t parentID[] = { TISCI_DEV_SERDES_16G0_CORE_REF1_CLK_PARENT_HSDIV4_16FFT_MAIN_2_HSDIVOUT4_CLK,
                             TISCI_DEV_SERDES_16G0_CORE_REF_CLK_PARENT_HSDIV4_16FFT_MAIN_2_HSDIVOUT4_CLK };
 
-    for(i = 0; i < (sizeof(clkID)/sizeof(clkID[0])); i++)
+    for(i=0; i< sizeof(clkID)/sizeof(clkID[0]); i++)
     {
         /* Disable the clock */
         result = Sciclient_pmModuleClkRequest(moduleId,
@@ -220,7 +220,7 @@ static Board_STATUS Board_CfgSierra0Clks(void)
                                               TISCI_MSG_VALUE_CLOCK_SW_STATE_UNREQ,
                                               0U,
                                               SCICLIENT_SERVICE_WAIT_FOREVER);
-        if (CSL_SERDES_NO_ERR != result)
+        if (result != CSL_SERDES_NO_ERR)
         {
             return BOARD_FAIL;
         }
@@ -231,7 +231,7 @@ static Board_STATUS Board_CfgSierra0Clks(void)
                                                 parentID[i],
                                                 SCICLIENT_SERVICE_WAIT_FOREVER);
 
-        if (CSL_SERDES_NO_ERR != result)
+        if (result != CSL_SERDES_NO_ERR)
         {
             return BOARD_FAIL;
         }
@@ -243,7 +243,7 @@ static Board_STATUS Board_CfgSierra0Clks(void)
                                               TISCI_MSG_FLAG_CLOCK_ALLOW_FREQ_CHANGE,
                                               SCICLIENT_SERVICE_WAIT_FOREVER);
 
-        if (CSL_SERDES_NO_ERR != result)
+        if (result != CSL_SERDES_NO_ERR)
         {
             return BOARD_FAIL;
         }
@@ -255,7 +255,7 @@ static Board_STATUS Board_CfgSierra0Clks(void)
                                               &clkRateRead,
                                               SCICLIENT_SERVICE_WAIT_FOREVER);
 
-        if ((CSL_SERDES_NO_ERR != result) || (clkRateRead != clkRateHz))
+        if ((result != CSL_SERDES_NO_ERR) || (clkRateRead != clkRateHz))
         {
             return BOARD_FAIL;
         }
@@ -266,7 +266,7 @@ static Board_STATUS Board_CfgSierra0Clks(void)
                                         TISCI_MSG_VALUE_DEVICE_SW_STATE_ON,
                                         (TISCI_MSG_FLAG_AOP | TISCI_MSG_FLAG_DEVICE_RESET_ISO),
                                         SCICLIENT_SERVICE_WAIT_FOREVER);
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
@@ -276,7 +276,7 @@ static Board_STATUS Board_CfgSierra0Clks(void)
                                       0x0U /*resetBit*/,
                                       SCICLIENT_SERVICE_WAIT_FOREVER);
 
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
@@ -352,7 +352,7 @@ static Board_STATUS Board_CfgMultilinkPcieQsgmii(void)
                                  CSL_SIERRA_SERDES0,
                                  0U /* unused */);
 
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
@@ -362,21 +362,21 @@ static Board_STATUS Board_CfgMultilinkPcieQsgmii(void)
                                      serdesInstanceId,
                                      &serdesLane0EnableParams,
                                      &serdesLane1EnableParams);
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
 
     /* Enable PCIe lane */
     laneRetVal = CSL_serdesLaneEnable(&serdesLane0EnableParams);
-    if (CSL_SERDES_LANE_ENABLE_NO_ERR != laneRetVal)
+    if (laneRetVal != CSL_SERDES_LANE_ENABLE_NO_ERR)
     {
         return BOARD_FAIL;
     }
 
     /* Enable QSGMII lane */
     laneRetVal = CSL_serdesLaneEnable(&serdesLane1EnableParams);
-    if (CSL_SERDES_LANE_ENABLE_NO_ERR != laneRetVal)
+    if (laneRetVal != CSL_SERDES_LANE_ENABLE_NO_ERR)
     {
         return BOARD_FAIL;
     }
@@ -427,7 +427,7 @@ static Board_STATUS Board_serdesCfgEthernetXaui(void)
                                  laneParams_serdes0.serdesInstance,
                                  laneParams_serdes0.phyType);
 
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
@@ -435,14 +435,14 @@ static Board_STATUS Board_serdesCfgEthernetXaui(void)
     /* Load the Serdes Config File */
     result = CSL_serdesEthernetInit(&laneParams_serdes0);
     /* Return error if input params are invalid */
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
 
     /* Common Lane Enable API for lane enable, pll enable etc */
     laneRetVal = CSL_serdesLaneEnable(&laneParams_serdes0);
-    if (CSL_SERDES_LANE_ENABLE_NO_ERR != laneRetVal)
+    if (laneRetVal != 0)
     {
         return BOARD_FAIL;
     }
@@ -469,7 +469,7 @@ Board_STATUS Board_serdesCfgSgmii(void)
     ret = Board_CfgSgmii();
     /* Lock MMR write access */
     Board_serdesKickCtrl(1);
-    if(BOARD_SOK != ret)
+    if(ret != BOARD_SOK)
     {
         return ret;
     }
@@ -496,7 +496,7 @@ Board_STATUS Board_serdesCfgQsgmii(void)
     ret = Board_CfgQsgmii();
     /* Lock MMR write access */
     Board_serdesKickCtrl(1);
-    if(BOARD_SOK != ret)
+    if(ret != BOARD_SOK)
     {
         return ret;
     }
@@ -523,7 +523,7 @@ Board_STATUS Board_serdesCfgXaui(void)
     ret = Board_serdesCfgEthernetXaui();
     /* Lock MMR write access */
     Board_serdesKickCtrl(1);
-    if(BOARD_SOK != ret)
+    if(ret != BOARD_SOK)
     {
         return ret;
     }
@@ -534,12 +534,12 @@ Board_STATUS Board_serdesCfgXaui(void)
 int32_t Board_serdesCfgStatus(void)
 {
     CSL_SerdesStatus serdesStatus;
-    int32_t ret = IFALSE;
+    int32_t ret = FALSE;
 
     serdesStatus = CSL_serdesConfigStatus(CSL_SERDES_16G0_BASE);
-    if (CSL_SERDES_STATUS_PLL_LOCKED == serdesStatus)
+    if (serdesStatus == CSL_SERDES_STATUS_PLL_LOCKED)
     {
-        ret = ITRUE;
+        ret = TRUE;
     }
 
     return ret;
@@ -562,7 +562,7 @@ Board_STATUS Board_serdesCfg(void)
 
     /* Configure SERDES clocks */
     ret = Board_CfgSierra0Clks();
-    if(BOARD_SOK == ret)
+    if(ret == BOARD_SOK)
     {
         /* SERDES0 Initializations */
         ret = Board_CfgMultilinkPcieQsgmii();

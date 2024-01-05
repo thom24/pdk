@@ -730,7 +730,7 @@ extern void OSPI_Params_init(OSPI_Params *params);
  *                      transaction timeout has occured, SPI_Transaction.count
  *                      will contain the number of frames that were transferred.
  *
- *  @return BTRUE if started successfully; else BFALSE
+ *  @return true if started successfully; else false
  *
  *  @sa     OSPI_open
  *  @sa     OSPI_transferCancel
@@ -785,7 +785,7 @@ extern void SPI_serviceISR(SPI_Handle handle);
  *                      transaction timeout has occured, SPI_Transaction.count
  *                      will contain the number of frames that were transferred.
  *
- *  @return BTRUE if started successfully; else BFALSE
+ *  @return true if started successfully; else false
  *
  *  @sa     SPI_open
  *  @sa     SPI_transferCancel

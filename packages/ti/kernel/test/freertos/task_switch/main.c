@@ -60,7 +60,7 @@ int32_t main()
 
     status = Board_init(boardCfg);
 
-    DebugP_assert(BOARD_SOK == status);
+    DebugP_assert(status == BOARD_SOK);
 
     c66xIntrConfig();
 
@@ -74,7 +74,7 @@ int32_t main()
 
 	/* This task is created at highest priority, it should create more tasks and then delete itself */
     gMainTask = TaskP_create(&task_switch_main, &taskParams);
-    configASSERT(NULL != gMainTask);
+    configASSERT(gMainTask != NULL);
 
     /* Start the scheduler to start the tasks executing. */
     vTaskStartScheduler();
@@ -83,7 +83,7 @@ int32_t main()
        will only return if there was not enough FreeRTOS heap memory available to
        create the Idle and (if configured) Timer tasks.  Heap management, and
        techniques for trapping heap exhaustion, are described in the book text. */
-    DebugP_assert(BFALSE);
+    DebugP_assert((bool)false);
 
     return 0;
 }

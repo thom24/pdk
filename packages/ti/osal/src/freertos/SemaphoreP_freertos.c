@@ -129,9 +129,9 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
 
      for (i = 0; i < maxSemaphores; i++)
      {
-         if (BFALSE == semPool[i].used)
+         if ((bool)false == semPool[i].used)
          {
-             semPool[i].used = BTRUE;
+             semPool[i].used = (bool)true;
              /* Update statistics */
              gOsalSemAllocCnt++;
              if (gOsalSemAllocCnt > gOsalSemPeak)
@@ -176,9 +176,9 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
         if (retVal != SemaphoreP_OK)
         {
             key = HwiP_disable();
-            handle->used = BFALSE;
+            handle->used = (bool)false;
             /* Found the osal semaphore object to delete */
-            if (0U < gOsalSemAllocCnt)
+            if (gOsalSemAllocCnt > 0U)
             {
                 gOsalSemAllocCnt--;
             }
@@ -248,14 +248,14 @@ SemaphoreP_Status SemaphoreP_delete(SemaphoreP_Handle handle)
     SemaphoreP_Status ret = SemaphoreP_OK;
     SemaphoreP_freertos *semaphore = (SemaphoreP_freertos *)handle;
 
-    if((NULL_PTR != semaphore) && (BTRUE == semaphore->used))
+    if((NULL_PTR != semaphore) && ((bool)true == semaphore->used))
     {
         vSemaphoreDelete(semaphore->semHndl);
 
         key = HwiP_disable();
-        semaphore->used = BFALSE;
+        semaphore->used = (bool)false;
         /* Found the osal semaphore object to delete */
-        if (0U < gOsalSemAllocCnt)
+        if (gOsalSemAllocCnt > 0U)
         {
             gOsalSemAllocCnt--;
         }

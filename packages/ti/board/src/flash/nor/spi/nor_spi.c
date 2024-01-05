@@ -82,7 +82,7 @@ static NOR_STATUS Nor_spiCmdRead(SPI_Handle handle,
                                  uint32_t rxLen)
 {
     uint32_t        xferEnable;
-    uint32_t        terminateXfer = 0U;
+    uint32_t        terminateXfer = 0;
     bool            retVal;
 
     /* Enable transfer */
@@ -90,9 +90,9 @@ static NOR_STATUS Nor_spiCmdRead(SPI_Handle handle,
     SPI_control(handle, SPI_V0_CMD_XFER_ACTIVATE, (void *)&xferEnable);
 
     /* If no read data, release CS at the end of write */
-    if (0U == rxLen)
+    if (rxLen == 0)
     {
-        terminateXfer = 1U;
+        terminateXfer = 1;
     }
 
     /* Write Command */
@@ -103,7 +103,7 @@ static NOR_STATUS Nor_spiCmdRead(SPI_Handle handle,
 
     retVal = SPI_transfer(handle, &transaction);
 
-    if (BFALSE == retVal)
+    if (retVal == false)
     {
         return NOR_FAIL;
     }
@@ -115,7 +115,7 @@ static NOR_STATUS Nor_spiCmdRead(SPI_Handle handle,
         transaction.txBuf = NULL;
         transaction.rxBuf = rxBuf;
         transaction.count = rxLen;
-        terminateXfer = 1U;
+        terminateXfer = 1;
         transaction.arg = (void *)&terminateXfer;
 
         retVal = SPI_transfer(handle, &transaction);
@@ -125,7 +125,7 @@ static NOR_STATUS Nor_spiCmdRead(SPI_Handle handle,
     xferEnable = 0;
     SPI_control(handle, SPI_V0_CMD_XFER_ACTIVATE, (void *)&xferEnable);
 
-    if (BTRUE == retVal)
+    if (retVal == true)
     {
         return NOR_PASS;
     }
@@ -143,11 +143,11 @@ static NOR_STATUS Nor_spiReadId(SPI_Handle handle)
     uint32_t    manfID, devID;
 
     retVal = Nor_spiCmdRead(handle, &cmd, 1, idCode, NOR_RDID_NUM_BYTES);
-    if (NOR_PASS == retVal)
+    if (retVal == NOR_PASS)
     {
         manfID = (uint32_t)idCode[0];
         devID = ((uint32_t)idCode[1] << 8) | ((uint32_t)idCode[2]);
-        if ((NOR_MANF_ID == manfID) && (NOR_DEVICE_ID == devID))
+        if ((manfID == NOR_MANF_ID) && (devID == NOR_DEVICE_ID))
         {
             Nor_spiInfo.manufacturerId = manfID;
             Nor_spiInfo.deviceId = devID;
@@ -282,17 +282,17 @@ static NOR_STATUS Nor_spiCmdWrite(SPI_Handle handle,
                                   uint32_t   txlen)
 {
     uint32_t        xferEnable;
-    uint32_t        terminateXfer = 0U;
+    uint32_t        terminateXfer = 0;
     bool            retVal;
 
     /* Enable transfer */
-    xferEnable = 1U;
+    xferEnable = 1;
     SPI_control(handle, SPI_V0_CMD_XFER_ACTIVATE, (void *)&xferEnable);
 
     /* If no read data, release CS at the end of write */
-    if (0U == txlen)
+    if (txlen == 0)
     {
-        terminateXfer = 1U;
+        terminateXfer = 1;
     }
 
     /* Write Command */
@@ -303,7 +303,7 @@ static NOR_STATUS Nor_spiCmdWrite(SPI_Handle handle,
 
     retVal = SPI_transfer(handle, &transaction);
 
-    if (BFALSE == retVal)
+    if (retVal == false)
     {
         return NOR_FAIL;
     }
@@ -315,16 +315,16 @@ static NOR_STATUS Nor_spiCmdWrite(SPI_Handle handle,
         transaction.txBuf = txBuf;
         transaction.rxBuf = NULL;
         transaction.count = txlen;
-        terminateXfer = 1U;
+        terminateXfer = 1;
         transaction.arg = (void *)&terminateXfer;
 
         retVal = SPI_transfer(handle, &transaction);
     }
 
     /* Disable transfer */
-    xferEnable = 0U;
+    xferEnable = 0;
     SPI_control(handle, SPI_V0_CMD_XFER_ACTIVATE, (void *)&xferEnable);
-    if (BTRUE == retVal)
+    if (retVal == true)
     {
         return NOR_PASS;
     }
@@ -408,7 +408,7 @@ NOR_STATUS Nor_spiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
 {
     uint8_t         cmd[4];
     uint32_t        cmdLen;
-    uint32_t        addr = 0U;
+    uint32_t        addr = 0;
     uint8_t         cmdWren  = NOR_CMD_WREN;
     NOR_Info       *norSpiInfo;
     SPI_Handle      spiHandle;
@@ -425,16 +425,16 @@ NOR_STATUS Nor_spiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     }
     spiHandle = (SPI_Handle)norSpiInfo->hwHandle;
 
-    if (NOR_BE_SECTOR_NUM == erLoc)
+    if (erLoc == NOR_BE_SECTOR_NUM)
     {
         cmd[0]  = NOR_CMD_BULK_ERASE;
         cmdLen = 1;
     }
     else
     {
-		if (BTRUE == blkErase)
+		if (blkErase == true)
 		{
-            if (NOR_NUM_BLOCKS <= erLoc)
+            if (erLoc >= NOR_NUM_BLOCKS)
             {
                 return NOR_FAIL;
             }
@@ -443,7 +443,7 @@ NOR_STATUS Nor_spiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
         }
         else
         {
-            if (NOR_NUM_SECTORS <= erLoc)
+            if (erLoc >= NOR_NUM_SECTORS)
             {
                 return NOR_FAIL;
             }
@@ -457,13 +457,13 @@ NOR_STATUS Nor_spiErase(NOR_HANDLE handle, int32_t erLoc, bool blkErase)
     }
 
     /* Send Write Enable command */
-    if (NOR_FAIL == Nor_spiCmdRead(spiHandle, &cmdWren, 1, NULL, 0))
+    if (Nor_spiCmdRead(spiHandle, &cmdWren, 1, NULL, 0) == NOR_FAIL)
     {
         return NOR_FAIL;
     }
 
     /* Send erase command */
-    if (NOR_FAIL == Nor_spiCmdRead(spiHandle, cmd, cmdLen, NULL, 0))
+    if (Nor_spiCmdRead(spiHandle, cmd, cmdLen, NULL, 0) == NOR_FAIL)
     {
     	return NOR_FAIL;
     }

@@ -188,7 +188,7 @@ int32_t Dss_dctrlDrvEnableVideoDP(const Fvid2_ModeInfo *mInfo,
     Dss_DctrlDisplayPortDrvObj *pObj = &gDssDctrlDisplayPortDrvObj;
     uint32_t numStdModes, modeCnt;
 
-    if(UFALSE == pObj->isHpdSupported)
+    if(FALSE == pObj->isHpdSupported)
     {
         retVal = Dss_dctrlDrvDetectDp();
     }
@@ -196,9 +196,9 @@ int32_t Dss_dctrlDrvEnableVideoDP(const Fvid2_ModeInfo *mInfo,
     cookie = HwiP_disable();
 
     if((FVID2_SOK == retVal) &&
-       (UFALSE    == pObj->isHpdSupported))
+    (FALSE == pObj->isHpdSupported))
     {
-        pObj->isConnected = UTRUE;
+        pObj->isConnected = TRUE;
     }
 
     /*
@@ -274,7 +274,7 @@ int32_t Dss_dctrlDrvEnableVideoDP(const Fvid2_ModeInfo *mInfo,
     (DP_VIDEO_STATE_IDLE == pObj->videoState))
     {
         pObj->videoState = DP_VIDEO_STATE_REQUESTED;
-        if(UTRUE == pObj->isConnected)
+        if(TRUE == pObj->isConnected)
         {
             retVal = Dss_dctrlDrvDpStartVideo(pObj);
             if(FVID2_SOK == retVal)
@@ -291,7 +291,7 @@ int32_t Dss_dctrlDrvEnableVideoDP(const Fvid2_ModeInfo *mInfo,
 
 int32_t Dss_dctrlDrvInitDp(uint32_t isHpdSupported)
 {
-    int32_t retVal = FVID2_SOK;
+    uint32_t retVal = FVID2_SOK;
 
     /*
      * XXX push this things to some CSL kind of functions
@@ -301,9 +301,9 @@ int32_t Dss_dctrlDrvInitDp(uint32_t isHpdSupported)
 /* J721S2 does not have the HPD pin connected, so no need to do anything here. */
 #elif defined (SOC_J721E)
     /* HPD Pin Mux */
-    CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG0 + 0x1C4, 0x00040005);
+    CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG0 + 0x1c4, 0x00040005);
 #elif defined (SOC_J784S4)
-    CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG51 , 0x0004000C); // MUX-Mode-->12
+    CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_PADCONFIG51 , 0x0004000c); // MUX-Mode-->12
     /* This HPD pin is mapped to J784S4_EVM on SPI0_CS0--> PADCONFIG_51  */
 #endif
 
@@ -317,32 +317,32 @@ int32_t Dss_dctrlDrvInitDp(uint32_t isHpdSupported)
     CSL_REG32_WR(CSL_CTRL_MMR0_CFG0_BASE + CSL_MAIN_CTRL_MMR_CFG0_SERDES0_LN3_CTRL, 0x0);
    
     /* WIZ PHY */
-    CSL_REG32_WR(ADDR_AFE + 0x408, 0x30000000U);
-    CSL_REG32_WR(ADDR_AFE + 0x40C, 0x39000000U);
-    CSL_REG32_WR(ADDR_AFE + 0x480, 0x70000000U);
-    CSL_REG32_WR(ADDR_AFE + 0x4C0, 0x70000000U);
-    CSL_REG32_WR(ADDR_AFE + 0x500, 0x70000000U);
-    CSL_REG32_WR(ADDR_AFE + 0x540, 0x70000000U);
-    CSL_REG32_WR(ADDR_AFE + 0x484, 0x10001U   );
-    CSL_REG32_WR(ADDR_AFE + 0x4C4, 0x10001U   );
-    CSL_REG32_WR(ADDR_AFE + 0x504, 0x10001U   );
-    CSL_REG32_WR(ADDR_AFE + 0x544, 0x10001U   );
-    CSL_REG32_WR(ADDR_AFE + 0x5FC, 0x00000U   );
+    CSL_REG32_WR(ADDR_AFE + 0x408, 0x30000000);
+    CSL_REG32_WR(ADDR_AFE + 0x40c, 0x39000000);
+    CSL_REG32_WR(ADDR_AFE + 0x480, 0x70000000);
+    CSL_REG32_WR(ADDR_AFE + 0x4c0, 0x70000000 );
+    CSL_REG32_WR(ADDR_AFE + 0x500, 0x70000000 );
+    CSL_REG32_WR(ADDR_AFE + 0x540, 0x70000000 );
+    CSL_REG32_WR(ADDR_AFE + 0x484, 0x10001   );
+    CSL_REG32_WR(ADDR_AFE + 0x4c4, 0x10001   );
+    CSL_REG32_WR(ADDR_AFE + 0x504, 0x10001   );
+    CSL_REG32_WR(ADDR_AFE + 0x544, 0x10001   );
+    CSL_REG32_WR(ADDR_AFE + 0x5FC, 0x00000   );
 #else
-    CSL_REG32_WR(ADDR_AFE + 0x408, 0x30000000U);
+    CSL_REG32_WR(ADDR_AFE + 0x408, 0x30000000);
 #if defined (SOC_J721E)
-    CSL_REG32_WR(ADDR_AFE + 0x40C, 0x39000000U);
+    CSL_REG32_WR(ADDR_AFE + 0x40c, 0x39000000);
 #elif defined(SOC_J784S4)
-    CSL_REG32_WR(ADDR_AFE + 0x40C, 0x2A800000U); // SerDes changed to Ct3. This offset is the serdes wiz_config_serdes_rst register. The MMR definition has changed.
+    CSL_REG32_WR(ADDR_AFE + 0x40c, 0x2A800000); // SerDes changed to Ct3. This offset is the serdes wiz_config_serdes_rst register. The MMR definition has changed.
 #endif
-    CSL_REG32_WR(ADDR_AFE + 0x480, 0x70000000U);
-    CSL_REG32_WR(ADDR_AFE + 0x4C0, 0x80000000U);
-    CSL_REG32_WR(ADDR_AFE + 0x500, 0x80000000U);
-    CSL_REG32_WR(ADDR_AFE + 0x540, 0x80000000U);
-    CSL_REG32_WR(ADDR_AFE + 0x484, 0x10001U   );
-    CSL_REG32_WR(ADDR_AFE + 0x4C4, 0x10001U   );
-    CSL_REG32_WR(ADDR_AFE + 0x504, 0x10001U   );
-    CSL_REG32_WR(ADDR_AFE + 0x544, 0x10001U   );
+    CSL_REG32_WR(ADDR_AFE + 0x480, 0x70000000);
+    CSL_REG32_WR(ADDR_AFE + 0x4c0, 0x80000000);
+    CSL_REG32_WR(ADDR_AFE + 0x500, 0x80000000);
+    CSL_REG32_WR(ADDR_AFE + 0x540, 0x80000000);
+    CSL_REG32_WR(ADDR_AFE + 0x484, 0x10001   );
+    CSL_REG32_WR(ADDR_AFE + 0x4c4, 0x10001   );
+    CSL_REG32_WR(ADDR_AFE + 0x504, 0x10001   );
+    CSL_REG32_WR(ADDR_AFE + 0x544, 0x10001   );
 #endif
 
 #if defined(SOC_J721S2) || defined (SOC_J721E)
@@ -380,11 +380,11 @@ int32_t Dss_dctrlDrvRegisterHpdCb(const Dss_DctrlDpHpdCbParams *cbParams)
     }
 
     if((NULL != pObj->hpdCbFxn) &&
-      (UTRUE == pObj->hpdPending))
+    (TRUE == pObj->hpdPending))
     {
-        pObj->hpdPending = UFALSE;
-        pObj->hpdInProgress = UTRUE;
-        pObj->hpdCbFxn(UTRUE, pObj->hpdCbData);
+        pObj->hpdPending = FALSE;
+        pObj->hpdInProgress = TRUE;
+        pObj->hpdCbFxn(TRUE, pObj->hpdCbData);
     }
 
     HwiP_restore(cookie);
@@ -394,19 +394,19 @@ int32_t Dss_dctrlDrvRegisterHpdCb(const Dss_DctrlDpHpdCbParams *cbParams)
 
 int32_t Dss_dctrlDrvProcessHpdDp(uint32_t hpdState)
 {
-    int32_t retVal = FVID2_SOK;
-    uint32_t cookie, dpApiRet;
-    uint32_t isConnected = UFALSE;
+    uint32_t retVal = FVID2_SOK, dpApiRet;
+    uint32_t cookie;
+    uint32_t isConnected = FALSE;
     Dss_DctrlDisplayPortDrvObj *pObj = &gDssDctrlDisplayPortDrvObj;
     DP_TrainingStatus trainingResult;
 
-    if(UTRUE == hpdState)
+    if(TRUE == hpdState)
     {
         dpApiRet = DP_LinkTraining(pObj->dpPrivData, &trainingResult);
-        if ((CDN_EOK  == dpApiRet) &&
-            (DP_LT_OK == trainingResult))
+        if ((CDN_EOK == dpApiRet) &&
+        (trainingResult == DP_LT_OK))
         {
-            isConnected = UTRUE;
+            isConnected = TRUE;
         }
     }
 
@@ -435,7 +435,7 @@ int32_t Dss_dctrlDrvProcessHpdDp(uint32_t hpdState)
      * If we just disconnected, and we were previously RUNNING,
      * we set to REQUESTED and stop video
      */
-    if(UTRUE == pObj->isConnected)
+    if(TRUE == pObj->isConnected)
     {
         if((DP_VIDEO_STATE_REQUESTED == pObj->videoState) ||
         (DP_VIDEO_STATE_RUNNING == pObj->videoState))
@@ -466,7 +466,7 @@ int32_t Dss_dctrlDrvProcessHpdDp(uint32_t hpdState)
         }
     }
 
-    pObj->hpdInProgress = UFALSE;
+    pObj->hpdInProgress = FALSE;
     HwiP_restore(cookie);
 
     return retVal;
@@ -476,10 +476,9 @@ int32_t Dss_dctrlDrvProcessHpdDp(uint32_t hpdState)
 /*                       Static Function Definitions                          */
 /* ========================================================================== */
 
-int32_t Dss_dctrlDrvDetectDp(void)
+int32_t Dss_dctrlDrvDetectDp()
 {
-    int32_t retVal = FVID2_SOK;
-    uint32_t dpApiRet;
+    int32_t retVal = FVID2_SOK, dpApiRet;
     bool hpdState;
     DP_TrainingStatus trainingResult;
     Dss_DctrlDisplayPortDrvObj *pObj = &gDssDctrlDisplayPortDrvObj;
@@ -490,10 +489,10 @@ int32_t Dss_dctrlDrvDetectDp(void)
 
 #if defined (SOC_J721S2)
         /* HPD pin is not connected on j721s2_evm, so setting hpdDtate as true to avoid error. */
-        hpdState = BTRUE;    
+        hpdState = true;    
 #endif        
         if((CDN_EOK != dpApiRet) ||
-        (BTRUE != hpdState))
+        (true != hpdState))
         {
             retVal = FVID2_EFAIL;
         }
@@ -503,7 +502,7 @@ int32_t Dss_dctrlDrvDetectDp(void)
     {
         dpApiRet = DP_LinkTraining(pObj->dpPrivData, &trainingResult);
         if ((CDN_EOK != dpApiRet) ||
-        (DP_LT_OK != trainingResult))
+        (trainingResult != DP_LT_OK))
         {
             retVal = FVID2_EFAIL;
         }
@@ -517,56 +516,56 @@ static void Dss_dctrlDrvDpIntr(uintptr_t arg)
     Dss_DctrlDisplayPortDrvObj *pObj = (Dss_DctrlDisplayPortDrvObj *)arg;
     uint32_t evt;
     uint32_t retVal;
-    uint8_t hpdEvents = 0;
+    uint8_t hpdEvents = 0u;
 
     retVal = DP_GetEvent(pObj->dpPrivData, &evt);
 
     if((CDN_EOK == retVal) &&
-    (UFALSE != (evt & DP_TX_HPD_EVENT)))
+    (0 != (evt & DP_TX_HPD_EVENT)))
     {
         retVal = DP_ReadHpdEvent(pObj->dpPrivData, &hpdEvents);
     }
 
     if((CDN_EOK == retVal) &&
-       (UFALSE  == pObj->hpdInProgress))
+    (FALSE == pObj->hpdInProgress))
     {
 
-        if((0 != (hpdEvents & (uint8_t)DP_HPD_STATE)) &&
-        (0 != (hpdEvents & (uint8_t)DP_HPD_TO_HIGH)))
+        if((0U != (hpdEvents & DP_HPD_STATE)) &&
+        (0U != (hpdEvents & DP_HPD_TO_HIGH)))
         {
             if(NULL != pObj->hpdCbFxn)
             {
-                pObj->hpdInProgress = UTRUE;
-                pObj->hpdCbFxn(UTRUE, pObj->hpdCbData);
+                pObj->hpdInProgress = TRUE;
+                pObj->hpdCbFxn(TRUE, pObj->hpdCbData);
             }
             else
             {
-                pObj->hpdPending = UTRUE;
+                pObj->hpdPending = TRUE;
             }
         }
-        else if((0 == (hpdEvents & (uint8_t)DP_HPD_STATE)) &&
-        (0 != (hpdEvents & (uint8_t)DP_HPD_TO_LOW)))
+        else if((0U == (hpdEvents & DP_HPD_STATE)) &&
+        (0U != (hpdEvents & DP_HPD_TO_LOW)))
         {
             if(NULL != pObj->hpdCbFxn)
             {
-                pObj->hpdInProgress = UTRUE;
-                pObj->hpdCbFxn(UFALSE, pObj->hpdCbData);
+                pObj->hpdInProgress = TRUE;
+                pObj->hpdCbFxn(FALSE, pObj->hpdCbData);
             }
             else
             {
-                pObj->hpdPending = UFALSE;
+                pObj->hpdPending = FALSE;
             }
         }
         if ((0U != (hpdEvents & DP_HPD_STATE)) && (0U != (hpdEvents & DP_HPD_PULSE)))
         {
             if (NULL != pObj->hpdCbFxn)
             {
-                pObj->hpdInProgress = UTRUE;
-                pObj->hpdCbFxn(UTRUE, pObj->hpdCbData);
+                pObj->hpdInProgress = TRUE;
+                pObj->hpdCbFxn(TRUE, pObj->hpdCbData);
             }
             else
             {
-                pObj->hpdPending = UTRUE;
+                pObj->hpdPending = TRUE;
             }
         }
     }
@@ -581,26 +580,26 @@ static int32_t Dss_dctrlDrvDpStopVideo(Dss_DctrlDisplayPortDrvObj *pObj)
 static int32_t Dss_dctrlDrvDpStartVideo(Dss_DctrlDisplayPortDrvObj *pObj)
 {
     int32_t retVal = FVID2_SOK;
-    uint32_t dpApiRet = CDN_EOK;
+    int32_t dpApiRet = CDN_EOK;
     DP_AudioVideoClkCfg clkCfg;
     DP_VideoParameters videoParams;
 
-    clkCfg.videoClockEnable   = BTRUE;
-    clkCfg.audioClockEnable   = BTRUE;
-    clkCfg.pktDataClockEnable = BTRUE;
+    clkCfg.videoClockEnable   = true;
+    clkCfg.audioClockEnable   = true;
+    clkCfg.pktDataClockEnable = true;
 
     videoParams.bitsPerSubpixel    = 8;
     videoParams.pxEncFormat        = DP_PXENC_PXL_RGB;
     videoParams.stereoVidAttr      = DP_STEREO_VIDEO_LEFT;
     videoParams.btType             = DP_BT_601;
-    videoParams.forceMiscIgnoreBit = BFALSE;
+    videoParams.forceMiscIgnoreBit = false;
     videoParams.alignment          = DP_ALIGN_MSB;
-    videoParams.dscEnable          = BFALSE;
+    videoParams.dscEnable          = 0;
 
     /* fill the ones the driver does not care about */
     videoParams.vicParams.vic   = 0U;
     videoParams.vicParams.hFreq = 0.0;
-    videoParams.vicParams.vFreq = 0.0;
+    videoParams.vicParams.vFreq = 0,0;
     videoParams.vicParams.vicR  = 0;
     videoParams.vicParams.vicPR = 0;
 
@@ -644,7 +643,7 @@ static int32_t Dss_dctrlDrvDpStartVideo(Dss_DctrlDisplayPortDrvObj *pObj)
 
     if(CDN_EOK == dpApiRet)
     {
-        dpApiRet = DP_SetFramerEnable(pObj->dpPrivData, BTRUE);
+        dpApiRet = DP_SetFramerEnable(pObj->dpPrivData, true);
         if(CDN_EOK != dpApiRet)
         {
             GT_0trace(DssTrace, GT_ERR, "error : DP_SetFramerEnable\r\n");
@@ -654,7 +653,7 @@ static int32_t Dss_dctrlDrvDpStartVideo(Dss_DctrlDisplayPortDrvObj *pObj)
 
     if(CDN_EOK == dpApiRet)
     {
-        dpApiRet = DP_SetVideoSst(pObj->dpPrivData, BTRUE);
+        dpApiRet = DP_SetVideoSst(pObj->dpPrivData, true);
         if(CDN_EOK != dpApiRet)
         {
             GT_0trace(DssTrace, GT_ERR, "error : DP_SetVideoSst\r\n");
@@ -689,40 +688,40 @@ static int32_t Dss_dctrlDrvInitDPTX(uint32_t isHpdSupported)
     pObj->dpFWImage.dMem     = gDctrlDpDram;
     pObj->dpFWImage.dMemSize = DCTRL_DP_DMEM_SIZE;
 
-    pObj->dpCbInfo.event     = NULL;
-    pObj->dpClkInfo.mhz      = 125;
+    pObj->dpCbInfo.event = NULL;
+    pObj->dpClkInfo.mhz = 125;
 #if defined (SOC_J721S2)
     pObj->srcCaps.maxLinkRate = DP_LINK_RATE_2_70;
-    pObj->srcCaps.laneCount   = 2;
+    pObj->srcCaps.laneCount = 2;
 #else
     pObj->srcCaps.maxLinkRate = DP_LINK_RATE_8_10;
-    pObj->srcCaps.laneCount   = 4;
+    pObj->srcCaps.laneCount = 4;
 #endif
-    pObj->srcCaps.ssc               = BFALSE;
-    pObj->srcCaps.scramblerDisable  = BFALSE;
-    pObj->srcCaps.tps3              = BTRUE;
-    pObj->srcCaps.tps4              = BTRUE;
-    pObj->srcCaps.fastLinkTraining  = BFALSE;
-    pObj->srcCaps.maxVoltageSwing   = 3;
-    pObj->srcCaps.maxPreemphasis    = 2;
-    pObj->srcCaps.forceVoltageSwing = BFALSE;
-    pObj->srcCaps.forcePreemphasis  = BFALSE;
-    pObj->srcCaps.laneMapping       = DP_LANE_MAPPING_SINGLE_REGULAR;
+    pObj->srcCaps.ssc = false;
+    pObj->srcCaps.scramblerDisable = false;
+    pObj->srcCaps.tps3 = true;
+    pObj->srcCaps.tps4 = true;
+    pObj->srcCaps.fastLinkTraining = false;
+    pObj->srcCaps.maxVoltageSwing = 3;
+    pObj->srcCaps.maxPreemphasis = 2;
+    pObj->srcCaps.forceVoltageSwing = false;
+    pObj->srcCaps.forcePreemphasis = false;
+    pObj->srcCaps.laneMapping = DP_LANE_MAPPING_SINGLE_REGULAR;
     pObj->srcCaps.controllersPerPhy = DP_SINGLE_CONTROLLER;
 
-    pObj->isConnected               = UFALSE;
-    pObj->videoState                = DP_VIDEO_STATE_IDLE;
+    pObj->isConnected = FALSE;
+    pObj->videoState = DP_VIDEO_STATE_IDLE;
 
-    pObj->isHpdSupported            = isHpdSupported;
+    pObj->isHpdSupported = isHpdSupported;
 
-    pObj->hpdPending                = UFALSE;
-    pObj->hpdInProgress             = UFALSE;
+    pObj->hpdPending = FALSE;
+    pObj->hpdInProgress = FALSE;
 
     if(FVID2_SOK == retVal)
     {
         dpApiRet = DP_Probe(&pObj->dpCfg, &memReqDp);
         if((CDN_EOK != dpApiRet) ||
-        (DP_PRIVATE_DATA_SIZE < memReqDp))
+        (memReqDp > DP_PRIVATE_DATA_SIZE))
         {
             GT_0trace(DssTrace, GT_ERR, "error : DP_Probe\r\n");
             retVal = FVID2_EFAIL;
@@ -733,7 +732,7 @@ static int32_t Dss_dctrlDrvInitDPTX(uint32_t isHpdSupported)
     {
         dpApiRet = DP_SD0801_Probe(&pObj->dpPhyCfg, &memReqDpPhy);
         if ((CDN_EOK != dpApiRet) ||
-        (DP_PHY_PRIVATE_DATA_SIZE < memReqDpPhy))
+        (memReqDpPhy > DP_PHY_PRIVATE_DATA_SIZE))
         {
             GT_0trace(DssTrace, GT_ERR, "error : DP_SD0801_Probe\r\n");
             retVal = FVID2_EFAIL;
@@ -818,7 +817,7 @@ static int32_t Dss_dctrlDrvInitDPTX(uint32_t isHpdSupported)
     {
         uint8_t mainCtrlResp;
 
-        dpApiRet = DP_MainControl(pObj->dpPrivData, (uint8_t)BTRUE, &mainCtrlResp);
+        dpApiRet = DP_MainControl(pObj->dpPrivData, true, &mainCtrlResp);
         if (CDN_EOK != dpApiRet)
         {
             GT_0trace(DssTrace, GT_ERR, "error : DP_MainControl\r\n");
@@ -867,7 +866,7 @@ static int32_t Dss_dctrlDrvInitDPTX(uint32_t isHpdSupported)
     }
 
     if((FVID2_SOK == retVal) &&
-       (UTRUE     == pObj->isHpdSupported))
+    (TRUE == pObj->isHpdSupported))
     {
         dpApiRet = DP_Start(pObj->dpPrivData);
         if(CDN_EOK != dpApiRet)
@@ -878,7 +877,7 @@ static int32_t Dss_dctrlDrvInitDPTX(uint32_t isHpdSupported)
     }
 
     if((FVID2_SOK == retVal) &&
-       (UTRUE     == pObj->isHpdSupported))
+    (TRUE == pObj->isHpdSupported))
     {
         HwiP_clearInterrupt(DP_INTR);
 

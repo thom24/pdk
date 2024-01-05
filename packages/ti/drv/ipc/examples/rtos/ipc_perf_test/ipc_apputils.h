@@ -142,7 +142,7 @@ void *Ipc_appPhyToVirtFxn(uint64_t phyAddr, uint32_t chNum, void *appData);
 /**
  *  \brief Returns if print can be supported for a platform/build
  *
- *  \return UTRUE if print can be supported for a platform. Else UFALSE
+ *  \return TRUE if print can be supported for a platform. Else FALSE
  */
 uint32_t Ipc_appIsPrintSupported(void);
 

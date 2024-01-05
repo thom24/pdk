@@ -71,7 +71,7 @@ DRESULT disk_register(
         DRESULT (*d_ioctl) (BYTE drive, BYTE cmd, void * buf))
 {
 
-    if (_VOLUMES <= drive) {
+    if (drive >= _VOLUMES) {
         return RES_PARERR;
     }
 
@@ -90,7 +90,7 @@ DRESULT disk_register(
 DRESULT disk_unregister(BYTE drive)
 {
 
-    if (_VOLUMES <= drive) {
+    if (drive >= _VOLUMES) {
         return RES_PARERR;
     }
 
@@ -108,7 +108,7 @@ DRESULT disk_unregister(BYTE drive)
  */
 DSTATUS disk_initialize(BYTE drive)
 {
-    if (NULL == drive_fxn_table[drive].d_init) {
+    if (drive_fxn_table[drive].d_init == NULL) {
         return RES_PARERR;
     }
     else {
@@ -122,7 +122,7 @@ DSTATUS disk_initialize(BYTE drive)
  */
 DSTATUS disk_status(BYTE drive)
 {
-    if (NULL == drive_fxn_table[drive].d_status) {
+    if (drive_fxn_table[drive].d_status == NULL) {
         return RES_PARERR;
     }
     else {
@@ -136,7 +136,7 @@ DSTATUS disk_status(BYTE drive)
  */
 DRESULT disk_read(BYTE drive, BYTE * buf, DWORD start, UINT num)
 {
-    if (NULL == drive_fxn_table[drive].d_read) {
+    if (drive_fxn_table[drive].d_read == NULL) {
         return RES_PARERR;
     }
     else {
@@ -151,7 +151,7 @@ DRESULT disk_read(BYTE drive, BYTE * buf, DWORD start, UINT num)
 #if     _READONLY == 0
 DRESULT disk_write(BYTE drive, const BYTE * buf, DWORD start, UINT num)
 {
-    if (NULL == drive_fxn_table[drive].d_write) {
+    if (drive_fxn_table[drive].d_write == NULL) {
         return RES_PARERR;
     }
     else {
@@ -166,7 +166,7 @@ DRESULT disk_write(BYTE drive, const BYTE * buf, DWORD start, UINT num)
  */
 DRESULT disk_ioctl(BYTE drive, BYTE cmd, void * buf)
 {
-    if (NULL == drive_fxn_table[drive].d_ioctl) {
+    if (drive_fxn_table[drive].d_ioctl == NULL) {
         return RES_PARERR;
     }
     else {

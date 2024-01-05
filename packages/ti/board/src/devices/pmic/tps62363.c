@@ -59,12 +59,12 @@ Board_STATUS Board_tps62363ConvertVolt(uint8_t voutCode,
     uint16_t baseMillivolt = 500, millivoltStep = 10;
 
 
-    if(NULL == millivolt)
+    if(millivolt == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
 
-    if(0x80 <= voutCode)
+    if(voutCode >= 0x80)
     {
         return BOARD_INVALID_PARAM;
     }
@@ -90,7 +90,7 @@ Board_STATUS Board_tps62363ConvertVoutCode(uint16_t millivolt,
     Board_STATUS boardStatus = BOARD_SOK;
     uint16_t baseMillivolt = 500, millivoltStep = 10;
 
-    if(NULL == voutCode)
+    if(voutCode == NULL)
     {
         return BOARD_INVALID_PARAM;
     }
@@ -102,7 +102,7 @@ Board_STATUS Board_tps62363ConvertVoutCode(uint16_t millivolt,
 
     *voutCode = (millivolt - baseMillivolt) / millivoltStep;
 
-    if(0x80 <= *voutCode)
+    if(*voutCode >= 0x80)
     {
         return BOARD_INVALID_PARAM;
     }
@@ -135,14 +135,14 @@ Board_STATUS Board_tps62363ConvertVoutCode(uint16_t millivolt,
     Board_STATUS boardStatus = BOARD_SOK;
     uint8_t voutCode;
 
-    if((NULL == handle) || 
-       (BOARD_TPS62363_SET3_VOUT < powerResource))
+    if((handle == NULL) || 
+       (powerResource > BOARD_TPS62363_SET3_VOUT))
     {
         return BOARD_INVALID_PARAM;
     }
 
     boardStatus = Board_tps62363ConvertVoutCode(millivolt, &voutCode);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return boardStatus;
     }
@@ -153,7 +153,7 @@ Board_STATUS Board_tps62363ConvertVoutCode(uint16_t millivolt,
                                      &voutCode,
                                      BOARD_I2C_NUM_OF_BYTES_01,
                                      BOARD_I2C_TRANSACTION_TIMEOUT);
-    if(BOARD_SOK != boardStatus)
+    if(boardStatus != BOARD_SOK)
     {
         return BOARD_I2C_TRANSFER_FAIL;
     }

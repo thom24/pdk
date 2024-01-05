@@ -62,16 +62,16 @@ typedef uintptr_t NOR_HANDLE;
 
 /** NOR return type macros */
 /** \brief On Success. */
-#define NOR_PASS                         (int32_t)(0)
+#define NOR_PASS                         (0U)
 
 /** \brief On Failure. */
-#define NOR_FAIL                         (int32_t)(-1U)
+#define NOR_FAIL                         (-1U)
 
 /** \brief Error code for Timeout. */
-#define NOR_TIMEOUT                      (int32_t)(-2U)
+#define NOR_TIMEOUT                      (-2U)
 
 /** \brief Error code to indicate invalid parameter. */
-#define NOR_INVALID_PARAM                (int32_t)(-3U)
+#define NOR_INVALID_PARAM                (-3U)
 
 /*
 * \breif NOR device size (bus width) in bits
@@ -280,8 +280,8 @@ NOR_STATUS NOR_write(NOR_HANDLE handle, uint32_t addr,
  * \param     handle  [IN]      : flash device handle
  * \param     sector  [IN]      : Sector number to be erased
  *                                if -1, device erase
- * \param     blkErase[IN]      : BFALSE - Sector erase
- *                                BTRUE  - Bloack erase
+ * \param     blkErase[IN]      : false - Sector erase
+ *                                true - Bloack erase
  *
  * \return    NOR_PASS      : if success.
  *            NOR_FAIL      : if error.

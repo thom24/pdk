@@ -106,7 +106,7 @@ static Dss_EvtMgrInstObj *Dss_evtMgrGetInstObj(uint32_t instId);
 /* ========================================================================== */
 
 static Dss_EvtMgrInstObj gDss_EvtMgrInstObj[DSS_EVT_MGR_INST_ID_MAX];
-static Dss_EvtMgrCommonObj gDss_EvtMgrCommonObj = {UFALSE};
+static Dss_EvtMgrCommonObj gDss_EvtMgrCommonObj = {FALSE};
 
 /* ========================================================================== */
 /*                  Internal/Private Function Declarations                   */
@@ -131,10 +131,10 @@ int32_t Dss_evtMgrInit(const Dss_EvtMgrInitParams *initParams)
     GT_assert(DssTrace,
               (initParams->dssCommonRegionId < CSL_DSS_COMM_REG_ID_MAX));
 
-    if(UFALSE == gDss_EvtMgrCommonObj.isInitDone)
+    if(FALSE == gDss_EvtMgrCommonObj.isInitDone)
     {
         /* Initialize objects and mark flags as free */
-        for(cnt = 0U; cnt < DSS_EVT_MGR_INST_ID_MAX; cnt++)
+        for(cnt=0U; cnt<DSS_EVT_MGR_INST_ID_MAX; cnt++)
         {
             Fvid2Utils_memset(&gDss_EvtMgrInstObj[cnt],
                               0U,
@@ -146,7 +146,7 @@ int32_t Dss_evtMgrInit(const Dss_EvtMgrInitParams *initParams)
                           0U,
                           sizeof (gDss_EvtMgrCommonObj));
 
-        for(cnt = 0U; cnt < DSS_EVT_MGR_MAX_CLIENTS; cnt++)
+        for(cnt=0U; cnt<DSS_EVT_MGR_MAX_CLIENTS; cnt++)
         {
             gDss_EvtMgrCommonObj.evtMgrMemFlag[cnt] =
                                                 DSS_EVT_MGR_MEM_FLAG_FREE;
@@ -165,13 +165,13 @@ int32_t Dss_evtMgrInit(const Dss_EvtMgrInitParams *initParams)
         if(FVID2_SOK == retVal)
         {
             /* Initialize instance object members */
-            for(cnt = 0U; cnt < initParams->numIrq; cnt++)
+            for(cnt=0U; cnt<initParams->numIrq; cnt++)
             {
                 instObj = &gDss_EvtMgrInstObj[cnt];
                 instObj->dssCommonRegionId = initParams->dssCommonRegionId;
                 instObj->irqNum = initParams->irqNum[cnt];
                 instObj->instId = initParams->instId[cnt];
-                instObj->isInitDone = UTRUE;
+                instObj->isInitDone = TRUE;
                 instObj->headNode = NULL;
                 instObj->numIntr  = 0U;
 
@@ -201,7 +201,7 @@ int32_t Dss_evtMgrInit(const Dss_EvtMgrInitParams *initParams)
             }
         }
 
-        if(FVID2_SOK != retVal)
+        if(retVal != FVID2_SOK)
         {
             retVal+= Dss_evtMgrDeInit();
         }
@@ -216,12 +216,12 @@ int32_t Dss_evtMgrDeInit(void)
     Fvid2Utils_Node *tempNode;
     Fvid2Utils_Node *emNode;
 
-    for(cnt = 0U; cnt < DSS_EVT_MGR_INST_ID_MAX; cnt++)
+    for(cnt=0U; cnt<DSS_EVT_MGR_INST_ID_MAX; cnt++)
     {
         instObj = &gDss_EvtMgrInstObj[cnt];
-        instObj->isInitDone = UFALSE;
+        instObj->isInitDone = FALSE;
 
-        if(NULL != instObj->intrHandle)
+        if(instObj->intrHandle != NULL)
         {
             /* Un-register interrupt */
             HwiP_delete(instObj->intrHandle);
@@ -239,7 +239,7 @@ int32_t Dss_evtMgrDeInit(void)
         }
     }
 
-    if(NULL != gDss_EvtMgrCommonObj.lockSem)
+    if(gDss_EvtMgrCommonObj.lockSem != NULL)
     {
         SemaphoreP_delete(gDss_EvtMgrCommonObj.lockSem);
         gDss_EvtMgrCommonObj.lockSem = NULL;
@@ -268,7 +268,7 @@ void *Dss_evtMgrRegister(uint32_t instId,
     instObj = Dss_evtMgrGetInstObj(instId);
     GT_assert(DssTrace, (NULL != instObj));
 
-    if(UTRUE != instObj->isInitDone)
+    if(TRUE != instObj->isInitDone)
     {
         retVal = FVID2_EBADARGS;
     }
@@ -308,7 +308,7 @@ void *Dss_evtMgrRegister(uint32_t instId,
 
 int32_t Dss_evtMgrUnRegister(void *handle)
 {
-    uint32_t found = UFALSE;
+    uint32_t found = FALSE;
     uint32_t cnt, event, regVal;
     uint32_t eventGroup;
     Dss_EvtMgrInstObj *instObj = NULL;
@@ -331,12 +331,12 @@ int32_t Dss_evtMgrUnRegister(void *handle)
     {
         if(tempNode == emNode)
         {
-            found = UTRUE;
+            found = TRUE;
             break;
         }
         emNode = emNode->next;
     }
-    GT_assert(DssTrace, (UFALSE != found));
+    GT_assert(DssTrace, (FALSE != found));
 
     evtMgrInfo = (Dss_EvtMgrInfo *) tempNode->data;
     GT_assert(DssTrace, (NULL != evtMgrInfo));
@@ -350,7 +350,7 @@ int32_t Dss_evtMgrUnRegister(void *handle)
     /* Disable events in the DSS registers */
     eventGroup = evtMgrInfo->eventGroup;
 
-    for(cnt = 0U; cnt < evtMgrInfo->numEvents; cnt++)
+    for(cnt=0U; cnt<evtMgrInfo->numEvents; cnt++)
     {
         event = evtMgrInfo->allEvents[cnt];
 
@@ -395,7 +395,7 @@ int32_t Dss_evtMgrUnRegister(void *handle)
 
 int32_t Dss_evtMgrEnable(void *handle)
 {
-    uint32_t found = UFALSE;
+    uint32_t found = FALSE;
     uint32_t cnt, regVal;
     uint32_t eventGroup, event;
     Dss_EvtMgrInstObj *instObj = NULL;
@@ -418,12 +418,12 @@ int32_t Dss_evtMgrEnable(void *handle)
     {
         if(tempNode == emNode)
         {
-            found = UTRUE;
+            found = TRUE;
             break;
         }
         emNode = emNode->next;
     }
-    GT_assert(DssTrace, (UFALSE != found));
+    GT_assert(DssTrace, (FALSE != found));
 
     evtMgrInfo = (Dss_EvtMgrInfo *) tempNode->data;
     GT_assert(DssTrace, (NULL != evtMgrInfo));
@@ -433,7 +433,7 @@ int32_t Dss_evtMgrEnable(void *handle)
 
     eventGroup = evtMgrInfo->eventGroup;
 
-    for(cnt = 0U; cnt < evtMgrInfo->numEvents; cnt++)
+    for(cnt=0U; cnt<evtMgrInfo->numEvents; cnt++)
     {
         event = evtMgrInfo->allEvents[cnt];
 
@@ -464,7 +464,7 @@ int32_t Dss_evtMgrEnable(void *handle)
 
 int32_t Dss_evtMgrDisable(void *handle)
 {
-    uint32_t found = UFALSE;
+    uint32_t found = FALSE;
     uint32_t cnt, regVal;
     uint32_t eventGroup, event;
     Dss_EvtMgrInstObj *instObj = NULL;
@@ -487,12 +487,12 @@ int32_t Dss_evtMgrDisable(void *handle)
     {
         if(tempNode == emNode)
         {
-            found = UTRUE;
+            found = TRUE;
             break;
         }
         emNode = emNode->next;
     }
-    GT_assert(DssTrace, (UFALSE != found));
+    GT_assert(DssTrace, (FALSE != found));
 
     evtMgrInfo = (Dss_EvtMgrInfo *) tempNode->data;
     GT_assert(DssTrace, (NULL != evtMgrInfo));
@@ -502,7 +502,7 @@ int32_t Dss_evtMgrDisable(void *handle)
 
     eventGroup = evtMgrInfo->eventGroup;
 
-    for(cnt = 0U; cnt < evtMgrInfo->numEvents; cnt++)
+    for(cnt=0U; cnt<evtMgrInfo->numEvents; cnt++)
     {
         event = evtMgrInfo->allEvents[cnt];
 
@@ -572,7 +572,7 @@ static void Dss_evtMgrMasterIsr(uintptr_t arg)
         GT_assert(DssTrace, (NULL != evtMgrInfo));
         numEvents = 0U;
 
-        for(cnt = 0U; cnt < evtMgrInfo->numEvents; cnt++)
+        for(cnt=0U; cnt<evtMgrInfo->numEvents; cnt++)
         {
             regVal = CSL_REG32_RD(evtMgrInfo->l1StatusReg[cnt]);
 
@@ -641,7 +641,7 @@ static int32_t Dss_evtMgrFillInfo(Dss_EvtMgrInfo *evtMgrInfo,
     commRegs = socInfo->commRegs[dssCommonRegionId];
     GT_assert(DssTrace, (NULL != commRegs));
 
-    for(cnt = 0U; cnt < numEvents; cnt++)
+    for(cnt=0U; cnt<numEvents; cnt++)
     {
         retVal = Dss_enableL1Event(evtMgrInfo,
                                    dssCommonRegionId,
@@ -679,7 +679,7 @@ static Dss_EvtMgrInfo *Dss_evtMgrCreateInfo(Fvid2Utils_Node **node)
     uint32_t cnt;
     Dss_EvtMgrInfo *evtMgrInfo = NULL;
 
-    for(cnt = 0U; cnt < DSS_EVT_MGR_MAX_CLIENTS; cnt++)
+    for(cnt=0U; cnt<DSS_EVT_MGR_MAX_CLIENTS; cnt++)
     {
         if(DSS_EVT_MGR_MEM_FLAG_FREE ==
                                     gDss_EvtMgrCommonObj.evtMgrMemFlag[cnt])
@@ -701,7 +701,7 @@ static void Dss_evtMgrDeleteInfo(const Dss_EvtMgrInfo *evtMgrInfo)
 
     GT_assert(DssTrace, (NULL != evtMgrInfo));
 
-    for(cnt = 0U; cnt < DSS_EVT_MGR_MAX_CLIENTS; cnt++)
+    for(cnt=0U; cnt<DSS_EVT_MGR_MAX_CLIENTS; cnt++)
     {
         if(evtMgrInfo == &(gDss_EvtMgrCommonObj.evtMgrMemPool[cnt]))
         {
@@ -811,9 +811,9 @@ static Dss_EvtMgrInstObj *Dss_evtMgrGetInstObj(uint32_t instId)
     uint32_t cnt;
     Dss_EvtMgrInstObj *instObj = NULL;
 
-    if(DSS_EVT_MGR_INST_ID_MAX > instId)
+    if(instId < DSS_EVT_MGR_INST_ID_MAX)
     {
-        for(cnt = 0U; cnt < DSS_EVT_MGR_INST_ID_MAX; cnt++)
+        for(cnt=0U; cnt<DSS_EVT_MGR_INST_ID_MAX; cnt++)
         {
             if(gDss_EvtMgrInstObj[instId].instId == instId)
             {

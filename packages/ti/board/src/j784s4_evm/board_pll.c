@@ -141,10 +141,10 @@ static int32_t Board_PLLSetModuleClkFreq(uint32_t modId,
     int32_t status   = CSL_EFAIL;
     uint64_t respClkRate = 0;
     uint32_t numParents = 0U;
-    uint32_t moduleClockParentChanged = UFALSE;
+    uint32_t moduleClockParentChanged = 0U;
     uint32_t clockStatus = 0U;
     uint32_t origParent = 0U;
-    uint32_t foundParent = UFALSE;
+    uint32_t foundParent = 0U;
 
     /* Check if the clock is enabled or not */
     status = Sciclient_pmModuleGetClkStatus(modId,
@@ -176,7 +176,7 @@ static int32_t Board_PLLSetModuleClkFreq(uint32_t modId,
     }
     if (status == CSL_PASS)
     {
-        foundParent = UFALSE;
+        foundParent = 0U;
         /* Try to loop and change parents of the clock */
         for(i=0U;i<numParents;i++)
         {
@@ -191,7 +191,7 @@ static int32_t Board_PLLSetModuleClkFreq(uint32_t modId,
                 /* Check if the clock can be set to desirable freq. */
                 if (status == CSL_PASS)
                 {
-                    moduleClockParentChanged = UTRUE;
+                    moduleClockParentChanged = 1U;
                 }
             }
             if (status == CSL_PASS)
@@ -204,7 +204,7 @@ static int32_t Board_PLLSetModuleClkFreq(uint32_t modId,
             }
             if ((status == CSL_PASS) && (respClkRate == clkRate))
             {
-                foundParent = UTRUE;
+                foundParent = 1U;
                 break;
             }
         }
@@ -219,11 +219,11 @@ static int32_t Board_PLLSetModuleClkFreq(uint32_t modId,
                                                 SCICLIENT_SERVICE_WAIT_FOREVER);
         if ((status == CSL_PASS) && (respClkRate == clkRate))
         {
-            foundParent = UTRUE;
+            foundParent = 1U;
         }
     }
 
-    if (UTRUE == foundParent)
+    if (foundParent == 1U)
     {
         /* Set the clock at the desirable frequency*/
         status = Sciclient_pmSetModuleClkFreq(
@@ -248,7 +248,7 @@ static int32_t Board_PLLSetModuleClkFreq(uint32_t modId,
                                             0U,
                                             SCICLIENT_SERVICE_WAIT_FOREVER);
     }
-    if ((CSL_PASS != status) && (UTRUE == moduleClockParentChanged))
+    if ((status != CSL_PASS) && (moduleClockParentChanged == 1U))
     {
         /* Setting the original parent if failure */
         status = Sciclient_pmSetModuleClkParent(

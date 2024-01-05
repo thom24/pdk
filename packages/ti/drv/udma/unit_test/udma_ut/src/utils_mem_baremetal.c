@@ -78,7 +78,7 @@ uint8_t *fw_mem_end[UTILS_MEM_HEAP_NUM];
 uint8_t *fw_mem_alloc_ptr[UTILS_MEM_HEAP_NUM];
 uint8_t  fw_mem_wraparound[UTILS_MEM_HEAP_NUM];
 
-static uint32_t gUtilsMemClearBuf = UFALSE;
+static uint32_t gUtilsMemClearBuf = FALSE;
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -89,21 +89,21 @@ int32_t Utils_memInit(void)
     fw_mem_start[0]     = (uint8_t*)  gUtilsHeapMemMsmc;
     fw_mem_end[0]       = (uint8_t*)(&gUtilsHeapMemMsmc[UTILS_MEM_HEAP_SIZE_MSMC-1U]);
     fw_mem_alloc_ptr[0] = (uint8_t*)  gUtilsHeapMemMsmc;
-    fw_mem_wraparound[0]= UFALSE;
+    fw_mem_wraparound[0]= FALSE;
     fw_mem_start[1]     = (uint8_t*)  gUtilsHeapMemDdr;
     fw_mem_end[1]       = (uint8_t*)(&gUtilsHeapMemDdr[UTILS_MEM_HEAP_SIZE_DDR-1U]);
     fw_mem_alloc_ptr[1] = (uint8_t*)  gUtilsHeapMemDdr;
-    fw_mem_wraparound[1]= UFALSE;
+    fw_mem_wraparound[1]= FALSE;
     fw_mem_start[2]     = (uint8_t*)  gUtilsHeapMemInternal;
     fw_mem_end[2]       = (uint8_t*)(&gUtilsHeapMemInternal[UTILS_MEM_HEAP_SIZE_INTERNAL-1U]);
     fw_mem_alloc_ptr[2] = (uint8_t*)  gUtilsHeapMemInternal;
-    fw_mem_wraparound[2]= UFALSE;
+    fw_mem_wraparound[2]= FALSE;
     fw_mem_start[3]     = (uint8_t*)  gUtilsHeapMemOspi;
     fw_mem_end[3]       = (uint8_t*)(&gUtilsHeapMemOspi[UTILS_MEM_HEAP_SIZE_OSPI-1U]);
     fw_mem_alloc_ptr[3] = (uint8_t*)  gUtilsHeapMemOspi;
-    fw_mem_wraparound[3]= UFALSE;
+    fw_mem_wraparound[3]= FALSE;
 
-    gUtilsMemClearBuf = UTRUE;
+    gUtilsMemClearBuf = TRUE;
 
     return (UDMA_SOK);
 }
@@ -128,7 +128,7 @@ void *Utils_alignedMalloc(uint32_t heapId, uint32_t size, uint32_t alignment)
   else
   {
       /* wraparound happened. */
-      fw_mem_wraparound[heapId] = UTRUE;
+      fw_mem_wraparound[heapId] = TRUE;
       fw_mem_alloc_ptr[heapId] = fw_mem_start[heapId];
       alloc_ptr = (uint8_t*)align((uintptr_t)fw_mem_alloc_ptr[heapId], alignment);
       p_block =(void *)alloc_ptr;
@@ -150,14 +150,14 @@ void *Utils_memAlloc(uint32_t heapId, uint32_t size, uint32_t align)
     GT_assert(UdmaUtTrace, heapId < UTILS_MEM_HEAP_NUM);
 
     /* Heap alloc need some minimum allocation size */
-    if(UDMA_CACHELINE_ALIGNMENT > size)
+    if(size < UDMA_CACHELINE_ALIGNMENT)
     {
         size = UDMA_CACHELINE_ALIGNMENT;
     }
 
     /* allocate memory  */
     addr = Utils_alignedMalloc(heapId, size, align);
-    if((NULL != addr) && (UTRUE == gUtilsMemClearBuf))
+    if((addr != NULL) && (TRUE == gUtilsMemClearBuf))
     {
         memset(addr, 0U, size);
         /* Flush and invalidate the CPU write */

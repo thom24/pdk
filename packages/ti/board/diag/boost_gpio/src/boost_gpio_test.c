@@ -359,7 +359,7 @@ int main(void)
     int8_t ret = 0;
 #ifdef SOC_AM65XX
     Board_IDInfo_v2 boardInfo;
-    bool isBoardConnected = BFALSE;
+    bool isBoardConnected = FALSE;
 #endif
 
 #ifdef PDK_RAW_BOOT
@@ -388,13 +388,13 @@ int main(void)
         {
             if(strcmp(boardInfo.boardInfo.boardName, "LAUNCHXL-AM6") == 0)
             {
-                isBoardConnected = BTRUE;
+                isBoardConnected = TRUE;
             }
         }
     }
     BoardDiag_enableI2C(0, CSL_I2C0_CFG_BASE);
 
-    if(BFALSE == isBoardConnected)
+    if(isBoardConnected == FALSE)
     {
         UART_printf("\nApplication Card not Connected!!\n");
         UART_printf("Exiting the Test...\n");

@@ -114,10 +114,10 @@ void TaskP_sleep(uint32_t timeout)
 void TaskP_sleepInMsecs(uint32_t timeoutInMsecs)
 {
     uint32_t ticks;
-    uint32_t Clock_tickPeriod = 1000U;
+    uint32_t Clock_tickPeriod = 1000u;
 
     /* Clock_tickPeriod is in units of usecs */
-    ticks = ((uint64_t)timeoutInMsecs * 1000U) / Clock_tickPeriod;
+    ticks = ((uint64_t)timeoutInMsecs * 1000u) / Clock_tickPeriod;
 
     TaskP_sleep(ticks);
 }
@@ -156,14 +156,14 @@ void TaskP_yield(void) {
  */
 uint32_t TaskP_isTerminated(TaskP_Handle handle)
 {
-    uint32_t isTaskTerminated = UFALSE;
+    uint32_t isTaskTerminated = 0U;
 
     if(EOK == pthread_cancel(*(pthread_t*)handle))
     if (NULL != handle)
     {
         if(EOK == pthread_cancel((pthread_t)(long)handle))
         {
-            isTaskTerminated = UTRUE;
+            isTaskTerminated = 1U;
         }
     }
     return isTaskTerminated;

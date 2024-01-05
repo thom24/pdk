@@ -109,11 +109,11 @@ HeapP_Handle HeapP_create(const HeapP_Params *params)
 
     key = HwiP_disable();
 
-     for (i = 0U; i < maxHeap; i++)
+     for (i = 0; i < maxHeap; i++)
      {
-         if (BFALSE == heapPool[i].used)
+         if ((bool)false == heapPool[i].used)
          {
-             heapPool[i].used = BTRUE;
+             heapPool[i].used = (bool)true;
              /* Update statistics */
              gOsalHeapAllocCnt++;
              if (gOsalHeapAllocCnt > gOsalHeapPeak)
@@ -153,16 +153,16 @@ HeapP_Status HeapP_delete(HeapP_Handle handle)
     HeapP_Status ret_val = HeapP_OK;
     HeapP_freertos *heap = (HeapP_freertos *)handle;
 
-    if((NULL_PTR != heap) && (BTRUE == heap->used))
+    if((NULL_PTR != heap) && ((bool)true == heap->used))
     {
         vTaskSuspendAll();
         vHeapDelete(&heap->heapHndl);
         (void)xTaskResumeAll();
 
         key = HwiP_disable();
-        heap->used = BFALSE;
+        heap->used = (bool)false;
         /* Found the osal heap object to delete */
-        if (0U < gOsalHeapAllocCnt)
+        if (gOsalHeapAllocCnt > 0U)
         {
             gOsalHeapAllocCnt--;
         }
@@ -184,7 +184,7 @@ void *HeapP_alloc(HeapP_Handle handle, uint32_t allocSize)
     void *ptr = NULL_PTR;
     HeapP_freertos *heap = (HeapP_freertos *)handle;
 
-    if((NULL_PTR != heap) && (BTRUE == heap->used))
+    if((NULL_PTR != heap) && ((bool)true == heap->used))
     {
         vTaskSuspendAll();
         ptr = pvHeapMalloc(&heap->heapHndl, allocSize);
@@ -202,7 +202,7 @@ HeapP_Status HeapP_free(HeapP_Handle handle, void *ptr, uint32_t size)
     HeapP_Status ret_val = HeapP_OK;
     HeapP_freertos *heap = (HeapP_freertos *)handle;
 
-    if((NULL_PTR != heap) && (BTRUE == heap->used) && (NULL_PTR != ptr))
+    if((NULL_PTR != heap) && ((bool)true == heap->used) && (NULL_PTR != ptr))
     {
         vTaskSuspendAll();
         vHeapFree(&heap->heapHndl, ptr);
@@ -225,7 +225,7 @@ HeapP_Status HeapP_getHeapStats(HeapP_Handle handle, HeapP_MemStats *stats)
     HeapP_freertos *heap = (HeapP_freertos *)handle;
     HeapMemStats_t pHeapStats;
 
-    if((NULL_PTR != heap) && (BTRUE == heap->used))
+    if((NULL_PTR != heap) && ((bool)true == heap->used))
     {
         vTaskSuspendAll();
         vHeapGetHeapStats(&heap->heapHndl, &pHeapStats);

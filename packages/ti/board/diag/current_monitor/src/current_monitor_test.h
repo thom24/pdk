@@ -109,10 +109,10 @@ extern "C" {
 #endif
 
 /* INA Device register masks */
-#define SHUNT_VOLTAGE_REG_MASK            (0x7FFFU)
-#define BUS_VOLTAGE_REG_MASK              (0x7FFFU)
-#define POWER_REG_MASK                    (0xFFFFU)
-#define CURRENT_REG_MASK                  (0x7FFFU)
+#define SHUNT_VOLTAGE_REG_MASK            (0x7fffU)
+#define BUS_VOLTAGE_REG_MASK              (0x7fffU)
+#define POWER_REG_MASK                    (0xffffU)
+#define CURRENT_REG_MASK                  (0x7fffU)
 
 #define CALIBRATION_CONSTANT              (5120000U)
 #define DEFAULT_CONFIG_REG_VAL            (0x4497U)

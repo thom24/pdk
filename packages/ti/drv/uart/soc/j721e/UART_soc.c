@@ -67,7 +67,7 @@
 #define UART_TISCI_INVALID_DEV_ID       (0xFFFFU)
 
 /* CLEC input event # offset for GIC SPI */
-#define UART_CLEC_SOC_EVENTS_IN_EVT_OFFSET (1024U - 32U)
+#define UART_CLEC_SOC_EVENTS_IN_EVT_OFFSET (1024U - 32)
 
 /* C7x INTC int # for UART0 */
 #define UART_C7X_IRQ0                   (20U)
@@ -127,13 +127,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
         NULL,                           /* edmaHandle */
         UART_RXTRIGLVL_8,               /* rxTrigLvl */
         UART_TXTRIGLVL_56,              /* txTrigLvl */
-        UFALSE,                         /* dmaMode */
-        UFALSE,                         /* loopback */
+        FALSE,                          /* dmaMode */
+        FALSE,                          /* loopback */
         1U,                             /* enableInterrupt */
         UART16x_OPER_MODE,              /* operMode */
         NULL,                           /* dmaInfo */
         UART_socConfigIntrPath,         /* configSocIntrPath */
-        UFALSE,                         /* dirEnable, RS-485 External Transceiver Direction */
+        FALSE,                          /* dirEnable, RS-485 External Transceiver Direction */
         UART_MDR3_DIR_POL_0,            /* dirPol, RS-485 External Transceiver Direction Polarity */
     },
     {
@@ -171,13 +171,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
+        FALSE,
         UART_MDR3_DIR_POL_0,
     },
     {
@@ -215,13 +215,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
+        FALSE,
         UART_MDR3_DIR_POL_0,
     },
     {
@@ -259,13 +259,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
+        FALSE,
         UART_MDR3_DIR_POL_0,
     },
     {
@@ -303,13 +303,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
+        FALSE,
         UART_MDR3_DIR_POL_0,
     },
     {
@@ -347,14 +347,14 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
-        UART_MDR3_DIR_POL_0,
+        FALSE,
+           UART_MDR3_DIR_POL_0,
     },
     {
 #if defined (BUILD_MPU)
@@ -391,13 +391,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
+        FALSE,
         UART_MDR3_DIR_POL_0,
     },
     {
@@ -435,13 +435,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
+        FALSE,
         UART_MDR3_DIR_POL_0,
     },
     {
@@ -479,13 +479,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
+        FALSE,
         UART_MDR3_DIR_POL_0,
     },
     {
@@ -523,13 +523,13 @@ UART_HwAttrs uartInitCfg[CSL_UART_PER_CNT] =
         NULL,
         UART_RXTRIGLVL_8,
         UART_TXTRIGLVL_56,
-        UFALSE,
-        UFALSE,
+        FALSE,
+        FALSE,
         1U,
         UART16x_OPER_MODE,
         NULL,
         UART_socConfigIntrPath,
-        UFALSE,
+        FALSE,
         UART_MDR3_DIR_POL_0,
     },
 };
@@ -613,7 +613,7 @@ UART_Config UART_config[CSL_UART_PER_CNT + 1U] = {
  */
 int32_t UART_socGetInitCfg(uint32_t idx, UART_HwAttrs *cfg)
 {
-    int32_t ret = UART_SUCCESS;
+    int32_t ret = 0;
 
     if (idx < CSL_UART_PER_CNT)
     {
@@ -621,7 +621,7 @@ int32_t UART_socGetInitCfg(uint32_t idx, UART_HwAttrs *cfg)
     }
     else
     {
-        ret = UART_ERROR;
+        ret = (int32_t)(-1);
     }
 
     return ret;
@@ -638,7 +638,7 @@ int32_t UART_socGetInitCfg(uint32_t idx, UART_HwAttrs *cfg)
  */
 int32_t UART_socSetInitCfg(uint32_t idx, const UART_HwAttrs *cfg)
 {
-    int32_t ret = UART_SUCCESS;
+    int32_t ret = 0;
 
     if (idx < CSL_UART_PER_CNT)
     {
@@ -646,7 +646,7 @@ int32_t UART_socSetInitCfg(uint32_t idx, const UART_HwAttrs *cfg)
     }
     else
     {
-        ret = UART_ERROR;
+        ret = (int32_t)(-1);
     }
 
     return ret;
@@ -671,13 +671,13 @@ void UART_socInit(void);
 void UART_socInit(void)
 {
     uint32_t         i;
-    CSL_ArmR5CPUInfo info = {0U, 0U, 0U};
+    CSL_ArmR5CPUInfo info;
 
     CSL_armR5GetCpuID(&info);
-    if (CSL_ARM_R5_CLUSTER_GROUP_ID_0 != info.grpId)
+    if (info.grpId != (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_0)
     {
         /* Pulsar R5 core is on the Main domain */
-        for (i = 0U; i < CSL_UART_PER_CNT; i++)
+        for (i = 0; i < CSL_UART_PER_CNT; i++)
         {
             /* Configure the Main SS UART instances for Main SS Pulsar R5 */
             uartInitCfg[i].baseAddr = (uint32_t)CSL_UART0_BASE + (0x10000U * i);
@@ -805,7 +805,7 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
 
     /* Get the destination ID. */
 #if defined (BUILD_C66X)
-    if (0U == CSL_chipReadDNUM())
+    if (CSL_chipReadDNUM() == 0U)
     {
        dst_id = TISCI_DEV_C66SS0_CORE0;
     }
@@ -817,26 +817,22 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
     CSL_ArmR5CPUInfo info = {0};
 
     CSL_armR5GetCpuID(&info);
-    if (CSL_ARM_R5_CLUSTER_GROUP_ID_1 == info.grpId)
+    if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_1)
     {
         /* MAIN SS Pulsar R5 SS0 */
-        dst_id = (CSL_ARM_R5_CPU_ID_0 == info.cpuID)?
+        dst_id = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
                                     TISCI_DEV_R5FSS0_CORE0:
                                         TISCI_DEV_R5FSS0_CORE1;
     }
-    else if (CSL_ARM_R5_CLUSTER_GROUP_ID_2 == info.grpId)
+    else if (info.grpId == (uint32_t)CSL_ARM_R5_CLUSTER_GROUP_ID_2)
     {
         /* MAIN SS Pulsar R5 SS1 */
-        dst_id = (CSL_ARM_R5_CPU_ID_0 == info.cpuID)?
+        dst_id = (info.cpuID == CSL_ARM_R5_CPU_ID_0)?
                                     TISCI_DEV_R5FSS1_CORE0:
                                         TISCI_DEV_R5FSS1_CORE1;
     }
-    else
-    {
-        /* Do Nothing */
-    }
 
-    if((CSL_UART0_BASE == hwAttrs->baseAddr) || (CSL_UART1_BASE == hwAttrs->baseAddr) || (CSL_UART2_BASE == hwAttrs->baseAddr))
+    if(hwAttrs->baseAddr == CSL_UART0_BASE || hwAttrs->baseAddr == CSL_UART1_BASE || hwAttrs->baseAddr == CSL_UART2_BASE)
     {
         /* UART instances 0,1 and 2 have direct interrupt lines to the Main R5 cores.
          * We dont need to do interrupt routing for them.
@@ -868,7 +864,7 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
                 ir_id = 0;
                 break;
         }
-        if (UART_SUCCESS == ret)
+        if (ret == UART_SUCCESS)
         {
             ret = UART_socGetIrqRange(ir_id, dst_id, &irq_range_start, &irq_range_num);
         }
@@ -899,14 +895,14 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
     /* Config event */
     if(setIntrPath)
     {
-        if((UART_SUCCESS == ret) && (UART_TISCI_INVALID_DEV_ID != rmIrqReq.src_id))
+        if(ret == UART_SUCCESS && rmIrqReq.src_id != UART_TISCI_INVALID_DEV_ID)
         {
             retVal = Sciclient_rmIrqSet(
                     (const struct tisci_msg_rm_irq_set_req *)&rmIrqReq,
                     &rmIrqResp,
                     SCICLIENT_SERVICE_WAIT_FOREVER);
 #if defined (BUILD_MCU)
-            if(CSL_PASS == retVal)
+            if(retVal == CSL_PASS)
             {
                 hwAttrs->intNum = rmIrqReq.dst_host_irq;
             }
@@ -915,7 +911,7 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
     }
     else
     {
-        if((UART_SUCCESS == ret) && (UART_TISCI_INVALID_DEV_ID != rmIrqRelease.src_id))
+        if(ret == UART_SUCCESS && rmIrqRelease.src_id != UART_TISCI_INVALID_DEV_ID)
         {
             retVal = Sciclient_rmIrqRelease(
                     (const struct tisci_msg_rm_irq_release_req *)&rmIrqRelease,
@@ -928,13 +924,13 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
     CSL_CLEC_EVTRegs     *clecBaseAddr = (CSL_CLEC_EVTRegs *)CSL_COMPUTE_CLUSTER0_CLEC_REGS_BASE;
 
     /* Configure CLEC for UART */
-    cfgClec.secureClaimEnable = UFALSE;
-    cfgClec.evtSendEnable     = UTRUE;
+    cfgClec.secureClaimEnable = FALSE;
+    cfgClec.evtSendEnable     = TRUE;
     cfgClec.rtMap             = CSL_CLEC_RTMAP_CPU_ALL;
-    cfgClec.extEvtNum         = 0U;
+    cfgClec.extEvtNum         = 0;
     cfgClec.c7xEvtNum         = hwAttrs->intNum;
     retVal = CSL_clecConfigEvent(clecBaseAddr, hwAttrs->eventId, &cfgClec);
-    if (CSL_PASS != retVal)
+    if (retVal != CSL_PASS)
     {
         ret = UART_ERROR;
     }
@@ -943,7 +939,7 @@ static int32_t UART_socConfigIntrPath(const void *pHwAttrs, bool setIntrPath)
     (void)pHwAttrs;
 #endif
 
-    if (CSL_PASS == retVal)
+    if (retVal == CSL_PASS)
     {
         ret = UART_SUCCESS;
     }
@@ -976,7 +972,7 @@ static int32_t UART_socGetIrqRange(uint16_t ir_id, uint16_t dst_id, uint16_t *ir
                 &req,
                 &res,
                 SCICLIENT_SERVICE_WAIT_FOREVER);
-    if ((CSL_PASS != retVal) || (0U == res.range_num)) {
+    if (CSL_PASS != retVal || res.range_num == 0) {
         /* Try with HOST_ID_ALL */
         req.type           = ir_id;
         req.subtype        = (uint8_t)TISCI_RESASG_SUBTYPE_IR_OUTPUT;
@@ -987,7 +983,7 @@ static int32_t UART_socGetIrqRange(uint16_t ir_id, uint16_t dst_id, uint16_t *ir
                 &res,
                 SCICLIENT_SERVICE_WAIT_FOREVER);
     }
-    if ((CSL_PASS == retVal) && (0U != res.range_num))
+    if ((CSL_PASS == retVal) && (res.range_num != 0))
     {
         *irq_range_num = res.range_num;
         /* Translate IR Idx to Core Interrupt Idx */
@@ -998,7 +994,7 @@ static int32_t UART_socGetIrqRange(uint16_t ir_id, uint16_t dst_id, uint16_t *ir
                                                   irq_range_start);
                     
     }
-    if (CSL_PASS == retVal)
+    if (retVal == CSL_PASS)
     {
         retVal = UART_SUCCESS;
     }

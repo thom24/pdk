@@ -90,9 +90,9 @@ EventP_Handle EventP_create(EventP_Params *params)
 
      for (i = 0; i < maxEvent; i++)
      {
-         if (BFALSE == eventPool[i].used)
+         if ((bool)false == eventPool[i].used)
          {
-             eventPool[i].used = BTRUE;
+             eventPool[i].used = (bool)true;
              /* Update statistics */
              gOsalEventAllocCnt++;
              if (gOsalEventAllocCnt > gOsalEventPeak)
@@ -120,9 +120,9 @@ EventP_Handle EventP_create(EventP_Params *params)
         {
             /* If there was an error reset the event object and return NULL. */
             key = HwiP_disable();
-            handle->used = BFALSE;
+            handle->used = (bool)false;
             /* Found the osal event object to delete */
-            if (0U < gOsalEventAllocCnt)
+            if (gOsalEventAllocCnt > 0U)
             {
                 gOsalEventAllocCnt--;
             }
@@ -150,16 +150,16 @@ EventP_Status EventP_delete(EventP_Handle *handle)
     EventP_safertos *event = (EventP_safertos *)*handle;
     portBaseType    xCreateResult;
 
-    if((NULL_PTR != event) && (BTRUE == event->used))
+    if((NULL_PTR != event) && ((bool)true == event->used))
     {
         xCreateResult = xEventGroupDelete(event->eventHndl);
 
         if(pdPASS == xCreateResult)
         {
             key = HwiP_disable();
-            event->used = BFALSE;
+            event->used = (bool)false;
             /* Found the osal event object to delete */
-            if (0U < gOsalEventAllocCnt)
+            if (gOsalEventAllocCnt > 0U)
             {
                 gOsalEventAllocCnt--;
             }
@@ -195,7 +195,7 @@ uint32_t EventP_wait(EventP_Handle handle, uint32_t eventMask,
     uint32_t        eventBits = 0U;
     portBaseType    xCreateResult;
 
-    if((NULL_PTR != event) && (BTRUE == event->used) && (EventP_WaitMode_ALL >= waitMode))
+    if((NULL_PTR != event) && ((bool)true == event->used) && (EventP_WaitMode_ALL >= waitMode))
     {
         xCreateResult = xEventGroupWaitBits(event->eventHndl,
                                                   (eventBitsType)eventMask,
@@ -229,7 +229,7 @@ EventP_Status EventP_post(EventP_Handle handle, uint32_t eventMask)
     EventP_safertos *event = (EventP_safertos *)handle;
     portBaseType    xCreateResult;
     
-    if((NULL_PTR != event) && (BTRUE == event->used))
+    if((NULL_PTR != event) && ((bool)true == event->used))
     {
         if( 1 == Osal_isInISRContext() )
         {
@@ -278,7 +278,7 @@ uint32_t EventP_getPostedEvents(EventP_Handle handle)
     uint32_t        eventBitsGet = 0U;
     portBaseType    xCreateResult;
     
-    if((NULL_PTR != event) && (BTRUE == event->used))
+    if((NULL_PTR != event) && ((bool)true == event->used))
     {
         if( 1 == Osal_isInISRContext() )
         {

@@ -45,7 +45,7 @@ static Board_STATUS Board_DDRSetPLLClock(uint32_t ddrInstance, uint64_t frequenc
 {
     Board_STATUS status = BOARD_SOK;
 
-    if(0U == ddrInstance)
+    if(ddrInstance == 0)
     {
         status = Board_PLLInit(TISCI_DEV_DDR0,
                                TISCI_DEV_DDR0_DDRSS_DDR_PLL_CLK,
@@ -87,7 +87,7 @@ static void Board_DDRChangeFreqAck(uint32_t ddrInstance)
         regVal = HW_RD_REG32((BOARD_DDR_FSP_CLKCHNG_REQ_ADDR + (0x10 * ddrInstance))) & 0x80;
         BOARD_DEBUG_LOG("Reg Value: %d \n", regVal);
 
-        while(0x0U == regVal)
+        while(regVal == 0x0)
         {
             regVal = HW_RD_REG32((BOARD_DDR_FSP_CLKCHNG_REQ_ADDR + (0x10 * ddrInstance))) & 0x80;
             BOARD_DEBUG_LOG("Reg Value: %d \n", regVal);
@@ -96,15 +96,15 @@ static void Board_DDRChangeFreqAck(uint32_t ddrInstance)
         reqType = HW_RD_REG32((BOARD_DDR_FSP_CLKCHNG_REQ_ADDR + (0x10 * ddrInstance))) & 0x03;
         BOARD_DEBUG_LOG("Frequency Change type %d request from Controller \n", reqType);
 
-        if(1U == reqType)
+        if(reqType == 1)
         {
             Board_DDRSetPLLClock(ddrInstance, DDRSS_PLL_FREQUENCY_1);
         }
-        else if(2U == reqType)
+        else if(reqType == 2)
         {
             Board_DDRSetPLLClock(ddrInstance, DDRSS_PLL_FREQUENCY_2);
         }
-        else if(0U == reqType)
+        else if(reqType == 0)
         {
             Board_DDRSetPLLClock(ddrInstance, DDRSS_PLL_FREQUENCY_0);
         }
@@ -116,7 +116,7 @@ static void Board_DDRChangeFreqAck(uint32_t ddrInstance)
         /* Acknowledge frequency change request */
         HW_WR_REG32((BOARD_DDR_FSP_CLKCHNG_ACK_ADDR + (0x10 * ddrInstance)), 0x1);
 
-        while(0x80U == (HW_RD_REG32((BOARD_DDR_FSP_CLKCHNG_REQ_ADDR + (0x10U * ddrInstance))) & 0x80U));
+        while((HW_RD_REG32((BOARD_DDR_FSP_CLKCHNG_REQ_ADDR + (0x10 * ddrInstance))) & 0x80) == 0x80);
 
         /* Clear frequency change request acknowledge */
         HW_WR_REG32((BOARD_DDR_FSP_CLKCHNG_ACK_ADDR + (0x10 * ddrInstance)), 0x0);
@@ -351,12 +351,12 @@ static Board_DdrHandle Board_DDROpen(uint32_t ddrInstance)
 {
     Board_DdrHandle ddrHandle = NULL;
 
-    if(BOARD_DDR_INSTANCE_MAX > ddrInstance)
+    if(ddrInstance < BOARD_DDR_INSTANCE_MAX)
     {
-        if(BFALSE == gBoardDdrObject[ddrInstance].isOpen)
+        if(gBoardDdrObject[ddrInstance].isOpen == FALSE)
         {
             ddrHandle                          = &gBoardDdrObject[ddrInstance];
-            ddrHandle->isOpen                  = BTRUE;
+            ddrHandle->isOpen                  = TRUE;
             ddrHandle->boardDdrPd.ddr_instance = ddrHandle;
             ddrHandle->ddrInst                 = ddrInstance;
 
@@ -391,9 +391,9 @@ static Board_STATUS Board_DDRClose(Board_DdrHandle ddrHandle)
 {
     Board_STATUS status = BOARD_FAIL;
 
-    if(NULL != ddrHandle)
+    if(ddrHandle != NULL)
     {
-        ddrHandle->isOpen = BFALSE;
+        ddrHandle->isOpen = FALSE;
         status = BOARD_SOK;
     }
 
@@ -438,7 +438,7 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
     HW_WR_REG32(BOARD_DDR_CFG_LOAD,   BOARD_DDR_CFG_LOAD_VALUE);
 
     /* Wait until DDR config load is complete */
-    while(0x0 == (HW_RD_REG32(BOARD_DDR_CFG_LOAD) & 0x1));
+    while((HW_RD_REG32(BOARD_DDR_CFG_LOAD) & 0x1) == 0x0);
 
     /* Partition5 lockkey0 */
     HW_WR_REG32(BOARD_CTRL_MMR_PART5_LOCK0, KICK0_UNLOCK);
@@ -450,14 +450,14 @@ Board_STATUS Board_DDRInit(Bool eccEnable)
         /* Set to Boot Frequency(F0) while configuring the DDR */
         Board_DDRSetPLLClock(ddrInstance, DDRSS_PLL_FREQUENCY_0);
         ddrHandle = Board_DDROpen(ddrInstance);
-        if(NULL == ddrHandle)
+        if(ddrHandle == NULL)
         {
             BOARD_DEBUG_LOG("Board_DDROpen: FAIL\n");
             return BOARD_FAIL;
         }
 
         status = Board_DDRConfig(ddrHandle, 0);
-        if(BOARD_SOK != status)
+        if(status != BOARD_SOK)
         {
             BOARD_DEBUG_LOG("Board_DDRConfig: FAIL\n");
             return status;

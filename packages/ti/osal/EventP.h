@@ -169,21 +169,16 @@ extern "C" {
 #define EventP_ID_23       0x800000U
 /* @} */
 
-/**
- * \anchor EventP_Status
- * \name Status codes for EventP APIs
- *
- * @{
- */
 /*!
  *  @brief    Status codes for EventP APIs
  */
-typedef int32_t EventP_Status;
-/*! API completed successfully */
-#define EventP_OK                               ( (int32_t) 0)
-/*! API failed */
-#define EventP_FAILURE                          (-(int32_t) 1)
-/* @} */
+typedef enum EventP_Status_e
+{
+    /*! API completed successfully */
+    EventP_OK         = 0,
+    /*! API failed */
+    EventP_FAILURE    = (-(int32_t)1)
+} EventP_Status;
 
 /**
  * \anchor EventP_WaitMode
@@ -204,12 +199,12 @@ typedef uint8_t EventP_WaitMode;
 /*!
  *  @brief    Wait forever define
  */
-#define EventP_WAIT_FOREVER                     (~((uint32_t)0U))
+#define EventP_WAIT_FOREVER (~((uint32_t)0U))
 
 /*!
  *  @brief    No wait define
  */
-#define EventP_NO_WAIT                          ((uint32_t)0U)
+#define EventP_NO_WAIT       ((uint32_t)0U)
 
 
 /*!
@@ -228,7 +223,7 @@ typedef  void *EventP_Handle;
  */
 typedef struct EventP_Params_s
 {
-    void *instance;          /*!< Name of the task instance.*/
+    void *instance;          /*!< Name of the task instance.                  */
 } EventP_Params;
 
 /*!

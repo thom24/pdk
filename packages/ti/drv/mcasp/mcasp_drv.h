@@ -78,10 +78,10 @@ extern "C" {
 /*                         MACRO TYPES                                        */
 /*============================================================================*/
 
-#define Mcasp_CACHE_LENGTH  (128U)
+#define Mcasp_CACHE_LENGTH  (128u)
 /**< cache line length                                                        */
 
-#define Mcasp_NUMSERIALIZERS (16U)
+#define Mcasp_NUMSERIALIZERS (16u)
 /**< Number of serializers on mcasp                                           */
 
 #define Mcasp_GBLCTL_TIMEOUT  (30000U)
@@ -170,20 +170,20 @@ typedef enum Mcasp_SerializerNum_e {
  *  \brief Enumerated constant for wordlength supported by the MCASP device
  */
 typedef enum Mcasp_WordLength_e {
-    Mcasp_WordLength_8  = 8U,           /**< Word length of 8 bits            */
-    Mcasp_WordLength_12 = 12U,          /**< Word length of 12 bits           */
-    Mcasp_WordLength_16 = 16U,          /**< Word length of 16 bits           */
-    Mcasp_WordLength_20 = 20U,          /**< Word length of 20 bits           */
-    Mcasp_WordLength_24 = 24U,          /**< Word length of 24 bits           */
-    Mcasp_WordLength_32 = 32U           /**< Word length of 32 bits           */
+    Mcasp_WordLength_8  = 8u,           /**< Word length of 8 bits            */
+    Mcasp_WordLength_12 = 12u,          /**< Word length of 12 bits           */
+    Mcasp_WordLength_16 = 16u,          /**< Word length of 16 bits           */
+    Mcasp_WordLength_20 = 20u,          /**< Word length of 20 bits           */
+    Mcasp_WordLength_24 = 24u,          /**< Word length of 24 bits           */
+    Mcasp_WordLength_32 = 32u           /**< Word length of 32 bits           */
 }Mcasp_WordLength;
 
 /**
  *  \brief Enumerated constant for selecting MSB/LSB word in the slot bits
  */
 typedef enum Mcasp_WordBitsSelect_e {
-    Mcasp_WordBitsSelect_LSB  = 0U,           /**< Select the Least significant 'word' sized bits in the slot bits */
-    Mcasp_WordBitsSelect_MSB  = 1U           /**< Select the  Most significant 'word' sized  bits in the slot  */
+    Mcasp_WordBitsSelect_LSB  = 0u,           /**< Select the Least significant 'word' sized bits in the slot bits */
+    Mcasp_WordBitsSelect_MSB  = 1u           /**< Select the  Most significant 'word' sized  bits in the slot  */
 }Mcasp_WordBitsSelect;
 /**
  * \brief  PLL domain to be used by the device
@@ -343,7 +343,7 @@ typedef struct Mcasp_HwSetupGbl_s {
     uint32_t ditCtl;                     /**< whether McASP operates in DIT mode*/
     uint32_t dlbMode;                    /**< Digital loopback mode setup       */
     uint32_t amute;                      /**< Mute control register - AMUTE     */
-    uint32_t serSetup[16U];              /**< Setup serializer control register */
+    uint32_t serSetup[16u];              /**< Setup serializer control register */
 }Mcasp_HwSetupGbl;
 
 /**
@@ -390,7 +390,7 @@ typedef struct Mcasp_ChanParams_s {
     uint16_t noOfSerRequested;
     /**< Serializer requested by channel. Channel can ask for both.           */
 
-    uint32_t indexOfSersRequested[16U];
+    uint32_t indexOfSersRequested[16u];
     /**< Multi Serializer numbers requested by channel                        */
 
     Mcasp_HwSetupData* mcaspSetup;
@@ -669,7 +669,7 @@ typedef enum Mcasp_ioctlCmd_e {
     Mcasp_IOCTL_SET_TIMEOUT,
 
     /**< Ioctl command to check if the driver is compiled in loop job mode or
-     * Not. cmdArg = (uint16_t *) UTRUE = loop job mode,UFALSE = loop job disabled  */
+     * Not. cmdArg = (uint16_t *) TRUE = loop job mode,FALSE = loop job disabled  */
     Mcasp_IOCTL_QUERY_LOOPJOB_MODE,
 
     /**< Ioctl command to collect error stats 
@@ -701,7 +701,7 @@ typedef struct Mcasp_Params_s
 {
 
     uint16_t          enablecache;
-    /**< Option to select whether to enable cache or not(default is UTRUE)     */
+    /**< Option to select whether to enable cache or not(default is TRUE)     */
 
     uint16_t          isDataBufferPayloadStructure;
     /**< This is useful during the operation of the Mcasp in DIT mode.This

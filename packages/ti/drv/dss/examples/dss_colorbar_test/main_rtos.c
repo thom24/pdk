@@ -120,16 +120,16 @@ static void taskFxn(void* a0, void* a1)
     Board_init(boardCfg);
 
 #if defined (SOC_AM65XX)
-    lcdParams.outType  = APP_OUTPUT_OLDI;
+    lcdParams.outType  = (uint32_t)APP_OUTPUT_OLDI;
     lcdParams.pixelClk = (uint64_t)497500000;
     App_configureLCD(lcdParams);
 #else
 #if (1U == DISP_APP_TEST_EDP)
-    lcdParams.outType  = APP_OUTPUT_EDP;
+    lcdParams.outType  = (uint32_t)APP_OUTPUT_EDP;
     lcdParams.pixelClk = (uint64_t)148500000ULL;
     App_configureLCD(lcdParams);
 #else
-    lcdParams.outType  = APP_OUTPUT_HDMI;
+    lcdParams.outType  = (uint32_t)APP_OUTPUT_HDMI;
     lcdParams.pixelClk = (uint64_t)148500000ULL;
     App_configureLCD(lcdParams);
 #endif
@@ -151,7 +151,7 @@ static void taskFxn(void* a0, void* a1)
                                    TISCI_MSG_FLAG_AOP,
                                    SCICLIENT_SERVICE_WAIT_FOREVER);
 #endif
-    if (CSL_PASS == retVal)
+    if (retVal == CSL_PASS)
     {
         Dss_colorbarTest();
     }

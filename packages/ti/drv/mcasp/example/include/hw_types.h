@@ -46,9 +46,20 @@
 extern "C" {
 #endif
 
-#include <ti/csl/tistdtypes.h>  // bool/Bool macros are define in this header file
-
+//*****************************************************************************
+//
+// Define a boolean type, and values for true and false.
+//
+//*****************************************************************************
 typedef unsigned char tBoolean;
+
+#ifndef true
+#define true 1
+#endif
+
+#ifndef false
+#define false 0
+#endif
 
 #ifndef NULL
 #define NULL ((void*) 0)
@@ -73,6 +84,9 @@ typedef unsigned char tBoolean;
 #define HWREGBITB(x, b)                                                       \
         HWREGB(((unsigned int)(x) & 0xF0000000) | 0x02000000 |               \
                (((unsigned int)(x) & 0x000FFFFF) << 5) | ((b) << 2))
+
+#define TRUE    1
+#define FALSE   0
 
 #ifdef __cplusplus
 }

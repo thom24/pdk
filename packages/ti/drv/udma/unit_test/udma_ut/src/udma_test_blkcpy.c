@@ -105,13 +105,13 @@ int32_t udmaTestBlkcpyTc(UdmaTestTaskObj *taskObj)
               " |TEST INFO|:: Task:%d: Pacing time          : %d ms ::\r\n", taskObj->taskId, taskObj->pacingTime);
 
     retVal = udmaTestBlkcpyAlloc(taskObj);
-    retVal += udmaTestBlkcpyCreate(taskObj, UFALSE);
+    retVal += udmaTestBlkcpyCreate(taskObj, FALSE);
 
     Utils_prfTsBegin(taskObj->prfTsHandle);
-    retVal += udmaTestBlkcpyTestLoop(taskObj, UFALSE, UFALSE);
+    retVal += udmaTestBlkcpyTestLoop(taskObj, FALSE, FALSE);
     Utils_prfTsEnd(taskObj->prfTsHandle, (taskObj->loopCnt * taskObj->numCh));
 
-    retVal += udmaTestBlkcpyDelete(taskObj, UFALSE);
+    retVal += udmaTestBlkcpyDelete(taskObj, FALSE);
     retVal += udmaTestBlkcpyFree(taskObj);
 
     retVal += gUdmaTestBlkcpyResult;
@@ -133,13 +133,13 @@ int32_t udmaTestBlkcpyPauseResumeTc(UdmaTestTaskObj *taskObj)
               " |TEST INFO|:: Task:%d: Pacing time          : %d ms ::\r\n", taskObj->taskId, taskObj->pacingTime);
 
     retVal = udmaTestBlkcpyAlloc(taskObj);
-    retVal += udmaTestBlkcpyCreate(taskObj, UFALSE);
+    retVal += udmaTestBlkcpyCreate(taskObj, FALSE);
 
     Utils_prfTsBegin(taskObj->prfTsHandle);
-    retVal += udmaTestBlkcpyTestLoop(taskObj, UTRUE, UFALSE);
+    retVal += udmaTestBlkcpyTestLoop(taskObj, TRUE, FALSE);
     Utils_prfTsEnd(taskObj->prfTsHandle, (taskObj->loopCnt * taskObj->numCh));
 
-    retVal += udmaTestBlkcpyDelete(taskObj, UFALSE);
+    retVal += udmaTestBlkcpyDelete(taskObj, FALSE);
     retVal += udmaTestBlkcpyFree(taskObj);
 
     retVal += gUdmaTestBlkcpyResult;
@@ -161,13 +161,13 @@ int32_t udmaTestBlkcpyChainingTc(UdmaTestTaskObj *taskObj)
               " |TEST INFO|:: Task:%d: Pacing time          : %d ms ::\r\n", taskObj->taskId, taskObj->pacingTime);
 
     retVal = udmaTestBlkcpyAlloc(taskObj);
-    retVal += udmaTestBlkcpyCreate(taskObj, UTRUE);
+    retVal += udmaTestBlkcpyCreate(taskObj, TRUE);
 
     Utils_prfTsBegin(taskObj->prfTsHandle);
-    retVal += udmaTestBlkcpyTestLoop(taskObj, UFALSE, UTRUE);
+    retVal += udmaTestBlkcpyTestLoop(taskObj, FALSE, TRUE);
     Utils_prfTsEnd(taskObj->prfTsHandle, (taskObj->loopCnt * taskObj->numCh));
 
-    retVal += udmaTestBlkcpyDelete(taskObj, UTRUE);
+    retVal += udmaTestBlkcpyDelete(taskObj, TRUE);
     retVal += udmaTestBlkcpyFree(taskObj);
 
     retVal += gUdmaTestBlkcpyResult;
@@ -181,7 +181,7 @@ int32_t udmaTestBlkCpyRingPrimeLcdmaTest(UdmaTestTaskObj *taskObj)
     uint32_t    loopCnt = 0U;
 
     retVal = udmaTestBlkcpyAlloc(taskObj);
-    retVal += udmaTestBlkcpyCreate(taskObj, UFALSE);
+    retVal += udmaTestBlkcpyCreate(taskObj, FALSE);
 
     while(loopCnt < taskObj->loopCnt)
     {
@@ -195,7 +195,7 @@ int32_t udmaTestBlkCpyRingPrimeLcdmaTest(UdmaTestTaskObj *taskObj)
         loopCnt++;
     }
 
-    retVal += udmaTestBlkcpyDelete(taskObj, UFALSE);
+    retVal += udmaTestBlkcpyDelete(taskObj, FALSE);
     retVal += udmaTestBlkcpyFree(taskObj);
 
     retVal += gUdmaTestBlkcpyResult;
@@ -215,13 +215,13 @@ static int32_t udmaTestBlkcpyTestLoop(UdmaTestTaskObj *taskObj, uint32_t pauseTe
     startTime = AppUtils_getCurTimeInMsec();
     while(loopCnt < taskObj->loopCnt)
     {
-        if(UTRUE == taskObj->testPrms->dcEnable)
+        if(TRUE == taskObj->testPrms->dcEnable)
         {
             /* Reset dest buffers */
             for(chCnt = 0U ; chCnt < taskObj->numCh; chCnt++)
             {
                 chObj = taskObj->chObj[chCnt];
-                GT_assert(taskObj->traceMask, NULL != chObj);
+                GT_assert(taskObj->traceMask, chObj != NULL);
 
                 for(qCnt = 0U; qCnt < chObj->qdepth; qCnt++)
                 {
@@ -241,7 +241,7 @@ static int32_t udmaTestBlkcpyTestLoop(UdmaTestTaskObj *taskObj, uint32_t pauseTe
 
         loopCnt++;
 
-        if(PACING_NONE != taskObj->pacingTime)
+        if(taskObj->pacingTime != PACING_NONE)
         {
             while(1U)
             {
@@ -269,7 +269,7 @@ static int32_t udmaTestBlkcpyTestLoop(UdmaTestTaskObj *taskObj, uint32_t pauseTe
     GT_5trace(taskObj->traceMask, GT_INFO1,
               " |Block Copy TEST DURATION|: Task:%d: %d:%0.2d:%0.2d:%0.3d \r\n",
               taskObj->taskId, hrs, mins, secs, msecs);
-    if(UTRUE == taskObj->testPrms->prfEnable)
+    if(TRUE == taskObj->testPrms->prfEnable)
     {
         udmaTestCalcPerformance(taskObj, elapsedTime);
     }
@@ -303,10 +303,10 @@ static int32_t udmaTestBlkcpyTest(UdmaTestTaskObj *taskObj, uint32_t pauseTest, 
     for(chCnt = 0U ; chCnt < taskObj->numCh; chCnt++)
     {
         chObj = taskObj->chObj[chCnt];
-        GT_assert(taskObj->traceMask, NULL != chObj);
+        GT_assert(taskObj->traceMask, chObj != NULL);
 
         /* Pause the channel before transfer */
-        if(UTRUE == pauseTest)
+        if(TRUE == pauseTest)
         {
             retVal = Udma_chPause(chObj->chHandle);
             if(UDMA_SOK != retVal)
@@ -390,7 +390,7 @@ static int32_t udmaTestBlkcpyTest(UdmaTestTaskObj *taskObj, uint32_t pauseTest, 
 
     if(UDMA_SOK == retVal)
     {
-        if(UTRUE == pauseTest)
+        if(TRUE == pauseTest)
         {
             /* Sleep for sometime and check if the transfer has completed;
              * if so then it is an error */
@@ -445,12 +445,12 @@ static int32_t udmaTestBlkcpyTest(UdmaTestTaskObj *taskObj, uint32_t pauseTest, 
         for(chCnt = 0U ; chCnt < taskObj->numCh; chCnt++)
         {
             chObj = taskObj->chObj[chCnt];
-            GT_assert(taskObj->traceMask, NULL != chObj);
+            GT_assert(taskObj->traceMask, chObj != NULL);
 
             if(UDMA_TEST_EVENT_INTR == chObj->chPrms->eventMode)
             {
-                if ((UFALSE == chainTest) ||
-                    ((UTRUE == chainTest) && (chCnt == (taskObj->numCh - 1))))
+                if ((chainTest == FALSE) ||
+                    ((chainTest == TRUE) && (chCnt == (taskObj->numCh - 1))))
                 {
                     for(qCnt = 0U; qCnt < chObj->qdepth; qCnt++)
                     {
@@ -467,7 +467,7 @@ static int32_t udmaTestBlkcpyTest(UdmaTestTaskObj *taskObj, uint32_t pauseTest, 
         for(chCnt = 0U ; chCnt < taskObj->numCh; chCnt++)
         {
             chObj = taskObj->chObj[chCnt];
-            GT_assert(taskObj->traceMask, NULL != chObj);
+            GT_assert(taskObj->traceMask, chObj != NULL);
 
             for(qCnt = 0U; qCnt < chObj->qdepth; qCnt++)
             {
@@ -518,7 +518,7 @@ static int32_t udmaTestBlkcpyTest(UdmaTestTaskObj *taskObj, uint32_t pauseTest, 
                     }
                 }
 
-                if((UDMA_SOK == retVal) && (UTRUE == taskObj->testPrms->dcEnable))
+                if((UDMA_SOK == retVal) && (TRUE == taskObj->testPrms->dcEnable))
                 {
                     /* Invalidate cache */
                     Udma_appUtilsCacheInv(trpdMem, chObj->trpdSize);
@@ -540,7 +540,7 @@ static int32_t udmaTestBlkcpyTest(UdmaTestTaskObj *taskObj, uint32_t pauseTest, 
                 }
             }
 
-            if((UDMA_SOK == retVal) && (UTRUE == taskObj->testPrms->dcEnable))
+            if((UDMA_SOK == retVal) && (TRUE == taskObj->testPrms->dcEnable))
             {
                 /* Compare data */
                 retVal = udmaTestBlkcpyCompareData(taskObj, chObj);
@@ -858,8 +858,8 @@ static int32_t udmaTestBlkcpyCreate(UdmaTestTaskObj *taskObj, uint32_t chainTest
 
         if((UDMA_SOK == retVal) && (UDMA_TEST_EVENT_NONE != chObj->chPrms->eventMode))
         {
-            if((UFALSE == chainTest) ||
-               ((UTRUE == chainTest) && (chCnt == taskObj->numCh - 1)))
+            if((chainTest == FALSE) ||
+               ((chainTest == TRUE) && (chCnt == taskObj->numCh - 1)))
             {
                 /* Register ring completion callback */
                 /* In case of chaining test, register ring completion only for last channel. */
@@ -960,7 +960,7 @@ static int32_t udmaTestBlkcpyCreate(UdmaTestTaskObj *taskObj, uint32_t chainTest
         }
     }
 
-    if((UDMA_SOK == retVal) && (UTRUE == chainTest))
+    if((UDMA_SOK == retVal) && (chainTest == TRUE))
     {
         for(chCnt = 0U ; chCnt < taskObj->numCh; chCnt++)
         {
@@ -1024,7 +1024,7 @@ static int32_t udmaTestBlkcpyDelete(UdmaTestTaskObj *taskObj, uint32_t chainTest
         #endif
         }
 
-        if(UTRUE == chainTest)
+        if(chainTest == TRUE)
         {
             if(chCnt < (taskObj->numCh - 1))
             {

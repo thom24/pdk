@@ -79,7 +79,7 @@
 #endif
 
 /* Constants required to setup the initial task context. */
-#define portINITIAL_SPSR                 ( ( StackType_t ) 0x1F ) /* System mode, ARM mode, IRQ enabled FIQ enabled. */
+#define portINITIAL_SPSR                 ( ( StackType_t ) 0x1f ) /* System mode, ARM mode, IRQ enabled FIQ enabled. */
 #define portTHUMB_MODE_BIT               ( ( StackType_t ) 0x20 )
 #define portINTERRUPT_ENABLE_BIT         ( 0x80UL )
 #define portTHUMB_MODE_ADDRESS           ( 0x01UL )
@@ -111,17 +111,17 @@ volatile uint32_t ulCriticalNesting = 9999UL;
 
 /* Saved as part of the task context.  If ulPortTaskHasFPUContext is non-zero then
  * a floating point context must be saved and restored for the task. */
-uint32_t ulPortTaskHasFPUContext = UFALSE;
+uint32_t ulPortTaskHasFPUContext = pdFALSE;
 
 /* Set to 1 to pend a context switch from an ISR. */
-uint32_t ulPortYieldRequired = UFALSE;
+uint32_t ulPortYieldRequired = pdFALSE;
 
 /* Counts the interrupt nesting depth.  A context switch is only performed if
  * if the nesting depth is 0. */
 uint32_t ulPortInterruptNesting = 0UL;
 
 /* set to true when schedular gets enabled in xPortStartScheduler */
-uint32_t ulPortSchedularRunning = UFALSE;
+uint32_t ulPortSchedularRunning = pdFALSE;
 
 /* Store the PMU counter timestamp during an OS tick.
  * This is required to calculate the time in microseconds for 
@@ -129,7 +129,7 @@ uint32_t ulPortSchedularRunning = UFALSE;
 static volatile uint64_t ullPortLastTickPmuTs;
 
 /*  PMU counter timestamp overflow count. */
-static uint32_t ulPmuTsOverFlowCount = 0U;
+static uint32_t ulPmuTsOverFlowCount = 0;
 
 /* Faulty Stack Pointer at Data Abort. */
 uint32_t FaultySP;
@@ -176,7 +176,7 @@ static void prvTaskExitError( void )
      *
      * Force an assert() to be triggered if configASSERT() is
      * defined, then stop here so application writers can catch the error. */
-    DebugP_assert(BFALSE);
+    DebugP_assert((bool)false);
 }
 
 uint32_t ulGetDataFaultStatusRegister( void )
@@ -236,7 +236,7 @@ StackType_t * pxPortInitialiseStack( StackType_t * pxTopOfStack,
     pxTopOfStack--;
     *pxTopOfStack = ( StackType_t ) portINITIAL_SPSR;
 
-    if( 0x00UL != ( ( uint32_t ) pxCode & portTHUMB_MODE_ADDRESS ) )
+    if( ( ( uint32_t ) pxCode & portTHUMB_MODE_ADDRESS ) != 0x00UL )
     {
         /* The task will start in THUMB mode. */
         *pxTopOfStack |= portTHUMB_MODE_BIT;
@@ -335,7 +335,7 @@ static void prvPortInitTickTimer(void)
     pTickTimerHandle = TimerP_create(configTIMER_ID, &prvPorttimerTickIsr, &timerParams);
 
     /* don't expect the handle to be null */
-    DebugP_assert (NULL != pTickTimerHandle);
+    DebugP_assert (pTickTimerHandle != NULL);
 
     /* init internal data structure */
     gTimerCntrl.uxTicks             = 0;
@@ -369,7 +369,7 @@ BaseType_t xPortStartScheduler(void)
     #endif
 
     /* Start the ISR handling of the timer that generates the tick ISR. */
-    ulPortSchedularRunning = UTRUE;
+    ulPortSchedularRunning = pdTRUE;
 
     prvPortInitTickTimer();
     prvPortStartTickTimer();
@@ -388,20 +388,20 @@ BaseType_t xPortStartScheduler(void)
 
 void vPortYeildFromISR( uint32_t xSwitchRequired )
 {
-    if( UFALSE != xSwitchRequired )
+    if( xSwitchRequired != pdFALSE )
     {
-        ulPortYieldRequired = UTRUE;
+        ulPortYieldRequired = pdTRUE;
     }
 }
 
 void vPortTimerTickHandler()
 {
-    if( UTRUE == ulPortSchedularRunning )
+    if( ulPortSchedularRunning == pdTRUE )
     {
         /* Increment the RTOS tick. */
-        if( UFALSE != xTaskIncrementTick() )
+        if( xTaskIncrementTick() != pdFALSE )
         {
-            ulPortYieldRequired = UTRUE;
+            ulPortYieldRequired = pdTRUE;
         }
     }
 }
@@ -409,11 +409,11 @@ void vPortTimerTickHandler()
 void vPortTaskUsesFPU( void )
 {
 #if (configFLOATING_POINT_CONTEXT==0)
-    uint32_t ulInitialFPSCR = 0U;
+    uint32_t ulInitialFPSCR = 0;
 
     /* A task is registering the fact that it needs an FPU context.  Set the
      * FPU flag (which is saved as part of the task context). */
-    ulPortTaskHasFPUContext = UTRUE;
+    ulPortTaskHasFPUContext = pdTRUE;
 
     /* Initialise the floating point status register. */
     __asm__ volatile ( "FMXR 	FPSCR, %0" ::"r" ( ulInitialFPSCR ) : "memory" );
@@ -440,9 +440,9 @@ void vPortEnterCritical( void )
      * functions that end in "FromISR" can be used in an interrupt.  Only assert if
      * the critical nesting count is 1 to protect against recursive calls if the
      * assert function also uses a critical section. */
-    if( 1U == ulCriticalNesting )
+    if( ulCriticalNesting == 1 )
     {
-        DebugP_assert( 0U == ulPortInterruptNesting );
+        DebugP_assert( ulPortInterruptNesting == 0);
     }
     #endif
 }
@@ -499,7 +499,7 @@ void vPortConfigTimerForRunTimeStats()
     CSL_armR5PmuResetCycleCnt();      /* Set PMCR C-bit */
     CSL_armR5PmuEnableCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM, 1);     /* Set PMCNTENSET for event */
     CSL_armR5PmuClearCntrOverflowStatus(0x80000007);
-    ulPmuTsOverFlowCount = 0U;
+    ulPmuTsOverFlowCount = 0;
 }
 
 uint64_t uxPortReadPmuCounter(void)
@@ -510,11 +510,11 @@ uint64_t uxPortReadPmuCounter(void)
 
     tsLo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
 
-    if( pdTRUE == xPortInIsrContext() )
+    if( true == (bool)xPortInIsrContext() )
     {
         ovsrStatus = (CSL_armR5PmuReadCntrOverflowStatus() & (0x1U << CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM));
 
-        if (0U != ovsrStatus)
+        if (ovsrStatus != 0)
         {
             tsLo = CSL_armR5PmuReadCntr(CSL_ARM_R5_PMU_CYCLE_COUNTER_NUM);
             ulPmuTsOverFlowCount++;
@@ -530,7 +530,7 @@ uint64_t getRunTimeCounterValue()
 {
     uint64_t uxDeltaTs, uxTimeInUsecs;
     volatile uint64_t uxTimeInMilliSecs, t1, t2, pmuCounterRead, pmuCounterReadHi, pmuCounterReadLow;
-    uint32_t noBusyWaiting = 2U;
+    uint32_t noBusyWaiting = 2;
     /* If there is a tick in between reading the micro seconds from last tick, then the differenfece will get corrupted.
      * We should keep looping to ensure that no tick happened during the miscrosecond offset measurement.
      * Worst case expectation is that the loop will execute 2 times, as the tick interrupt occurs in 
@@ -563,7 +563,7 @@ uint64_t getRunTimeCounterValue()
     /* If t1 and t2 are not equal after 2 iterations of the while loop, then this is 
      * as unexpected situation and we should return an error, i.e., 0
      */
-    if ( ( 0U == noBusyWaiting ) && ( t1 != t2 ) )
+    if ( ( 0U == noBusyWaiting ) && ( t1!=t2 ) )
     {
         uxTimeInUsecs = (uint64_t)0;
     }
@@ -624,7 +624,7 @@ void vApplicationStackOverflowHook( TaskHandle_t xTask,
                                     char * pcTaskName )
 {
     DebugP_log1("[FreeRTOS] Stack overflow detected for task [%s]", (uintptr_t)pcTaskName);
-    DebugP_assert(BFALSE);
+    DebugP_assert((bool)false);
 }
 
 /* configSUPPORT_STATIC_ALLOCATION is set to 1, so the application must provide an
@@ -693,10 +693,10 @@ static StackType_t uxTimerTaskStack[ configTIMER_TASK_STACK_DEPTH ];
  */
 BaseType_t xPortInIsrContext(void)
 {
-    BaseType_t inISR = pdFALSE;
-    if (0U != ulPortInterruptNesting)
+    BaseType_t inISR = false;
+    if (ulPortInterruptNesting != 0)
     {
-        inISR =  pdTRUE;
+        inISR =  true;
     }
     return inISR;
 }
@@ -744,7 +744,7 @@ __attribute__((weak)) void _system_post_cinit(void)
 {
     osalArch_Config_t cfg;
 
-    cfg.disableIrqOnInit = BTRUE;
+    cfg.disableIrqOnInit = (bool)true;
     osalArch_Init(&cfg);
     extended_system_post_cinit();
 }

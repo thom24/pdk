@@ -538,7 +538,7 @@ static int32_t App_udmaOspiFlash(App_UdmaObj *appObj, App_OspiObj *ospiObj)
         /* For XSPI Flash App_ospiFlashInit configures in INDAC mode for Write.
          * Now switching to DAC mode to perform DAC DMA read.
          */
-        App_ospiFlashConfigDacMode(ospiObj, BTRUE);
+        App_ospiFlashConfigDacMode(ospiObj, TRUE);
     #endif
     }
 
@@ -640,7 +640,7 @@ static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj, App_OspiObj *ospiObj)
         txStartTicks = App_getGTCTimerTicks();
 
         /* Do Cache write-back for "appTestObj->numBytes" chunk to be tranferred */
-        CSL_armR5CacheWb(txBuf, size, BTRUE);
+        CSL_armR5CacheWb(txBuf, size, (bool)TRUE);
         
         /* Set number of times to trigger TX transfer */
         chunkCnt = appTrObj->icnt[1];
@@ -672,18 +672,18 @@ static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj, App_OspiObj *ospiObj)
             volatile uint32_t delay = OSPI_FLASH_CHECK_IDLE_DELAY;
             uint8_t  status = 0xFF;
             uint32_t regVal;
-            while (0U != timeOutVal)
+            while (timeOutVal != 0U)
             {
                 (void)CSL_ospiCmdRead(baseAddr, OSPI_FLASH_CMD_RDSR, 1U);
                 while(!CSL_ospiIsIdle(baseAddr));
                 CSL_ospiFlashExecCmd(baseAddr);
-                while(0U != retry)
+                while(retry != 0U)
                 {
-                    if(UTRUE == CSL_ospiFlashExecCmdComplete(baseAddr))
+                    if(CSL_ospiFlashExecCmdComplete(baseAddr) == TRUE)
                     {
                         break;
                     }
-                    while (0U < delay)
+                    while (delay > 0U)
                     {  
                         delay = delay - 1U;
                     }
@@ -692,13 +692,13 @@ static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj, App_OspiObj *ospiObj)
                 while(!CSL_ospiIsIdle(baseAddr));
                 regVal = CSL_REG32_RD(&baseAddr->FLASH_RD_DATA_LOWER_REG);
                 (void)memcpy((void *)&status, (void *)(&regVal), 1U);
-                if (0U == (status & 1U))
+                if ((status & 1U) == 0U)
                 {
                     break;
                 }
                 timeOutVal--;
                 delay = OSPI_FLASH_CHECK_IDLE_DELAY;
-                while (0U < delay)
+                while (delay > 0U)
                 {  
                     delay = delay - 1U;
                 }
@@ -744,7 +744,7 @@ static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj, App_OspiObj *ospiObj)
     uint32_t             offset;
 
     /* Init TX buffers */
-    if(UDMA_OSPI_FLASH_TEST_ID_WR_TUNING == appTestObj->testId)
+    if(appTestObj->testId == UDMA_OSPI_FLASH_TEST_ID_WR_TUNING)
     {
         for(i = 0U; i < totalSize; i++)
         {
@@ -765,7 +765,7 @@ static int32_t App_udmaOspiFlashWrite(App_UdmaObj *appObj, App_OspiObj *ospiObj)
     txStartTicks = App_getGTCTimerTicks();
 
     /* Call the API to write in INDAC mode */
-    OspiFlash_xspiIndacWrite(ospiObj, txBuf, totalSize, BFALSE, offset);
+    OspiFlash_xspiIndacWrite(ospiObj, txBuf, totalSize, FALSE, offset);
 
     /* Capture the time at the end of operation */
     txStopTicks = App_getGTCTimerTicks();
@@ -800,10 +800,10 @@ static int32_t App_udmaOspiFlashRead(App_UdmaObj *appObj)
     volatile uint64_t   *intrClearReg     = appTrObj->trEventPrms.intrClearReg;
     uint8_t             *trpdMem          = appChObj->trpdMem;
 
-    if(UDMA_OSPI_FLASH_TEST_ID_WR_TUNING != appTestObj->testId)
+    if(appTestObj->testId != UDMA_OSPI_FLASH_TEST_ID_WR_TUNING)
     {
     #if defined(FLASH_TYPE_XSPI)
-        OspiFlash_spiPhyTune(BTRUE, OSPI_FLASH_TUNING_DATA_OFFSET, appTestObj->clk);
+        OspiFlash_spiPhyTune(TRUE, OSPI_FLASH_TUNING_DATA_OFFSET, appTestObj->clk);
     #endif
 
         App_udmaTrObjInitRead(appTestObj, appTrObj);
@@ -858,7 +858,7 @@ static int32_t App_udmaOspiFlashRead(App_UdmaObj *appObj)
                 }
 #ifndef UDMA_TEST_DISABLE_RT_CACHEOPS
                 /* Do Cache invalidate for the received chunk */
-                CSL_armR5CacheInv(rxBuf, size, BTRUE);
+                CSL_armR5CacheInv(rxBuf, size, (bool)TRUE);
 #endif
 
                 rxStopTicks = App_getGTCTimerTicks();
@@ -989,7 +989,7 @@ static int32_t App_deinit(App_UdmaObj *appObj, App_OspiObj *ospiObj)
     int32_t         retVal;
     Udma_DrvHandle  drvHandle = &appObj->drvObj;
 
-    OspiFlash_ospiClose(ospiObj, BFALSE);
+    OspiFlash_ospiClose(ospiObj, FALSE);
 
     retVal = Udma_deinit(drvHandle);
     if(UDMA_SOK != retVal)
@@ -1408,7 +1408,7 @@ static void App_printPerfResults(App_UdmaObj *appObj)
 void App_print(const char *str)
 {
     UART_printf("%s", str);
-    if(UTRUE == Udma_appIsPrintSupported())
+    if(TRUE == Udma_appIsPrintSupported())
     {
         printf("%s", str);
     }
@@ -1423,7 +1423,7 @@ static void App_printNum(const char *str, uint32_t num)
     snprintf(printBuf, 200U, str, num);
     UART_printf("%s", printBuf);
 
-    if(UTRUE == Udma_appIsPrintSupported())
+    if(TRUE == Udma_appIsPrintSupported())
     {
         printf("%s", printBuf);
     }
@@ -1460,12 +1460,12 @@ static int32_t App_ospiFlashInit(App_OspiObj *ospiObj, uint32_t clk)
     bool dacMode;
 
 #if defined(FLASH_TYPE_OSPI)
-    dacMode = BTRUE;
+    dacMode = TRUE;
 #else
-    dacMode = BFALSE;
+    dacMode = FALSE;
 #endif
 
-    OspiFlash_spiPhyTuneReset(BTRUE);
+    OspiFlash_spiPhyTuneReset(TRUE);
 
     status += OspiFlash_ospiConfigClk(clk);
     if(UDMA_SOK == status)
@@ -1474,14 +1474,14 @@ static int32_t App_ospiFlashInit(App_OspiObj *ospiObj, uint32_t clk)
     }
 
     ospiObj->clk = clk;
-    status += OspiFlash_ospiOpen(ospiObj, OSPI_FLASH_WRITE_TIMEOUT, OSPI_FLASH_CHECK_IDLE_DELAY, dacMode, BFALSE);
+    status += OspiFlash_ospiOpen(ospiObj, OSPI_FLASH_WRITE_TIMEOUT, OSPI_FLASH_CHECK_IDLE_DELAY, dacMode, FALSE);
 
-    status += OspiFlash_ospiEnableDDR(dacMode, BFALSE);
+    status += OspiFlash_ospiEnableDDR(dacMode, FALSE);
 
     status += OspiFlash_ospiSetOpcode(dacMode);
 
 #if defined(FLASH_TYPE_OSPI)
-    status += OspiFlash_ospiConfigPHY(clk, BFALSE);
+    status += OspiFlash_ospiConfigPHY(clk, FALSE);
 #endif
 
     return (status);    
@@ -1489,9 +1489,9 @@ static int32_t App_ospiFlashInit(App_OspiObj *ospiObj, uint32_t clk)
 
 void App_ospiFlashConfigDacMode( App_OspiObj *ospiObj, bool dacMode)
 {
-    OspiFlash_ospiClose(ospiObj, BFALSE);
-    OspiFlash_ospiOpen(ospiObj, OSPI_FLASH_WRITE_TIMEOUT, OSPI_FLASH_CHECK_IDLE_DELAY, BTRUE, BTRUE);
-    OspiFlash_ospiEnableDDR(dacMode, BFALSE);
+    OspiFlash_ospiClose(ospiObj, FALSE);
+    OspiFlash_ospiOpen(ospiObj, OSPI_FLASH_WRITE_TIMEOUT, OSPI_FLASH_CHECK_IDLE_DELAY, TRUE, TRUE);
+    OspiFlash_ospiEnableDDR(dacMode, FALSE);
     OspiFlash_ospiSetOpcode(dacMode);
 }
 
@@ -1501,12 +1501,12 @@ static int32_t App_ospiFlashStart(uint32_t numBytes)
     int32_t retVal = UDMA_SOK;
     const CSL_ospi_flash_cfgRegs *baseAddr = (const CSL_ospi_flash_cfgRegs *)(OSPI_FLASH_CONFIG_REG_BASE_ADDR);
 
-    retVal = OspiFlash_ospiEraseBlk(0U, numBytes, BFALSE);
+    retVal = OspiFlash_ospiEraseBlk(0U, numBytes, FALSE);
 
-    OspiFlash_ospiXferIntrInit(BFALSE);
+    OspiFlash_ospiXferIntrInit(FALSE);
 
     /* Enable PHY pipeline mode */
-    CSL_ospiPipelinePhyEnable(baseAddr, UTRUE);
+    CSL_ospiPipelinePhyEnable(baseAddr, TRUE);
 
     return (retVal);
 }

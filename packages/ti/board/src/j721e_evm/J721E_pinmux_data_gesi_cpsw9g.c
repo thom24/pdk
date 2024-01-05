@@ -32,7 +32,7 @@ static pinmuxPerCfg_t gCpsw9g0PinCfg[] =
 
 static pinmuxModuleCfg_t gCpsw9gPinCfg[] =
 {
-    {0, 1, gCpsw9g0PinCfg},
+    {0, TRUE, gCpsw9g0PinCfg},
     {PINMUX_END}
 };
 
@@ -54,7 +54,7 @@ static pinmuxPerCfg_t gGpio0PinCfg[] =
 
 static pinmuxModuleCfg_t gGpioPinCfg[] =
 {
-    {0, 1, gGpio0PinCfg},
+    {0, TRUE, gGpio0PinCfg},
     {PINMUX_END}
 };
 
@@ -76,7 +76,7 @@ static pinmuxPerCfg_t gMdio0PinCfg[] =
 
 static pinmuxModuleCfg_t gMdioPinCfg[] =
 {
-    {0, 1, gMdio0PinCfg},
+    {0, TRUE, gMdio0PinCfg},
     {PINMUX_END}
 };
 
@@ -473,29 +473,29 @@ static pinmuxPerCfg_t gRgmii8PinCfg[] =
 
 static pinmuxModuleCfg_t gRgmiiPinCfg[] =
 {
-    {3, 1, gRgmii3PinCfg},
-    {4, 1, gRgmii4PinCfg},
-    {1, 1, gRgmii1PinCfg},
-    {2, 1, gRgmii2PinCfg},
+    {3, TRUE, gRgmii3PinCfg},
+    {4, TRUE, gRgmii4PinCfg},
+    {1, TRUE, gRgmii1PinCfg},
+    {2, TRUE, gRgmii2PinCfg},
     {PINMUX_END}
 };
 
 
 static pinmuxModuleCfg_t gSgmiiPinCfg[] =
 {
-    {3, 1, gRgmii3PinCfg},
-    {4, 1, gRgmii4PinCfg},
-    {7, 1, gRgmii7PinCfg},
-    {8, 1, gRgmii8PinCfg},
+    {3, TRUE, gRgmii3PinCfg},
+    {4, TRUE, gRgmii4PinCfg},
+    {7, TRUE, gRgmii7PinCfg},
+    {8, TRUE, gRgmii8PinCfg},
     {PINMUX_END}
 };
 
 static pinmuxModuleCfg_t gQsgmiiPinCfg[] =
 {
-    {1, 1, gRgmii1PinCfg},
-    {3, 1, gRgmii3PinCfg},
-    {4, 1, gRgmii4PinCfg},
-    {8, 1, gRgmii8PinCfg},
+    {1, TRUE, gRgmii1PinCfg},
+    {3, TRUE, gRgmii3PinCfg},
+    {4, TRUE, gRgmii4PinCfg},
+    {8, TRUE, gRgmii8PinCfg},
     {PINMUX_END}
 };
 
@@ -552,8 +552,8 @@ static pinmuxPerCfg_t gRmii0PinCfg[] =
 
 static pinmuxModuleCfg_t gRmiiPinCfg[] =
 {
-    {8, 1, gRmii8PinCfg},
-    {0, 1, gRmii0PinCfg},
+    {8, TRUE, gRmii8PinCfg},
+    {0, TRUE, gRmii0PinCfg},
     {PINMUX_END}
 };
 

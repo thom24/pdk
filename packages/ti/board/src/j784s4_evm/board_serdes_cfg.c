@@ -80,7 +80,7 @@ static Board_STATUS Board_CfgSgmii(uint32_t boardID)
     uint32_t laneNum;
     uint32_t laneMask;
 
-    if (BOARD_ID_ENET == boardID)
+    if (boardID == BOARD_ID_ENET)
     {
         laneNum  = BOARD_SERDES_SGMII_ENET1_LANE_NUM;
         laneMask = BOARD_SERDES_SGMII_ENET1_LANE_MASK;
@@ -127,7 +127,7 @@ static Board_STATUS Board_CfgSgmii(uint32_t boardID)
                                  serdesLaneEnableParams.serdesInstance,
                                  serdesLaneEnableParams.phyType);
 
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
@@ -139,14 +139,14 @@ static Board_STATUS Board_CfgSgmii(uint32_t boardID)
     /* Load the Serdes Config File */
     result = CSL_serdesEthernetInit(&serdesLaneEnableParams);
     /* Return error if input params are invalid */
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
 
     /* Common Lane Enable API for lane enable, pll enable etc */
     laneRetVal = CSL_serdesLaneEnable(&serdesLaneEnableParams);
-    if (0U != laneRetVal)
+    if (laneRetVal != 0)
     {
         return BOARD_FAIL;
     }
@@ -162,7 +162,7 @@ static Board_STATUS Board_CfgQsgmii(uint32_t boardID)
     uint32_t laneNum;
     uint32_t laneMask;
 
-    if (BOARD_ID_ENET == boardID)
+    if (boardID == BOARD_ID_ENET)
     {
         laneNum  = BOARD_SERDES_SGMII_ENET1_LANE_NUM;
         laneMask = BOARD_SERDES_SGMII_ENET1_LANE_MASK;
@@ -208,7 +208,7 @@ static Board_STATUS Board_CfgQsgmii(uint32_t boardID)
                                  serdesLaneEnableParams.serdesInstance,
                                  serdesLaneEnableParams.phyType);
 
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
@@ -216,14 +216,14 @@ static Board_STATUS Board_CfgQsgmii(uint32_t boardID)
     /* Load the Serdes Config File */
     result = CSL_serdesEthernetInit(&serdesLaneEnableParams);
     /* Return error if input params are invalid */
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
 
     /* Common Lane Enable API for lane enable, pll enable etc */
     laneRetVal = CSL_serdesLaneEnable(&serdesLaneEnableParams);
-    if (0U != laneRetVal)
+    if (laneRetVal != 0)
     {
         return BOARD_FAIL;
     }
@@ -239,7 +239,7 @@ static Board_STATUS Board_serdesCfgEthernetUsxgmii(uint32_t boardID)
     uint32_t laneNum;
     uint32_t laneMask;
 
-    if (BOARD_ID_ENET == boardID)
+    if (boardID == BOARD_ID_ENET)
     {
         laneNum  = BOARD_SERDES_SGMII_ENET1_LANE_NUM;
         laneMask = BOARD_SERDES_SGMII_ENET1_LANE_MASK;
@@ -287,7 +287,7 @@ static Board_STATUS Board_serdesCfgEthernetUsxgmii(uint32_t boardID)
                                  serdesLaneEnableParams.serdesInstance,
                                  serdesLaneEnableParams.phyType);
 
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
@@ -295,14 +295,14 @@ static Board_STATUS Board_serdesCfgEthernetUsxgmii(uint32_t boardID)
     /* Load the Serdes Config File */
     result = CSL_serdesEthernetInit(&serdesLaneEnableParams);
     /* Return error if input params are invalid */
-    if (CSL_SERDES_NO_ERR != result)
+    if (result != CSL_SERDES_NO_ERR)
     {
         return BOARD_FAIL;
     }
 
     /* Common Lane Enable API for lane enable, pll enable etc */
     laneRetVal = CSL_serdesLaneEnable(&serdesLaneEnableParams);
-    if (0U != laneRetVal)
+    if (laneRetVal != 0)
     {
         return BOARD_FAIL;
     }
@@ -329,8 +329,8 @@ Board_STATUS Board_serdesCfgSgmii(void)
 
     boardID = gBoardInitParams.enetBoardID;
 
-    if ((BOARD_ID_ENET  == boardID) ||
-        (BOARD_ID_ENET2 == boardID))
+    if ((boardID == BOARD_ID_ENET) ||
+        (boardID == BOARD_ID_ENET2))
     {
         /* Unlock MMR write access */
         Board_serdesKickCtrl(0);
@@ -366,8 +366,8 @@ Board_STATUS Board_serdesCfgQsgmii(void)
 
     boardID = gBoardInitParams.enetBoardID;
 
-    if ((BOARD_ID_ENET  == boardID) ||
-        (BOARD_ID_ENET2 == boardID))
+    if ((boardID == BOARD_ID_ENET) ||
+        (boardID == BOARD_ID_ENET2))
     {
         /* Unlock MMR write access */
         Board_serdesKickCtrl(0);
@@ -403,8 +403,8 @@ Board_STATUS Board_serdesCfgUsxgmii(void)
 
     boardID = gBoardInitParams.enetBoardID;
 
-    if ((BOARD_ID_ENET  == boardID) ||
-        (BOARD_ID_ENET2 == boardID))
+    if ((boardID == BOARD_ID_ENET) ||
+        (boardID == BOARD_ID_ENET2))
     {
         /* Unlock MMR write access */
         Board_serdesKickCtrl(0);
@@ -425,18 +425,18 @@ Board_STATUS Board_serdesCfgUsxgmii(void)
  *
  *  The function gets the configuration status of Torrent SerDes module.
  *
- *  \retval ITRUE    SerDes1 is configured
- *  \retval IFALSE   SerDes1 is not configured
+ *  \retval TRUE    SerDes1 is configured
+ *  \retval FALSE   SerDes1 is not configured
  */
 int32_t Board_serdesCfgStatus(void)
 {
     CSL_SerdesStatus serdesStatus;
-    int32_t ret = IFALSE;
+    int32_t ret = FALSE;
 
     serdesStatus = CSL_serdesConfigStatus(CSL_WIZ16B8M4CT3_2_WIZ16B8M4CT3_BASE);
-    if (CSL_SERDES_STATUS_PLL_LOCKED == serdesStatus)
+    if (serdesStatus == CSL_SERDES_STATUS_PLL_LOCKED)
     {
-        ret = ITRUE;
+        ret = TRUE;
     }
 
     return ret;

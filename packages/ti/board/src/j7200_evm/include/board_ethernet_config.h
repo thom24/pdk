@@ -53,7 +53,7 @@ extern "C" {
 #define CPSW5G_QGMII_PORTNUM            (0U)
 #define CPSW5G_RGMII_PORTNUM            (1U)
 
-#define RGMII_ID_DISABLE_MASK           (0x10U)
+#define RGMII_ID_DISABLE_MASK           (0x10)
 
 typedef struct Board_pruicssMdioInfo
 {

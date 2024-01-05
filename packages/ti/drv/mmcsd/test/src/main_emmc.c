@@ -197,7 +197,7 @@ mmcsdTestMMCProfile_t EMMCProfiles_DS_1BIT = {
 	                                        /*** Test Config details ***/
 	                                        MMCSD_REGRESSION_EMMC_DS_1BIT_TEST,  /* testID */
 	                                        "DS Mode 1-bit Test",  /* testDescription */
-	                                        BFALSE, /* powerCycleRequired */
+	                                        FALSE, /* powerCycleRequired */
 	                                        /*** Device config details ***/
 	                                       (MMCSD_SupportedMMCModes_e)MMCSD_SUPPORT_MMC_DS, /* mode */
 	                                       (MMCSD_BusVoltage_e)MMCSD_BUS_VOLTAGE_1_8V, /* bus Voltage */
@@ -211,7 +211,7 @@ mmcsdTestMMCProfile_t EMMCProfiles_DS_4BIT = {
 	                                        /*** Test Config details ***/
 	                                        MMCSD_REGRESSION_EMMC_DS_4BIT_TEST,  /* testID */
 	                                        "DS Mode 4-bit Test",  /* testDescription */
-	                                        BFALSE, /* powerCycleRequired */
+	                                        FALSE, /* powerCycleRequired */
 	                                        /*** Device config details ***/
 	                                       (MMCSD_SupportedMMCModes_e)MMCSD_SUPPORT_MMC_DS, /* mode */
 	                                       (MMCSD_BusVoltage_e)MMCSD_BUS_VOLTAGE_1_8V, /* bus Voltage */
@@ -226,7 +226,7 @@ mmcsdTestMMCProfile_t EMMCProfiles_DS_8BIT = {
 	                                        /*** Test Config details ***/
 	                                        MMCSD_REGRESSION_EMMC_DS_8BIT_TEST,  /* testID */
 	                                        "DS Mode 8-bit Test",  /* testDescription */
-	                                        BFALSE, /* powerCycleRequired */
+	                                        FALSE, /* powerCycleRequired */
 	                                        /*** Device config details ***/
 	                                       (MMCSD_SupportedMMCModes_e)MMCSD_SUPPORT_MMC_DS, /* mode */
 	                                       (MMCSD_BusVoltage_e)MMCSD_BUS_VOLTAGE_1_8V, /* bus Voltage */
@@ -240,7 +240,7 @@ mmcsdTestMMCProfile_t EMMCProfiles_HS_SDR = {
 	                                        /*** Test Config details ***/
 	                                        MMCSD_REGRESSION_EMMC_HS_SDR_TEST,  /* testID */
 	                                        "HS-SDR Mode Test",  /* testDescription */
-	                                        BFALSE, /* powerCycleRequired */
+	                                        FALSE, /* powerCycleRequired */
 	                                        /*** Device config details ***/
 	                                       (MMCSD_SupportedMMCModes_e)MMCSD_SUPPORT_MMC_HS_SDR ,/* mode */
 	                                       (MMCSD_BusVoltage_e)MMCSD_BUS_VOLTAGE_1_8V, /* bus Voltage */
@@ -254,7 +254,7 @@ mmcsdTestMMCProfile_t EMMCProfiles_HS_DDR = {
 	                                        /*** Test Config details ***/
 	                                        MMCSD_REGRESSION_EMMC_HS_DDR_TEST,  /* testID */
 	                                        "HS-DDR Mode Test",  /* testDescription */
-	                                        BFALSE, /* powerCycleRequired */
+	                                        FALSE, /* powerCycleRequired */
 	                                        /*** Device config details ***/
 	                                       (MMCSD_SupportedMMCModes_e)MMCSD_SUPPORT_MMC_HS_DDR, /* mode */
 	                                       (MMCSD_BusVoltage_e)MMCSD_BUS_VOLTAGE_1_8V, /* bus Voltage */
@@ -268,7 +268,7 @@ mmcsdTestMMCProfile_t EMMCProfiles_HS200 = {
 	                                        /*** Test Config details ***/
 	                                        MMCSD_REGRESSION_EMMC_HS200_TEST,  /* testID */
 	                                        "HS200 Mode Test",  /* testDescription */
-	                                        BFALSE, /* powerCycleRequired */
+	                                        FALSE, /* powerCycleRequired */
 	                                        /*** Device config details ***/
 	                                       (MMCSD_SupportedMMCModes_e)MMCSD_SUPPORT_MMC_HS200, /* mode */
 	                                       (MMCSD_BusVoltage_e)MMCSD_BUS_VOLTAGE_1_8V, /* bus Voltage */
@@ -281,7 +281,7 @@ mmcsdTestMMCProfile_t EMMCProfiles_HS400 = {
 	                                        /*** Test Config details ***/
 	                                        MMCSD_REGRESSION_EMMC_HS400_TEST,  /* testID */
 	                                        "HS400 Mode Test",  /* testDescription */
-	                                        BFALSE, /* powerCycleRequired */
+	                                        FALSE, /* powerCycleRequired */
 	                                        /*** Device config details ***/
 	                                       (MMCSD_SupportedMMCModes_e)MMCSD_SUPPORT_MMC_HS400, /* mode */
 	                                       (MMCSD_BusVoltage_e)MMCSD_BUS_VOLTAGE_1_8V, /* bus Voltage */
@@ -297,7 +297,7 @@ mmcsdTestMMCProfile_t EMMCProfiles_Default = {
 	                                        /*** Test Config details ***/
 	                                        MMCSD_REGRESSION_DEFAULT_TEST,  /* testID */
 	                                        "Default Unit Test (Max speed)",  /* testDescription */
-	                                        BTRUE, /* powerCycleRequired */
+	                                        TRUE, /* powerCycleRequired */
 	                                        /*** Device config details ***/
 	                                       (MMCSD_SupportedMMCModes_e)MMCSD_SUPPORT_MMC_ALL, /* mode */
 	                                       (MMCSD_BusVoltage_e)(MMCSD_BUS_VOLTAGE_3_3V | MMCSD_BUS_VOLTAGE_1_8V), /* bus Voltage */
@@ -310,7 +310,7 @@ mmcsdTestMMCProfile_t EMMCProfiles_All_NonPowerCycleTests = {
 	                                        /*** Test Config details ***/
 	                                        MMCSD_REGRESSION_ALL_NON_POWERCYCLE_TESTS,  /* testID */
 	                                        " All non powercycle tests",  /* testDescription */
-	                                        BFALSE, /* powerCycleRequired */
+	                                        FALSE, /* powerCycleRequired */
 	                                        /*** Device config details ***/
 	                                       (MMCSD_SupportedMMCModes_e)0, /*  mode: Irrelevant. */
 	                                       (MMCSD_BusVoltage_e)0, /* bus Voltage. Irrelevant. */
@@ -324,7 +324,7 @@ mmcsdTestMMCProfile_t EMMCProfiles_Exit = {
 	                                        /*** Test Config details ***/
 	                                        MMCSD_REGRESSION_TEST_EXIT,  /* testID */
 	                                        " Exit the regression test",  /* testDescription */
-	                                        BFALSE, /* powerCycleRequired */
+	                                        FALSE, /* powerCycleRequired */
 	                                        /*** Device config details ***/
 	                                       (MMCSD_SupportedMMCModes_e)-1, /* mode */
 	                                       (MMCSD_BusVoltage_e)-1, /* bus Voltage */
@@ -486,7 +486,7 @@ int32_t mmcsd_regression_seek_testID()
 {
    mmcsdTestMMCProfile_t *testProfilePtr;
    uint32_t testprofile;
-   bool validInput = BFALSE;
+   bool validInput=FALSE;
    int32_t			selection;
 
 
@@ -509,7 +509,7 @@ int32_t mmcsd_regression_seek_testID()
         {  /* End of test profiles */
 	      break;
 	    }
-        MMCSD_log ("%5d         %20s           %4s \n",testProfilePtr->testID,testProfilePtr->testDescription,((testProfilePtr->powerCycleRequired == BTRUE)?"Yes":"No"));
+        MMCSD_log ("%5d         %20s           %4s \n",testProfilePtr->testID,testProfilePtr->testDescription,((testProfilePtr->powerCycleRequired==TRUE)?"Yes":"No"));
 	 }
 
     MMCSD_log ("\n\n");
@@ -524,18 +524,18 @@ int32_t mmcsd_regression_seek_testID()
 	 selection = atoi(Response);
 
       if(selection >= 0  && selection <MMCSD_REGRESSION_TEST_MAX) {
-		 validInput = BTRUE;
+		 validInput=TRUE;
 	  } else {
 
          if( !((selection == MMCSD_REGRESSION_ALL_NON_POWERCYCLE_TESTS) ||
              (selection == MMCSD_REGRESSION_TEST_EXIT)) ) {
              MMCSD_log ("Invalid selection: %d !! Please enter a valid test ID from the table!!!\n", selection);
          } else {
-		   validInput = BTRUE;
+		   validInput=TRUE;
 		 }
 	  }
 
-  } while(validInput == BFALSE);
+  } while(validInput==FALSE);
 
   return(selection);
 }
@@ -610,7 +610,7 @@ void mmcsd_test(void *arg0, void *arg1)
 
      if(testID == MMCSD_REGRESSION_ALL_NON_POWERCYCLE_TESTS) {
   	     /* Run all the non powercycle tests */
-		 if(testProfilePtr->powerCycleRequired != BFALSE) {
+		 if(testProfilePtr->powerCycleRequired!= FALSE) {
 		   continue;
 		 }
 	  }

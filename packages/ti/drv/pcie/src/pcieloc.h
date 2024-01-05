@@ -57,7 +57,7 @@ int32_t pcie_check_handle_fcn (Pcie_Handle handle);
 Pcie_DeviceCfgBaseAddr *pcie_handle_to_cfg (Pcie_Handle handle);
 
 #define pcie_check_handle(x) {\
-    if (IFALSE == pcie_check_handle_fcn(x)) {  \
+    if (pcie_check_handle_fcn(x) == 0) {  \
       return pcie_RET_INV_HANDLE;         \
     }                                        \
   }

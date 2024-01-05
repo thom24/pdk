@@ -144,10 +144,10 @@
 #define SCISERVER_INIT_NOT_DONE         (0x96U)
 
 /** Max size of the message for SCICLIENT */
-#define SCISERVER_HW_QUEUE_SIZE         (52U)
+#define SCISERVER_HW_QUEUE_SIZE (52U)
 
 /** Max number of interrupts for HWI */
-#define SCISERVER_HWI_NUM               (5U)
+#define SCISERVER_HWI_NUM (5U)
 
 /** Macro to define number of secure proxy instances **/
 #define SCISERVER_SECPROXY_INSTANCE_COUNT (0x2U)
@@ -159,16 +159,16 @@
  * @{
  */
 /*!
- * @brief Semaphore Ids to be used for the user and DM tasks
- */
-/**< User High Priority Semaphore */
-#define SCISERVER_SEMAPHORE_USER_HI   ((uint32_t)0)
-/**< User Low Priority Semaphore */
-#define SCISERVER_SEMAPHORE_USER_LO   ((uint32_t)1)
-/**< Device Manager Semaphore */
-#define SCISERVER_SEMAPHORE_USER_DM   ((uint32_t)2)
-/**< Max Semaphore */  
-#define SCISERVER_SEMAPHORE_MAX_CNT   ((uint32_t)3)
+ * @brief Semaphore Ids to be used for the user and DM tasks */
+typedef uint32_t Sciserver_SemaphoreIds;
+#define SCISERVER_SEMAPHORE_USER_HI   (uint32_t)0
+    /**< User High Priority Semaphore */
+#define SCISERVER_SEMAPHORE_USER_LO   (uint32_t)1
+    /**< User Low Priority Semaphore */
+#define SCISERVER_SEMAPHORE_USER_DM   (uint32_t)2
+    /**< Device Manager Semaphore */
+#define SCISERVER_SEMAPHORE_MAX_CNT   (uint32_t)3
+    /**< Max Semaphore */
 /* @} */
 
 /**
@@ -179,12 +179,13 @@
  */
 /*!
  * @brief Task Ids to be used for the user and DM tasks */
-/**< User High priority Task ID */
-#define SCISERVER_TASK_USER_HI        ((int32_t)0)
-/**< User Low priority Task ID */
-#define SCISERVER_TASK_USER_LO        ((int32_t)1)
-/**< User Max Task ID */
-#define SCISERVER_TASK_MAX_CNT        ((int32_t)2)
+typedef uint32_t Sciserver_TaskIds;
+#define SCISERVER_TASK_USER_HI    (uint32_t)0
+    /**< User High priority Task ID */
+#define SCISERVER_TASK_USER_LO    (uint32_t)1
+    /**< User Low priority Task ID */
+#define SCISERVER_TASK_MAX_CNT    (uint32_t)2
+    /**< User Max Task ID */
 /* @} */
 
 /* ========================================================================== */
