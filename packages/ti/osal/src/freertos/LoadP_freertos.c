@@ -188,7 +188,7 @@ void LoadP_update(void)
     if(!gLoadP_initDone)
     {
         (void)memset( (void *)&gLoadP_freertos,0,sizeof(gLoadP_freertos));
-        gLoadP_initDone = (bool)false;
+        gLoadP_initDone = (bool)true;
     }
 
     /* Idle Task Update */
