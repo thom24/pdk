@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2020, Texas Instruments Incorporated
+ * Copyright (c) 2020-2024, Texas Instruments Incorporated
  * All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -585,10 +585,10 @@ int32_t Sciclient_ProcessPmMessage(const uint32_t reqFlags, void *tx_msg)
                                 SCICLIENT_DEV_MCU_R5FSS0_CORE1_PROCID);
                     break;
                     case TISCI_DEV_BOARD0:
-                        if (state == TISCI_MSG_VALUE_DEVICE_SW_STATE_ON) {
+                        if (state == (uint8_t)TISCI_MSG_VALUE_DEVICE_SW_STATE_ON) {
                             coreRefCnt++;
                         }
-                        else if (state == TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF) {
+                        else if (state == (uint8_t)TISCI_MSG_VALUE_DEVICE_SW_STATE_AUTO_OFF) {
                             coreRefCnt--;
                             /*
                              * When no core is active, shutdown PMIC.
