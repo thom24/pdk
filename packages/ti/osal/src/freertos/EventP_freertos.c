@@ -149,8 +149,6 @@ EventP_Handle EventP_create(EventP_Params *params)
  */
 EventP_Status EventP_delete(EventP_Handle *handle)
 {
-    DebugP_assert(NULL_PTR != handle);
-
     uintptr_t       key;
     EventP_Status   ret_val = EventP_OK;
     EventP_freertos *event = (EventP_freertos *)*handle;
@@ -183,7 +181,6 @@ EventP_Status EventP_delete(EventP_Handle *handle)
 uint32_t EventP_wait(EventP_Handle handle, uint32_t eventMask,
                     uint8_t waitMode, uint32_t timeout)
 {
-    DebugP_assert(NULL_PTR != handle);
     DebugP_assert(eventMask <= EventP_ID_23);
     DebugP_assert(eventMask != EventP_ID_NONE);
 
@@ -253,8 +250,6 @@ EventP_Status EventP_post(EventP_Handle handle, uint32_t eventMask)
  */
 uint32_t EventP_getPostedEvents(EventP_Handle handle)
 {
-    DebugP_assert(NULL_PTR != handle);
-
     EventP_freertos *event = (EventP_freertos *)handle;
     uint32_t        eventBits = 0U;
     

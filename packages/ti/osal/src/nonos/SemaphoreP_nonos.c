@@ -171,7 +171,6 @@ SemaphoreP_Handle SemaphoreP_create(uint32_t count,
  */
 SemaphoreP_Status SemaphoreP_delete(SemaphoreP_Handle handle)
 {
-    OSAL_Assert(NULL_PTR == handle);
     SemaphoreP_Status ret = SemaphoreP_OK;
     uintptr_t   key;
     Sem_Struct *semS = (Sem_Struct *)handle;
@@ -201,7 +200,6 @@ SemaphoreP_Status SemaphoreP_delete(SemaphoreP_Handle handle)
  */
 void SemaphoreP_Params_init(SemaphoreP_Params *params)
 {
-    OSAL_Assert(NULL_PTR == params);
     if(NULL_PTR != params) {
       params->mode = SemaphoreP_Mode_COUNTING;
       params->name = (char *) NULL_PTR;
@@ -268,7 +266,6 @@ SemaphoreP_Status SemaphoreP_pend(SemaphoreP_Handle handle, uint32_t timeout)
  */
 SemaphoreP_Status SemaphoreP_post(SemaphoreP_Handle handle)
 {
-    OSAL_Assert(NULL_PTR == handle);
     SemaphoreP_Status ret = SemaphoreP_OK;
     uintptr_t   key;
     Sem_Struct *semS = (Sem_Struct *)handle;

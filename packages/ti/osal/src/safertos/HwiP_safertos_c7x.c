@@ -54,9 +54,6 @@ void HwiP_compileTime_SizeChk(void);
 void SemaphoreP_compileTime_SizeChk(void);
 
 extern void Osal_DebugP_assert(int32_t expression, const char *file, int32_t line);
-#define HWIPOSAL_Assert(expression) (Osal_DebugP_assert((int32_t)((expression)?1:0),\
-                                                  __FILE__, __LINE__))
-
 extern uint32_t  gOsalHwiAllocCnt, gOsalHwiPeak;
 
 /*!
@@ -226,8 +223,6 @@ HwiP_Handle HwiP_createDirect(uint32_t interruptNum, HwiP_DirectFxn hwiFxn,
  */
 HwiP_Status HwiP_delete(HwiP_Handle handle)
 {
-    HWIPOSAL_Assert(NULL_PTR == handle);
-
     uintptr_t   key;
     HwiP_Status ret;
     
