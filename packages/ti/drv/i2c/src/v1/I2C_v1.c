@@ -404,7 +404,7 @@ static void I2C_v1_hwiFxnMaster(I2C_Handle handle)
  *  ======== I2C_v1_hwiFxnSlave ========
  *  Hwi interrupt handler to service the I2C peripheral in slave mode
  */
-#if (1U == USE_SLAVE_MODE)
+#if (1U == I2C_ENABLE_SLAVE_MODE)
 static void I2C_v1_hwiFxnSlave(I2C_Handle handle);   /* for misra warnings*/
 static void I2C_v1_hwiFxnSlave(I2C_Handle handle)
 {
@@ -635,7 +635,7 @@ static void I2C_v1_hwiFxn(uintptr_t arg)
     {
         I2C_v1_hwiFxnMaster(handle);
     }
-#if (1U == USE_SLAVE_MODE)
+#if (1U == I2C_ENABLE_SLAVE_MODE)
     else
     {
         I2C_v1_hwiFxnSlave(handle);
@@ -1252,7 +1252,7 @@ static int16_t I2C_primeTransfer_v1(I2C_Handle handle,
             }
         }
     }
-#if (1U == USE_SLAVE_MODE)
+#if (1U == I2C_ENABLE_SLAVE_MODE)
     /* In slave mode */
     else
     {
