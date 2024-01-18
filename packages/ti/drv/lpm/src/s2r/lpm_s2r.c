@@ -42,7 +42,6 @@
 /* ========================================================================== */
 /*                             Include Files                                  */
 /* ========================================================================== */
-
 #include <stdint.h>
 #include <stdarg.h>
 #include <ti/csl/soc.h>
@@ -117,6 +116,15 @@
 #define CSL_CTRL_MMR0_CFG0_SET(r, m)  CSL_CTRL_MMR0_CFG0_WR(r, CSL_CTRL_MMR0_CFG0_RD(r) | m)
 #define CSL_CTRL_MMR0_CFG0_CLR(r, m)  CSL_CTRL_MMR0_CFG0_WR(r, CSL_CTRL_MMR0_CFG0_RD(r) & ~(m))
 
+#define CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_RD(r)     \
+	CSL_REG32_RD_OFF(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, r)
+#define CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_WR(r, v)  \
+	CSL_REG32_WR_OFF(CSL_STD_FW_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_PWR_START, r, v)
+#define CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_SET(r, m) \
+	CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_WR(r, CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_RD(r) | m)
+#define CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_CLR(r, m) \
+	CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_WR(r, CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_RD(r) & ~(m))
+
 #define SCICLIENT_LPM_GPIO2_CONF (0x32)
 #define SCICLIENT_LPM_GPIO3_CONF (0x33)
 #define SCICLIENT_LPM_GPIO6_CONF (0x36)
@@ -130,14 +138,31 @@
 #define SCICLIENT_LPM_DIR_SHIFT       0
 #define SCICLIENT_LPM_SCRATCH_PAD_REG_3 (0xCB)
 #define SCICLIENT_LPM_MAGIC_SUSPEND     (0xBA)
+#ifndef IORET
 #define SCICLIENT_LPM_GPIO1_8_FALL 0xFF
 #define SCICLIENT_LPM_GPIO1_8_RISE 0xF7
+#else
+#define SCICLIENT_LPM_GPIO1_8_FALL 0xF7
+#define SCICLIENT_LPM_GPIO1_8_RISE 0xFF
+#endif
 
+#ifndef IORET
 #define SCICLIENT_LPM_FSM_I2C_TRIGGERS (0x80)
-
+#else
+#define SCICLIENT_LPM_FSM_I2C_TRIGGERS (0x40) | (0x80)
+#endif
 #define SCICLIENT_LPM_DEVICE_ID_PMICB     0x86
 #define SCICLIENT_LPM_DEVICE_ID_PMICB_EVM 0x7
 #define SCICLIENT_LPM_I2C_DETECT_TIMEOUT  500 /* usually the I2C is ready after 221 loops */
+
+#ifdef IORET
+#define SOC_NUM_SPINLOCKS          (256U)
+#define MMR_LOCK0_KICK0            (0x01008)
+#define MMR_LOCK0_KICK0_UNLOCK_VAL (0x68EF3490)
+#define MMR_LOCK0_KICK1_UNLOCK_VAL (0xD172BC5A)
+#define SOC_LOCK_MMR_UNLOCK        (0U)
+#define IO_TIMEOUT                 (150)
+#endif
 
 /* ========================================================================== */
 /*                          Function Definitions                              */
@@ -182,6 +207,172 @@ static void Lpm_ddrFreqChange(void);
  */
 static void Lpm_debugPrintf(const char *pcString, ...);
 
+#ifdef IORET
+static void busy_wait_10us(void)
+{
+    volatile unsigned int i = 0;
+    for(i = 0; i < IO_TIMEOUT; i++);
+}
+
+static void main_io_pm_seq(void)
+{
+    /* Configure MAIN_MCAN0_TX PADCONF */
+    CSL_CTRL_MMR0_CFG0_WR(0x1c020, 0x20050000);
+
+    /* Configure MAIN_MCAN1_RX PADCONF */
+    CSL_CTRL_MMR0_CFG0_WR(0x1c02c, 0x20050000);
+
+    /* Configure PMIC_WAKE */
+    CSL_CTRL_MMR0_CFG0_WR(0x1c124, 0x38038000);
+
+    /* Unlock DMSC reg */
+    CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_WR(DMSC_CM_LOCK0_KICK0, 0x8a6b7cda);
+    CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_WR(DMSC_CM_LOCK0_KICK1, 0x823caef9);
+
+    /* Enable fw_ctrl_out[0] */
+    CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_SET(DMSC_CM_FW_CTRL_OUT0_SET, 0x2);
+    CSL_WKUP_CTRL_MMR0_CFG0_SET(CSL_WKUP_CTRL_MMR_CFG0_DEEPSLEEP_CTRL, 0x100);
+
+    /* Enable Wakeup_enable */
+    CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_SET(CSL_PMMCCONTROL_PMCTRL_DDR, 0x10000);
+
+    /* Enable ISOIN */
+    CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_SET(CSL_PMMCCONTROL_PMCTRL_DDR, 0x1000000);
+    busy_wait_10us();
+
+    /* Check ISOIN status. Unsure if read has a side-effect; it is present in
+     * the original code. */
+    CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_RD(CSL_PMMCCONTROL_PMCTRL_DDR);
+}
+
+static void main_configure_can_uart_lock_dmsc(void)
+{
+    main_io_pm_seq();
+
+    /* Load the Magic word */
+    CSL_WKUP_CTRL_MMR0_CFG0_WR(CSL_WKUP_CTRL_MMR_CFG0_CANUART_WAKE_CTRL, 0x55555554);
+    CSL_WKUP_CTRL_MMR0_CFG0_WR(CSL_WKUP_CTRL_MMR_CFG0_CANUART_WAKE_CTRL, 0x55555555);
+
+    /* re-lock DMSC reg */
+    CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_WR(DMSC_CM_LOCK0_KICK0, 0x00);
+    CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_WR(DMSC_CM_LOCK0_KICK1, 0x00);
+}
+
+static void wkup_io_pm_seq(void)
+{
+    /* CONFIGURE MCU_MCAN0_TX with internal pull up resistor */
+    CSL_WKUP_CTRL_MMR0_CFG0_WR(0x1C0B8, 0x20060000);
+
+    /* CONFIGURE MCU_MCAN1_TX with internal pull up resistor */
+    CSL_WKUP_CTRL_MMR0_CFG0_WR(0x1C0D0, 0x20060000);
+
+    /* Configure PMIC_WAKE1 */
+    CSL_WKUP_CTRL_MMR0_CFG0_WR(0x1C190, 0x38038000);
+
+    /* Bypass IO Isolation for I2C Pins. Those pins go to a mux behind which is the PMIC. */
+    CSL_WKUP_CTRL_MMR0_CFG0_WR(0x1C100, 0x00840000); // WKUP_I2C0_SCL, F20
+    CSL_WKUP_CTRL_MMR0_CFG0_WR(0x1C104, 0x00840000); // WKUP_I2C0_SDA, H21
+
+    /* Bypass IO Isolation for UART Pins so that we can print after entering IO Isolation */
+    /* REMOVE THIS IF YOU WOULD LIKE TO WAKEUP FROM THE UART PINS */
+    CSL_WKUP_CTRL_MMR0_CFG0_WR(0x1C0E8, 0x00840000);
+    CSL_WKUP_CTRL_MMR0_CFG0_WR(0x1C0EC, 0x00840000);
+    CSL_WKUP_CTRL_MMR0_CFG0_WR(0x1C0F0, 0x00840000);
+    CSL_WKUP_CTRL_MMR0_CFG0_WR(0x1C0E4, 0x00840000);
+    CSL_WKUP_CTRL_MMR0_CFG0_WR(0x1C0F8, 0x00840000);
+    CSL_WKUP_CTRL_MMR0_CFG0_WR(0x1C0FC, 0x00840000);
+
+    /* Unlock DMSC reg */
+    CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_WR(DMSC_CM_LOCK0_KICK0, 0x8a6b7cda);
+    CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_WR(DMSC_CM_LOCK0_KICK1, 0x823caef9);
+
+    /* Enable fw_ctrl_out[0] */
+    CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_SET(DMSC_CM_FW_CTRL_OUT0_SET, 0x1);
+    CSL_WKUP_CTRL_MMR0_CFG0_SET(CSL_WKUP_CTRL_MMR_CFG0_DEEPSLEEP_CTRL, 0x1);
+
+    /* Enable Wakeup_enable */
+    CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_SET(CSL_PMMCCONTROL_PMCTRL_IO, 0x10000);
+
+    /* Enable ISOIN */
+    CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_SET(CSL_PMMCCONTROL_PMCTRL_IO, 0x1000000 | (0x1 << 6));
+
+    busy_wait_10us();
+}
+
+static void wkup_configure_can_uart_lock_dmsc(void)
+{
+    wkup_io_pm_seq();
+
+    /* Load the Magic Word */
+    CSL_WKUP_CTRL_MMR0_CFG0_WR(CSL_WKUP_CTRL_MMR_CFG0_MCU_GEN_WAKE_CTRL, 0x55555554);
+    CSL_WKUP_CTRL_MMR0_CFG0_WR(CSL_WKUP_CTRL_MMR_CFG0_MCU_GEN_WAKE_CTRL, 0x55555555);
+
+    /* re-lock DMSC reg */
+    CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_WR(DMSC_CM_LOCK0_KICK0, 0x00);
+    CSL_WKUP_DMSC0_PWRCTRL_0_DMSC_PWR_MMR_WR(DMSC_CM_LOCK0_KICK1, 0x00);
+}
+
+
+/* SOC_lock, SOC_unlock, Lpm_mmr_isLocked and Lpm_mmr_unlock are extracted from
+ * the PDK lpm. */
+static int32_t SOC_lock(uint32_t lockNum)
+{
+    volatile uint32_t *spinLockReg;
+
+    if (lockNum >= SOC_NUM_SPINLOCKS)
+    {
+        return -1;
+    }
+
+    spinLockReg = (volatile uint32_t*)(CSL_NAVSS0_SPINLOCK_BASE + 0x800);
+
+    while (spinLockReg[lockNum] != 0x0);
+
+    return 0;
+}
+
+static int32_t SOC_unlock(uint32_t lockNum)
+{
+    volatile uint32_t *spinLockReg;
+
+    if (lockNum >= SOC_NUM_SPINLOCKS)
+    {
+        return -1;
+    }
+
+    spinLockReg = (volatile uint32_t *)(CSL_NAVSS0_SPINLOCK_BASE + 0x800);
+    spinLockReg[lockNum] = 0x0;
+
+    return 0;
+}
+
+static int Lpm_mmr_isLocked(uintptr_t base, uint32_t partition)
+{
+    volatile uint32_t * lock = (volatile uint32_t *)(base + partition * 0x4000 + MMR_LOCK0_KICK0);
+
+    return (*lock & 0x1u) ? 0 : 1;
+}
+
+static void Lpm_mmr_unlock(uintptr_t base, uint32_t partition)
+{
+    volatile uint32_t * lock = (volatile uint32_t *)(base + partition * 0x4000 + MMR_LOCK0_KICK0);
+
+    if (!Lpm_mmr_isLocked(base, partition))
+    {
+        return;
+    }
+    else
+    {
+        SOC_lock(SOC_LOCK_MMR_UNLOCK);
+        lock[0] = MMR_LOCK0_KICK0_UNLOCK_VAL;
+        lock[1] = MMR_LOCK0_KICK1_UNLOCK_VAL;
+        SOC_unlock(SOC_LOCK_MMR_UNLOCK);
+    }
+}
+
+
+#endif
+
 /*
  * \brief Run the suspend sequence (set DDR in retention and powerdown the SOC)
  *
@@ -196,11 +387,21 @@ void Lpm_enterRetention(void)
     /* Make sure that nothing remains in cache before going to retention */
     Lpm_cleanAllDCache();
 
+#ifdef IORET
+    Lpm_mmr_unlock(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 6);
+    Lpm_mmr_unlock(CSL_WKUP_CTRL_MMR0_CFG0_BASE, 7);
+    Lpm_mmr_unlock(CSL_CTRL_MMR0_CFG0_BASE, 7);
+#endif
+
     Lpm_ddrRetention();
     Lpm_debugFullPrintf("Lpm_enterRetention: DDRSS_CTL_141: 0x%08x\n",
                             CSL_DDRSS0_RD(CSL_EMIF_CTLCFG_DENALI_CTL_141));
     Lpm_debugFullPrintf("Lpm_enterRetention: DDR retention done\n");
 
+#ifdef IORET
+    main_configure_can_uart_lock_dmsc();
+    wkup_configure_can_uart_lock_dmsc();
+#endif
 
     Lpm_setupPmic();
     Lpm_debugPrintf("Lpm_enterRetention: Done! Going to wait now \n");
