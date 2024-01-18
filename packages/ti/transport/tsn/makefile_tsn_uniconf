@@ -9,8 +9,8 @@ endif
 
 MODULE_NAME = tsn_uniconf
 
-SRCDIR = tsn_uniconf tsn_uniconf/hal tsn_uniconf/tilld tsn_uniconf/yangs tsn_uniconf/yangs/generated
-INCDIR = tsn_uniconf tsn_uniconf/hal tsn_uniconf/yangs tsn_combase/tilld/jacinto
+SRCDIR = tsn_uniconf tsn_uniconf/hal tsn_uniconf/tilld tsn_uniconf/yangs tsn_uniconf/yangs/generated tsn_buildconf
+INCDIR = tsn_uniconf tsn_uniconf/hal tsn_uniconf/yangs tsn_combase/tilld/jacinto 
 
 SRC_PATH := $(PDK_TSN_COMP_PATH)/tsn-stack/tsn_uniconf
 
@@ -56,7 +56,8 @@ SRCS_COMMON += ucman.c \
 	ietf-yang-library.c \
 	ietf-yang-library_runconf.c
 
-PACKAGE_SRCS_COMMON = ../makefile_tsn_uniconf
+PACKAGE_SRCS_COMMON = ../tsn_component.mk ../makefile_tsn_uniconf
+PACKAGE_SRCS_COMMON += $(SRCDIR)
 CFLAGS_LOCAL_COMMON = $(PDK_CFLAGS) $(TSN_CFLAGS) -DTSNPKGVERSION=\"$(TSNPKGVERSION)\" \
 	-DUB_LOGCAT=4 -DUB_LOGTSTYPE=UB_CLOCK_REALTIME\
 	-include $(PDK_TSN_COMP_PATH)/tsn-stack/tsn_buildconf/jacinto_buildconf.h
