@@ -541,8 +541,16 @@ static int32_t Sciserver_UserProcessMsg(uint32_t *msg_recv,
             break;
         /* Start of PM messages */
         case TISCI_MSG_BOARD_CONFIG_PM:
-            reqMsgSize = sizeof(struct tisci_msg_board_config_pm_req);
-            respMsgSize = sizeof(struct tisci_msg_board_config_pm_resp);
+	    if (hw_host_id == TISCI_HOST_ID_DMSC2DM) {
+                /* Hack because DMSC do not forward suspend msg */
+                reqMsgSize = sizeof(struct tisci_msg_enter_sleep_req);
+                respMsgSize = sizeof(struct tisci_msg_enter_sleep_resp);
+                hdr->type = TISCI_MSG_ENTER_SLEEP;
+            } else {
+                /* Normal case */
+                reqMsgSize = sizeof(struct tisci_msg_board_config_pm_req);
+                respMsgSize = sizeof(struct tisci_msg_board_config_pm_resp);
+            }
             break;
         case TISCI_MSG_SET_CLOCK:
             reqMsgSize = sizeof(struct tisci_msg_set_clock_req);
