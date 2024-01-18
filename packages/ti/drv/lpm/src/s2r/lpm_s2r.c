@@ -587,56 +587,15 @@ static void Lpm_setupPmic(void)
      * you can configure both NSLEEP bits before the PMIC reacts to the change.
      */
 
-    uint8_t buf;
-    int single = 1;
-
-    /* clear pending interrupt */
-#if defined (j7200_evm)
-    Lpm_writePmicA(0x60, 0x04);
-    Lpm_writePmicA(0x69, 0x04);
-#endif
-
-    /*
-     * If there an I2C device at the PMICB address and that have
-     * the correct ID when reading DEV_REV then it means that
-     * there are 2 PMICs.
-     */
-    if((!Lpm_readPmicB_timeout(0x1, &buf, SCICLIENT_LPM_I2C_DETECT_TIMEOUT)) &&
-       ((buf == SCICLIENT_LPM_DEVICE_ID_PMICB) || (buf == SCICLIENT_LPM_DEVICE_ID_PMICB_EVM)))
-    {
-        Lpm_debugFullPrintf("Lpm_setupPmic: Double PMIC configuration\n");
-        single = 0;
-    }
-
     /* Change FSM_NSLEEP_TRIGGERS: NSLEEP1=high, NSLEEP2=high */
     Lpm_writePmicA(PMIC_FSM_NSLEEP_TRIGGERS_REGADDR, 0x03);
     Lpm_debugFullPrintf("Lpm_setupPmic: Write FSM_NSLEEP_TRIGGERS\n");
     Lpm_debugReadPmicA(PMIC_FSM_NSLEEP_TRIGGERS_REGADDR);
 
-    if(single)
-    {
-        /* Clear BIST_PASS_INT */
-        Lpm_writePmicA(0x66, 0x01);
-        Lpm_debugFullPrintf("Lpm_setupPmic: Write INT_MISC\n");
-        Lpm_debugReadPmicA(0x65);
-
-        /*  Clear all potential sources of the On Request */
-        Lpm_writePmicA(0x65, 0x26);
-        Lpm_debugFullPrintf("Lpm_setupPmic: Write INT_STARTUP\n");
-        Lpm_debugReadPmicA(0x65);
-    }
-    else
-    {
-        /* Clear INT_STARTUP: clear ENABLE pin interrupt */
-        Lpm_writePmicA(0x65, 0x02);
-        Lpm_debugFullPrintf("Lpm_setupPmic: Write INT_STARTUP\n");
-        Lpm_debugReadPmicA(0x65);
-    }
-
-    /* Change SCICLIENT_LPM_FSM_I2C_TRIGGERS on PMIC A*/
-    Lpm_writePmicA(PMIC_FSM_I2C_TRIGGERS_REGADDR, SCICLIENT_LPM_FSM_I2C_TRIGGERS);
-    Lpm_debugFullPrintf("Lpm_setupPmic: Write FSM_TRIGGERS\n");
-    Lpm_debugReadPmicA(PMIC_FSM_I2C_TRIGGERS_REGADDR);
+    /* Clear INT_STARTUP: clear ENABLE pin interrupt */
+    Lpm_writePmicA(0x65, 0x02);
+    Lpm_debugFullPrintf("Lpm_setupPmic: Write INT_STARTUP\n");
+    Lpm_debugReadPmicA(0x65);
 
     /* Configure GPIO4_CONF: input, no pull, signal LP_WKUP1 */
     Lpm_writePmicA(0x34, 0xc0);
@@ -659,18 +618,15 @@ static void Lpm_setupPmic(void)
 
     Lpm_enableDDRRetention();
 
-    if(!single)
-    {
-        /* Change FSM_I2C_TRIGGERS - PMICB */
-        Lpm_writePmicB(PMIC_FSM_I2C_TRIGGERS_REGADDR, SCICLIENT_LPM_FSM_I2C_TRIGGERS);
-        Lpm_debugFullPrintf("Lpm_setupPmic: Write SCICLIENT_LPM_FSM_I2C_TRIGGERS \n");
-        Lpm_debugReadPmicB(PMIC_FSM_I2C_TRIGGERS_REGADDR);
+    /* Change FSM_I2C_TRIGGERS - PMICB */
+    Lpm_writePmicB(PMIC_FSM_I2C_TRIGGERS_REGADDR, SCICLIENT_LPM_FSM_I2C_TRIGGERS);
+    Lpm_debugFullPrintf("Lpm_setupPmic: Write SCICLIENT_LPM_FSM_I2C_TRIGGERS \n");
+    Lpm_debugReadPmicB(PMIC_FSM_I2C_TRIGGERS_REGADDR);
 
-        /* Change FSM_I2C_TRIGGERS - PMICA */
-        Lpm_writePmicA(PMIC_FSM_I2C_TRIGGERS_REGADDR, SCICLIENT_LPM_FSM_I2C_TRIGGERS);
-        Lpm_debugFullPrintf("Lpm_setupPmic: Write SCICLIENT_LPM_FSM_I2C_TRIGGERS\n");
-        Lpm_debugReadPmicA(PMIC_FSM_I2C_TRIGGERS_REGADDR);
-    }
+    /* Change FSM_I2C_TRIGGERS - PMICA */
+    Lpm_writePmicA(PMIC_FSM_I2C_TRIGGERS_REGADDR, SCICLIENT_LPM_FSM_I2C_TRIGGERS);
+    Lpm_debugFullPrintf("Lpm_setupPmic: Write SCICLIENT_LPM_FSM_I2C_TRIGGERS\n");
+    Lpm_debugReadPmicA(PMIC_FSM_I2C_TRIGGERS_REGADDR);
 
     /* Write magic number to scratch register to indicate the suspend */
     Lpm_writePmicA(SCICLIENT_LPM_SCRATCH_PAD_REG_3, SCICLIENT_LPM_MAGIC_SUSPEND);
