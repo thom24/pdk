@@ -18,5 +18,6 @@ packages/ti/boot/sbl/example/boot_app/multicore_images/
 packages/ti/boot/sbl/example/boot_app/binary/
 packages/ti/kernel/freertos/FreeRTOS-LTS/
 packages/ti/kernel/freertos/FreeRTOS-Labs/
+packages/ti/safety_checkers
 *.d
 *.o
