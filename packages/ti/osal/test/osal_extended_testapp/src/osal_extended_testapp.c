@@ -1598,6 +1598,8 @@ void OSAL_tests(void *arg0, void *arg1)
     EventP_Max_Test();
 
     loadP_freertos_test();
+    
+    result += OsalApp_memoryTests();
 
 #endif
 

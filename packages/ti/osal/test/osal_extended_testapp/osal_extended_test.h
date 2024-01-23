@@ -104,6 +104,9 @@ int32_t OsalApp_mailboxTests(void);
 /* Top level function for Task tests */
 int32_t OsalApp_taskTests(void);
 
+/* Top level function for Memory tests */
+int32_t OsalApp_memoryTests(void);
+
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
 /* ========================================================================== */

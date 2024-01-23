@@ -23,7 +23,7 @@ ifeq ($(BUILD_OS_TYPE),freertos)
 CFLAGS_OS_DEFINES = -DFREERTOS
 EXTERNAL_INTERFACES = freertos
 COMP_LIST_COMMON    = $(PDK_COMMON_FREERTOS_COMP)
-SRCS_COMMON += osal_extended_testapp_queue.c osal_extended_testapp_heap.c
+SRCS_COMMON += osal_extended_testapp_queue.c osal_extended_testapp_heap.c osal_extended_testapp_memory.c
 endif
 
 ifeq ($(BUILD_OS_TYPE),safertos)
