@@ -220,18 +220,6 @@ ifeq ($(ISA),c66)
   ASMEXT = s$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
 endif
 
-  # If ENDIAN is set to "big", set ENDIAN_EXT to "e", that would be used in
-  #    in the filename extension of object/library/executable files
-  ifeq ($(ENDIAN),big)
-    ENDIAN_EXT = e
-  endif
-
-  # Define the file extensions
-  OBJEXT = o$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
-  LIBEXT = a$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
-  EXEEXT = x$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
-  ASMEXT = s$(FORMAT_EXT)$(ISA_EXT)$(ENDIAN_EXT)
-
 ifeq ($(SOC),$(filter $(SOC), j7200 j721e j721s2 j784s4))
   SBL_CORE_ID_mpu1_0 = 0
   SBL_CORE_ID_mpu1_1 = 1
