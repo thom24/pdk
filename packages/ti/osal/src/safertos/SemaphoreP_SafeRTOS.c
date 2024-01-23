@@ -237,8 +237,6 @@ int32_t SemaphoreP_constructCounting( SemaphoreP_safertos *handle, uint32_t init
  */
 SemaphoreP_Status SemaphoreP_delete( SemaphoreP_Handle handle )
 {
-    DebugP_assert(NULL_PTR != handle);
-
     uintptr_t   key;
     SemaphoreP_Status ret = SemaphoreP_OK;
     SemaphoreP_safertos *semaphore = ( SemaphoreP_safertos * )handle;

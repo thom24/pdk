@@ -299,7 +299,6 @@ int32_t SemaphoreP_getCount(SemaphoreP_Handle handle)
 
 {
     int32_t ret=0;
-    OSAL_Assert(NULL_PTR == handle);
     Sem_Struct *semS = (Sem_Struct *)handle;
     if(NULL_PTR != semS) {
        ret = (int32_t)semS->count;

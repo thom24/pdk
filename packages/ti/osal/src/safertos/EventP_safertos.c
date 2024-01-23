@@ -143,8 +143,6 @@ EventP_Handle EventP_create(EventP_Params *params)
  */
 EventP_Status EventP_delete(EventP_Handle *handle)
 {
-    DebugP_assert(NULL_PTR != handle);
-
     uintptr_t       key;
     EventP_Status   ret_val = EventP_OK;
     EventP_safertos *event = (EventP_safertos *)*handle;
@@ -185,7 +183,6 @@ EventP_Status EventP_delete(EventP_Handle *handle)
 uint32_t EventP_wait(EventP_Handle handle, uint32_t eventMask,
                     uint8_t waitMode, uint32_t timeout)
 {
-    DebugP_assert(NULL_PTR != handle);
     DebugP_assert(EventP_ID_23 >= eventMask);
     DebugP_assert(EventP_ID_NONE != eventMask);
 
@@ -272,8 +269,6 @@ EventP_Status EventP_post(EventP_Handle handle, uint32_t eventMask)
  */
 uint32_t EventP_getPostedEvents(EventP_Handle handle)
 {
-    DebugP_assert(NULL_PTR != handle);
-
     EventP_safertos *event = (EventP_safertos *)handle;
     uint32_t        eventBitsGet = 0U;
     portBaseType    xCreateResult;

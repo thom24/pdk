@@ -70,35 +70,67 @@ MutexP_Handle MutexP_create(MutexP_Object *mutexObj)
 
 MutexP_Status MutexP_delete(MutexP_Handle handle)
 {
-    OSAL_Assert(NULL_PTR == handle);
     SemaphoreP_Handle semHandle = NULL;
-    MutexP_Object *mutexObj = (MutexP_Object *)handle;
-
-    semHandle = (void *)mutexObj->object;
-
-    return (int32_t)SemaphoreP_delete(semHandle);
+    MutexP_Status     status = MutexP_OK;
+    MutexP_Object     *mutexObj = (MutexP_Object *)handle;
+    
+    if (NULL_PTR != mutexObj)
+    {
+        semHandle = (void *)mutexObj->object;
+        if (SemaphoreP_OK == SemaphoreP_delete(semHandle))
+        {
+            status = MutexP_OK;
+        }
+        else
+        {
+            status = MutexP_FAILURE;
+        }
+    }
+    return status;
 }
 
 MutexP_Status MutexP_lock(MutexP_Handle handle, uint32_t timeout)
 {
-    OSAL_Assert(NULL_PTR == handle);
     SemaphoreP_Handle semHandle = NULL;
-    MutexP_Object *mutexObj = (MutexP_Object *)handle;
+    MutexP_Status     status = MutexP_OK;
+    MutexP_Object     *mutexObj = (MutexP_Object *)handle;
 
-    semHandle = (void *)mutexObj->object;
-
-    return (MutexP_Status)SemaphoreP_pend(semHandle, timeout);
+    if(NULL_PTR != mutexObj)
+    {
+        semHandle = (void *)mutexObj->object;
+        if(SemaphoreP_OK == SemaphoreP_pend(semHandle, timeout))
+        {
+            status = MutexP_OK;
+        }
+        else
+        {
+            status = MutexP_FAILURE;
+        }
+    }
+    
+    return status;
 }
 
 MutexP_Status MutexP_unlock(MutexP_Handle handle)
 {
-    OSAL_Assert(NULL_PTR == handle);
     SemaphoreP_Handle semHandle = NULL;
-    MutexP_Object *mutexObj = (MutexP_Object *)handle;
+    MutexP_Status     status = MutexP_OK;
+    MutexP_Object     *mutexObj = (MutexP_Object *)handle;
 
-    semHandle = (void *)mutexObj->object;
+    if(NULL_PTR != mutexObj)
+    {
+        semHandle = (void *)mutexObj->object;
+        if(SemaphoreP_OK == SemaphoreP_post(semHandle))
+        {
+            status = MutexP_OK;
+        }
+        else
+        {
+            status = MutexP_FAILURE;
+        }
+    }
 
-    return (MutexP_Status)SemaphoreP_post(semHandle);
+    return status;
 }
 
 
