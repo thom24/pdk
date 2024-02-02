@@ -294,6 +294,16 @@ int32_t Virtio_addUsedBuf(Virtio_Handle vq, int16_t token, int32_t len);
  */
 uint8_t Virtio_isRemoteLinux(uint16_t procId);
 
+/**
+ *  \brief Virtio_enableCallback
+ */
+uint8_t Virtio_enableCallback(Virtio_Handle vq);
+
+/**
+ *  \brief Virtio_disableCallback
+ */
+void Virtio_disableCallback(Virtio_Handle vq);
+
 /* ========================================================================== */
 /*                       Static Function Definitions                          */
 /* ========================================================================== */

@@ -257,16 +257,6 @@ static void Virtio_isr(uint32_t* msg, uint32_t priv);
  */
 static void Virtio_prime(Virtio_Object *vq, uintptr_t addr, uint32_t num);
 
-/**
- *  \brief Virtio_enableCallback
- */
-uint8_t Virtio_enableCallback(Virtio_Handle vq);
-
-/**
- *  \brief Virtio_disableCallback
- */
-void Virtio_disableCallback(Virtio_Handle vq);
-
  /**
   *  \brief Virtio_create
   */

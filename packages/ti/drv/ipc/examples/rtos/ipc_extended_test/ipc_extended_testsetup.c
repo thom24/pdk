@@ -277,6 +277,8 @@ int32_t Rpmsg_Extended_ResponderFxn(uint32_t testId)
       RPMessageParams_init(NULL);
 
       RPMessageParams_init(&params);
+      
+      Ipc_getVqObjMemoryRequired();
 
       Ipc_newMessageIsr(selfProcId);
 
@@ -551,8 +553,6 @@ int32_t IpcApp_Extended_test(uint32_t testId)
          IpcUtils_HeapCreate(&pHndl,&hparam);
        }
 
-       IpcUtils_HeapAlloc(&pHndl,size,align);
-
        IpcUtils_HeapAlloc(NULL_PTR,size,align);
 
        Virtio_setCallback(p,NULL,NULL);
@@ -571,6 +571,7 @@ int32_t IpcApp_echoExtTest(void)
       IpcUtils_QHandle    qhandle;
       RPMessage_Handle    *payload = NULL;
       IpcUtils_QElem      elem;
+      Virtio_Handle       vq = NULL;
 
       IpcApp_Extended_test(i);
 
@@ -613,6 +614,11 @@ int32_t IpcApp_echoExtTest(void)
       IpcUtils_HeapDelete(&pHndl);
 
       IpcUtils_HeapDelete(NULL_PTR);
+      
+      /* Test Virtio enable and disable Callback */
+      Virtio_enableCallback(vq);
+      
+      Virtio_disableCallback (vq);
 
       /* Test rpmessage deinitialization */
       RPMessage_deInit();
