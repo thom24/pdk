@@ -59,7 +59,7 @@ BIN2C_GEN="$ROOTDIR/ti/drv/sciclient/tools/bin2c/bin2c.out"
 
 ################################################################################
 # Parse CLI arguments
-SOC_LIST="j7200"
+SOC_LIST="j7200 j784s4"
 for i in "$@"; do
 case $i in
     -sr|--skip-reset) # Skips the PDK reset and rebase step

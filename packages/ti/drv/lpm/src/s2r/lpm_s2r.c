@@ -52,6 +52,10 @@
 #include <ti/board/src/j7200_evm/include/board_cfg.h>
 #include <ti/board/src/j7200_evm/include/board_pll.h>
 #include <ti/board/src/j7200_evm/include/board_ddr.h>
+#elif defined(SOC_J784S4)
+#include <ti/board/src/j784s4_evm/include/board_cfg.h>
+#include <ti/board/src/j784s4_evm/include/board_pll.h>
+#include <ti/board/src/j784s4_evm/include/board_ddr.h>
 #endif
 #include <ti/drv/lpm/include/io_retention/dmsc_cm.h>
 #include <ti/drv/pmic/src/pmic_fsm_priv.h>
@@ -92,6 +96,9 @@
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
 
+#define CSL_REG32_SET_OFF(o, r, m) CSL_REG32_WR_OFF(o, r, CSL_REG32_RD_OFF(o, r) | m)
+#define CSL_REG32_CLR_OFF(o, r, m) CSL_REG32_WR_OFF(o, r, CSL_REG32_RD_OFF(o, r) & ~(m))
+
 #define CSL_PLL0_CFG_RD(r)     CSL_REG32_RD_OFF(CSL_PLL0_CFG_BASE, r)
 #define CSL_PLL0_CFG_WR(r, v)  CSL_REG32_WR_OFF(CSL_PLL0_CFG_BASE, r, v)
 #define CSL_PLL0_CFG_SET(r, m) CSL_PLL0_CFG_WR(r, CSL_PLL0_CFG_RD(r) | m)
@@ -106,11 +113,6 @@
 #define CSL_WKUP_I2C0_CFG_WR(r, v)  CSL_REG32_WR_OFF(CSL_WKUP_I2C0_CFG_BASE, r, v)
 #define CSL_WKUP_I2C0_CFG_SET(r, m) CSL_WKUP_I2C0_CFG_WR(r, CSL_WKUP_I2C0_CFG_RD(r) | m)
 #define CSL_WKUP_I2C0_CFG_CLR(r, m) CSL_WKUP_I2C0_CFG_WR(r, CSL_WKUP_I2C0_CFG_RD(r) & ~(m))
-
-#define CSL_DDRSS0_RD(r)     CSL_REG32_RD_OFF(CSL_STD_FW_COMPUTE_CLUSTER0__VBUSP_DDRSS0_DDRSS0_CTLCFG_CTL_CFG_START, r)
-#define CSL_DDRSS0_WR(r, v)  CSL_REG32_WR_OFF(CSL_STD_FW_COMPUTE_CLUSTER0__VBUSP_DDRSS0_DDRSS0_CTLCFG_CTL_CFG_START, r, v)
-#define CSL_DDRSS0_SET(r, m) CSL_DDRSS0_WR(r, CSL_DDRSS0_RD(r) | m)
-#define CSL_DDRSS0_CLR(r, m) CSL_DDRSS0_WR(r, CSL_DDRSS0_RD(r) & ~(m))
 
 #define CSL_CTRL_MMR0_CFG0_RD(r)      CSL_REG32_RD_OFF(CSL_CTRL_MMR0_CFG0_BASE, r)
 #define CSL_CTRL_MMR0_CFG0_WR(r, v)   CSL_REG32_WR_OFF(CSL_CTRL_MMR0_CFG0_BASE, r, v)
@@ -139,6 +141,66 @@
 #define SCICLIENT_LPM_DEVICE_ID_PMICB_EVM 0x7
 #define SCICLIENT_LPM_I2C_DETECT_TIMEOUT  500 /* usually the I2C is ready after 221 loops */
 
+
+struct Ddr_instance {
+    unsigned int ddrBase;
+    unsigned int chngReq;
+    unsigned int chngAck;
+    unsigned int clkChngReq;
+    unsigned int clkChngAck;
+    unsigned int pllBase;
+};
+
+#if defined(SOC_J784S4)
+static const struct Ddr_instance ddr[] = {
+    {
+        .ddrBase = CSL_STD_FW_COMPUTE_CLUSTER0_CFG_WRAP_0__VBUSP_DDRSS0_DDRSS0_CTLCFG_VBUSP_DDRSS0_CTLCFG_START,
+        .chngReq = CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_REQ0,
+        .chngAck = CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_ACK0,
+        .clkChngReq = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_REQ0,
+        .clkChngAck = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_ACK0,
+        .pllBase = CSL_PLL0_CFG_BASE + 12 * 0x1000
+    },
+    {
+        .ddrBase = 0x029B0000,
+        .chngReq = CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_REQ1,
+        .chngAck = CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_ACK1,
+        .clkChngReq = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_REQ1,
+        .clkChngAck = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_ACK1,
+        .pllBase = CSL_PLL0_CFG_BASE + 26 * 0x1000
+    },
+    {
+        .ddrBase = 0x029D0000,
+        .chngReq = CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_REQ2,
+        .chngAck = CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_ACK2,
+        .clkChngReq = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_REQ2,
+        .clkChngAck = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_ACK2,
+        .pllBase = CSL_PLL0_CFG_BASE + 27 * 0x1000
+    },
+    {
+        .ddrBase = 0x029F0000,
+        .chngReq = CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_REQ3,
+        .chngAck = CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_ACK3,
+        .clkChngReq = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_REQ3,
+        .clkChngAck = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_ACK3,
+        .pllBase = CSL_PLL0_CFG_BASE + 28 * 0x1000
+    },
+    { },
+};
+#else
+static const struct Ddr_instance ddr[] = {
+    {
+        .ddrBase = CSL_STD_FW_COMPUTE_CLUSTER0__VBUSP_DDRSS0_DDRSS0_CTLCFG_CTL_CFG_START,
+        .chngReq = CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_REQ,
+        .chngAck = CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_ACK,
+        .clkChngReq = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_REQ,
+        .clkChngAck = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_ACK,
+        .pllBase = CSL_PLL0_CFG_BASE
+    },
+    { },
+};
+#endif
+
 /* ========================================================================== */
 /*                          Function Definitions                              */
 /* ========================================================================== */
@@ -164,8 +226,10 @@ static void Lpm_cleanAllDCache(void);
 /**
   * \brief Set the DRAM to the lowest frequency
   *
+  * \param d is the DDR instance to change frequency
+  *
   */
-static void Lpm_ddrFreqChange(void);
+static void Lpm_ddrFreqChange(const struct Ddr_instance *d);
 
 /**
  * A simple UART based printf function supporting \%p, \%x, and \%X.
@@ -197,8 +261,6 @@ void Lpm_enterRetention(void)
     Lpm_cleanAllDCache();
 
     Lpm_ddrRetention();
-    Lpm_debugFullPrintf("Lpm_enterRetention: DDRSS_CTL_141: 0x%08x\n",
-                            CSL_DDRSS0_RD(CSL_EMIF_CTLCFG_DENALI_CTL_141));
     Lpm_debugFullPrintf("Lpm_enterRetention: DDR retention done\n");
 
 
@@ -222,7 +284,7 @@ static void Lpm_cleanAllDCache(void)
         }
 }
 
-static void Lpm_ddrFreqChange(void)
+static void Lpm_ddrFreqChange(const struct Ddr_instance *d)
 {
     unsigned int val;
     volatile unsigned int t;
@@ -230,69 +292,76 @@ static void Lpm_ddrFreqChange(void)
     CSL_CTRL_MMR0_CFG0_WR(CSL_MAIN_CTRL_MMR_CFG0_LOCK5_KICK0, KICK0_UNLOCK);
     CSL_CTRL_MMR0_CFG0_WR(CSL_MAIN_CTRL_MMR_CFG0_LOCK5_KICK1, KICK1_UNLOCK);
 
-    CSL_DDRSS0_SET(CSL_EMIF_CTLCFG_DENALI_CTL_190, 0x01010100);
+    CSL_REG32_WR_OFF(d->ddrBase, CSL_EMIF_CTLCFG_DENALI_CTL_190, 0x01010100);
     Lpm_debugFullPrintf("Lpm_ddrFreqChange: DDRSS_CTL_190: 0x%08X\n",
-                        CSL_DDRSS0_RD(CSL_EMIF_CTLCFG_DENALI_CTL_190));
+                        CSL_REG32_RD_OFF(d->ddrBase, CSL_EMIF_CTLCFG_DENALI_CTL_190));
 
     Lpm_debugFullPrintf("Lpm_ddrFreqChange: req_type: 0\n");
-    CSL_CTRL_MMR0_CFG0_WR(CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_REQ, 0); // set REQ_TYPE to 0
+    CSL_CTRL_MMR0_CFG0_WR(d->chngReq, 0); // set REQ_TYPE to 0
     for(t = 0; t < 100; t++) {}
-    CSL_CTRL_MMR0_CFG0_SET(CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_REQ, 0x100); // assert req
+    CSL_CTRL_MMR0_CFG0_SET(d->chngReq, 0x100); // assert req
 
-    val = CSL_CTRL_MMR0_CFG0_RD(CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_REQ);
+    val = CSL_CTRL_MMR0_CFG0_RD(d->clkChngReq);
     while((val & 0x80) != 0x80)
     {
-        val = CSL_CTRL_MMR0_CFG0_RD(CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_REQ);
+        val = CSL_CTRL_MMR0_CFG0_RD(d->clkChngReq);
     }
 
-    CSL_PLL0_CFG_SET(CSL_MAIN_PLL_MMR_CFG_PLL12_CTRL, 0x80000000);
-    val = CSL_PLL0_CFG_RD(CSL_MAIN_PLL_MMR_CFG_PLL12_CTRL);
+    CSL_REG32_SET_OFF(d->pllBase, CSL_MAIN_PLL_MMR_CFG_PLL12_CTRL, 0x80000000);
+    val = CSL_REG32_RD_OFF(d->pllBase, CSL_MAIN_PLL_MMR_CFG_PLL12_CTRL);
     Lpm_debugFullPrintf("Lpm_ddrFreqChange: PLL12_CTRL =%x\n", val);
     if((val & 0x80000000) == 0x80000000)
     {
-        val = CSL_PLL0_CFG_RD(CSL_MAIN_PLL_MMR_CFG_PLL12_CTRL);
+        val = CSL_REG32_RD_OFF(d->pllBase, CSL_MAIN_PLL_MMR_CFG_PLL12_CTRL);
     }
 
     for(t = 0; t< 1000000; t++) {}
-    CSL_CTRL_MMR0_CFG0_WR(CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_ACK, 1);
+    CSL_CTRL_MMR0_CFG0_WR(d->clkChngAck, 1);
 
-    val = CSL_CTRL_MMR0_CFG0_RD(CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_ACK);
+    val = CSL_CTRL_MMR0_CFG0_RD(d->chngAck);
     while((val & 0x80) != 0x80)
     {
-        val = CSL_CTRL_MMR0_CFG0_RD(CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_ACK);
+        val = CSL_CTRL_MMR0_CFG0_RD(d->chngAck);
     }
 
-    CSL_CTRL_MMR0_CFG0_WR(CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_ACK, 0);
-    CSL_CTRL_MMR0_CFG0_CLR(CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_REQ, 0x100);  // de-assert req
+    CSL_CTRL_MMR0_CFG0_WR(d->clkChngAck, 0);
+    CSL_CTRL_MMR0_CFG0_CLR(d->chngReq, 0x100);
 }
 
 static void Lpm_ddrEnterRetention(void)
 {
-    unsigned int n;
+    unsigned int n, i;
 
    /* try going to a new fsp (boot freq) before entering retention (11/3/21) */
-    Lpm_ddrFreqChange();
-    Lpm_debugFullPrintf("Lpm_ddrEnterRetention: Readout PHY regs in boot freq prior to entry into DDR retention\n");
-    /* disable auto entry / exit */
-    CSL_DDRSS0_CLR(CSL_EMIF_CTLCFG_DENALI_CTL_141, ((0xF << 24) | (0xF << 16)));
-    n = CSL_DDRSS0_RD(CSL_EMIF_CTLCFG_DENALI_CTL_132) & ~(0x7F << 24);
-    /* set low power mode to 0x31 (alternatively could use 0x51??)*/
-    CSL_DDRSS0_WR(CSL_EMIF_CTLCFG_DENALI_CTL_132, (n | (0x51 << 24)));
-    /* wait until low power operation has been completed */
-    while((CSL_DDRSS0_RD(CSL_EMIF_CTLCFG_DENALI_CTL_293) & (0x1 << 10)) == 0) {};
-    /* clear flag by writing t to DDRSS_CTL_295[10] */
-    CSL_DDRSS0_WR(CSL_EMIF_CTLCFG_DENALI_CTL_295, (0x1 << 10));
-    /* bit 6 / 14 -- lp_state valid; bits 13:8 / 5:0 0x0F SRPD Long with Mem Clk Gating */
-    while((CSL_DDRSS0_RD(CSL_EMIF_CTLCFG_DENALI_CTL_141) & 0x4F4F) != 0x4F4F) {};
+    for (i = 0; ddr[i].ddrBase; i++)
+    {
+        Lpm_ddrFreqChange(&ddr[i]);
+    }
 
-    Lpm_debugFullPrintf("Lpm_ddrEnterRetention: DDRSS_CTL_141: 0x%08x\n",
-                            CSL_DDRSS0_RD(CSL_EMIF_CTLCFG_DENALI_CTL_141));
-    Lpm_debugFullPrintf("Lpm_ddrEnterRetention: DDRSS_CTL_132: 0x%08x\n",
-                            CSL_DDRSS0_RD(CSL_EMIF_CTLCFG_DENALI_CTL_132));
-    Lpm_debugFullPrintf("Lpm_ddrEnterRetention: DDRSS_CTL_293: 0x%08x\n",
-                            CSL_DDRSS0_RD(CSL_EMIF_CTLCFG_DENALI_CTL_293));
-    Lpm_debugFullPrintf("Lpm_ddrEnterRetention: PI Interrupt status: 0x%08x\n",
-                            CSL_DDRSS0_RD(CSL_EMIF_CTLCFG_DENALI_PI_79));
+    Lpm_debugFullPrintf("Lpm_ddrEnterRetention: Readout PHY regs in boot freq prior to entry into DDR retention\n");
+    for (i = 0; ddr[i].ddrBase; i++)
+    {
+        /* disable auto entry / exit */
+        CSL_REG32_CLR_OFF(ddr[i].ddrBase, CSL_EMIF_CTLCFG_DENALI_CTL_141, ((0xF << 24) | (0xF << 16)));
+        n = CSL_REG32_RD_OFF(ddr[i].ddrBase, CSL_EMIF_CTLCFG_DENALI_CTL_132) & ~(0x7F << 24);
+        /* set low power mode to 0x31 (alternatively could use 0x51??)*/
+        CSL_REG32_WR_OFF(ddr[i].ddrBase, CSL_EMIF_CTLCFG_DENALI_CTL_132, (n | (0x51 << 24)));
+        /* wait until low power operation has been completed */
+        while((CSL_REG32_RD_OFF(ddr[i].ddrBase, CSL_EMIF_CTLCFG_DENALI_CTL_293) & (0x1 << 10)) == 0) {};
+        /* clear flag by writing t to DDRSS_CTL_295[10] */
+        CSL_REG32_WR_OFF(ddr[i].ddrBase, CSL_EMIF_CTLCFG_DENALI_CTL_295, (0x1 << 10));
+        /* bit 6 / 14 -- lp_state valid; bits 13:8 / 5:0 0x0F SRPD Long with Mem Clk Gating */
+        while((CSL_REG32_RD_OFF(ddr[i].ddrBase, CSL_EMIF_CTLCFG_DENALI_CTL_141) & 0x4F4F) != 0x4F4F) {};
+
+        Lpm_debugFullPrintf("Lpm_ddrEnterRetention: DDRSS_CTL_141: 0x%08x\n",
+                                CSL_REG32_RD_OFF(ddr[i].ddrBase, CSL_EMIF_CTLCFG_DENALI_CTL_141));
+        Lpm_debugFullPrintf("Lpm_ddrEnterRetention: DDRSS_CTL_132: 0x%08x\n",
+                                CSL_REG32_RD_OFF(ddr[i].ddrBase, CSL_EMIF_CTLCFG_DENALI_CTL_132));
+        Lpm_debugFullPrintf("Lpm_ddrEnterRetention: DDRSS_CTL_293: 0x%08x\n",
+                                CSL_REG32_RD_OFF(ddr[i].ddrBase, CSL_EMIF_CTLCFG_DENALI_CTL_293));
+        Lpm_debugFullPrintf("Lpm_ddrEnterRetention: PI Interrupt status: 0x%08x\n",
+                                CSL_REG32_RD_OFF(ddr[i].ddrBase, CSL_EMIF_CTLCFG_DENALI_PI_79));
+    }
 }
 
 static void Lpm_ddrUnlockPll(void)
