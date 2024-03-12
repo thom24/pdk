@@ -50,6 +50,22 @@ int32_t Sciclient_prepareSleep(void)
 int32_t Sciclient_enterSleep(uint32_t *msg_recv)
 {
     int32_t ret = -1;
-    /* Low power sequence will be implemented by Bootlin */
+    struct tisci_msg_enter_sleep_req *req =
+        (struct tisci_msg_enter_sleep_req *) msg_recv;
+
+    uint8_t mode = req->mode;
+
+    if (mode != TISCI_MSG_VALUE_SLEEP_MODE_DEEP_SLEEP)
+    {
+        ret = EINVAL;
+    }
+    else
+    {
+        (void)osal_hwip_disable();
+
+        S2R_goRetention();
+        /* Never reach this point */
+    }
+
     return ret;
 }
