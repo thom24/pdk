@@ -39,6 +39,7 @@
 
 #include <stdint.h>
 #include <ti/drv/sciclient/sciclient.h>
+#include <ti/drv/uart/UART_stdio.h>
 
 int32_t Sciclient_prepareSleep(void)
 {
@@ -55,6 +56,8 @@ int32_t Sciclient_enterSleep(uint32_t *msg_recv)
 
     uint8_t mode = req->mode;
 
+    UART_printf("############################\n");
+azeazeazez
     if (mode != TISCI_MSG_VALUE_SLEEP_MODE_DEEP_SLEEP)
     {
         ret = EINVAL;

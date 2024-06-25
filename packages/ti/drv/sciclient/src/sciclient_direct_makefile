@@ -68,7 +68,7 @@ SRCS_COMMON += sciclient_lpm.c
 SRCS_COMMON += sciclient_pmic.c
 endif
 
-ifeq ($(SOC),$(filter $(SOC), j7200))
+ifeq ($(SOC),$(filter $(SOC), j7200 j784s4))
 SRCS_COMMON += sciclient_s2r.c
 endif
 

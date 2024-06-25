@@ -72,12 +72,13 @@
  * redirected by enabling DEBUG_UART_MAIN flag.
  * A compilation is needed for each modification.
  */
-//#define DEBUG_SRAM_S2R
-//#define DEBUG_FULL_SRAM_S2R
-//#define DEBUG_UART_MAIN
+#define DEBUG_SRAM_S2R
+#define DEBUG_FULL_SRAM_S2R
+#define DEBUG_UART_MAIN
 
 #ifdef DEBUG_UART_MAIN
-#define UART_DEBUG_ADDR CSL_UART0_BASE
+#define UART_DEBUG_ADDR CSL_UART8_BASE
+//#define UART_DEBUG_ADDR CSL_UART0_BASE
 #else
 #define UART_DEBUG_ADDR CSL_MCU_UART0_BASE
 #endif
@@ -95,6 +96,9 @@
 /* ========================================================================== */
 /*                           Macros & Typedefs                                */
 /* ========================================================================== */
+
+#define CSL_REG32_SET(r, m) CSL_REG32_WR(r, CSL_REG32_RD(r) | m)
+#define CSL_REG32_CLR(r, m) CSL_REG32_WR(r, CSL_REG32_RD(r) & ~(m))
 
 #define CSL_REG32_SET_OFF(o, r, m) CSL_REG32_WR_OFF(o, r, CSL_REG32_RD_OFF(o, r) | m)
 #define CSL_REG32_CLR_OFF(o, r, m) CSL_REG32_WR_OFF(o, r, CSL_REG32_RD_OFF(o, r) & ~(m))
@@ -148,7 +152,7 @@ struct Ddr_instance {
     unsigned int chngAck;
     unsigned int clkChngReq;
     unsigned int clkChngAck;
-    unsigned int pllBase;
+    unsigned int pllCtrl;
 };
 
 #if defined(SOC_J784S4)
@@ -159,7 +163,8 @@ static const struct Ddr_instance ddr[] = {
         .chngAck = CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_ACK0,
         .clkChngReq = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_REQ0,
         .clkChngAck = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_ACK0,
-        .pllBase = CSL_PLL0_CFG_BASE + 12 * 0x1000
+        .pllCtrl = CSL_PLL0_CFG_BASE + CSL_MAIN_PLL_MMR_CFG_PLL12_CTRL
+        /*.pllBase = CSL_PLL0_CFG_BASE + 12 * 0x1000*/
     },
     {
         .ddrBase = 0x029B0000,
@@ -167,7 +172,7 @@ static const struct Ddr_instance ddr[] = {
         .chngAck = CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_ACK1,
         .clkChngReq = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_REQ1,
         .clkChngAck = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_ACK1,
-        .pllBase = CSL_PLL0_CFG_BASE + 26 * 0x1000
+        .pllCtrl = CSL_PLL0_CFG_BASE + CSL_MAIN_PLL_MMR_CFG_PLL26_CTRL
     },
     {
         .ddrBase = 0x029D0000,
@@ -175,7 +180,7 @@ static const struct Ddr_instance ddr[] = {
         .chngAck = CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_ACK2,
         .clkChngReq = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_REQ2,
         .clkChngAck = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_ACK2,
-        .pllBase = CSL_PLL0_CFG_BASE + 27 * 0x1000
+        .pllCtrl = CSL_PLL0_CFG_BASE + CSL_MAIN_PLL_MMR_CFG_PLL27_CTRL
     },
     {
         .ddrBase = 0x029F0000,
@@ -183,7 +188,7 @@ static const struct Ddr_instance ddr[] = {
         .chngAck = CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_ACK3,
         .clkChngReq = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_REQ3,
         .clkChngAck = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_ACK3,
-        .pllBase = CSL_PLL0_CFG_BASE + 28 * 0x1000
+        .pllCtrl = CSL_PLL0_CFG_BASE + CSL_MAIN_PLL_MMR_CFG_PLL28_CTRL
     },
     { },
 };
@@ -195,7 +200,7 @@ static const struct Ddr_instance ddr[] = {
         .chngAck = CSL_MAIN_CTRL_MMR_CFG0_CHNG_DDR4_FSP_ACK,
         .clkChngReq = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_REQ,
         .clkChngAck = CSL_MAIN_CTRL_MMR_CFG0_DDR4_FSP_CLKCHNG_ACK,
-        .pllBase = CSL_PLL0_CFG_BASE
+        .pllCtrl = CSL_PLL0_CFG_BASE + CSL_MAIN_PLL_MMR_CFG_PLL12_CTRL
     },
     { },
 };
@@ -216,6 +221,10 @@ static int Lpm_ddrRetention(void);
  *
  */
 static void Lpm_setupPmic(void);
+
+static void Lpm_i2cConfigWkup(char pmic);
+static unsigned char Lpm_i2cRead(char add);
+static void Lpm_i2cWrite(char add, char data);
 
 /**
  * \brief Clean R5 Caches
@@ -284,35 +293,61 @@ static void Lpm_cleanAllDCache(void)
         }
 }
 
+void WKUP_LOCK(unsigned int partition)  {
+    *(unsigned int *)(0x43000008 +partition*0x4000 + 0x1000) = 0x68EF3490;
+    *(unsigned int *)(0x4300000C +partition*0x4000 + 0x1000) = 0xD172BC5A;
+}
+
+void MCU_LOCK(unsigned int partition)  {
+    *(unsigned int *)(0x40F00008 +partition*0x4000 + 0x1000) = 0x68EF3490;
+    *(unsigned int *)(0x40F0000C +partition*0x4000 + 0x1000) = 0xD172BC5A;
+}
+
+void PLL_LOCK(unsigned int MAIN_PLL)  {
+    *(unsigned int *)(0x00680010 + MAIN_PLL*0x1000) = 0x68EF3490;
+    *(unsigned int *)(0x00680014 + MAIN_PLL*0x1000) = 0xD172BC5A;
+}
+
+
 static void Lpm_ddrFreqChange(const struct Ddr_instance *d)
 {
     unsigned int val;
     volatile unsigned int t;
 
-    CSL_CTRL_MMR0_CFG0_WR(CSL_MAIN_CTRL_MMR_CFG0_LOCK5_KICK0, KICK0_UNLOCK);
-    CSL_CTRL_MMR0_CFG0_WR(CSL_MAIN_CTRL_MMR_CFG0_LOCK5_KICK1, KICK1_UNLOCK);
+#define CTRLMMR_LOCK5_KICK0 0x00115008
+#define CTRLMMR_LOCK5_KICK1 0x0011500C
+    //CSL_CTRL_MMR0_CFG0_WR(CSL_MAIN_CTRL_MMR_CFG0_LOCK5_KICK0 + 0x100000, KICK0_UNLOCK);
+    *(unsigned int *)CTRLMMR_LOCK5_KICK0 = 0x68EF3490;
+    //CSL_CTRL_MMR0_CFG0_WR(CSL_MAIN_CTRL_MMR_CFG0_LOCK5_KICK1 + 0x100000, KICK1_UNLOCK);
+    *(unsigned int *)CTRLMMR_LOCK5_KICK1 = 0xD172BC5A;
 
-    CSL_REG32_WR_OFF(d->ddrBase, CSL_EMIF_CTLCFG_DENALI_CTL_190, 0x01010100);
+    //CSL_REG32_WR_OFF(d->ddrBase, CSL_EMIF_CTLCFG_DENALI_CTL_190, 0x01010100);
+    CSL_REG32_SET_OFF(d->ddrBase, CSL_EMIF_CTLCFG_DENALI_CTL_190, 0x01010100);
     Lpm_debugFullPrintf("Lpm_ddrFreqChange: DDRSS_CTL_190: 0x%08X\n",
                         CSL_REG32_RD_OFF(d->ddrBase, CSL_EMIF_CTLCFG_DENALI_CTL_190));
 
     Lpm_debugFullPrintf("Lpm_ddrFreqChange: req_type: 0\n");
     CSL_CTRL_MMR0_CFG0_WR(d->chngReq, 0); // set REQ_TYPE to 0
+    Lpm_debugFullPrintf("Lpm_ddrFreqChange: req_type set\n");
     for(t = 0; t < 100; t++) {}
+    Lpm_debugFullPrintf("Lpm_ddrFreqChange: loop\n");
     CSL_CTRL_MMR0_CFG0_SET(d->chngReq, 0x100); // assert req
+    Lpm_debugFullPrintf("Lpm_ddrFreqChange: d->chngReq set\n");
 
     val = CSL_CTRL_MMR0_CFG0_RD(d->clkChngReq);
+    Lpm_debugFullPrintf("d->clkChngReq = 0x%x\n", val);
     while((val & 0x80) != 0x80)
     {
         val = CSL_CTRL_MMR0_CFG0_RD(d->clkChngReq);
+	Lpm_debugFullPrintf("d->clkChngReq = 0x%x\n", val);
     }
 
-    CSL_REG32_SET_OFF(d->pllBase, CSL_MAIN_PLL_MMR_CFG_PLL12_CTRL, 0x80000000);
-    val = CSL_REG32_RD_OFF(d->pllBase, CSL_MAIN_PLL_MMR_CFG_PLL12_CTRL);
+    CSL_REG32_SET(d->pllCtrl, 0x80000000);
+    val = CSL_REG32_RD(d->pllCtrl);
     Lpm_debugFullPrintf("Lpm_ddrFreqChange: PLL12_CTRL =%x\n", val);
     if((val & 0x80000000) == 0x80000000)
     {
-        val = CSL_REG32_RD_OFF(d->pllBase, CSL_MAIN_PLL_MMR_CFG_PLL12_CTRL);
+        val = CSL_REG32_RD(d->pllCtrl);
     }
 
     for(t = 0; t< 1000000; t++) {}
@@ -331,10 +366,30 @@ static void Lpm_ddrFreqChange(const struct Ddr_instance *d)
 static void Lpm_ddrEnterRetention(void)
 {
     unsigned int n, i;
+    volatile unsigned int val;
+
+    MCU_LOCK(0);
+    WKUP_LOCK(2);
+    PLL_LOCK(12);
+
+    Lpm_i2cConfigWkup(0x48);
+
+    n = (Lpm_i2cRead(0x3D) & ~(1 << 5));
+    Lpm_i2cWrite(0x3D, (char)n);
+    // config the PMIC so that it does not go to sleep...
+    n = (Lpm_i2cRead(0x52) | (1 << 1));
+    Lpm_i2cWrite(0x52, (char)n);
+    Lpm_debugFullPrintf("MASK_STARTUP 0x%02X\n", (char)Lpm_i2cRead(0x52));
+
+    for(val = 0; val<0x10000000*0 + 0x1000*1; val++) {
+        *(unsigned int *)(0x80000000+val*8) = val;
+        *(unsigned int *)(0x80000000+val*8 + 4) = ~val;
+    }
 
    /* try going to a new fsp (boot freq) before entering retention (11/3/21) */
-    for (i = 0; ddr[i].ddrBase; i++)
+    for (i = 0; ddr[i].ddrBase > 0; i++)
     {
+	Lpm_debugFullPrintf("ddr[i].ddrBase = %x\n", ddr[i].ddrBase);
         Lpm_ddrFreqChange(&ddr[i]);
     }
 
@@ -564,27 +619,58 @@ static void Lpm_i2cConfigWkup(char pmic)
 /* All the following function could be improve by splitting
  * Lpm_i2cConfigWkup in two parts: the real initialisation and then just
  * the address setting */
+
+static void Lpm_writePmic(char pmic, uint8_t reg, uint8_t val)
+{
+    Lpm_i2cConfigWkup(pmic);
+
+    if (pmic == BOARD_I2C_LEO_PMIC_A_ADDR)
+    {
+        Lpm_debugFullPrintf("Lpm_writePmicA: reg=0x%x 0x%x\n", reg, val);
+    }
+    else
+    {
+        Lpm_debugFullPrintf("Lpm_writePmicB: reg=0x%x 0x%x\n", reg, val);
+    }
+
+    Lpm_i2cWrite(reg, val);
+}
+
+static uint8_t Lpm_readPmic(char pmic, uint8_t reg)
+{
+    unsigned char rxd;
+
+    Lpm_i2cConfigWkup(pmic);
+
+    rxd = Lpm_i2cRead(reg);
+    if (pmic == BOARD_I2C_LEO_PMIC_A_ADDR)
+    {
+        Lpm_debugFullPrintf("Lpm_readPmicA: reg=0x%x 0x%x\n", reg, rxd);
+
+    }
+    else
+    {
+        Lpm_debugFullPrintf("Lpm_readPmicB: reg=0x%x 0x%x\n", reg, rxd);
+    }
+
+    return rxd;
+}
+
 static void Lpm_writePmicA(uint8_t reg, uint8_t val)
 {
-    Lpm_i2cConfigWkup(BOARD_I2C_LEO_PMIC_A_ADDR);
-    Lpm_i2cWrite(reg, val);
-    Lpm_debugFullPrintf("Lpm_writePmicA: reg=0x%x 0x%x\n", reg, val);
+    Lpm_writePmic(BOARD_I2C_LEO_PMIC_A_ADDR, reg, val);
 }
 
 static void Lpm_writePmicB(uint8_t reg, uint8_t val)
 {
-    Lpm_i2cConfigWkup(BOARD_I2C_LEO_PMIC_B_ADDR);
-    Lpm_i2cWrite(reg, val);
-    Lpm_debugFullPrintf("Lpm_writePmicB: reg=0x%x 0x%x\n", reg, val);
+    Lpm_writePmic(BOARD_I2C_LEO_PMIC_B_ADDR, reg, val);
 }
 
 static uint8_t Lpm_readPmicA(uint8_t reg)
 {
     unsigned char rxd;
 
-    Lpm_i2cConfigWkup(BOARD_I2C_LEO_PMIC_A_ADDR);
-    rxd = Lpm_i2cRead(reg);
-    Lpm_debugFullPrintf("Lpm_readPmicA: reg=0x%x 0x%x\n", reg, rxd);
+    rxd = Lpm_readPmic(BOARD_I2C_LEO_PMIC_A_ADDR, reg);
 
     return(rxd);
 }
@@ -593,9 +679,7 @@ static uint8_t Lpm_readPmicB(uint8_t reg)
 {
     unsigned char rxd;
 
-    Lpm_i2cConfigWkup(BOARD_I2C_LEO_PMIC_B_ADDR);
-    rxd = Lpm_i2cRead(reg);
-    Lpm_debugFullPrintf("Lpm_readPmicB: reg=0x%x 0x%x\n", reg, rxd);
+    rxd = Lpm_readPmic(BOARD_I2C_LEO_PMIC_B_ADDR, reg);
 
     return(rxd);
 }
@@ -633,13 +717,155 @@ static void Lpm_enableDDRRetention(void)
     uint8_t buf;
 
     /* Put GPIO6 as output push-pull no pull-up or pull down */
-    Lpm_writePmicA(SCICLIENT_LPM_GPIO6_CONF, 1 << SCICLIENT_LPM_DIR_SHIFT | 0 << SCICLIENT_LPM_OD_SHIFT);
+//    Lpm_writePmicA(SCICLIENT_LPM_GPIO6_CONF, 1 << SCICLIENT_LPM_DIR_SHIFT | 0 << SCICLIENT_LPM_OD_SHIFT);
     /* GPIO_OUT_1 */
+    buf = Lpm_readPmicA(0x36);
     buf = Lpm_readPmicA(0x3D) | SCICLIENT_LPM_EN_DDR_RET_1V1; // 1<<5, GPIO6_OUT on
     Lpm_writePmicA(0x3D, buf);
+
 }
 #endif
 
+static void Lpm_ClearPmicInterrupts(unsigned char pmic)
+{
+    uint8_t int_top, val, val1;
+
+    int_top = Lpm_readPmic(pmic, 0x5A);
+  //  Lpm_debugFullPrintf("INT_TOP = 0x%02X\n", int_top);
+
+    if(!int_top)
+    {
+        return;
+    }
+
+    if(int_top & (1 << 0))
+    {
+        val = Lpm_readPmic(pmic, 0x5B);
+        Lpm_debugFullPrintf("INT_BUCK = 0x%02X\n", val);
+        if (val & 1)
+        {
+            val1 = Lpm_readPmic(pmic, 0x5C);
+            Lpm_debugFullPrintf("INT_BUCK1_2 = 0x%02X\n", val1);
+            Lpm_writePmic(pmic, 0x5C, val1);
+        }
+
+        if(val & (1 << 1))
+        {
+            val1 = Lpm_readPmic(pmic, 0x5D);
+            Lpm_debugFullPrintf("INT_BUCK3_4 = 0x%02X\n", val1);
+            Lpm_writePmic(pmic, 0x5D, val1);
+        }
+
+        if(val & (1 << 2))
+        {
+            val1 = Lpm_readPmic(pmic, 0x5E);
+            Lpm_debugFullPrintf("INT_BUCK5 = 0x%02X\n", val1);
+            Lpm_writePmic(pmic, 0x5E, val1);
+        }
+    }
+
+    if(int_top & (1 << 1))
+    {
+        val = Lpm_readPmic(pmic, 0x5F);
+        Lpm_debugFullPrintf("INT_LDO_VMON = 0x%02X\n", val);
+        if(val & 1)
+        {
+            val1 = Lpm_readPmic(pmic, 0x60);
+            Lpm_debugFullPrintf("INT_LDO1_2 = 0x%02X\n", val1);
+            Lpm_writePmic(pmic, 0x60, val1);
+        }
+        if(val & (1 << 1))
+        {
+            val1 = Lpm_readPmic(pmic, 0x61);
+            Lpm_debugFullPrintf("INT_LDO3_4 = 0x%02X\n", val1);
+            Lpm_writePmic(pmic, 0x61, val1);
+        }
+        if(val & (1 << 2))
+        {
+            val1 = Lpm_readPmic(pmic, 0x62);
+            Lpm_debugFullPrintf("INT_VMON = 0x%02X\n", val1);
+            Lpm_writePmic(pmic, 0x62, val1);
+        }
+    }
+
+    if(int_top & (1 << 2))
+    {
+        val = Lpm_readPmic(pmic, 0x63);
+        Lpm_debugFullPrintf("INT_GPIO = 0x%02X\n", val);
+        if(val & (1 << 3))
+        {
+            val1 = Lpm_readPmic(pmic, 0x64);
+            Lpm_debugFullPrintf("INT_GPIO1_8 = 0x%02X\n", val1);
+            Lpm_writePmic(pmic, 0x64, val1);
+        }
+        Lpm_writePmic(pmic, 0x63, val); // clear GPIO9, GPIO10, GPIO11
+    }
+
+    if(int_top & (1 << 3))
+    {
+        val = Lpm_readPmic(pmic, 0x65);
+        Lpm_debugFullPrintf("INT_STARTUP = 0x%02X\n", val);
+        Lpm_writePmic(pmic, 0x65, val);
+    }
+
+    if(int_top & (1 << 4))
+    {
+        val = Lpm_readPmic(pmic, 0x66);
+        Lpm_debugFullPrintf("INT_MISC = 0x%02X\n", val);
+        Lpm_writePmic(pmic, 0x66, val);
+    }
+
+    if(int_top & (1 << 5))
+    {
+        val = Lpm_readPmic(pmic, 0x67);
+        Lpm_debugFullPrintf("INT_MODERATE_ERR = 0x%02X\n", val);
+        Lpm_writePmic(pmic, 0x67, val);
+    }
+
+    if(int_top & (1 << 6))
+    {
+        val = Lpm_readPmic(pmic, 0x68);
+        Lpm_debugFullPrintf("INT_SEVERE_ERR = 0x%02X\n", val);
+        Lpm_writePmic(pmic, 0x68, val);
+    }
+
+    if(int_top & (1 << 7))
+    {
+        val = Lpm_readPmic(pmic, 0x69);
+        Lpm_debugFullPrintf("INT_FSM_ERR = 0x%02X\n", val);
+        if(val & (1 << 4))
+        {
+            val1 = Lpm_readPmic(pmic, 0x6A);
+            Lpm_debugFullPrintf("INT_COMM_ERR = 0x%02X\n", val1);
+            Lpm_writePmic(pmic, 0x6A, val1);
+        }
+        if(val & (1 << 5))
+        {
+            val1 = Lpm_readPmic(pmic, 0x6B);
+            Lpm_debugFullPrintf("INT_READBACK_ERR = 0x%02X\n", val1);
+            Lpm_writePmic(pmic, 0x6B, val1);
+        }
+        if(val & (1 << 6))
+        {
+            val1 = Lpm_readPmic(pmic, 0x6C);
+            Lpm_debugFullPrintf("INT_ESM = 0x%02X\n", val1);
+            Lpm_writePmic(pmic, 0x6C, val1);
+        }
+        Lpm_writePmic(pmic, 0x69, val); // clear INT_FSM_ERR
+    }
+
+    int_top = Lpm_readPmic(pmic, 0x5A);
+    Lpm_debugFullPrintf("INT_TOP = 0x%02X\n", int_top);
+}
+
+static void Lpm_readAllRegPmicA(void)
+{
+    int i;
+    for(i = 1; i <= 0xD0; i++)
+    {
+        Lpm_readPmicA(i);
+    }
+}
 /* Taken from Lpm_pmicStateChangeActiveToIORetention, with some changes to
  * SCICLIENT_LPM_FSM_I2C_TRIGGERS for DDRRET support. Explaination on this change is still
  * obscure. */
@@ -656,13 +882,13 @@ static void Lpm_setupPmic(void)
      * you can configure both NSLEEP bits before the PMIC reacts to the change.
      */
 
-    uint8_t buf;
+    //uint8_t buf;
     int single = 1;
 
     /* clear pending interrupt */
 #if defined (j7200_evm)
-    Lpm_writePmicA(0x60, 0x04);
-    Lpm_writePmicA(0x69, 0x04);
+//    Lpm_writePmicA(0x60, 0x04);
+//    Lpm_writePmicA(0x69, 0x04);
 #endif
 
     /*
@@ -670,82 +896,99 @@ static void Lpm_setupPmic(void)
      * the correct ID when reading DEV_REV then it means that
      * there are 2 PMICs.
      */
-    if((!Lpm_readPmicB_timeout(0x1, &buf, SCICLIENT_LPM_I2C_DETECT_TIMEOUT)) &&
+/*    if((!Lpm_readPmicB_timeout(0x1, &buf, SCICLIENT_LPM_I2C_DETECT_TIMEOUT)) &&
        ((buf == SCICLIENT_LPM_DEVICE_ID_PMICB) || (buf == SCICLIENT_LPM_DEVICE_ID_PMICB_EVM)))
     {
         Lpm_debugFullPrintf("Lpm_setupPmic: Double PMIC configuration\n");
         single = 0;
     }
-
+*/
     /* Change FSM_NSLEEP_TRIGGERS: NSLEEP1=high, NSLEEP2=high */
     Lpm_writePmicA(PMIC_FSM_NSLEEP_TRIGGERS_REGADDR, 0x03);
     Lpm_debugFullPrintf("Lpm_setupPmic: Write FSM_NSLEEP_TRIGGERS\n");
     Lpm_debugReadPmicA(PMIC_FSM_NSLEEP_TRIGGERS_REGADDR);
 
-    if(single)
-    {
-        /* Clear BIST_PASS_INT */
-        Lpm_writePmicA(0x66, 0x01);
-        Lpm_debugFullPrintf("Lpm_setupPmic: Write INT_MISC\n");
-        Lpm_debugReadPmicA(0x65);
+    Lpm_debugFullPrintf("Lpm_ClearPmicInterrupts (PMIC A)\n");
+    Lpm_ClearPmicInterrupts(BOARD_I2C_LEO_PMIC_A_ADDR);
 
-        /*  Clear all potential sources of the On Request */
-        Lpm_writePmicA(0x65, 0x26);
-        Lpm_debugFullPrintf("Lpm_setupPmic: Write INT_STARTUP\n");
-        Lpm_debugReadPmicA(0x65);
-    }
-    else
+    if(!single)
     {
-        /* Clear INT_STARTUP: clear ENABLE pin interrupt */
-        Lpm_writePmicA(0x65, 0x02);
-        Lpm_debugFullPrintf("Lpm_setupPmic: Write INT_STARTUP\n");
-        Lpm_debugReadPmicA(0x65);
+        Lpm_debugFullPrintf("Lpm_ClearPmicInterrupts (PMIC B)\n");
+        Lpm_ClearPmicInterrupts(BOARD_I2C_LEO_PMIC_B_ADDR);
     }
+//    if(single)
+//    {
+//        /* Clear BIST_PASS_INT */
+//        Lpm_writePmicA(0x66, 0x01);
+//        Lpm_debugFullPrintf("Lpm_setupPmic: Write INT_MISC\n");
+//        Lpm_debugReadPmicA(0x65);
+//
+//        /*  Clear all potential sources of the On Request */
+//        Lpm_writePmicA(0x65, 0x26);
+//        Lpm_debugFullPrintf("Lpm_setupPmic: Write INT_STARTUP\n");
+//        Lpm_debugReadPmicA(0x65);
+//    }
+//    else
+//    {
+//        /* Clear INT_STARTUP: clear ENABLE pin interrupt */
+//        Lpm_writePmicA(0x65, 0x02);
+//        Lpm_debugFullPrintf("Lpm_setupPmic: Write INT_STARTUP\n");
+//        Lpm_debugReadPmicA(0x65);
+//    }
 
     /* Change SCICLIENT_LPM_FSM_I2C_TRIGGERS on PMIC A*/
     Lpm_writePmicA(PMIC_FSM_I2C_TRIGGERS_REGADDR, SCICLIENT_LPM_FSM_I2C_TRIGGERS);
     Lpm_debugFullPrintf("Lpm_setupPmic: Write FSM_TRIGGERS\n");
     Lpm_debugReadPmicA(PMIC_FSM_I2C_TRIGGERS_REGADDR);
 
+    /* Suppress interrupts on all pins except GPIO4 (CAN_WAKE) */
+//    Lpm_writePmicA(0x4F, 0xFF);
+    Lpm_writePmicA(0x50, ~(0x01 << 3));
+//////////////////    Lpm_writePmicA(0x50, SCICLIENT_LPM_GPIO1_8_RISE);
+    Lpm_writePmicA(0x51, 0x3F);
+
     /* Configure GPIO4_CONF: input, no pull, signal LP_WKUP1 */
     Lpm_writePmicA(0x34, 0xc0);
     Lpm_debugFullPrintf("Lpm_setupPmic: Write GPIO4_CONF\n");
     Lpm_debugReadPmicA(0x34);
 
-    /* Configure INT_GPIO1_8 (enable GPIO4 interrupt): clear GPIO4_INT */
-    Lpm_writePmicA(0x64, SCICLIENT_LPM_GPIO4_BIT);
-    Lpm_debugFullPrintf("Lpm_setupPmic: Write INT_GPIO1_8\n");
-    Lpm_debugReadPmicA(0x64);
+    /* Clear interrupt from GPIO 1 - 11 */
+    Lpm_writePmicA(0x64, Lpm_readPmicA(0x64));
+    Lpm_writePmicA(0x63, Lpm_readPmicA(0x63));
 
-    /* Configure MASK_GPIO*_RISE */
-    Lpm_writePmicA(0x50, SCICLIENT_LPM_GPIO1_8_RISE);
-    Lpm_writePmicA(0x51, 0x3F);
+    /* Configure INT_GPIO1_8 (enable GPIO4 interrupt): clear GPIO4_INT */
+    //Lpm_writePmicA(0x64, SCICLIENT_LPM_GPIO4_BIT);
+    //Lpm_debugFullPrintf("Lpm_setupPmic: Write INT_GPIO1_8\n");
+    //Lpm_debugReadPmicA(0x64);
 
     /* Configure MASK_SCICLIENT_LPM_GPIO1_8_FALL (configure GPIO4 falling edge interrupt): enable INT on GPIO4 */
-    Lpm_writePmicA(0x4F, SCICLIENT_LPM_GPIO1_8_FALL);
-    Lpm_debugFullPrintf("Lpm_setupPmic: Write MASK_SCICLIENT_LPM_GPIO1_8_FALL\n");
-    Lpm_debugReadPmicA(0x4F);
+//    Lpm_writePmicA(0x4F, SCICLIENT_LPM_GPIO1_8_FALL);
+//    Lpm_debugFullPrintf("Lpm_setupPmic: Write MASK_SCICLIENT_LPM_GPIO1_8_FALL\n");
+//    Lpm_debugReadPmicA(0x4F);
 
     Lpm_enableDDRRetention();
 
-    if(!single)
-    {
-        /* Change FSM_I2C_TRIGGERS - PMICB */
-        Lpm_writePmicB(PMIC_FSM_I2C_TRIGGERS_REGADDR, SCICLIENT_LPM_FSM_I2C_TRIGGERS);
-        Lpm_debugFullPrintf("Lpm_setupPmic: Write SCICLIENT_LPM_FSM_I2C_TRIGGERS \n");
-        Lpm_debugReadPmicB(PMIC_FSM_I2C_TRIGGERS_REGADDR);
 
-        /* Change FSM_I2C_TRIGGERS - PMICA */
-        Lpm_writePmicA(PMIC_FSM_I2C_TRIGGERS_REGADDR, SCICLIENT_LPM_FSM_I2C_TRIGGERS);
-        Lpm_debugFullPrintf("Lpm_setupPmic: Write SCICLIENT_LPM_FSM_I2C_TRIGGERS\n");
-        Lpm_debugReadPmicA(PMIC_FSM_I2C_TRIGGERS_REGADDR);
-    }
+    /* Change FSM_I2C_TRIGGERS - PMICA */
+//    Lpm_writePmicA(PMIC_FSM_I2C_TRIGGERS_REGADDR, SCICLIENT_LPM_FSM_I2C_TRIGGERS);
+//    Lpm_debugFullPrintf("Lpm_setupPmic: Write SCICLIENT_LPM_FSM_I2C_TRIGGERS\n");
+//    Lpm_debugReadPmicA(PMIC_FSM_I2C_TRIGGERS_REGADDR);
+
+//    if(!single)
+//    {
+        /* Change FSM_I2C_TRIGGERS - PMICB */
+//        Lpm_writePmicB(PMIC_FSM_I2C_TRIGGERS_REGADDR, SCICLIENT_LPM_FSM_I2C_TRIGGERS);
+//        Lpm_debugFullPrintf("Lpm_setupPmic: Write SCICLIENT_LPM_FSM_I2C_TRIGGERS \n");
+//        Lpm_debugReadPmicB(PMIC_FSM_I2C_TRIGGERS_REGADDR);
+//    }
 
     /* Write magic number to scratch register to indicate the suspend */
     Lpm_writePmicA(SCICLIENT_LPM_SCRATCH_PAD_REG_3, SCICLIENT_LPM_MAGIC_SUSPEND);
     Lpm_debugReadPmicA(SCICLIENT_LPM_SCRATCH_PAD_REG_3);
 
-    Lpm_debugReadPmicA(SCICLIENT_LPM_INT_TOP);
+  //  Lpm_debugReadPmicA(SCICLIENT_LPM_INT_TOP);
+
+    //Lpm_readAllRegPmicA();
 
     /* Change FSM_NSLEEP_TRIGGERS: NSLEEP1=low, NSLEEP2=low */
     Lpm_writePmicA(PMIC_FSM_NSLEEP_TRIGGERS_REGADDR, 0x00);

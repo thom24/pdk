@@ -53,7 +53,7 @@
 #include <ti/drv/uart/UART_stdio.h>
 
 /* Set VERBOSE to 1 for trace information on message routing */
-#define VERBOSE 0
+#define VERBOSE 1
 
 #if VERBOSE
 #define Sciserver_printf UART_printf
@@ -462,7 +462,7 @@ static int32_t Sciserver_UserProcessMsg(uint32_t *msg_recv,
     uint32_t reqMsgSize;
     uint32_t respMsgSize;
 
-    Sciserver_printf("type = 0x%x, host = %d\n", hdr->type, hw_host_id);
+//    Sciserver_printf("type = 0x%x, host = %d\n", hdr->type, hw_host_id);
 
     switch (hdr->type)
     {
@@ -541,8 +541,17 @@ static int32_t Sciserver_UserProcessMsg(uint32_t *msg_recv,
             break;
         /* Start of PM messages */
         case TISCI_MSG_BOARD_CONFIG_PM:
-            reqMsgSize = sizeof(struct tisci_msg_board_config_pm_req);
-            respMsgSize = sizeof(struct tisci_msg_board_config_pm_resp);
+	    if (hw_host_id == TISCI_HOST_ID_DMSC2DM) {
+		//UART_printf("type = 0x%x, host = %d\n", hdr->type, hw_host_id);
+		    /* Hack because DMSC do not forward suspend msg */
+		    reqMsgSize = sizeof(struct tisci_msg_enter_sleep_req);
+		    respMsgSize = sizeof(struct tisci_msg_enter_sleep_resp);
+		    hdr->type = TISCI_MSG_ENTER_SLEEP;
+	    } else {
+		    /* Normal case */
+		    reqMsgSize = sizeof(struct tisci_msg_board_config_pm_req);
+		    respMsgSize = sizeof(struct tisci_msg_board_config_pm_resp);
+	    }
             break;
         case TISCI_MSG_SET_CLOCK:
             reqMsgSize = sizeof(struct tisci_msg_set_clock_req);

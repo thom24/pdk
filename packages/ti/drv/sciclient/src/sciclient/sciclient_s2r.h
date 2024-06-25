@@ -49,8 +49,9 @@
  * Debug messages for suspend can be enabled by uncommenting the following macro
  * and recompiling
  */
-// #define DEBUG_SUSPEND
+#define DEBUG_SUSPEND
 #ifdef DEBUG_SUSPEND
+#include <ti/drv/uart/UART.h>
 #include <ti/drv/uart/UART_stdio.h>
 #endif
 

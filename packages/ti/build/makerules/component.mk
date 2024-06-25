@@ -132,7 +132,7 @@ DEFAULT_$(SOC)_CORELIST_safertos = $(filter-out $(DEFAULT_CORELIST_EXCLUDE_CORES
 # in the case of building libraries for multiple cores
 
 # Component specific CFLAGS
-PDK_CFLAGS =
+PDK_CFLAGS = -DENABLE_UART_PRINT
 PDK_LNKFLAGS =
 
 ############################
